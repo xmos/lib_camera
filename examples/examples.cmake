@@ -2,6 +2,7 @@
 # edit subfolder, put your examples here
 set(EXAMPLES 
         blink_example
+        take_picture
     )
 
 # add all the examples that you need
