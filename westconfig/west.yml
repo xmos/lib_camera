@@ -31,8 +31,7 @@ manifest:
     - name : lib_mipi # fork
       remote : xalbertoisorna
       path: modules/mipi
-      revision: master
       submodules: true
-      clone-depth : 1
+      revision: develop      
 
     
