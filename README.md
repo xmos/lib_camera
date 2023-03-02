@@ -1,8 +1,6 @@
-# first_project
+# Camera framework
+repo to manipulate camera
 
-some basic bare metals examples on the explorer board,
-useful when you to start from 0
-
-
-
-# https://docs.zephyrproject.org/latest/develop/west/manifest.html#west-manifest-import
+# usefull commands
+run in simulation: 
+```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```

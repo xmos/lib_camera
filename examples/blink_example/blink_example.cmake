@@ -1,7 +1,7 @@
 #**********************
 # Gather Sources
 #**********************
-set(executable_name blink)
+set(executable_name example_blink)
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.c )
 set(APP_INCLUDES
     ${CMAKE_CURRENT_LIST_DIR}/src
