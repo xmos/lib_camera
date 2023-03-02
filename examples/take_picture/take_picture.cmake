@@ -1,7 +1,10 @@
 #**********************
 # Gather Sources
 #**********************
-set(executable_name take_picture) # Set the executable
+
+# <--- Set the executable
+set(executable_name take_picture)  
+
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.c* )
 set(APP_INCLUDES
     ${CMAKE_CURRENT_LIST_DIR}/src
@@ -38,8 +41,11 @@ set(APP_LINK_OPTIONS
     ${CMAKE_CURRENT_LIST_DIR}/src/config.xscope
 )
 
-set(APP_COMMON_LINK_LIBRARIES
-        io::general)
+# <--- Link libraries
+set(APP_COMMON_LINK_LIBRARIES                           
+        io::general
+        mipi::lib_mipi
+        )
 
 
 #**********************

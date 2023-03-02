@@ -8,7 +8,7 @@ manifest:
       url-base: https://github.com/xalbertoisorna/
       
   projects:
-    - name: xmos_cmake_toolchain
+    - name: xmos_cmake_toolchain # fork
       remote : xalbertoisorna
       path: xmos_cmake_toolchain
       revision: main
@@ -28,8 +28,8 @@ manifest:
       submodules: true
       clone-depth : 1
 
-    - name : lib_mipi
-      remote : xmos
+    - name : lib_mipi # fork
+      remote : xalbertoisorna
       path: modules/mipi
       revision: master
       submodules: true
