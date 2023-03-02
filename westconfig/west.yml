@@ -1,0 +1,26 @@
+manifest:
+  remotes:
+    - name: xmos
+      url-base: git@github.com:xmos
+
+    - name: xalbertoisorna
+      url-base: https://github.com/xalbertoisorna/
+      
+  projects:
+    - name: xmos_cmake_toolchain
+      remote : xalbertoisorna
+      path: xmos_cmake_toolchain
+      revision: main
+
+    - name : fwk_io
+      remote : xmos
+      path: modules/io
+      revision: b689f61
+      submodules: true
+    
+    - name : fwk_core
+      remote : xmos
+      path: modules/core
+      revision: develop
+      submodules: true
+    
