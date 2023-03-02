@@ -1,3 +1,4 @@
+# https://docs.zephyrproject.org/latest/develop/west/manifest.html
 manifest:
   remotes:
     - name: xmos
@@ -11,16 +12,27 @@ manifest:
       remote : xalbertoisorna
       path: xmos_cmake_toolchain
       revision: main
+      clone-depth : 1
 
     - name : fwk_io
       remote : xmos
       path: modules/io
       revision: b689f61
       submodules: true
+      clone-depth : 1
     
     - name : fwk_core
       remote : xmos
       path: modules/core
       revision: develop
       submodules: true
+      clone-depth : 1
+
+    - name : lib_mipi
+      remote : xmos
+      path: modules/mipi
+      revision: master
+      submodules: true
+      clone-depth : 1
+
     
