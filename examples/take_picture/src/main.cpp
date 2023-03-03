@@ -2,31 +2,49 @@
 TODO add compatibility with XC
 
 */
-
 #include <stdio.h>
-#include <xs1.h>
+#include <platform.h>
+#include <xcore/channel.h>
 #include <xcore/port.h>
-#include "mipi.h"
+#include <xcore/parallel.h>
+#include <xcore/hwtimer.h>
+#include <xcore/select.h>
+#include <xscope.h>
+#include <platform.h>
 
-/*
-on tile[MIPI_TILE]:         in port    p_mipi_clk = XS1_PORT_1O;
-on tile[MIPI_TILE]:         in port    p_mipi_rxa = XS1_PORT_1E;
-on tile[MIPI_TILE]:         in port    p_mipi_rxv = XS1_PORT_1I;
-on tile[MIPI_TILE]:buffered in port:32 p_mipi_rxd = XS1_PORT_8A;
-*/
+#include "i2c.h"
+#include "mipi.h"
+#include "mipi_main.h"
+#include "main.hpp"
+
+// I2C interface ports
+port_t p_scl = XS1_PORT_1N;
+port_t p_sda = XS1_PORT_1O;
+
+void enable_mipi_ports(){
+    port_enable(p_scl);
+    port_enable(p_sda);
+}
+
+// ?
+// astew: TIL xscope_user_init() is an XC magic function that gets called
+//        automatically..for some reason.
+void xscope_user_init() {
+   xscope_register(0, 0, "", 0, "");
+   xscope_config_io(XSCOPE_IO_BASIC);
+}
+
 
 int main(void)
 {
-    port_t p_mipi_clk = XS1_PORT_1O; 
-    port_enable(p_mipi_clk);
+    enable_mipi_ports();
 
-    unsigned long clk_state = port_in(p_mipi_clk); // i force to be equal at the beginning
-    // power on the sensor
-    // write_node_config_reg(tile, XS1_SSWITCH_MIPI_DPHY_CFG3_NUM , 0x7E42);
-
-    // config camera 
-    printf("clk_state = %lu\n", clk_state);
-    // take frame
+    // i2c par job on tile 0 
+    i2c_master_init(
+            i2c_ctx_ptr,
+            p_scl, p_scl_bit_pos, 0,
+            p_sda, p_sda_bit_pos, 0,
+            SPEED);
 
     return 0;
 }
