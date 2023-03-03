@@ -1,4 +1,7 @@
-#TODO add compatibility with XC
+/*
+TODO add compatibility with XC
+
+*/
 
 #include <stdio.h>
 #include <xs1.h>
