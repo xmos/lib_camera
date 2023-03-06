@@ -43,7 +43,8 @@ set(APP_LINK_OPTIONS
 
 # <--- Link libraries
 set(APP_COMMON_LINK_LIBRARIES                           
-        io::general
+        core::general
+        lib_i2c
         mipi::lib_mipi
         )
 
