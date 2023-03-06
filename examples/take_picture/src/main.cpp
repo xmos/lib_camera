@@ -1,8 +1,5 @@
 #include "main.hpp"
 
-// #include "mipi.h"
-// #include "mipi_main.h"
-
 // I2C interface ports
 port_t p_scl = XS1_PORT_1N;
 port_t p_sda = XS1_PORT_1O;
