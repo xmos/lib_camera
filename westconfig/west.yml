@@ -17,7 +17,7 @@ manifest:
     - name : fwk_io
       remote : xmos
       path: modules/io
-      revision: b689f61
+      revision: develop
       submodules: true
       clone-depth : 1
     

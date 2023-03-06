@@ -16,7 +16,9 @@ TODO add compatibility with XC
 #include <xcore/triggerable.h>
 
 #include "i2c.h"
-#include "main.hpp"
+#include "i2c_reg.h"
+
+#include "main.h"
 
 // #include "mipi.h"
 // #include "mipi_main.h"
