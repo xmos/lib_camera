@@ -27,7 +27,9 @@ int main(void)
 {
     enable_mipi_ports();
     PAR_JOBS(
-        PJOB(i2c_job, ()));
+        PJOB(i2c_job, ())
+        // the other job here will be mipi work //
+        );
     return 0;
 }
 
