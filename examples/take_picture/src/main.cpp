@@ -2,7 +2,9 @@
 TODO add compatibility with XC
 
 */
+#include <xs1.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <platform.h>
 #include <xcore/channel.h>
 #include <xcore/port.h>
@@ -11,40 +13,43 @@ TODO add compatibility with XC
 #include <xcore/select.h>
 #include <xscope.h>
 #include <platform.h>
+#include <xcore/triggerable.h>
 
 #include "i2c.h"
-#include "mipi.h"
-#include "mipi_main.h"
 #include "main.hpp"
+
+// #include "mipi.h"
+// #include "mipi_main.h"
 
 // I2C interface ports
 port_t p_scl = XS1_PORT_1N;
 port_t p_sda = XS1_PORT_1O;
 
-void enable_mipi_ports(){
+i2c_master_t i2c_ctx;
+i2c_master_t *i2c_ctx_ptr = &i2c_ctx;
+
+void enable_mipi_ports()
+{
     port_enable(p_scl);
     port_enable(p_sda);
 }
 
-// ?
-// astew: TIL xscope_user_init() is an XC magic function that gets called
-//        automatically..for some reason.
-void xscope_user_init() {
-   xscope_register(0, 0, "", 0, "");
-   xscope_config_io(XSCOPE_IO_BASIC);
+DECLARE_JOB(i2c_job, (void));
+void i2c_job(void)
+{
+    i2c_master_init(
+        i2c_ctx_ptr,
+        p_scl, p_scl_bit_pos, 0,
+        p_sda, p_sda_bit_pos, 0,
+        I2C_SPEED);
 }
-
 
 int main(void)
 {
     enable_mipi_ports();
-
-    // i2c par job on tile 0 
-    i2c_master_init(
-            i2c_ctx_ptr,
-            p_scl, p_scl_bit_pos, 0,
-            p_sda, p_sda_bit_pos, 0,
-            SPEED);
-
+    PAR_JOBS(
+        PJOB(i2c_job, ()));
     return 0;
 }
+
+// https://github.com/xmos/fwk_io/blob/develop/test/lib_i2c/i2c_master_test/src/main.c
