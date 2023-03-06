@@ -19,7 +19,7 @@ manifest:
       path: modules/i2c
       revision: develop
       submodules: true
-      clone-depth : 1
+      import : true
     
     - name : lib_mipi # fork
       remote : xalbertoisorna
