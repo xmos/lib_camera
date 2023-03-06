@@ -5,7 +5,7 @@
 # <--- Set the executable
 set(executable_name example_take_picture)  
 
-file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.c* )
+file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c* )
 set(APP_INCLUDES
     ${CMAKE_CURRENT_LIST_DIR}/src
 )
@@ -43,10 +43,7 @@ set(APP_LINK_OPTIONS
 
 # <--- Link libraries
 set(APP_COMMON_LINK_LIBRARIES                           
-        core::general
-        lib_i2c
-        mipi::lib_mipi
-        )
+        mipi::lib_mipi)
 
 
 #**********************

@@ -39,7 +39,7 @@ set(APP_LINK_OPTIONS
 )
 
 set(APP_COMMON_LINK_LIBRARIES
-        io::general)
+        )
 
 
 #**********************

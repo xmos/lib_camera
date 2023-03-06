@@ -14,13 +14,19 @@ manifest:
       revision: main
       clone-depth : 1
 
-    - name : fwk_io
-      remote : xmos
-      path: modules/io
+    - name : lib_i2c # fork
+      remote : xalbertoisorna
+      path: modules/i2c
       revision: develop
       submodules: true
       clone-depth : 1
     
+    - name : lib_mipi # fork
+      remote : xalbertoisorna
+      path: modules/mipi
+      submodules: true
+      revision: develop     
+
     - name : fwk_core
       remote : xmos
       path: modules/core
@@ -28,10 +34,6 @@ manifest:
       submodules: true
       clone-depth : 1
 
-    - name : lib_mipi # fork
-      remote : xalbertoisorna
-      path: modules/mipi
-      submodules: true
-      revision: develop      
+ 
 
     
