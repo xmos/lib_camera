@@ -12,10 +12,12 @@ on tile[0]: port p_sda = XS1_PORT_1O;
 // astew: TIL xscope_user_init() is an XC magic function that gets called
 //        automatically..for some reason.
 
+/*
 void xscope_user_init() {
    xscope_register(0, 0, "", 0, "");
    xscope_config_io(XSCOPE_IO_BASIC);
 }
+*/
 
 int main(void) 
 {

@@ -78,4 +78,7 @@ tools/ai/ai_tools
 # modules
 /modules/*
 
+# temp folder
+temp
+
 !CMakeLists.txt
