@@ -19,11 +19,16 @@ manifest:
       path: modules/i2c
       revision: develop
       submodules: true
-      import : true
     
     - name : lib_mipi # fork
       remote : xalbertoisorna
       path: modules/mipi
+      submodules: true
+      revision: develop     
+
+    - name : lib_xassert # fork
+      remote : xalbertoisorna
+      path: modules/i2c/lib_xassert
       submodules: true
       revision: develop     
 

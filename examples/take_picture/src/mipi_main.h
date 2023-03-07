@@ -34,6 +34,8 @@ typedef struct {
   unsigned dummy;
 } mipi_yuv422_packet_t;
 
+#define MIPI_TILE 0
+
 #ifdef __XC__
 
 void mipi_main(client interface i2c_master_if i2c);
