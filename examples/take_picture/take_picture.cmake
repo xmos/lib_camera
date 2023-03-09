@@ -1,8 +1,11 @@
 #**********************
 # Gather Sources
 #**********************
-set(executable_name example_blink)
-file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.c )
+
+# <--- Set the executable
+set(executable_name example_take_picture)  
+
+file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c* )
 set(APP_INCLUDES
     ${CMAKE_CURRENT_LIST_DIR}/src
 )
@@ -38,8 +41,12 @@ set(APP_LINK_OPTIONS
     ${CMAKE_CURRENT_LIST_DIR}/src/config.xscope
 )
 
+# <--- Link libraries
 set(APP_COMMON_LINK_LIBRARIES
-        )
+        core::general                           
+        mipi::lib_mipi
+        i2c::lib_i2c
+    )
 
 
 #**********************

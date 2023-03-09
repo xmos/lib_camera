@@ -74,3 +74,11 @@ tools/ai/ai_tools
 
 # west
 .west
+
+# modules
+/modules/*
+
+# temp folder
+temp
+
+!CMakeLists.txt
