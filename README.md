@@ -5,6 +5,5 @@ repo to manipulate camera
 west update
 
 # usefull commands
-run in simulation: 
-```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
-build : ```launch_cmake.sh```
+- run in simulation:  ```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
+- build : ```launch_cmake.sh```
