@@ -32,10 +32,9 @@ if(IS_DIRECTORY modules)
 endif()
 
 ## Add sensors
-if(IS_DIRECTORY sensors)
-    add_subdirectory(sensors)
-    message("Adding sensors/")
-endif()
+add_subdirectory(sensors)
+message("Adding sensors/")
+
 
 ## Add top level project targets
 if(PROJECT_IS_TOP_LEVEL)
