@@ -6,4 +6,4 @@ west update
 
 # usefull commands
 - run in simulation:  ```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
-- build : ```launch_cmake.sh```
+- build : ```sh launch_cmake.sh```
