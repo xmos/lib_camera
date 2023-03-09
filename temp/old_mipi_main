@@ -316,7 +316,11 @@ void mipi_packet_handler(
 #define MIPI_CFG_CLK_DIV 3
 
 void mipi_main(
-    client interface i2c_master_if i2c)
+    client interface i2c_master_if i2c)  // interfaces are not defined in C 
+                                         // in XC there are no pointers (unless unsafe)
+                                         // use channels or arrays to pass XC > C / c++ (extern C)
+                                         // on tile[MIPI_TILE] cant be used it C (and xc just in main)
+
 {
     streaming chan c_pkt;
     streaming chan c_ctrl;

@@ -16,6 +16,8 @@
 
 // Sensor
 #include "imx219.h"
+#define MSG_SUCCESS "Stream start OK\n"
+#define MSG_FAIL "Stream start Failed\n"
 
 /*
 #include <math.h>
@@ -46,13 +48,9 @@ on tile[MIPI_TILE]:clock               clk_mipi   = MIPI_CLKBLK;
  * thread to store received packets.
  */
 static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
-
-
 #define DEMUX_DATATYPE 0 // RESERVED
-
 #define DEMUX_MODE     0x00     // no demux
 #define DEMUX_EN       0 
-
 #define MIPI_CLK_DIV 1
 #define MIPI_CFG_CLK_DIV 3
 
@@ -125,12 +123,22 @@ static void mipi_packet_handler(
     }
 }
 
+
+
+
 void mipi_main(client interface i2c_master_if i2c)
 {
+    printf("< Start of MIPI >\n");
     streaming chan c_pkt;
     streaming chan c_ctrl;
+    
+    // See AN for MPIP shim
     // 0x7E42 >> 0111 1110 0100 0010
-    write_node_config_reg(tile[MIPI_TILE], XS1_SSWITCH_MIPI_DPHY_CFG3_NUM , 0x7E42);
+    // in the explorer BOARD DPDN is swap 
+    write_node_config_reg(tile[MIPI_TILE], 
+                          XS1_SSWITCH_MIPI_DPHY_CFG3_NUM , 
+                          0x7E42);
+    
 
     // send packet to MIPI shim
     MipiPacketRx_init(tile[MIPI_TILE],
@@ -146,13 +154,17 @@ void mipi_main(client interface i2c_master_if i2c)
                     MIPI_CFG_CLK_DIV);
     
     // Now start the camera
-    if (imx219_stream_start(i2c) != 0) {
-        printf("Stream start failed\n");
+    int r = imx219_stream_start(i2c);
+    if (r!=0) {printf(MSG_FAIL);}
+    else {printf(MSG_SUCCESS);}
+    
+    par {
+        MipiPacketRx2(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+        mipi_packet_handler(c_pkt, c_ctrl);
     }
 
-    printf("hello world\n");
-}
 
-// TODO for the IMX
-// https://github0.xmos.com/xmos-int/doorbell/blob/master/app_explorer/src/mipi_main.xc
-// https://github.com/xmos/lib_mipi/blob/master/app_explorer/src/mipi_main.xc
+    // return 
+    printf("Return code = %d\n", r);
+    printf("< End of MIPI >\n");
+}

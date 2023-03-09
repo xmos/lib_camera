@@ -23,11 +23,19 @@ void i2c_job(void)
         I2C_SPEED);
 }
 
+
+DECLARE_JOB(i2c_job, (void));
+void mipi_main(void)
+{
+    
+}
+
 int main(void)
 {
     enable_mipi_ports();
     PAR_JOBS(
-        PJOB(i2c_job, ())
+        PJOB(i2c_job, ()),
+        PJOB(mipi_main, ()),
         // the other job here will be mipi work //
         );
     return 0;
