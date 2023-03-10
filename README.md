@@ -1,5 +1,5 @@
 # Camera framework
-repo to manipulate camera
+Repository to manipulate cameras using the XCORE.AI sensor
 
 # To use first update dependencies
 west update
@@ -9,3 +9,9 @@ west update
 - run (explorer board):  ```xrun --xscope example_take_picture.xe```
 - run (simulation):  ```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
 
+# Supported Cameras
+
+| Model  | Max Resolution | Output Formats
+| ------------- | ------------- | ------------- |
+| IMX219 | 640Hx480V (2x2 binning) | RAW10
+| GC2145 | 1600H x 1200V  | YUV422
