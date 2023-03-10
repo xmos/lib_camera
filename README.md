@@ -10,6 +10,7 @@ Repository to manipulate cameras using the XCORE.AI sensor
 ```
 git clone 
 cd ./fwk_camera
+west init -l westconfig/
 sh launch_cmake.sh
 ```
 

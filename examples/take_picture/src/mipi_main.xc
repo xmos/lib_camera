@@ -11,7 +11,6 @@
 // MIPI
 #include "mipi.h"
 #include "mipi_main.h"
-#include "extmem_data.h"
 #include "MipiPacket.h"
 #include "imx219.h"
 
