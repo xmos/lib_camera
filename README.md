@@ -4,7 +4,7 @@ Repository to manipulate cameras using the XCORE.AI sensor
 # Requirements
 - CMAKE
 - XMOS tools
-- west for the dependencies (TBC)
+- west for the dependencies
 
 # Installation
 cd /repo
