@@ -13,5 +13,5 @@ west update
 
 | Model  | Max Resolution | Output Formats
 | ------------- | ------------- | ------------- |
-| IMX219 | 640Hx480V (2x2 binning) | RAW10
-| GC2145 | 1600H x 1200V  | YUV422
+| IMX219 | 640Hx480V == VGA (2x2 binning) | RAW10
+| GC2145 | 1600H x 1200V == 2MPX | YUV422
