@@ -9,9 +9,9 @@
 #define MIPI_CLKBLK XS1_CLKBLK_1
 #endif
 
-#define MIPI_IMAGE_WIDTH_PIXELS 1600
-#define MIPI_IMAGE_HEIGHT_PIXELS 1200
-
+#define MIPI_IMAGE_WIDTH_PIXELS 800 //TODO this is camera dependant -> out of lib mipi
+#define MIPI_IMAGE_HEIGHT_PIXELS 480 //TODO this is camera dependant -> out of lib mipi
+ 
 #define MIPI_LINE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS)*2)
 
 #define MIPI_PKT_BUFFER_COUNT 4

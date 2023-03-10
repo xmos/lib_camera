@@ -1,5 +1,7 @@
 
 // --------- REG definitions ---------------------------------------------------------
+
+// Sleep values and registers
 #define SLEEP 0xFFFF
 #define TRSTUS 200
 
@@ -14,6 +16,11 @@
 #define BINNING_2X2		0x0101
 
 #define BINNING_MODE BINNING_2X2
+
+// Gain params
+#define GAIN_MIN_DB       0
+#define GAIN_MAX_DB      84
+#define GAIN_DEFAULT_DB  50
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static imx219_settings_t imx219_common_regs[] = {

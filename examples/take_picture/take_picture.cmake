@@ -46,6 +46,7 @@ set(APP_COMMON_LINK_LIBRARIES
         core::general                           
         mipi::lib_mipi
         i2c::lib_i2c
+        sensors::lib_imx 
     )
 
 

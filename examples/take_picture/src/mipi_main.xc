@@ -12,10 +12,10 @@
 #include "mipi.h"
 #include "mipi_main.h"
 #include "extmem_data.h"
-#include "mipi/MipiPacket.h"
+#include "MipiPacket.h"
+#include "imx219.h"
 
 // Sensor
-#include "imx219.h"
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
 
@@ -36,9 +36,9 @@
  * Clock, receiver active, receiver data valid, and receiver data
  */
 on tile[MIPI_TILE]:         in port    p_mipi_clk = XS1_PORT_1O;
-on tile[MIPI_TILE]:         in port    p_mipi_rxa = XS1_PORT_1E;
-on tile[MIPI_TILE]:         in port    p_mipi_rxv = XS1_PORT_1I;
-on tile[MIPI_TILE]:buffered in port:32 p_mipi_rxd = XS1_PORT_8A;
+on tile[MIPI_TILE]:         in port    p_mipi_rxa = XS1_PORT_1E; // activate
+on tile[MIPI_TILE]:         in port    p_mipi_rxv = XS1_PORT_1I; // valid
+on tile[MIPI_TILE]:buffered in port:32 p_mipi_rxd = XS1_PORT_8A; // data
 
 on tile[MIPI_TILE]:clock               clk_mipi   = MIPI_CLKBLK;
 
@@ -48,11 +48,11 @@ on tile[MIPI_TILE]:clock               clk_mipi   = MIPI_CLKBLK;
  * thread to store received packets.
  */
 static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
-#define DEMUX_DATATYPE 0 // RESERVED
-#define DEMUX_MODE     0x00     // no demux
-#define DEMUX_EN       0 
-#define MIPI_CLK_DIV 1
-#define MIPI_CFG_CLK_DIV 3
+#define DEMUX_DATATYPE    0 // RESERVED
+#define DEMUX_MODE        0x00     // no demux
+#define DEMUX_EN          0 
+#define MIPI_CLK_DIV      1
+#define MIPI_CFG_CLK_DIV  3
 
 
 
@@ -155,9 +155,13 @@ void mipi_main(client interface i2c_master_if i2c)
     
     // Now start the camera
     int r = imx219_stream_start(i2c);
-    if (r!=0) {printf(MSG_FAIL);}
-    else {printf(MSG_SUCCESS);}
-    
+    if (r!=0) {
+      printf(MSG_FAIL);
+    }
+    else {
+      printf(MSG_SUCCESS);
+    }
+
     par {
         MipiPacketRx2(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
         mipi_packet_handler(c_pkt, c_ctrl);
