@@ -7,8 +7,10 @@ Repository to manipulate cameras using the XCORE.AI sensor
 - west for the dependencies
 
 # Installation
+```
 cd /repo
 sh launch_cmake.sh
+```
 
 # Useful commands
 - build : ```sh launch_cmake.sh```
