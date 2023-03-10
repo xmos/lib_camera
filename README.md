@@ -1,24 +1,24 @@
 # Camera framework
 Repository to manipulate cameras using the XCORE.AI sensor
 
-# Requirements
+## Requirements
 - CMAKE
 - XMOS tools
 - west for the dependencies
 
-# Installation
+## Installation
 ```
 git clone 
 cd ./fwk_camera
 sh launch_cmake.sh
 ```
 
-# Useful commands
+## Useful commands
 - build : ```sh launch_cmake.sh```
 - run (explorer board):  ```xrun --xscope example_take_picture.xe```
 - run (simulation):  ```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
 
-# Supported Cameras
+## Supported Cameras
 
 | Model  | Max Resolution | Output Formats
 | ------------- | ------------- | ------------- |
