@@ -57,4 +57,3 @@ typedef struct
     const pixformat_t pix_format;
     const framesize_t framse_size;
 } camera_sensor;
-S
