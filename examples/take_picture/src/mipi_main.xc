@@ -13,9 +13,9 @@
 #include "mipi_main.h"
 #include "extmem_data.h"
 #include "MipiPacket.h"
+#include "imx219.h"
 
 // Sensor
-#include "imx219.h"
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
 
