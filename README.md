@@ -10,7 +10,7 @@ Repository to manipulate cameras using the XCORE.AI sensor
 cd /repo
 sh launch_cmake.sh
 
-# usefull commands
+# Useful commands
 - build : ```sh launch_cmake.sh```
 - run (explorer board):  ```xrun --xscope example_take_picture.xe```
 - run (simulation):  ```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
