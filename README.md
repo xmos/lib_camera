@@ -1,8 +1,14 @@
 # Camera framework
 Repository to manipulate cameras using the XCORE.AI sensor
 
-# To use first update dependencies
-west update
+# Requirements
+- CMAKE
+- XMOS tools
+- west installation for the dependencies
+
+# Installation
+cd /repo
+sh launch_cmake.sh
 
 # usefull commands
 - build : ```sh launch_cmake.sh```
