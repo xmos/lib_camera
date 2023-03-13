@@ -12,7 +12,7 @@
 #define MIPI_IMAGE_WIDTH_PIXELS 800 //TODO this is camera dependant -> out of lib mipi
 #define MIPI_IMAGE_HEIGHT_PIXELS 480 //TODO this is camera dependant -> out of lib mipi
  
-#define MIPI_LINE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS)*1)
+#define MIPI_LINE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS)*1) // because RAW 10
 
 #define MIPI_PKT_BUFFER_COUNT 4
 

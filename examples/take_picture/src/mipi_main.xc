@@ -60,6 +60,7 @@ typedef struct
 } image_rx_t;
 
 
+#define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
 
 unsafe {
 
@@ -70,11 +71,20 @@ void handle_packet(
 {
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-
   const unsigned is_long = MIPI_IS_LONG_PACKET(header);
   const unsigned word_count = MIPI_GET_WORD_COUNT(header);
 
-  printf("packet header = %d\n", header);
+  printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
+
+  if(data_type == MIPI_DT_FRAME_START) {
+    // Start of frame. Just reset line number.
+    img_rx->frame_number++;
+    img_rx->line_number = 0;
+  }
+  // if data type matches the data type you want to handle
+
+
+
 }
 
 #pragma unsafe arrays
