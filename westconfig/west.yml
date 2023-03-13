@@ -1,11 +1,16 @@
 # https://docs.zephyrproject.org/latest/develop/west/manifest.html
 manifest:
+
   remotes:
     - name: xmos
       url-base: git@github.com:xmos
 
     - name: xalbertoisorna
       url-base: https://github.com/xalbertoisorna/
+
+    - name: astew
+      url-base: https://github.com/astewart-xmos/
+      
       
   projects:
     - name: xmos_cmake_toolchain # fork
@@ -20,11 +25,11 @@ manifest:
       revision: develop
       submodules: true
     
-    - name : lib_mipi # fork
+    - name : lib_mipi # fork 
       remote : xalbertoisorna
       path: modules/mipi
       submodules: true
-      revision: develop     
+      revision: master     
 
     - name : lib_xassert # fork
       remote : xalbertoisorna
