@@ -6,6 +6,10 @@
 #include <stdlib.h> // exit status
 #include <xccompat.h>
 
+#include <print.h>
+
+#include <string.h>
+
 // I2C
 #include "i2c.h"
 
@@ -13,24 +17,11 @@
 #include "mipi.h"
 #include "mipi_main.h"
 #include "MipiPacket.h"
-#include "imx219.h"
+#include "imx219.h" //TODO remove it from here
 
 // Sensor
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
-
-/*
-#include <math.h>
-#include <string.h>
-
-#include <stdint.h>
-*/
-
-/*
-#include "gc2145.h"
-#include "debayer.h"
-#include "yuv_to_rgb.h"
-*/
 
 /* Declaration of the MIPI interface ports:
  * Clock, receiver active, receiver data valid, and receiver data
@@ -53,14 +44,19 @@ static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
 #define MIPI_CLK_DIV 1
 #define MIPI_CFG_CLK_DIV 3
 
-typedef struct
-{
-  unsigned frame_number;
-  unsigned line_number;
-} image_rx_t;
 
+#define EXPECTED_FORMAT MIPI_DT_RAW10
+
+
+
+#define M 800
+#define N 4
+uint8_t FINAL_IMAGE[N][M];
 
 #define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
+
+
+char wait = 0;
 
 unsafe {
 
@@ -68,24 +64,64 @@ static
 void handle_packet(
     image_rx_t* img_rx,
     const mipi_packet_t* unsafe pkt)
-{
-  const mipi_header_t header = pkt->header;
-  const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-  const unsigned is_long = MIPI_IS_LONG_PACKET(header);
-  const unsigned word_count = MIPI_GET_WORD_COUNT(header);
+  {
+    const mipi_header_t header = pkt->header;
+    const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
+    const unsigned is_long = MIPI_IS_LONG_PACKET(header);
+    const unsigned word_count = MIPI_GET_WORD_COUNT(header);
+    
+    // printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
+    
+    switch (data_type)
+    {
+        case MIPI_DT_FRAME_START:
+        {
+          // Start of frame. Just reset line number.
+          printchar('S'); 
+          img_rx->frame_number++;
+          img_rx->line_number = 0;
+          break;
+        }
 
-  printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
+        case EXPECTED_FORMAT:
+        {
+          printchar('T'); 
+          // work with expected frame format
+          // const mipi_packet_t *data_payload = (const mipi_packet_t *)pkt;
+          
+          // memcpy(FINAL_IMAGE[0], pkt->payload, 800*sizeof(uint8_t));
 
-  if(data_type == MIPI_DT_FRAME_START) {
-    // Start of frame. Just reset line number.
-    img_rx->frame_number++;
-    img_rx->line_number = 0;
+          //printchar('\n'); 
+          img_rx->line_number++;
+          break;
+        }
+
+        case MIPI_DT_FRAME_END:
+        {
+          printchar('E'); 
+          
+          if (wait++)
+          { 
+            assert(0);
+          }
+          // 
+          break;
+        }
+
+        default:
+        {
+          printchar('D');
+          printchar('\n'); 
+          // error with frame type
+          break;
+        }
+    }
+
+    printuint(img_rx->frame_number);
+    printchar('-');
+    printuintln( img_rx->line_number);
   }
-  // if data type matches the data type you want to handle
 
-
-
-}
 
 #pragma unsafe arrays
 static
@@ -119,6 +155,11 @@ void mipi_packet_handler(
 
 }
 
+
+
+
+
+
 void mipi_main(client interface i2c_master_if i2c)
 {
   printf("< Start of MIPI >\n");
@@ -147,10 +188,14 @@ void mipi_main(client interface i2c_master_if i2c)
                     MIPI_CFG_CLK_DIV);
 
   // Now start the camera
+  //TODO  replace with camera init
   int r = imx219_init(i2c);
   delay_milliseconds(1000);
+  
+  //TODO replace with camera start 
   r |= imx219_stream_start(i2c);
   delay_milliseconds(2000);
+
   if (r != 0)
   {
     printf(MSG_FAIL);

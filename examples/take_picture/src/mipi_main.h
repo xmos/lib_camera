@@ -26,6 +26,12 @@ typedef struct
   uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
 } mipi_packet_t;
 
+typedef struct
+{
+  unsigned frame_number;
+  unsigned line_number;
+} image_rx_t;
+
 
 #ifdef __XC__
 

@@ -100,6 +100,7 @@ i2c_regop_res_t res;
 
 /// -------------------------------------------------------------------------------
 #define OLD false
+//TODO group especific things
 
 #if OLD
 int imx219_init(client interface i2c_master_if i2c)
