@@ -48,22 +48,43 @@ static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
 #define EXPECTED_FORMAT MIPI_DT_RAW10
 
 
-
-#define M 800
-#define N 4
-uint8_t FINAL_IMAGE[N][M];
+uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_MAX_PKT_SIZE_BYTES];
 
 #define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
 
 
 char wait = 0;
 
-unsafe {
 
+void out_image(chanend flag)
+{
+  select
+  {
+    case flag :> int:
+      {
+      printchar('\n'); 
+      for (int i = 0; i < MIPI_MAX_PKT_SIZE_BYTES; i++)
+      {
+        printhex(FINAL_IMAGE[0][i]);
+        printchar(' '); 
+      }
+      printchar('\n'); 
+      printchar('\n'); 
+      
+      assert(0);
+      break;
+      }
+  }
+}
+
+
+
+unsafe {
 static
 void handle_packet(
     image_rx_t* img_rx,
-    const mipi_packet_t* unsafe pkt)
+    const mipi_packet_t* unsafe pkt,
+    chanend flag)
   {
     const mipi_header_t header = pkt->header;
     const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
@@ -71,27 +92,23 @@ void handle_packet(
     const unsigned word_count = MIPI_GET_WORD_COUNT(header);
     
     // printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
+    //TODO wait for first clean frame
+
     
     switch (data_type)
     {
-        case MIPI_DT_FRAME_START:
+        case MIPI_DT_FRAME_START: // Start of frame. Just reset line number.
         {
-          // Start of frame. Just reset line number.
           printchar('S'); 
           img_rx->frame_number++;
           img_rx->line_number = 0;
           break;
         }
 
-        case EXPECTED_FORMAT:
+        case EXPECTED_FORMAT: // save it in SRAM and increment line
         {
-          printchar('T'); 
-          // work with expected frame format
-          // const mipi_packet_t *data_payload = (const mipi_packet_t *)pkt;
-          
-          // memcpy(FINAL_IMAGE[0], pkt->payload, 800*sizeof(uint8_t));
-
-          //printchar('\n'); 
+          printchar('D'); 
+          memcpy(FINAL_IMAGE[img_rx->line_number], pkt->payload, MIPI_MAX_PKT_SIZE_BYTES*sizeof(uint8_t));
           img_rx->line_number++;
           break;
         }
@@ -99,20 +116,18 @@ void handle_packet(
         case MIPI_DT_FRAME_END:
         {
           printchar('E'); 
-          
-          if (wait++)
+          wait++;
+          if (wait==2)
           { 
-            assert(0);
+            flag <: 1;
           }
-          // 
           break;
         }
 
-        default:
+        default: // error with frame type
         {
-          printchar('D');
+          printchar('X');
           printchar('\n'); 
-          // error with frame type
           break;
         }
     }
@@ -127,7 +142,9 @@ void handle_packet(
 static
 void mipi_packet_handler(
     streaming chanend c_pkt, 
-    streaming chanend c_ctrl)
+    streaming chanend c_ctrl,
+    chanend flag
+    )
 {
   mipi_header_t mipiHeader;
   image_rx_t img_rx = {0,0};
@@ -149,7 +166,7 @@ void mipi_packet_handler(
     // Process the packet. We need to be finished with this and looped
     // back up to grab the next MIPI packet BEFORE the receiver thread
     // tries to give us the next packet.
-    handle_packet(&img_rx, pkt);
+    handle_packet(&img_rx, pkt, flag);
   }
 }
 
@@ -166,6 +183,7 @@ void mipi_main(client interface i2c_master_if i2c)
   
   streaming chan c_pkt;
   streaming chan c_ctrl;
+  chan flag;
 
   // See AN for MIPI shim
   // 0x7E42 >> 0111 1110 0100 0010
@@ -208,7 +226,8 @@ void mipi_main(client interface i2c_master_if i2c)
   par
   {
     MipiPacketRx2(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-    mipi_packet_handler(c_pkt, c_ctrl);
+    mipi_packet_handler(c_pkt, c_ctrl, flag);
+    out_image(flag);
   }
 
   // return

@@ -25,17 +25,18 @@ typedef enum
 {
     MODE_VGA_RAW10 = 0,
     MODE_QXVGA_YUV422
-} camera_mode_t;
+} frame_mode_t;
 
 // -------------- CAMERA STRUCTURE
 typedef struct
 {
     const camera_model_t camera_model;
-    const camera_mode_t camera_mode;
-    void (*init_func_ptr)(int);
-    void (*start_func_ptr)(int);
+    const frame_mode_t frame_mode;
+    // void (*init_func_ptr)(int);
+    // void (*start_func_ptr)(int);
 
-} camera_sensor_t;
+} camera_config_t;
+
 
 
 // Pixel format definitions
