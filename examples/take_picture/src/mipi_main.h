@@ -12,7 +12,7 @@
 #define MIPI_IMAGE_WIDTH_PIXELS 800 //TODO this is camera dependant -> out of lib mipi
 #define MIPI_IMAGE_HEIGHT_PIXELS 480 //TODO this is camera dependant -> out of lib mipi
  
-#define MIPI_LINE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS)*2)
+#define MIPI_LINE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS)*1) // because RAW 10
 
 #define MIPI_PKT_BUFFER_COUNT 4
 
@@ -28,13 +28,10 @@ typedef struct
 
 typedef struct
 {
-  mipi_header_t header;
-  //  data[k % 2 == 0][0]  are U values
-  //  data[k % 2 == 1][0]  are V values
-  //  data[k][1]           are Y values
-  uint8_t data[MIPI_IMAGE_WIDTH_PIXELS][2];
-  unsigned dummy;
-} mipi_yuv422_packet_t;
+  unsigned frame_number;
+  unsigned line_number;
+} image_rx_t;
+
 
 #ifdef __XC__
 

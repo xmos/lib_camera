@@ -11,11 +11,17 @@
 #define CSI_LANE_MODE_4_LANES 3
 
 // BINNING
-#define REG_BINNING_MODE 0x0174
-#define BINNING_NONE	0x0000
-#define BINNING_2X2		0x0101
+#define BINNING_MODE_REG 0x0174
+#define BINNING_NONE	 0x0000
+#define BINNING_2X2		 0x0101
 
 #define BINNING_MODE BINNING_2X2
+
+// PLL settings
+#define PREPLLCK_VT_DIV_REG 0x0304 
+#define PREPLLCK_OP_DIV     0x0305 
+#define PREDVIDE_2          0x02
+#define PLL_VT_MPY_REG      0x0306 
 
 // Gain params
 #define GAIN_MIN_DB       0
@@ -39,15 +45,15 @@ static imx219_settings_t imx219_common_regs[] = {
 	{0x30eb, 0x09},
 
 	/* PLL Clock Table */
-	{0x0301, 0x05},	/* VTPXCK_DIV */
-	{0x0303, 0x01},	/* VTSYSCK_DIV */
-	{0x0304, 0x03},	/* PREPLLCK_VT_DIV 0x03 = AUTO set */
-	{0x0305, 0x03}, /* PREPLLCK_OP_DIV 0x03 = AUTO set */
-	{0x0306, 0x00},	/* PLL_VT_MPY */
-	{0x0307, 0x39},
-	{0x030b, 0x01},	/* OP_SYS_CLK_DIV */
-	{0x030c, 0x00},	/* PLL_OP_MPY */
-	{0x030d, 0x72},
+	{ 0x812A, 0x1800 }, /* EXCK_FREQ        24.00, for 24 Mhz */
+	{ 0x0304,   0x02 }, /* PREPLLCK_VT_DIV      2, for pre divide by 2 */
+	{ 0x0305,   0x02 }, /* PREPLLCK_OP_DIV      2, for pre divide by 2 */
+	{ 0x8306, 0x0027 }, /* PLL_VT_MPY        0x27, for multiply by 39, pixclk=187.2 MHz */
+	{ 0x830C, 0x0040 }, /* PLL_OP_MPY        0x40, for multiply by 64, MIPI clk=768 MHz */
+	{ 0x0301,   0x05 }, /* VTPXCK_DIV           5, ? */
+	{ 0x0303,   0x01 }, /* VTSYCK_DIV           1, ? */
+	// { 0x0309,   0x08 }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
+	{ 0x030B,   0x01 }, /* OPSYCK_DIV           1, has to be 1? */
 
 	/* Undocumented registers */
 	{0x455e, 0x00},
@@ -113,8 +119,8 @@ static imx219_settings_t raw10_framefmt_regs[] = {
 
 
 static imx219_settings_t binning_regs[] = {
-	{REG_BINNING_MODE, BINNING_MODE}
-};
+	{BINNING_MODE_REG, BINNING_MODE}
+};  
 
 
 static imx219_settings_t start[] = {

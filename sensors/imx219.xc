@@ -64,7 +64,7 @@ static int i2c_write_table_val(client interface i2c_master_if i2c,
             tmr when timerafter(t + TRSTUS * 100) :> void;
         }
 
-        if (value & 0xFF00) {
+        if ((value & 0xFF00) || (address & 0x8000)){
             if (address & 0x8000) {
                 address &= 0x7fff;
             }
@@ -99,27 +99,45 @@ i2c_regop_res_t res;
 
 
 /// -------------------------------------------------------------------------------
+#define OLD false
+//TODO group especific things
 
-
-int imx219_stream_start(client interface i2c_master_if i2c)
+#if OLD
+int imx219_init(client interface i2c_master_if i2c)
 {
     int ret = 0;
-    /* Send all registers that are common to all modes */
-    ret = i2c_write_table_val(i2c, imx219_common_regs, sizeof(imx219_common_regs) / sizeof(imx219_common_regs[0]));
-    /* Configure two or four Lane mode */
-    ret = i2c_write_table_val(i2c, imx219_lanes_regs, sizeof(imx219_lanes_regs) / sizeof(imx219_lanes_regs[0]));
-    /* Apply default values of current mode */
-    ret = i2c_write_table_val(i2c, mode_640_480_regs, sizeof(mode_640_480_regs) / sizeof(mode_640_480_regs[0]));
-    /* set frame format register */
-    ret = i2c_write_table_val(i2c, raw10_framefmt_regs, sizeof(raw10_framefmt_regs) / sizeof(raw10_framefmt_regs[0]));
-    /* set binning */
-    ret = i2c_write_table_val(i2c, binning_regs, sizeof(binning_regs) / sizeof(binning_regs[0]));
-    /* set stream on register */
-    ret = i2c_write_table_val(i2c, start_regs, sizeof(start_regs) / sizeof(start_regs[0]));
-    
+    ret = i2c_write_table_val(i2c, chip_set_up, sizeof(chip_set_up) / sizeof(chip_set_up[0]));
     return ret;
 }
+#else
+    int imx219_init(client interface i2c_master_if i2c)
+    {
+        int ret = 0;
+        // Send all registers that are common to all modes
+        ret = i2c_write_table_val(i2c, imx219_common_regs, sizeof(imx219_common_regs) / sizeof(imx219_common_regs[0]));
+        //ret = i2c_write_table_val(i2c, chip_set_up, sizeof(chip_set_up) / sizeof(chip_set_up[0]));
+        // Configure two or four Lane mode
+        ret = i2c_write_table_val(i2c, imx219_lanes_regs, sizeof(imx219_lanes_regs) / sizeof(imx219_lanes_regs[0]));
+        // Apply default values of current mode
+        ret = i2c_write_table_val(i2c, mode_640_480_regs, sizeof(mode_640_480_regs) / sizeof(mode_640_480_regs[0]));
+        // set frame format register
+        ret = i2c_write_table_val(i2c, raw10_framefmt_regs, sizeof(raw10_framefmt_regs) / sizeof(raw10_framefmt_regs[0]));
+        // set binning
+        ret = i2c_write_table_val(i2c, binning_regs, sizeof(binning_regs) / sizeof(binning_regs[0]));
+        return ret;
+    }
+#endif
 
+
+
+
+
+int imx219_stream_start(client interface i2c_master_if i2c){
+    int ret = 0;
+    /* set stream on register */
+    ret = i2c_write_table_val(i2c, start_regs, sizeof(start_regs) / sizeof(start_regs[0]));
+    return ret;
+}
 
 int imx219_stream_stop(client interface i2c_master_if i2c)
 {
