@@ -4,13 +4,14 @@ Repository to manipulate cameras using the XCORE.AI sensor
 ## Requirements
 - CMAKE
 - XMOS tools
-- west for the dependencies
+- git submodules 
 
 ## Installation
 ```
 git clone 
 cd ./fwk_camera
-west init -l westconfig/
+add submodules
+git submodule update --init --recursive
 sh launch_cmake.sh
 ```
 

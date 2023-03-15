@@ -1,11 +1,8 @@
 #!/bin/bash
 
 # clean everything
-sudo rm -r build/*
-sudo rm -r modules/core modules/i2c modules/mipi 
-echo "Running west update"
-sleep 2 
-west update
+sudo rm -r build/
+
 
 # build again
 echo "Building everything up"
