@@ -75,8 +75,6 @@ tools/ai/ai_tools
 # west
 .west
 
-# modules
-
 # temp folder
 temp
 
