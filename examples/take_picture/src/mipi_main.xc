@@ -14,18 +14,17 @@
 #include "i2c.h"
 
 // MIPI
-#include "mipi.h"
 #include "mipi_main.h"
 #include "MipiPacket.h"
-#include "imx219.h" //TODO remove it from here
 
 // Sensor
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
 
-/* Declaration of the MIPI interface ports:
- * Clock, receiver active, receiver data valid, and receiver data
- */
+/**
+* Declaration of the MIPI interface ports:
+* Clock, receiver active, receiver data valid, and receiver data
+*/
 on tile[MIPI_TILE] : in port p_mipi_clk = XS1_PORT_1O;
 on tile[MIPI_TILE] : in port p_mipi_rxa = XS1_PORT_1E;               // activate
 on tile[MIPI_TILE] : in port p_mipi_rxv = XS1_PORT_1I;               // valid
@@ -43,34 +42,44 @@ static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
 #define DEMUX_EN 0
 #define MIPI_CLK_DIV 1
 #define MIPI_CFG_CLK_DIV 3
-
-
-#define EXPECTED_FORMAT MIPI_DT_RAW10
-
-
-uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_MAX_PKT_SIZE_BYTES];
-
 #define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
 
 
-char wait = 0;
+// global vars
+#define EXPECTED_FORMAT MIPI_DT_RAW10 //TODO should not be here
+#define MIPI_LINE_WIDTH_bits MIPI_LINE_WIDTH_BYTES*sizeof(uint8_t)
 
+
+uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
+
+char wait = 0;
+uint16_t j=0;
+uint16_t i=0;
+int count = 0;
+char enable = 0;
+uint8_t end_transmission = 0;
+
+// functions
 
 void out_image(chanend flag)
 {
   select
   {
-    case flag :> int:
+    case flag :> int i:
       {
-      printchar('\n'); 
-      for (int i = 0; i < MIPI_MAX_PKT_SIZE_BYTES; i++)
+      printchar('\n');
+      //printchar('X');  
+      for (i = 0; i < MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES; i++)
       {
-        printhex(FINAL_IMAGE[0][i]);
-        printchar(' '); 
+        int rowIndex = i / MIPI_LINE_WIDTH_BYTES; // divide by column count = row index
+        int colIndex = i % MIPI_LINE_WIDTH_BYTES; // modulo by column count = column index
+        // printchar(FINAL_IMAGE[rowIndex][colIndex]);
+        delay_microseconds(10);
+        printuintln(i);
+        // printchar(' '); 
       }
+      printchar('X');
       printchar('\n'); 
-      printchar('\n'); 
-      
       assert(0);
       break;
       }
@@ -86,6 +95,11 @@ void handle_packet(
     const mipi_packet_t* unsafe pkt,
     chanend flag)
   {
+    if (end_transmission){
+      return;
+    }
+
+
     const mipi_header_t header = pkt->header;
     const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
     const unsigned is_long = MIPI_IS_LONG_PACKET(header);
@@ -94,12 +108,21 @@ void handle_packet(
     // printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
     //TODO wait for first clean frame
 
+    if (enable == 0){
+      if (data_type == MIPI_DT_FRAME_END){
+        enable = 1;
+      }
+      else {
+        return;
+      }
+    }
+
     
     switch (data_type)
     {
         case MIPI_DT_FRAME_START: // Start of frame. Just reset line number.
         {
-          printchar('S'); 
+          // printchar('S'); 
           img_rx->frame_number++;
           img_rx->line_number = 0;
           break;
@@ -107,34 +130,33 @@ void handle_packet(
 
         case EXPECTED_FORMAT: // save it in SRAM and increment line
         {
-          printchar('D'); 
-          memcpy(FINAL_IMAGE[img_rx->line_number], pkt->payload, MIPI_MAX_PKT_SIZE_BYTES*sizeof(uint8_t));
+          // printchar('D'); 
+          memcpy(FINAL_IMAGE[img_rx->line_number], pkt->payload, MIPI_LINE_WIDTH_bits);
           img_rx->line_number++;
           break;
         }
 
         case MIPI_DT_FRAME_END:
         {
-          printchar('E'); 
-          wait++;
-          if (wait==2)
-          { 
-            flag <: 1;
-          }
+          if (end_transmission == 0)
+          {
+            flag <: 1; 
+            end_transmission = 1;
+          } 
           break;
         }
 
         default: // error with frame type
         {
-          printchar('X');
-          printchar('\n'); 
+          // printchar('X');
+          // printchar('\n'); 
           break;
         }
     }
 
-    printuint(img_rx->frame_number);
-    printchar('-');
-    printuintln( img_rx->line_number);
+    // printuint(img_rx->frame_number);
+    // printchar('-');
+    // printuintln( img_rx->line_number);
   }
 
 
@@ -149,7 +171,7 @@ void mipi_packet_handler(
   mipi_header_t mipiHeader;
   image_rx_t img_rx = {0,0};
   unsigned pkt_idx = 0;
-  unsigned in_frame = 0;
+  // unsigned in_frame = 0;
   
   // Give the MIPI packet receiver a buffer
   outuint((chanend) c_pkt, (unsigned) &packet_buffer[pkt_idx]);
@@ -169,17 +191,12 @@ void mipi_packet_handler(
     handle_packet(&img_rx, pkt, flag);
   }
 }
-
 }
-
-
-
-
 
 
 void mipi_main(client interface i2c_master_if i2c)
 {
-  printf("< Start of MIPI >\n");
+  //printf("< Start of MIPI >\n");
   
   streaming chan c_pkt;
   streaming chan c_ctrl;
@@ -231,6 +248,6 @@ void mipi_main(client interface i2c_master_if i2c)
   }
 
   // return
-  printf("Return code = %d\n", r);
-  printf("< End of MIPI >\n");
+  //printf("Return code = %d\n", r);
+  //printf("< End of MIPI >\n");
 }

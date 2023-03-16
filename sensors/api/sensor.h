@@ -6,79 +6,55 @@
 
 #if CONFIG_IMX219_SUPPORT
 #include "imx219.h"
+#define CAMERA_IMX219
+#define FRAMESIZE_QVGA              // 640x480
+#define PIXFORMAT_RAW10             // RAW 10 bits format
+#define MIPI_IMAGE_WIDTH_PIXELS     800 // csi2 packed   
+#define MIPI_IMAGE_HEIGHT_PIXELS    480
+#define PIXEL_MULTIPLIER 1          // because is RAW 10, 1 byte per pyxel
 #endif
 
 #if CONFIG_GC2145_SUPPORT
 #include "gc2145.h"
+#define FRAMESIZE_UXGA        // 1600x1200
+#define MIPI_IMAGE_WIDTH_PIXELS       1600
+#define MIPI_IMAGE_HEIGHT_PIXELS      1200
+#define PIXEL_MULTIPLIER 2
 #endif
 
+
+// Camera dependant
+#define MIPI_LINE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS)*PIXEL_MULTIPLIER) // because RAW 10
+#define MIPI_PKT_BUFFER_COUNT 4 // this is user defined
+#define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
+#define MIPI_TILE 1
+
 // -------------- CAMERA MODELS
-typedef enum
-{
-    CAMERA_IMX219,
-    CAMERA_GC2145,
-    CAMERA_NONE,
-} camera_model_t;
-
-// -------------- CAMERA MODES
-typedef enum
-{
-    MODE_VGA_RAW10 = 0,
-    MODE_QXVGA_YUV422
-} frame_mode_t;
-
-// -------------- CAMERA STRUCTURE
-typedef struct
-{
-    const camera_model_t camera_model;
-    const frame_mode_t frame_mode;
-    // void (*init_func_ptr)(int);
-    // void (*start_func_ptr)(int);
-
-} camera_config_t;
-
-
-
-// Pixel format definitions
 /*
-{
-    PIXFORMAT_RGB565,    // 2BPP/RGB565
-    PIXFORMAT_YUV422,    // 2BPP/YUV422
-    PIXFORMAT_YUV420,    // 1.5BPP/YUV420
-    PIXFORMAT_GRAYSCALE, // 1BPP/GRAYSCALE
-    PIXFORMAT_JPEG,      // JPEG/COMPRESSED
-    PIXFORMAT_RGB888,    // 3BPP/RGB888
-    PIXFORMAT_RAW,       // RAW
-    PIXFORMAT_RGB444,    // 3BP2P/RGB444
-    PIXFORMAT_RGB555,    // 3BP2P/RGB555
-}
+#define CAMERA_GC2145 0x02
+#define CAMERA_NONE   0x03  
+
+// -------------- Pixel format definitions
+#define PIXFORMAT_RGB565 0x00
+#define PIXFORMAT_YUV422 0x01
+#define PIXFORMAT_YUV420 0x02
+#define PIXFORMAT_RGB888 0x03
+#define PIXFORMAT_RAW10  0x04
+
+// -------------- Framesize definitions
+#define FRAMESIZE_QQVGA     0x01  // 160x120
+#define FRAMESIZE_HQVGA     0x02 // 240x176
+#define FRAMESIZE_240X240   0x03  // 240x240
+#define FRAMESIZE_QVGA      0x04  // 320x240
+#define FRAMESIZE_HVGA      0x05  // 480x320
+#define FRAMESIZE_VGA       0x06  // 640x480
+#define FRAMESIZE_HD        0x07  // 1280x720
+#define FRAMESIZE_SXGA      0x08  // 1280x1024
+#define FRAMESIZE_UXGA      0x09  // 1600x1200
+#define FRAMESIZE_FHD       0x0A  // 1920x1080
+#define FRAMESIZE_P_HD      0x0B  //  720x1280
+#define FRAMESIZE_QHD       0x0C  // 2560x1440
+#define FRAMESIZE_WQXGA     0x0D  // 2560x1600
+
 */
 
-// framesize definitions
-/*
-    FRAMESIZE_96X96,   // 96x96
-    FRAMESIZE_QQVGA,   // 160x120
-    FRAMESIZE_QCIF,    // 176x144
-    FRAMESIZE_HQVGA,   // 240x176
-    FRAMESIZE_240X240, // 240x240
-    FRAMESIZE_QVGA,    // 320x240
-    FRAMESIZE_CIF,     // 400x296
-    FRAMESIZE_HVGA,    // 480x320
-    FRAMESIZE_VGA,     // 640x480
-    FRAMESIZE_SVGA,    // 800x600
-    FRAMESIZE_XGA,     // 1024x768
-    FRAMESIZE_HD,      // 1280x720
-    FRAMESIZE_SXGA,    // 1280x1024
-    FRAMESIZE_UXGA,    // 1600x1200
-    // 3MP Sensors
-    FRAMESIZE_FHD,   // 1920x1080
-    FRAMESIZE_P_HD,  //  720x1280
-    FRAMESIZE_P_3MP, //  864x1536
-    FRAMESIZE_QXGA,  // 2048x1536
-    // 5MP Sensors
-    FRAMESIZE_QHD,   // 2560x1440
-    FRAMESIZE_WQXGA, // 2560x1600
-    FRAMESIZE_P_FHD, // 1080x1920
-    FRAMESIZE_QSXGA, // 2560x1920
-    FRAMESIZE_INVALID
-*/

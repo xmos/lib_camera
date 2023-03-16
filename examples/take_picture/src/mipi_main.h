@@ -1,24 +1,16 @@
-
 #pragma once
 
 #include <stdint.h>
-
 #include "mipi.h"
 
+#include "sensor.h"
+///TODO this is inside lib_mipi
 #ifndef MIPI_CLKBLK
 #define MIPI_CLKBLK XS1_CLKBLK_1
 #endif
 
-#define MIPI_IMAGE_WIDTH_PIXELS 800 //TODO this is camera dependant -> out of lib mipi
-#define MIPI_IMAGE_HEIGHT_PIXELS 480 //TODO this is camera dependant -> out of lib mipi
- 
-#define MIPI_LINE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS)*1) // because RAW 10
-
-#define MIPI_PKT_BUFFER_COUNT 4
-
 // Must be large enough to fit a maximum-size long packet plus the 3-byte footer
-#define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
-#define MIPI_TILE 1
+
 
 typedef struct
 {

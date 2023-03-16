@@ -11,6 +11,7 @@ typedef struct
     uint16_t val;
 } imx219_settings_t;
 
+
 // functions
 int imx219_init(client interface i2c_master_if i2c);
 int imx219_stream_start(client interface i2c_master_if i2c);
