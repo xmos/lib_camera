@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdlib.h> // exit status
 #include <xccompat.h>
-
+#include <stdint.h>
 #include <print.h>
 
 #include <string.h>
@@ -20,6 +20,9 @@
 // Sensor
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
+
+// Image 
+#include "process_frame.h"
 
 /**
 * Declaration of the MIPI interface ports:
@@ -50,7 +53,6 @@ static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
 #define MIPI_LINE_WIDTH_bits MIPI_LINE_WIDTH_BYTES*sizeof(uint8_t)
 
 
-uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
 
 char wait = 0;
 uint16_t j=0;
@@ -59,7 +61,7 @@ int count = 0;
 char enable = 0;
 uint8_t end_transmission = 0;
 
-// functions
+
 
 void out_image(chanend flag)
 {
@@ -67,19 +69,9 @@ void out_image(chanend flag)
   {
     case flag :> int i:
       {
-      printchar('\n');
-      //printchar('X');  
-      for (i = 0; i < MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES; i++)
-      {
-        int rowIndex = i / MIPI_LINE_WIDTH_BYTES; // divide by column count = row index
-        int colIndex = i % MIPI_LINE_WIDTH_BYTES; // modulo by column count = column index
-        // printchar(FINAL_IMAGE[rowIndex][colIndex]);
-        delay_microseconds(10);
-        printuintln(i);
-        // printchar(' '); 
-      }
-      printchar('X');
-      printchar('\n'); 
+      // write to a file
+      write_image();
+      delay_microseconds(10);
       assert(0);
       break;
       }
@@ -130,8 +122,7 @@ void handle_packet(
 
         case EXPECTED_FORMAT: // save it in SRAM and increment line
         {
-          // printchar('D'); 
-          memcpy(FINAL_IMAGE[img_rx->line_number], pkt->payload, MIPI_LINE_WIDTH_bits);
+          not_silly_memcpy(&FINAL_IMAGE[img_rx->line_number], &pkt->payload, MIPI_MAX_PKT_SIZE_BYTES*sizeof(uint8_t));
           img_rx->line_number++;
           break;
         }
