@@ -14,6 +14,7 @@ extern "C" {
 
 
 extern uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
+extern uint8_t image_row[MIPI_LINE_WIDTH_BYTES];
 
 void write_image();
 void not_silly_memcpy(

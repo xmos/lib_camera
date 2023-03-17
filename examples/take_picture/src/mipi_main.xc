@@ -9,7 +9,7 @@
 #include <print.h>
 
 #include <string.h>
-
+ 
 // I2C
 #include "i2c.h"
 
@@ -53,16 +53,6 @@ static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
 #define MIPI_LINE_WIDTH_bits MIPI_LINE_WIDTH_BYTES*sizeof(uint8_t)
 
 
-
-char wait = 0;
-uint16_t j=0;
-uint16_t i=0;
-int count = 0;
-char enable = 0;
-uint8_t end_transmission = 0;
-
-
-
 void out_image(chanend flag)
 {
   select
@@ -71,12 +61,47 @@ void out_image(chanend flag)
       {
       // write to a file
       write_image();
-      delay_microseconds(10);
+      delay_microseconds(100);
       assert(0);
       break;
       }
   }
 }
+
+char wait = 0;
+uint16_t j=0;
+uint16_t i=0;
+int count = 0;
+char enable = 0;
+int end_transmission = 0;
+
+mipi_data_type_t p_data_type = 0;
+
+/* possible values 
+data type = 0x0000
+data type = 0x0012
+data type = 0x0007
+data type = 0x003e
+*/
+int arr[] = {0x0000, 0x0012, 0x0007, 0x003e};
+int len = sizeof(arr) / sizeof(arr[0]); // Calculate the size of the array
+
+int findValue(mipi_data_type_t X) {
+    for (int i = 0; i < len; i++) {
+        if (arr[i] == X) {
+            return 1; // X was found
+        }
+    }
+    return 0; // X was not found
+}
+
+int found = 0;
+
+typedef struct {
+  mipi_header_t header;
+  uint8_t payload[MIPI_IMAGE_WIDTH_PIXELS];
+  unsigned dummy;
+} mipi_RAW_packet_t;
 
 
 
@@ -87,42 +112,46 @@ void handle_packet(
     const mipi_packet_t* unsafe pkt,
     chanend flag)
   {
-    if (end_transmission){
+    if (end_transmission == 1){
       return;
     }
-
-
     const mipi_header_t header = pkt->header;
     const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
     const unsigned is_long = MIPI_IS_LONG_PACKET(header);
     const unsigned word_count = MIPI_GET_WORD_COUNT(header);
     
     // printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
-    //TODO wait for first clean frame
-
-    if (enable == 0){
-      if (data_type == MIPI_DT_FRAME_END){
-        enable = 1;
-      }
-      else {
-        return;
+    // here we wait for a clean start of frame after a payload
+    if (found == 0){
+      if (findValue(p_data_type) && data_type == EXPECTED_FORMAT) {
+        printf("good to go\n");
+        p_data_type = data_type;
+        found = 1;
+      }  
+      else{
+        p_data_type = data_type;
+        if (found == 0){
+          return;
+        }
       }
     }
 
-    
     switch (data_type)
     {
         case MIPI_DT_FRAME_START: // Start of frame. Just reset line number.
         {
-          // printchar('S'); 
           img_rx->frame_number++;
           img_rx->line_number = 0;
           break;
         }
-
+        
         case EXPECTED_FORMAT: // save it in SRAM and increment line
         {
-          not_silly_memcpy(&FINAL_IMAGE[img_rx->line_number], &pkt->payload, MIPI_MAX_PKT_SIZE_BYTES*sizeof(uint8_t));
+          not_silly_memcpy(
+              &FINAL_IMAGE[img_rx->line_number][0], 
+              &pkt->payload[0], 
+              MIPI_LINE_WIDTH_BYTES);
+          
           img_rx->line_number++;
           break;
         }
@@ -242,3 +271,4 @@ void mipi_main(client interface i2c_master_if i2c)
   //printf("Return code = %d\n", r);
   //printf("< End of MIPI >\n");
 }
+
