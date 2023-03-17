@@ -77,32 +77,20 @@ int end_transmission = 0;
 
 mipi_data_type_t p_data_type = 0;
 
-/* possible values 
-data type = 0x0000
-data type = 0x0012
-data type = 0x0007
-data type = 0x003e
-*/
+// this are poissble data types that could be between SOF and DATA
 int arr[] = {0x0000, 0x0012, 0x0007, 0x003e};
 int len = sizeof(arr) / sizeof(arr[0]); // Calculate the size of the array
 
 int findValue(mipi_data_type_t X) {
     for (int i = 0; i < len; i++) {
         if (arr[i] == X) {
-            return 1; // X was found
+            return 1;
         }
     }
     return 0; // X was not found
 }
 
 int found = 0;
-
-typedef struct {
-  mipi_header_t header;
-  uint8_t payload[MIPI_IMAGE_WIDTH_PIXELS];
-  unsigned dummy;
-} mipi_RAW_packet_t;
-
 
 
 unsafe {
