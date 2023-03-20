@@ -24,6 +24,11 @@
 // Image 
 #include "process_frame.h"
 
+// Globals
+char end_transmission = 0;
+char found = 0;
+mipi_data_type_t p_data_type = 0;
+
 /**
 * Declaration of the MIPI interface ports:
 * Clock, receiver active, receiver data valid, and receiver data
@@ -32,28 +37,23 @@ on tile[MIPI_TILE] : in port p_mipi_clk = XS1_PORT_1O;
 on tile[MIPI_TILE] : in port p_mipi_rxa = XS1_PORT_1E;               // activate
 on tile[MIPI_TILE] : in port p_mipi_rxv = XS1_PORT_1I;               // valid
 on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A; // data
-
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
 /**
  * The packet buffer is where the packet decoupler will tell the MIPI receiver
  * thread to store received packets.
  */
-static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
-#define DEMUX_DATATYPE 0 // RESERVED
-#define DEMUX_MODE 0x00  // no demux
-#define DEMUX_EN 0
-#define MIPI_CLK_DIV 1
-#define MIPI_CFG_CLK_DIV 3
+#define DEMUX_DATATYPE    0     // RESERVED
+#define DEMUX_MODE        0x00  // no demux
+#define DEMUX_EN          0     // DISABLE DEMUX
+#define MIPI_CLK_DIV      1     // CLK DIVIDER
+#define MIPI_CFG_CLK_DIV  3     // CFG DIVIDER
 #define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
 
 
-// global vars
-#define EXPECTED_FORMAT MIPI_DT_RAW10 //TODO should not be here
-#define MIPI_LINE_WIDTH_bits MIPI_LINE_WIDTH_BYTES*sizeof(uint8_t)
 
-
-void out_image(chanend flag)
+// Saves the image to a file. This is a bit tricky because we don't want to use an endless loop
+void save_image_to_file(chanend flag)
 {
   select
   {
@@ -61,36 +61,12 @@ void out_image(chanend flag)
       {
       // write to a file
       write_image();
-      delay_microseconds(100);
-      assert(0);
+      delay_microseconds(200); // for stability
+      exit(1);
       break;
       }
   }
 }
-
-char wait = 0;
-uint16_t j=0;
-uint16_t i=0;
-int count = 0;
-char enable = 0;
-int end_transmission = 0;
-
-mipi_data_type_t p_data_type = 0;
-
-// this are poissble data types that could be between SOF and DATA
-int arr[] = {0x0000, 0x0012, 0x0007, 0x003e};
-int len = sizeof(arr) / sizeof(arr[0]); // Calculate the size of the array
-
-int findValue(mipi_data_type_t X) {
-    for (int i = 0; i < len; i++) {
-        if (arr[i] == X) {
-            return 1;
-        }
-    }
-    return 0; // X was not found
-}
-
-int found = 0;
 
 
 unsafe {
@@ -100,52 +76,51 @@ void handle_packet(
     const mipi_packet_t* unsafe pkt,
     chanend flag)
   {
+    
+    // if just one transmission return
     if (end_transmission == 1){
       return;
     }
+
+    // definitions
     const mipi_header_t header = pkt->header;
     const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
     const unsigned is_long = MIPI_IS_LONG_PACKET(header);
     const unsigned word_count = MIPI_GET_WORD_COUNT(header);
-    
-    // printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
-    // here we wait for a clean start of frame after a payload
-    if (found == 0){
-      if (findValue(p_data_type) && data_type == EXPECTED_FORMAT) {
-        printf("good to go\n");
-        p_data_type = data_type;
-        found = 1;
-      }  
+    static uint8_t wait_for_clean_frame = 1; // static because it will change in the future
+    //[debug] printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
+
+
+    // We return until the start of frame is reached
+    if (wait_for_clean_frame == 1){
+      if (data_type != MIPI_DT_FRAME_START){
+        return;
+      }
       else{
-        p_data_type = data_type;
-        if (found == 0){
-          return;
-        }
+        wait_for_clean_frame = 0;
       }
     }
 
+    // Use case by data type
     switch (data_type)
     {
-        case MIPI_DT_FRAME_START: // Start of frame. Just reset line number.
-        {
+        case MIPI_DT_FRAME_START: { // Start of frame. Just reset line number.
           img_rx->frame_number++;
           img_rx->line_number = 0;
           break;
         }
         
-        case EXPECTED_FORMAT: // save it in SRAM and increment line
-        {
+        case EXPECTED_FORMAT: { // save it in SRAM and increment line
           not_silly_memcpy(
               &FINAL_IMAGE[img_rx->line_number][0], 
               &pkt->payload[0], 
-              MIPI_LINE_WIDTH_BYTES);
+              MIPI_LINE_WIDTH_BYTES); // here is data width
           
           img_rx->line_number++;
           break;
         }
 
-        case MIPI_DT_FRAME_END:
-        {
+        case MIPI_DT_FRAME_END:{ // we signal that the frame is finish so we can write it to a file
           if (end_transmission == 0)
           {
             flag <: 1; 
@@ -154,17 +129,11 @@ void handle_packet(
           break;
         }
 
-        default: // error with frame type
+        default: // error with frame type or protected types
         {
-          // printchar('X');
-          // printchar('\n'); 
           break;
         }
     }
-
-    // printuint(img_rx->frame_number);
-    // printchar('-');
-    // printuintln( img_rx->line_number);
   }
 
 
@@ -176,11 +145,9 @@ void mipi_packet_handler(
     chanend flag
     )
 {
-  mipi_header_t mipiHeader;
-  image_rx_t img_rx = {0,0};
-  unsigned pkt_idx = 0;
-  // unsigned in_frame = 0;
-  
+  image_rx_t img_rx = {0,0};  // stores the coordinates X, Y of the image
+  unsigned pkt_idx = 0;       // packet index
+
   // Give the MIPI packet receiver a buffer
   outuint((chanend) c_pkt, (unsigned) &packet_buffer[pkt_idx]);
   pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT-1);
@@ -204,8 +171,7 @@ void mipi_packet_handler(
 
 void mipi_main(client interface i2c_master_if i2c)
 {
-  //printf("< Start of MIPI >\n");
-  
+  printf("< Start of APP capture application >\n");
   streaming chan c_pkt;
   streaming chan c_ctrl;
   chan flag;
@@ -215,7 +181,7 @@ void mipi_main(client interface i2c_master_if i2c)
   // in the explorer BOARD DPDN is swap
   write_node_config_reg(tile[MIPI_TILE],
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
-                        0x7E42);
+                        0x7E42); //TODO decompose into different values
 
   // send packet to MIPI shim
   MipiPacketRx_init(tile[MIPI_TILE],
@@ -230,33 +196,30 @@ void mipi_main(client interface i2c_master_if i2c)
                     MIPI_CLK_DIV,
                     MIPI_CFG_CLK_DIV);
 
-  // Now start the camera
-  //TODO  replace with camera init
-  int r = imx219_init(i2c);
-  delay_milliseconds(1000);
+  // Start camera and its configurations
+  int r = 0;
+  r |= camera_init(i2c);
+  delay_milliseconds(100); //TODO include this inside the function
+  r |= camera_configure(i2c);
+  delay_milliseconds(500);
   
-  //TODO replace with camera start 
-  r |= imx219_stream_start(i2c);
+  // Start streaming mode
+  r |= camera_start(i2c);
   delay_milliseconds(2000);
 
-  if (r != 0)
-  {
+  if (r != 0){
     printf(MSG_FAIL);
   }
-  else
-  {
+  else{
     printf(MSG_SUCCESS);
   }
 
+  // start the different jobs (packet controller, handler, and post_process)
   par
   {
-    MipiPacketRx2(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+    gMipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, flag);
-    out_image(flag);
+    save_image_to_file(flag);
   }
-
-  // return
-  //printf("Return code = %d\n", r);
-  //printf("< End of MIPI >\n");
 }
 
