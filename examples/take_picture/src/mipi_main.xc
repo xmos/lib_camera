@@ -111,6 +111,14 @@ void handle_packet(
         }
         
         case EXPECTED_FORMAT: { // save it in SRAM and increment line
+          printf("line numbver == %d\n", img_rx->line_number);
+          // if line number is grater than expected, just reset the line number
+          if (img_rx->line_number >= MIPI_IMAGE_HEIGHT_PIXELS){
+            break; // let pass the rest until next frame
+          }
+
+
+          // then copy
           not_silly_memcpy(
               &FINAL_IMAGE[img_rx->line_number][0], 
               &pkt->payload[0], 

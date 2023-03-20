@@ -97,7 +97,6 @@ i2c_regop_res_t res;
 }
 
 
-
 /// -------------------------------------------------------------------------------
 
 int imx219_init(client interface i2c_master_if i2c)
@@ -110,17 +109,18 @@ int imx219_init(client interface i2c_master_if i2c)
     return ret;
 }
 
-int imx219_configure_mode_0(client interface i2c_master_if i2c)
+int imx219_configure_mode(client interface i2c_master_if i2c)
 {
     int ret = 0;
     // Apply default values of current mode
-    ret = i2c_write_table_val(i2c, mode_640_480_regs, sizeof(mode_640_480_regs) / sizeof(mode_640_480_regs[0]));
+    ret = i2c_write_table_val(i2c, CONFIG_REG, sizeof(CONFIG_REG) / sizeof(CONFIG_REG[0]));
     // set frame format register
     ret = i2c_write_table_val(i2c, raw10_framefmt_regs, sizeof(raw10_framefmt_regs) / sizeof(raw10_framefmt_regs[0]));
     // set binning
     ret = i2c_write_table_val(i2c, binning_regs, sizeof(binning_regs) / sizeof(binning_regs[0]));
     return ret;
 }
+
 
 int imx219_stream_start(client interface i2c_master_if i2c){
     int ret = 0;

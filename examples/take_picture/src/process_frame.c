@@ -15,12 +15,13 @@ void write_image()
   img_file = fopen(FINAL_IMAGE_FILENAME, "wb");
 
   for(int k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
-    for(int j = 0; j < MIPI_IMAGE_WIDTH_PIXELS; j++){
+    for(int j = 0; j < MIPI_IMAGE_WIDTH_BYTES; j++){
       fwrite(&FINAL_IMAGE[k][j], sizeof(uint8_t), 1, img_file);
       }
   }
   fclose(img_file);
   printf("image written to %s\n", FINAL_IMAGE_FILENAME);
+  printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
 }
 
 
