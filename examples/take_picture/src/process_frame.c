@@ -1,0 +1,34 @@
+
+#include "process_frame.h"
+
+#include <string.h>
+#include <stdio.h>
+#include <stdint.h>
+
+uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
+
+// Write image to disk. This is called by camera main () to do the work
+void write_image()
+{
+  static FILE* img_file = NULL;
+  const char* FINAL_IMAGE_FILENAME = "test2.raw";
+  img_file = fopen(FINAL_IMAGE_FILENAME, "wb");
+
+  for(int k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
+    for(int j = 0; j < MIPI_IMAGE_WIDTH_PIXELS; j++){
+      fwrite(&FINAL_IMAGE[k][j], sizeof(uint8_t), 1, img_file);
+      }
+  }
+  fclose(img_file);
+  printf("image written to %s\n", FINAL_IMAGE_FILENAME);
+}
+
+
+// This is called when want to memcpy from Xc to C
+void not_silly_memcpy(
+    void* dst,
+    void* src,
+    size_t size)
+{
+  memcpy(dst, src, size);
+}

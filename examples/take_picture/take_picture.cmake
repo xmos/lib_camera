@@ -3,9 +3,9 @@
 #**********************
 
 # <--- Set the executable
-set(executable_name example_take_picture)  
+set(TARGET example_take_picture)  
 
-file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.c* )
+file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
 set(APP_INCLUDES
     ${CMAKE_CURRENT_LIST_DIR}/src
 )
@@ -42,29 +42,36 @@ set(APP_LINK_OPTIONS
 )
 
 # <--- Link libraries
-set(APP_COMMON_LINK_LIBRARIES                           
-        core::general
-        lib_i2c
+set(APP_COMMON_LINK_LIBRARIES
+        core::general                           
         mipi::lib_mipi
-        )
+        i2c::lib_i2c
+        sensors::lib_imx 
+    )
 
 
 #**********************
 # Tile Targets
 #**********************
-add_executable(${executable_name} EXCLUDE_FROM_ALL)
-target_sources(${executable_name} PUBLIC ${APP_SOURCES})
-target_include_directories(${executable_name} PUBLIC ${APP_INCLUDES})
-target_compile_definitions(${executable_name} PRIVATE ${APP_COMPILE_DEFINITIONS})
-target_compile_options(${executable_name} PRIVATE ${APP_COMPILER_FLAGS})
-target_link_libraries(${executable_name} PUBLIC ${APP_COMMON_LINK_LIBRARIES})
-target_link_options(${executable_name} PRIVATE ${APP_LINK_OPTIONS})
+add_executable(${TARGET} EXCLUDE_FROM_ALL)
+target_sources(${TARGET} PUBLIC ${APP_SOURCES})
+target_include_directories(${TARGET} PUBLIC ${APP_INCLUDES})
+target_compile_definitions(${TARGET} PRIVATE ${APP_COMPILE_DEFINITIONS})
+target_compile_options(${TARGET} PRIVATE ${APP_COMPILER_FLAGS})
+target_link_libraries(${TARGET} PUBLIC ${APP_COMMON_LINK_LIBRARIES})
+target_link_options(${TARGET} PRIVATE ${APP_LINK_OPTIONS})
 
 
 #**********************
 # Create run and debug targets
 #**********************
-create_run_target(${executable_name})
-create_debug_target(${executable_name})
-create_flash_app_target(${executable_name})
-create_install_target(${executable_name})
+create_run_target(${TARGET})
+create_debug_target(${TARGET})
+create_flash_app_target(${TARGET})
+create_install_target(${TARGET})
+
+# then custom command line
+add_custom_command(TARGET ${TARGET} POST_BUILD  
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_BINARY_DIR}/*.xe  /mnt/c/Users/albertoisorna/exec/)
+

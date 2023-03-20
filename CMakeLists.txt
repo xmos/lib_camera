@@ -28,8 +28,13 @@ set(first_project_PATH ${PROJECT_SOURCE_DIR} CACHE STRING "Root folder of sln_vo
 ## Add frameworks
 if(IS_DIRECTORY modules)
     add_subdirectory(modules)
-    message("Adding module/")
+    message("Adding modules/")
 endif()
+
+## Add sensors
+add_subdirectory(sensors)
+message("Adding sensors/")
+
 
 ## Add top level project targets
 if(PROJECT_IS_TOP_LEVEL)
