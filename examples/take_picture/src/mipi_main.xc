@@ -20,6 +20,8 @@
 // Sensor
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
+// #define TIME_MSG "elapsed : %.6f [ms] , %d [ticks]\n"
+#define TIME_MSG "elapsed : %d [ticks]\n"
 
 // Image 
 #include "process_frame.h"
@@ -28,7 +30,7 @@
 char end_transmission = 0;
 char found = 0;
 mipi_data_type_t p_data_type = 0;
-
+int t4, t5;
 /**
 * Declaration of the MIPI interface ports:
 * Clock, receiver active, receiver data valid, and receiver data
@@ -51,7 +53,6 @@ on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 #define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
 
 
-
 // Saves the image to a file. This is a bit tricky because we don't want to use an endless loop
 void save_image_to_file(chanend flag)
 {
@@ -68,6 +69,11 @@ void save_image_to_file(chanend flag)
   }
 }
 
+int measure_time(){
+  int y;
+  asm volatile("gettime %0": "=r"(y));
+  return y;
+}
 
 unsafe {
 static
@@ -105,30 +111,31 @@ void handle_packet(
     switch (data_type)
     {
         case MIPI_DT_FRAME_START: { // Start of frame. Just reset line number.
+          printf("--------->> Start\n");
           img_rx->frame_number++;
           img_rx->line_number = 0;
           break;
         }
-        
-        case EXPECTED_FORMAT: { // save it in SRAM and increment line
-          printf("line numbver == %d\n", img_rx->line_number);
+
+        case EXPECTED_FORMAT:
+        { // save it in SRAM and increment line
           // if line number is grater than expected, just reset the line number
-          if (img_rx->line_number >= MIPI_IMAGE_HEIGHT_PIXELS){
+          if (img_rx->line_number >= MIPI_IMAGE_HEIGHT_PIXELS)
+          {
             break; // let pass the rest until next frame
           }
-
-
           // then copy
           not_silly_memcpy(
-              &FINAL_IMAGE[img_rx->line_number][0], 
-              &pkt->payload[0], 
+              &FINAL_IMAGE[img_rx->line_number][0],
+              &pkt->payload[0],
               MIPI_LINE_WIDTH_BYTES); // here is data width
-          
+
           img_rx->line_number++;
           break;
         }
 
         case MIPI_DT_FRAME_END:{ // we signal that the frame is finish so we can write it to a file
+          printf("--------->> End\n");
           if (end_transmission == 0)
           {
             flag <: 1; 
@@ -171,7 +178,10 @@ void mipi_packet_handler(
     // Process the packet. We need to be finished with this and looped
     // back up to grab the next MIPI packet BEFORE the receiver thread
     // tries to give us the next packet.
+    t4 = measure_time();
     handle_packet(&img_rx, pkt, flag);
+    t4 = measure_time() - t4;
+    printf(TIME_MSG, t4);
   }
 }
 }

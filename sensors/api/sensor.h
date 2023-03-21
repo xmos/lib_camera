@@ -60,5 +60,5 @@
     #error "size of the image does not fit in internal ram"
 #endif
 
+// Store the image
 extern uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
-

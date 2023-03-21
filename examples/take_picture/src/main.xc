@@ -17,7 +17,6 @@ int main(void)
     par {
         on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, Kbps);
         on tile[MIPI_TILE]: mipi_main(i2c[0]);
-        // on tile[MIPI_TILE]: mipi_main(i2c[0], &camera_config);
     }
     return 0;
 }
