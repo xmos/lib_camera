@@ -3,10 +3,10 @@
 #define STR(x) #x
 
 // -------------- Sensor abstraction layer. --------------
-#define CONFIG_IMX219_SUPPORT 1
-#define CONFIG_GC2145_SUPPORT 0
-#define CONFIG_MODE 0
-
+#define CONFIG_IMX219_SUPPORT   1
+#define CONFIG_GC2145_SUPPORT   0
+#define CONFIG_MODE             0
+#define MIPI_PKT_BUFFER_COUNT   4 // this is user defined
 
 #if CONFIG_IMX219_SUPPORT
 #include "imx219.h"
@@ -46,7 +46,6 @@
 #endif
 
 #define MIPI_LINE_WIDTH_BYTES MIPI_IMAGE_WIDTH_BYTES
-#define MIPI_PKT_BUFFER_COUNT 4 // this is user defined
 #define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
 #define MIPI_TILE 1
 

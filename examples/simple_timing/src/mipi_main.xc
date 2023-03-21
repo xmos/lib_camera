@@ -21,13 +21,24 @@
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
 
+// timing information
+#define TIME_MSG_1 "elapsed\t%.6f\t[ms]\t%d\t[ticks]\n"
+#define TIME_MSG_2 "e\t%d\n"
+#define PRINT_TIME(y) printf(TIME_MSG_2, y)
+#define MS_MULTIPLIER 0.000001 
+
+// input with measurement do you want to perform
+#define MEASURE_T2
+
+
 // Image 
 #include "process_frame.h"
 
 // Globals
 char end_transmission = 0;
+char found = 0;
 mipi_data_type_t p_data_type = 0;
-
+int t1, t2, t3, t4, t5, t6;
 
 /**
 * Declaration of the MIPI interface ports:
@@ -60,11 +71,18 @@ void save_image_to_file(chanend flag)
       {
       // write to a file
       write_image();
-      delay_microseconds(200); // for stability //TODO maybe inside the function
+      delay_microseconds(200); // for stability
       exit(1); // end the program here
       break;
       }
   }
+}
+
+//TODO this should be in utils
+int measure_time(){
+  int y = 0;
+  asm volatile("gettime %0": "=r"(y));
+  return y;
 }
 
 unsafe {
@@ -74,18 +92,15 @@ void handle_packet(
     const mipi_packet_t* unsafe pkt,
     chanend flag)
   {
-    // End here if just one transmission
-    if (end_transmission == 1){
-      return;
-    }
 
     // definitions
     const mipi_header_t header = pkt->header;
     const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-    const unsigned is_long = MIPI_IS_LONG_PACKET(header);  // not used for the moment
-    const unsigned word_count = MIPI_GET_WORD_COUNT(header); // not used for the moment
+    const unsigned is_long = MIPI_IS_LONG_PACKET(header);
+    const unsigned word_count = MIPI_GET_WORD_COUNT(header);
     static uint8_t wait_for_clean_frame = 1; // static because it will change in the future
     //[debug] printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
+
 
     // We return until the start of frame is reached
     if (wait_for_clean_frame == 1){
@@ -96,39 +111,64 @@ void handle_packet(
         wait_for_clean_frame = 0;
       }
     }
-
     // Use case by data type
     switch (data_type)
     {
         case MIPI_DT_FRAME_START: { // Start of frame. Just reset line number.
+          #ifdef MEASURE_T3
+            PRINT_TIME((measure_time() - t3));
+            t3 = measure_time();
+          #endif
           img_rx->frame_number++;
           img_rx->line_number = 0;
           break;
         }
 
         case EXPECTED_FORMAT:{ // save it in SRAM and increment line
+          #ifdef MEASURE_T2
+            t2 = measure_time();
+          #endif
+
+          #ifdef MEASURE_T4
+            PRINT_TIME((measure_time() - t4));
+            t4 = measure_time();
+          #endif
+
+
           // if line number is grater than expected, just reset the line number
-          if (img_rx->line_number >= MIPI_IMAGE_HEIGHT_PIXELS){
+          if (img_rx->line_number >= MIPI_IMAGE_HEIGHT_PIXELS)
+          {
             break; // let pass the rest until next frame
           }
+
           // then copy
           not_silly_memcpy(
               &FINAL_IMAGE[img_rx->line_number][0],
               &pkt->payload[0],
               MIPI_LINE_WIDTH_BYTES); // here is data width
+          
+          // go for next line and exit
           img_rx->line_number++;
+          
+          #ifdef MEASURE_T2
+            PRINT_TIME((measure_time() - t2));
+          #endif
+          break;
+        }
+
+        case MIPI_DT_EOT:{
+          
           break;
         }
 
         case MIPI_DT_FRAME_END:{ // we signal that the frame is finish so we can write it to a file
-          if (end_transmission == 0){ //TODO not needed if and the end of transmission I just return
-            flag <: 1; 
-            end_transmission = 1;            
-          } 
+          // printf("--------->> End\n");
+
           break;
         }
 
-        default:{ // error with frame type or protected types
+        default: // error with frame type or protected types
+        {
           break;
         }
     }
@@ -161,7 +201,10 @@ void mipi_packet_handler(
     // Process the packet. We need to be finished with this and looped
     // back up to grab the next MIPI packet BEFORE the receiver thread
     // tries to give us the next packet.
+    //t5 = measure_time();
     handle_packet(&img_rx, pkt, flag);
+    //t5 = measure_time() - t5;
+    //printf(TIME_MSG, (t5*MS_MULTIPLIER));
   }
 }
 }
