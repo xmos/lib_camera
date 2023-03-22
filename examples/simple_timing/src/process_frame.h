@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "mipi_main.h"
+#include "mipi_timing.h"
 
 #ifdef __XC__
 extern "C" {

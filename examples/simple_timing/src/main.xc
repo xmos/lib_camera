@@ -4,7 +4,7 @@
 #include <xscope.h>
 
 #include "i2c.h"
-#include "mipi_main.h"
+#include "mipi_timing.h"
 
 // I2C interface ports
 #define Kbps 400
