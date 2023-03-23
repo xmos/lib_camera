@@ -1,8 +1,8 @@
 
 # edit subfolder, put your examples here
 set(EXAMPLES 
-        blink_example
-        take_picture
+        take_picture #TODO replace by glob
+        simple_timing
     )
 
 # add all the examples that you need
