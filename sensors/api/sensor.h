@@ -8,13 +8,14 @@
 #define CONFIG_MODE             0
 #define MIPI_PKT_BUFFER_COUNT   4 // this is user defined
 
-#if CONFIG_IMX219_SUPPORT
-#include "imx219.h"
-#endif
 
-#if CONFIG_GC2145_SUPPORT
-#include "gc2145.h"
-#endif
+// -------- Sensor.h settings needed for custom sensor configuration
+
+// FPS settings
+/* allowed values:
+    - [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
+*/
+#define FPS_30
 
 // Modes definition
 #if CONFIG_MODE == 0
@@ -31,6 +32,18 @@
     #define MIPI_IMAGE_HEIGHT_PIXELS        1232
 #endif
 
+// Inlcude custom libraries
+#if CONFIG_IMX219_SUPPORT
+    #include "imx219.h"
+#endif
+
+#if CONFIG_GC2145_SUPPORT
+    #include "gc2145.h"
+#endif
+
+
+// -------- Sensor.h settings dependant of each sensor library
+
 // Camera functions to be called from main program
 #define camera_init(x)                  imx219_init(x)
 #define camera_start(x)                 imx219_stream_start(x)
@@ -40,16 +53,16 @@
 // -------------------------------------------------------------------------------
 // Camera dependant (do not edit)
 #if EXPECTED_FORMAT == MIPI_DT_RAW10
-    #define MIPI_IMAGE_WIDTH_BYTES ((MIPI_IMAGE_WIDTH_PIXELS) >> 2) * 5 // by 5/4
-#elif EXPECTED_FORMAT == MIPI_DT_RAW8
+    #define MIPI_IMAGE_WIDTH_BYTES (((MIPI_IMAGE_WIDTH_PIXELS) >> 2) * 5) // by 5/4
+
+#elif (EXPECTED_FORMAT == MIPI_DT_RAW8)
     #define MIPI_IMAGE_WIDTH_BYTES MIPI_IMAGE_WIDTH_PIXELS // same size
+
 #endif
 
 #define MIPI_LINE_WIDTH_BYTES MIPI_IMAGE_WIDTH_BYTES
 #define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
 #define MIPI_TILE 1
-
-
 
 // SRAM Image storage (do not edit)
 //TODO check maximum storage size for the image
@@ -59,5 +72,4 @@
     #error "size of the image does not fit in internal ram"
 #endif
 
-// Store the image
-extern uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
+
