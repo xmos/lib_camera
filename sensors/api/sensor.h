@@ -15,7 +15,7 @@
 /* allowed values:
     - [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
 */
-#define FPS_30
+#define FPS_13
 
 // Modes definition
 #if CONFIG_MODE == 0

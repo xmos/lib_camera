@@ -30,7 +30,7 @@ typedef struct
 
 // configure FPS
 #if   defined(FPS_13) 
-    #define PLL_VT_MPY  0x0027   
+    #define PLL_VT_MPY  0x0030   
 #elif defined(FPS_24)
     #define PLL_VT_MPY  0x0047
 #elif defined(FPS_30)

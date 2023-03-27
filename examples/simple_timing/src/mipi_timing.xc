@@ -157,6 +157,8 @@ void handle_packet(
 
           // burn some cycles
           delay_ticks(TICKS_DELAY);
+          
+          // printf("0x%04x,",pkt->payload[0]);
 
           // go for next line and exit
           img_rx->line_number++;

@@ -111,9 +111,6 @@ void handle_packet(
           if (img_rx->line_number >= MIPI_IMAGE_HEIGHT_PIXELS){
             break; // let pass the rest until next frame
           }
-          // process the frame
-          
-
           // then copy
           not_silly_memcpy(
               &FINAL_IMAGE[img_rx->line_number][0],
