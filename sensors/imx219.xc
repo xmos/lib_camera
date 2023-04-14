@@ -106,6 +106,9 @@ int imx219_init(client interface i2c_master_if i2c)
     ret = i2c_write_table_val(i2c, imx219_common_regs, sizeof(imx219_common_regs) / sizeof(imx219_common_regs[0]));
     // Configure two or four Lane mode
     ret = i2c_write_table_val(i2c, imx219_lanes_regs, sizeof(imx219_lanes_regs) / sizeof(imx219_lanes_regs[0]));
+    // set gain
+    // ret = imx219_set_gain_dB(i2c, 18);
+
     return ret;
 }
 
@@ -115,7 +118,7 @@ int imx219_configure_mode(client interface i2c_master_if i2c)
     // Apply default values of current mode
     ret = i2c_write_table_val(i2c, CONFIG_REG, sizeof(CONFIG_REG) / sizeof(CONFIG_REG[0]));
     // set frame format register
-    ret = i2c_write_table_val(i2c, raw10_framefmt_regs, sizeof(raw10_framefmt_regs) / sizeof(raw10_framefmt_regs[0]));
+    ret = i2c_write_table_val(i2c, DATA_FORMAT_REGS, sizeof(DATA_FORMAT_REGS) / sizeof(DATA_FORMAT_REGS[0]));
     // set binning
     ret = i2c_write_table_val(i2c, binning_regs, sizeof(binning_regs) / sizeof(binning_regs[0]));
     return ret;

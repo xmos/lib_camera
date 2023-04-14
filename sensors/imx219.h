@@ -19,7 +19,7 @@ typedef struct
 #ifdef __XC__
 
 // configure registers
-#if (CONFIG_MODE == 0)
+#if ((CONFIG_MODE == 0) || (CONFIG_MODE == 1))
     #define CONFIG_REG      mode_640_480_regs
 #elif (CONFIG_MODE == 2)
     #define CONFIG_REG      mode_1640_1232_regs
@@ -27,6 +27,14 @@ typedef struct
     #error "Invalid configuration mode"
 #endif
 
+// Configure formats
+#if EXPECTED_FORMAT == MIPI_DT_RAW10
+    #define DATA_FORMAT_REGS raw10_framefmt_regs
+
+#elif EXPECTED_FORMAT == MIPI_DT_RAW8
+    #define DATA_FORMAT_REGS  raw8_framefmt_regs
+    
+#endif
 
 // configure FPS
 #if   defined(FPS_13) 
@@ -50,7 +58,6 @@ typedef struct
 // functions
 int imx219_init(client interface i2c_master_if i2c);
 int imx219_stream_start(client interface i2c_master_if i2c);
-int imx219_configure_mode_0(client interface i2c_master_if i2c);
 int imx219_configure_mode(client interface i2c_master_if i2c);
 int imx219_stream_stop(client interface i2c_master_if i2c);
 int imx219_set_gain_dB(client interface i2c_master_if i2c, uint32_t dBGain);

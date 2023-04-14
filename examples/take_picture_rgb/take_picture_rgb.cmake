@@ -3,7 +3,7 @@
 #**********************
 
 # <--- Set the executable
-set(TARGET example_take_picture_RGB)  
+set(TARGET example_take_picture_rgb)  
 
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
 set(APP_INCLUDES

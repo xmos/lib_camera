@@ -12,9 +12,9 @@
  
 
 // ********** input with measurement do you want to perform
-#define MEASURE_T3
+#define MEASURE_T4 // T4 == line, T3 == frame
 #define DO_MEMCPY 0
-#define TICKS_DELAY 1
+#define TICKS_DELAY 800
 // ***********
 
 // I2C

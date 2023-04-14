@@ -85,7 +85,7 @@ void handle_packet(
     const unsigned is_long = MIPI_IS_LONG_PACKET(header);  // not used for the moment
     const unsigned word_count = MIPI_GET_WORD_COUNT(header); // not used for the moment
     static uint8_t wait_for_clean_frame = 1; // static because it will change in the future
-    //[debug] printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
+    // printf("packet header = 0x%08x, wc=%d \n", REV(header), word_count);
 
     // We return until the start of frame is reached
     if (wait_for_clean_frame == 1){
@@ -162,6 +162,10 @@ void mipi_packet_handler(
     // back up to grab the next MIPI packet BEFORE the receiver thread
     // tries to give us the next packet.
     handle_packet(&img_rx, pkt, flag);
+
+    if (end_transmission == 1){
+      return;
+    }
   }
 }
 }

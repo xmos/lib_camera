@@ -4,8 +4,26 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define FINAL_IMAGE_FILENAME "out.raw"
-uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
+#include "image.h"
+
+
+#define FINAL_IMAGE_FILENAME "img_raw.bin"
+uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS/2][MIPI_LINE_WIDTH_BYTES/2][3];
+//uint8_t FINAL_IMAGE[(MIPI_IMAGE_HEIGHT_PIXELS/2)*(MIPI_LINE_WIDTH_BYTES/2)*3];
+
+// uint8_t img_rgb[CHEIGHT(FINAL_IMAGE)/2][CWIDTH(FINAL_IMAGE)/4][3];
+
+// RAW to RGB pipeline
+void raw_to_rgb(){
+  // downsample image in raw
+  // downsample_image[1][1] = 1;
+  // img_rgb[1][1][1] = 1;
+  // split the 3 color channels
+
+  // Demosaic the image
+}
+
+
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image()
@@ -19,7 +37,25 @@ void write_image()
   }
   fclose(img_file);
   printf("Outfile %s\n", FINAL_IMAGE_FILENAME);
-  printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
+  // printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
+}
+
+void write_image_rgb()
+{
+  static FILE* img_file = NULL;
+  img_file = fopen(FINAL_IMAGE_FILENAME, "wb");
+
+  
+    for(int k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS/2; k++){
+      for(int j = 0; j < MIPI_IMAGE_WIDTH_BYTES/2; j++){
+        for(int l = 0; l < 3; l++){
+          fwrite(&FINAL_IMAGE[k][j][l], sizeof(uint8_t), 1, img_file);
+        }
+    }
+  }
+  fclose(img_file);
+  printf("Outfile %s\n", FINAL_IMAGE_FILENAME);
+  // printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
 }
 
 

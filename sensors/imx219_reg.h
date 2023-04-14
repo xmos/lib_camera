@@ -55,9 +55,12 @@ static imx219_settings_t imx219_common_regs[] = {
 	{ 0x0303,   0x01 }, /* VTSYCK_DIV           1, ? */
 	{ 0x0309,   0x0A }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
 	{ 0x030B,   0x01 }, /* OPSYCK_DIV           1, has to be 1? */
-
+    
+    // pck clock
     {0x1148,    0x00},    
-    {0x1149,    0xFF},
+    {0x1149,    0xF0},
+    
+
 	/* Undocumented registers */
 	{0x455e, 0x00},
 	{0x471e, 0x4b},
@@ -137,6 +140,12 @@ static imx219_settings_t raw10_framefmt_regs[] = {
 	{0x018c, 0x0a},
 	{0x018d, 0x0a},
 	{0x0309, 0x0a},
+};
+
+static imx219_settings_t raw8_framefmt_regs[] = {
+	{0x018c, 0x08},
+	{0x018d, 0x08},
+	{0x0309, 0x08},
 };
 
 
