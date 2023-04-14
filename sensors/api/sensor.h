@@ -21,7 +21,7 @@
 /* allowed values:
     - [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
 */
-#define FPS_13
+#define FPS_24
 
 // Inlcude custom libraries
 #if CONFIG_IMX219_SUPPORT
