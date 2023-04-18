@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <platform.h> // for ports
 #include <assert.h>
-#include <stdlib.h> // exit status
+#include <stdlib.h> // exit status and malloc
 #include <xccompat.h>
 #include <stdint.h>
 #include <print.h>
@@ -51,15 +51,17 @@ on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 #define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
 
 
+unsafe {
+
 // Saves the image to a file. This is a bit tricky because we don't want to use an endless loop
-void save_image_to_file(chanend flag)
+void save_image_to_file(chanend flag, uint8_t* unsafe image)
 {
   select
   {
-    case flag :> uint8_t* img:
+    case flag :> int i:
       {
       // write to a file
-      write_image(img);
+      write_image(image);
       delay_microseconds(200); // for stability //TODO maybe inside the function
       exit(1); // end the program here
       break;
@@ -67,13 +69,12 @@ void save_image_to_file(chanend flag)
   }
 }
 
-unsafe {
 static
 void handle_packet(
     image_rx_t* img_rx,
     const mipi_packet_t* unsafe pkt,
     chanend flag,
-    uint8_t* img_raw_ptr)
+    uint8_t* unsafe img_raw_ptr)
   {
     // End here if just one transmission
     if (end_transmission == 1){
@@ -113,7 +114,7 @@ void handle_packet(
             break; // let pass the rest until next frame
           }
           // then copy
-          uint16_t pos = (img_rx->line_number) * MIPI_LINE_WIDTH_BYTES;
+          uint32_t pos = (img_rx->line_number) * MIPI_LINE_WIDTH_BYTES;
           not_silly_memcpy(
               &img_raw_ptr[pos],
               &pkt->payload[0],
@@ -124,13 +125,13 @@ void handle_packet(
 
         case MIPI_DT_FRAME_END:{ // we signal that the frame is finish so we can write it to a file
           if (end_transmission == 0){ //TODO not needed if and the end of transmission I just return
-            flag <: img_raw_ptr; 
+            flag <: 1; 
             end_transmission = 1;            
           } 
           break;
         }
 
-        default:{ // error with frame type or protected types
+        default:{ // error with frame type or protected types or blank fields
           break;
         }
     }
@@ -142,15 +143,13 @@ static
 void mipi_packet_handler(
     streaming chanend c_pkt, 
     streaming chanend c_ctrl,
-    chanend flag
+    chanend flag,
+    uint8_t* unsafe image_ptr
     )
 {
   image_rx_t img_rx = {0,0};  // stores the coordinates X, Y of the image
   unsigned pkt_idx = 0;       // packet index
 
-  // allocate espace for the image buffer
-  uint8_t* img_raw_ptr = malloc((MIPI_IMAGE_HEIGHT_PIXELS * MIPI_IMAGE_WIDTH_PIXELS) * sizeof(uint8_t));
-  
   // Give the MIPI packet receiver a buffer
   outuint((chanend) c_pkt, (unsigned) &packet_buffer[pkt_idx]);
   pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT-1);
@@ -166,7 +165,7 @@ void mipi_packet_handler(
     // Process the packet. We need to be finished with this and looped
     // back up to grab the next MIPI packet BEFORE the receiver thread
     // tries to give us the next packet.
-    handle_packet(&img_rx, pkt, flag, img_raw_ptr);
+    handle_packet(&img_rx, pkt, flag, image_ptr);
 
     if (end_transmission == 1){
       return;
@@ -182,6 +181,9 @@ void mipi_main(client interface i2c_master_if i2c)
   streaming chan c_pkt;
   streaming chan c_ctrl;
   chan flag;
+  
+  // allocate espace for the image buffer
+  uint8_t* unsafe img_raw_ptr = malloc(MIPI_IMAGE_HEIGHT_PIXELS * MIPI_IMAGE_WIDTH_PIXELS * sizeof(uint8_t));
   
   // See AN for MIPI shim
   // 0x7E42 >> 0111 1110 0100 0010
@@ -229,8 +231,8 @@ void mipi_main(client interface i2c_master_if i2c)
   par
   {
     gMipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-    mipi_packet_handler(c_pkt, c_ctrl, flag);
-    save_image_to_file(flag);
+    mipi_packet_handler(c_pkt, c_ctrl, flag, img_raw_ptr);
+    save_image_to_file(flag, img_raw_ptr);
   }
 }
 

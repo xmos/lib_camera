@@ -12,9 +12,9 @@ void write_image(uint8_t *image)
 {
   static FILE* img_file = NULL;
   img_file = fopen(FINAL_IMAGE_FILENAME, "wb");
-  for(int k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
-    for(int j = 0; j < MIPI_IMAGE_WIDTH_BYTES; j++){
-      uint16_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
+  for(uint16_t k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
+    for(uint16_t j = 0; j < MIPI_IMAGE_WIDTH_BYTES; j++){
+      uint32_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
       fwrite(&image[pos], sizeof(uint8_t), 1, img_file);
       }
   }
