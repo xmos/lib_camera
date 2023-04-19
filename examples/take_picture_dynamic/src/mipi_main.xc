@@ -26,8 +26,6 @@
 
 // Globals
 char end_transmission = 0;
-mipi_data_type_t p_data_type = 0;
-
 
 /**
 * Declaration of the MIPI interface ports:
@@ -39,16 +37,6 @@ on tile[MIPI_TILE] : in port p_mipi_rxv = XS1_PORT_1I;               // valid
 on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A; // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
-/**
- * The packet buffer is where the packet decoupler will tell the MIPI receiver
- * thread to store received packets.
- */
-#define DEMUX_DATATYPE    0     // RESERVED
-#define DEMUX_MODE        0x00  // no demux
-#define DEMUX_EN          0     // DISABLE DEMUX
-#define MIPI_CLK_DIV      1     // CLK DIVIDER
-#define MIPI_CFG_CLK_DIV  3     // CFG DIVIDER
-#define REV(n) ((n << 24) | (((n>>16)<<24)>>16) |  (((n<<16)>>24)<<16) | (n>>24))
 
 
 unsafe {
@@ -115,10 +103,8 @@ void handle_packet(
           }
           // then copy
           uint32_t pos = (img_rx->line_number) * MIPI_LINE_WIDTH_BYTES;
-          not_silly_memcpy(
-              &img_raw_ptr[pos],
-              &pkt->payload[0],
-              MIPI_LINE_WIDTH_BYTES); // here is data width
+          not_silly_memcpy(&img_raw_ptr[pos], &pkt->payload[0], MIPI_LINE_WIDTH_BYTES); 
+          // increase line number
           img_rx->line_number++;
           break;
         }
@@ -137,42 +123,42 @@ void handle_packet(
     }
   }
 
-
 #pragma unsafe arrays
-static
-void mipi_packet_handler(
-    streaming chanend c_pkt, 
+static void mipi_packet_handler(
+    streaming chanend c_pkt,
     streaming chanend c_ctrl,
     chanend flag,
-    uint8_t* unsafe image_ptr
-    )
+    uint8_t * unsafe image_ptr)
 {
-  image_rx_t img_rx = {0,0};  // stores the coordinates X, Y of the image
+  image_rx_t img_rx = {0, 0}; // stores the coordinates X, Y of the image
   unsigned pkt_idx = 0;       // packet index
 
   // Give the MIPI packet receiver a buffer
-  outuint((chanend) c_pkt, (unsigned) &packet_buffer[pkt_idx]);
-  pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT-1);
-  
-  while(1) {
-    // Wait for the receiver thread to tell us a new packet was completed.
-    mipi_packet_t * unsafe pkt = (mipi_packet_t*unsafe) inuint((chanend) c_pkt);
+  outuint((chanend)c_pkt, (unsigned)&packet_buffer[pkt_idx]);
+  pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
 
-    // Give it a new buffer before processing the received one
-    outuint((chanend) c_pkt, (unsigned) &packet_buffer[pkt_idx]);
-    pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT-1);
+  while (1)
+  {
+        // Wait for the receiver thread to tell us a new packet was completed.
+        mipi_packet_t *unsafe pkt = (mipi_packet_t * unsafe) inuint((chanend)c_pkt);
 
-    // Process the packet. We need to be finished with this and looped
-    // back up to grab the next MIPI packet BEFORE the receiver thread
-    // tries to give us the next packet.
-    handle_packet(&img_rx, pkt, flag, image_ptr);
+        // Give it a new buffer before processing the received one
+        outuint((chanend)c_pkt, (unsigned)&packet_buffer[pkt_idx]);
+        pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
 
-    if (end_transmission == 1){
-      return;
-    }
+        // Process the packet. We need to be finished with this and looped
+        // back up to grab the next MIPI packet BEFORE the receiver thread
+        // tries to give us the next packet.
+        handle_packet(&img_rx, pkt, flag, image_ptr);
+
+        if (end_transmission == 1)
+        {
+          return;
+        }
   }
 }
-}
+
+} // unsafe region
 
 
 void mipi_main(client interface i2c_master_if i2c)
@@ -211,8 +197,6 @@ void mipi_main(client interface i2c_master_if i2c)
   delay_milliseconds(100); //TODO include this inside the function
   r |= camera_configure(i2c);
   delay_milliseconds(500);
-  
-  // Start streaming mode
   r |= camera_start(i2c);
   delay_milliseconds(2000);
 
@@ -222,10 +206,6 @@ void mipi_main(client interface i2c_master_if i2c)
   else{
     printf(MSG_SUCCESS);
   }
-
-  // ask the user to press the key "c" to capture the frame
-  // user_input(); //TODO not working with a par job 
-
 
   // start the different jobs (packet controller, handler, and post_process)
   par
