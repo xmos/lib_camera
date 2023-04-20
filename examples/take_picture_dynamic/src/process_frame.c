@@ -26,7 +26,7 @@ void write_image(uint8_t *image)
 
 
 // This is called when want to memcpy from Xc to C
-void not_silly_memcpy(
+void c_memcpy(
     void* dst,
     void* src,
     size_t size)

@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 void write_image(uint8_t *image);
-void not_silly_memcpy(void *dst, void *src, size_t size);
+void c_memcpy(void *dst, void *src, size_t size);
 // void user_input(void);
 
 #ifdef __XC__

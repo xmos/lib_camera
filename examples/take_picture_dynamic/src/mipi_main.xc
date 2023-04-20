@@ -103,7 +103,7 @@ void handle_packet(
           }
           // then copy
           uint32_t pos = (img_rx->line_number) * MIPI_LINE_WIDTH_BYTES;
-          not_silly_memcpy(&img_raw_ptr[pos], &pkt->payload[0], MIPI_LINE_WIDTH_BYTES); 
+          c_memcpy(&img_raw_ptr[pos], &pkt->payload[0], MIPI_LINE_WIDTH_BYTES); 
           // increase line number
           img_rx->line_number++;
           break;
@@ -112,6 +112,7 @@ void handle_packet(
         case MIPI_DT_FRAME_END:{ // we signal that the frame is finish so we can write it to a file
           if (end_transmission == 0){ //TODO not needed if and the end of transmission I just return
             flag <: 1; 
+            wait_for_clean_frame = 1; // in case
             end_transmission = 1;            
           } 
           break;
