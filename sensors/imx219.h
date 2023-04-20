@@ -8,7 +8,6 @@
 // I2C adress
 #define IMX219_I2C_ADDR 0x10
 
-
 // TODO maybe out of here
 typedef struct
 {
