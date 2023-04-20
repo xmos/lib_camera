@@ -201,6 +201,9 @@ void mipi_main(client interface i2c_master_if i2c)
   r |= camera_start(i2c);
   delay_milliseconds(2000);
 
+  uint16_t val = imx219_read(i2c, 0x0174);
+  printf("read value = %d\n", val);
+
   if (r != 0){
     printf(MSG_FAIL);
   }

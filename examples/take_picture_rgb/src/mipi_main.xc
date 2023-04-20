@@ -119,18 +119,18 @@ void handle_packet(
           }
           // copy thepending of the row
           uint16_t newline = (img_rx->line_number >> 1);
-          uint16_t temp    = newline * (MIPI_LINE_WIDTH_BYTES/2); // aritmetic pointer conversion
+          uint16_t temp    = newline * (MIPI_LINE_WIDTH_BYTES/4); // aritmetic pointer conversion
 
-          for (uint16_t i = 0; i < MIPI_LINE_WIDTH_BYTES - 2; i = i + 2){
+          for (uint16_t i = 0; i < MIPI_LINE_WIDTH_BYTES - 2; i = i + 4){
             uint16_t index = temp + (i >> 1);
             if ((img_rx->line_number % 2) == 0){ // even
               //FINAL_IMAGE[newline][(i >> 1)][RED] = pkt->payload[i]; //RED
               //FINAL_IMAGE[newline][(i >> 1)][GREEN] = pkt->payload[i+1]; //GREEN
-              r_image[index] = pkt->payload[i]; //RED
-              g_image[index] = pkt->payload[i+1]; //RED
+              rgb_image[index][0] = pkt->payload[i]; //RED
+              rgb_image[index][1] = pkt->payload[i+1]; //RED
             }
             else{
-              b_image[index] = pkt->payload[i+1];
+              rgb_image[index][2] = pkt->payload[i+1];
               // FINAL_IMAGE[newline][i][RED]; //GREEN 2
               // FINAL_IMAGE[newline][(i >> 1)][BLUE] = pkt->payload[i+1]; //BLUE
             }

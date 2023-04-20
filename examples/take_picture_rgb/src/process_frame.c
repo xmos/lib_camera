@@ -10,10 +10,10 @@
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
 //uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS/2][MIPI_LINE_WIDTH_BYTES/2][3];
 //uint8_t FINAL_IMAGE[(MIPI_IMAGE_HEIGHT_PIXELS/2)*(MIPI_LINE_WIDTH_BYTES/2)*3];
-uint8_t r_image[MIPI_IMAGE_HEIGHT_PIXELS/2*MIPI_LINE_WIDTH_BYTES/2];
-uint8_t g_image[MIPI_IMAGE_HEIGHT_PIXELS/2*MIPI_LINE_WIDTH_BYTES/2];
-uint8_t b_image[MIPI_IMAGE_HEIGHT_PIXELS/2*MIPI_LINE_WIDTH_BYTES/2];
-
+//uint8_t r_image[MIPI_IMAGE_HEIGHT_PIXELS/2*MIPI_LINE_WIDTH_BYTES/2];
+//uint8_t g_image[MIPI_IMAGE_HEIGHT_PIXELS/2*MIPI_LINE_WIDTH_BYTES/2];
+//uint8_t b_image[MIPI_IMAGE_HEIGHT_PIXELS/2*MIPI_LINE_WIDTH_BYTES/2];
+uint8_t rgb_image[MIPI_IMAGE_HEIGHT_PIXELS/2*MIPI_LINE_WIDTH_BYTES/4][3];
 // uint8_t img_rgb[CHEIGHT(FINAL_IMAGE)/2][CWIDTH(FINAL_IMAGE)/4][3];
 
 // RAW to RGB pipeline
@@ -48,11 +48,11 @@ void write_image_rgb()
   static FILE* img_file = NULL;
   img_file = fopen(FINAL_IMAGE_FILENAME, "wb");
     for(int k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS/2; k++){
-      for(int j = 0; j < MIPI_IMAGE_WIDTH_BYTES/2; j++){
-        int index = k * (MIPI_LINE_WIDTH_BYTES/2) + j;
-        fwrite(&r_image[index], sizeof(uint8_t), 1, img_file);
-        fwrite(&g_image[index], sizeof(uint8_t), 1, img_file);
-        fwrite(&b_image[index], sizeof(uint8_t), 1, img_file);
+      for(int j = 0; j < MIPI_IMAGE_WIDTH_BYTES/4; j++){
+        int index = k * (MIPI_LINE_WIDTH_BYTES/4) + j;
+        fwrite(&rgb_image[index][0], sizeof(uint8_t), 1, img_file);
+        fwrite(&rgb_image[index][1], sizeof(uint8_t), 1, img_file);
+        fwrite(&rgb_image[index][2], sizeof(uint8_t), 1, img_file);
     }
   }
   fclose(img_file);
