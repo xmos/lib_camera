@@ -24,6 +24,7 @@
 // Image 
 #include "process_frame.h"
 
+
 // Globals
 char end_transmission = 0;
 
@@ -49,7 +50,8 @@ void save_image_to_file(chanend flag, uint8_t* unsafe image)
     case flag :> int i:
       {
       // write to a file
-      write_image(image);
+      // write_image(image);
+      process_image(image);
       delay_microseconds(200); // for stability //TODO maybe inside the function
       exit(1); // end the program here
       break;
@@ -112,7 +114,7 @@ void handle_packet(
         case MIPI_DT_FRAME_END:{ // we signal that the frame is finish so we can write it to a file
           if (end_transmission == 0){ //TODO not needed if and the end of transmission I just return
             flag <: 1; 
-            wait_for_clean_frame = 1; // in case
+            // wait_for_clean_frame = 1; // in case
             end_transmission = 1;            
           } 
           break;
@@ -201,8 +203,16 @@ void mipi_main(client interface i2c_master_if i2c)
   r |= camera_start(i2c);
   delay_milliseconds(2000);
 
-  uint16_t val = imx219_read(i2c, 0x0174);
-  printf("read value = %d\n", val);
+  //uint16_t val = imx219_read(i2c, 0x0174);
+  //printf("read value = %d\n", val);
+
+  uint16_t gain_values[5];
+  imx219_read_gains(i2c, gain_values);
+  for (int i = 0; i < 5; i++)
+  {
+    printf("gain value = %d\n", gain_values[i]);
+  }
+
 
   if (r != 0){
     printf(MSG_FAIL);

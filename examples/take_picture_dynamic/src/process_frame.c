@@ -1,11 +1,14 @@
-
-#include "process_frame.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "process_frame.h"
+#include "histogram.h"
+#include "utils.h" // for measuring time
+
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
+
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image(uint8_t *image)
@@ -22,6 +25,30 @@ void write_image(uint8_t *image)
   printf("Outfile %s\n", FINAL_IMAGE_FILENAME);
   printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
   free(image);
+  exit(1);
+}
+
+void process_image(uint8_t *image){
+  const int len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
+
+  // compute histogram
+  int t0 = measure_time();    
+  float hist[64];
+  //compute_hist_32(len, image, hist);
+  compute_hist_64_norm(len, image, hist);
+  //compute_hist_64_norm_pointer(len, image, hist);
+  int t1 = measure_time();
+  PRINT_TIME(t0, t1);
+
+  // compute skewness
+  t0 = measure_time();
+  float sk = skew_fast(hist);
+  t1 = measure_time();
+  PRINT_TIME(t0, t1);
+  printf("Skewness of histogram = %f\n",sk);
+
+  // write it to a file
+  write_image(image);
 }
 
 

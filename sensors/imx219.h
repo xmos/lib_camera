@@ -62,5 +62,6 @@ int imx219_stream_stop(client interface i2c_master_if i2c);
 int imx219_set_gain_dB(client interface i2c_master_if i2c, uint32_t dBGain);
 int imx219_set_binning(client interface i2c_master_if i2c, uint32_t H_binning, uint32_t V_binning);
 int imx219_read(client interface i2c_master_if i2c, uint16_t addr);
+void imx219_read_gains(client interface i2c_master_if i2c, uint16_t values[5]);
 
 #endif

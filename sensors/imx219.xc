@@ -7,7 +7,7 @@
 #include "imx219.h"
 #include "imx219_reg.h"
 
-#define GAIN_DB 35
+#define GAIN_DB 29
 
 static int i2c_write(client interface i2c_master_if i2c, int reg, int value)
 {
@@ -101,6 +101,14 @@ int imx219_read(client interface i2c_master_if i2c, uint16_t addr){
     return val;
 }
 
+void imx219_read_gains(client interface i2c_master_if i2c, uint16_t values[5]){
+    values[0] = imx219_read(i2c, 0x0157);
+    values[1] = imx219_read(i2c, 0x0158);
+    values[2] = imx219_read(i2c, 0x0159);
+    values[3] = imx219_read(i2c, 0x015A);
+    values[4] = imx219_read(i2c, 0x015B);
+}
+
 
 /// -------------------------------------------------------------------------------
 
@@ -112,8 +120,7 @@ int imx219_init(client interface i2c_master_if i2c)
     // Configure two or four Lane mode
     ret = i2c_write_table_val(i2c, imx219_lanes_regs, sizeof(imx219_lanes_regs) / sizeof(imx219_lanes_regs[0]));
     // set gain
-    // ret = imx219_set_gain_dB(i2c, GAIN_DB);
-
+    ret = imx219_set_gain_dB(i2c, GAIN_DB);
     return ret;
 }
 
