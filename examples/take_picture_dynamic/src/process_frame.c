@@ -3,12 +3,19 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <xcore/channel.h>
+
 #include "process_frame.h"
 #include "histogram.h"
 #include "utils.h" // for measuring time
+#include "auto_exposure.h"
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
+#define AE_MARGIN 0.1
+#define ENABLE_AE 1
 
+const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
+float new_exp = 35;
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image(uint8_t *image)
@@ -28,27 +35,48 @@ void write_image(uint8_t *image)
   exit(1);
 }
 
-void process_image(uint8_t *image){
-  const int len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 
+void process_image(uint8_t *image, chanend_t c){
+  static int initial_t = 0;
+  if (initial_t == 0){
+    initial_t = measure_time();
+  }
+
+  static int print_msg = 0;
   // compute histogram
-  int t0 = measure_time();    
-  float hist[64];
-  //compute_hist_32(len, image, hist);
-  compute_hist_64_norm(len, image, hist);
-  //compute_hist_64_norm_pointer(len, image, hist);
-  int t1 = measure_time();
-  PRINT_TIME(t0, t1);
+  float hist[64] = {0};
+  compute_hist_64_norm(img_len, image, hist);  
 
   // compute skewness
-  t0 = measure_time();
   float sk = skew_fast(hist);
-  t1 = measure_time();
-  PRINT_TIME(t0, t1);
-  printf("Skewness of histogram = %f\n",sk);
+
+  // print information
+  printf("texp=%f , skewness=%f\n", new_exp, sk);
+
+  // exit condition
+  if (sk < AE_MARGIN && sk > -AE_MARGIN){
+    if (print_msg == 0){
+      printf("-----> adjustement done\n");
+      print_msg = 1;
+    } 
+  }
+  else{
+      // adjust exposure
+      new_exp = false_position_step(new_exp, sk);
+
+      // put exposure
+      #if ENABLE_AE
+        chan_out_word(c, (unsigned) new_exp);
+      #endif
+      // cancel output message
+      print_msg = 0;
+  }
 
   // write it to a file
-  write_image(image);
+  if (measure_time() - initial_t >= 604435538){
+      write_image(image);
+  }
+
 }
 
 
@@ -61,6 +89,16 @@ void c_memcpy(
   memcpy(dst, src, size);
 }
 
+
+/*
+void set_exposure(chanend_t c){
+  printf("hello world");
+  int ret = chan_in_word(c_otp);
+  printf("ret  = %d\n", ret);
+}
+*/
+
+
 /*
 void user_input(void){
   printf("Enter the character 'c' to capture the frame : ");
@@ -69,4 +107,19 @@ void user_input(void){
     exit(0);
   }
 }
+*/
+
+/*
+  // compute histogram
+  //int t0 = measure_time();    
+  float hist[64] = {0};
+  compute_hist_64_norm(img_len, image, hist);  
+  //int t1 = measure_time();
+  //PRINT_TIME(t0, t1);
+
+  // compute skewness
+  //t0 = measure_time();
+  float sk = skew_fast(hist);
+  //t1 = measure_time();
+  //PRINT_TIME(t0, t1);
 */
