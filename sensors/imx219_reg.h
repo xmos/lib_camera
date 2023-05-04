@@ -22,6 +22,7 @@
 #define PREPLLCK_OP_DIV     0x0305 
 #define PREDVIDE_2          0x02
 #define PLL_VT_MPY_REG      0x0306 
+#define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 // Gain params
 #define GAIN_MIN_DB       0
@@ -48,12 +49,17 @@ static imx219_settings_t imx219_common_regs[] = {
 	{ 0x812A, 0x1800 }, /* EXCK_FREQ        24.00, for 24 Mhz */
 	{ 0x0304,   0x02 }, /* PREPLLCK_VT_DIV      2, for pre divide by 2 */
 	{ 0x0305,   0x02 }, /* PREPLLCK_OP_DIV      2, for pre divide by 2 */
-	{ 0x8306, 0x0070 }, /* PLL_VT_MPY        0x27, for multiply by 39, pixclk=187.2 MHz */
-	{ 0x830C, 0x0040 }, /* PLL_OP_MPY        0x40, for multiply by 64, MIPI clk=768 MHz */
-	{ 0x0301,   0x05 }, /* VTPXCK_DIV           5, ? */
+	{ 0x8306,  PLL_VT_MPY}, /* PLL_VT_MPY        0x27, for multiply by 39, pixclk=187.2 MHz */
+	{ 0x830C,  PLL_OP_MPY}, /* PLL_OP_MPY        0x40, for multiply by 64, MIPI clk=768 MHz */
+	{ 0x0301,   0x0A }, /* VTPXCK_DIV           5, ? */
 	{ 0x0303,   0x01 }, /* VTSYCK_DIV           1, ? */
-	// { 0x0309,   0x08 }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
+	{ 0x0309,   0x0A }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
 	{ 0x030B,   0x01 }, /* OPSYCK_DIV           1, has to be 1? */
+    
+    // pck clock
+    {0x1148,    0x00},    
+    {0x1149,    0xF0},
+    
 
 	/* Undocumented registers */
 	{0x455e, 0x00},
@@ -134,6 +140,12 @@ static imx219_settings_t raw10_framefmt_regs[] = {
 	{0x018c, 0x0a},
 	{0x018d, 0x0a},
 	{0x0309, 0x0a},
+};
+
+static imx219_settings_t raw8_framefmt_regs[] = {
+	{0x018c, 0x08},
+	{0x018d, 0x08},
+	{0x0309, 0x08},
 };
 
 

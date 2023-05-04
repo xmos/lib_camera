@@ -3,6 +3,8 @@
 set(EXAMPLES 
         take_picture #TODO replace by glob
         simple_timing
+        take_picture_rgb
+        take_picture_dynamic
     )
 
 # add all the examples that you need

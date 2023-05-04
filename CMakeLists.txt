@@ -35,6 +35,11 @@ endif()
 add_subdirectory(sensors)
 message("Adding sensors/")
 
+## Add cameras
+add_subdirectory(lib_camera)
+message("Adding camera/")
+
+
 
 ## Add top level project targets
 if(PROJECT_IS_TOP_LEVEL)
