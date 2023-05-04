@@ -2,10 +2,10 @@
 Repository to manipulate cameras using the XCORE.AI sensor
 
 ## Structure
-- examples    : examples for taking pictures with the explorer board
-- lib_camera  : useful functions to manipulate images
-- modules     : dependencies folder
-- sensors     : camera sensors and API for controlling any camera sensor
+- **examples**    : examples for taking pictures with the explorer board
+- **lib_camera**  : useful functions to manipulate images
+- **modules**     : dependencies folder
+- **sensors**     : camera sensors and API for controlling any camera sensor
 
 ## Requirements
 - CMAKE
