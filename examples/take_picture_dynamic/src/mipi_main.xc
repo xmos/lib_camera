@@ -24,9 +24,11 @@
 // Image 
 #include "process_frame.h"
 
-
 // Globals
 char end_transmission = 0;
+
+typedef chanend chanend_t;
+
 
 /**
 * Declaration of the MIPI interface ports:
@@ -39,6 +41,25 @@ on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A; // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
 
+extern "C"
+{
+    void process_image(uint8_t *image, chanend_t c);
+}
+
+
+void control_exposure(chanend_t ch, client interface i2c_master_if i2c){
+  while(1){
+    select {
+      case ch :> unsigned exposure:
+      //printf("Exposure :> %d\n", exposure);
+      imx219_set_gain_dB(i2c, exposure);
+      break ;
+    }
+  }
+}
+
+
+
 
 unsafe {
 
@@ -48,15 +69,18 @@ void save_image_to_file(chanend flag, uint8_t* unsafe image)
   select
   {
     case flag :> int i:
-      {
+      
       // write to a file
       // write_image(image);
-      process_image(image);
-      delay_microseconds(200); // for stability //TODO maybe inside the function
-      exit(1); // end the program here
+      printf("-- Im here 1 --\n");
+      //process_image(image);
+      
+      //delay_microseconds(200); // for stability //TODO maybe inside the function
+      //exit(1); // end the program here
       break;
-      }
+      
   }
+  printf("-- Im here 2 --\n");
 }
 
 static
@@ -64,13 +88,14 @@ void handle_packet(
     image_rx_t* img_rx,
     const mipi_packet_t* unsafe pkt,
     chanend flag,
-    uint8_t* unsafe img_raw_ptr)
+    uint8_t* unsafe img_raw_ptr,
+    chanend_t ch_exp)
   {
     // End here if just one transmission
-    if (end_transmission == 1){
-      return;
-    }
-
+    //if (end_transmission == 1){
+    //  return;
+    //}
+    
     // definitions
     const mipi_header_t header = pkt->header;
     const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
@@ -88,7 +113,8 @@ void handle_packet(
         wait_for_clean_frame = 0;
       }
     }
-
+    //printf("-- Im here 4--\n");
+    // printf("dat type: 0x%08x\n",data_type);
     // Use case by data type
     switch (data_type)
     {
@@ -112,11 +138,14 @@ void handle_packet(
         }
 
         case MIPI_DT_FRAME_END:{ // we signal that the frame is finish so we can write it to a file
-          if (end_transmission == 0){ //TODO not needed if and the end of transmission I just return
-            flag <: 1; 
+          //if (end_transmission == 0){ //TODO not needed if and the end of transmission I just return
+            
+            //flag <: 1; 
             // wait_for_clean_frame = 1; // in case
-            end_transmission = 1;            
-          } 
+            // end_transmission = 1;            
+          //} 
+          process_image(img_raw_ptr, ch_exp);
+          //printf("-- Im here 3--\n");
           break;
         }
 
@@ -131,7 +160,8 @@ static void mipi_packet_handler(
     streaming chanend c_pkt,
     streaming chanend c_ctrl,
     chanend flag,
-    uint8_t * unsafe image_ptr)
+    uint8_t * unsafe image_ptr,
+    chanend_t ch_exp)
 {
   image_rx_t img_rx = {0, 0}; // stores the coordinates X, Y of the image
   unsigned pkt_idx = 0;       // packet index
@@ -152,12 +182,12 @@ static void mipi_packet_handler(
         // Process the packet. We need to be finished with this and looped
         // back up to grab the next MIPI packet BEFORE the receiver thread
         // tries to give us the next packet.
-        handle_packet(&img_rx, pkt, flag, image_ptr);
+        handle_packet(&img_rx, pkt, flag, image_ptr, ch_exp);
 
-        if (end_transmission == 1)
-        {
-          return;
-        }
+        //if (end_transmission == 1)
+        //{
+        //  return;
+        //}
   }
 }
 
@@ -170,6 +200,7 @@ void mipi_main(client interface i2c_master_if i2c)
   streaming chan c_pkt;
   streaming chan c_ctrl;
   chan flag;
+  chan ch_exp;
   
   // allocate espace for the image buffer
   uint8_t* unsafe img_raw_ptr = malloc(MIPI_IMAGE_HEIGHT_PIXELS * MIPI_IMAGE_WIDTH_PIXELS * sizeof(uint8_t));
@@ -203,17 +234,6 @@ void mipi_main(client interface i2c_master_if i2c)
   r |= camera_start(i2c);
   delay_milliseconds(2000);
 
-  //uint16_t val = imx219_read(i2c, 0x0174);
-  //printf("read value = %d\n", val);
-
-  uint16_t gain_values[5];
-  imx219_read_gains(i2c, gain_values);
-  for (int i = 0; i < 5; i++)
-  {
-    printf("gain value = %d\n", gain_values[i]);
-  }
-
-
   if (r != 0){
     printf(MSG_FAIL);
   }
@@ -225,8 +245,21 @@ void mipi_main(client interface i2c_master_if i2c)
   par
   {
     gMipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-    mipi_packet_handler(c_pkt, c_ctrl, flag, img_raw_ptr);
-    save_image_to_file(flag, img_raw_ptr);
+    mipi_packet_handler(c_pkt, c_ctrl, flag, img_raw_ptr, ch_exp);
+    //save_image_to_file(flag, img_raw_ptr);
+    control_exposure(ch_exp, i2c);
   }
 }
 
+
+/*
+  //uint16_t val = imx219_read(i2c, 0x0174);
+  //printf("read value = %d\n", val);
+
+  uint16_t gain_values[5];
+  imx219_read_gains(i2c, gain_values);
+  for (int i = 0; i < 5; i++)
+  {
+    printf("gain value = %d\n", gain_values[i]);
+  }
+*/
