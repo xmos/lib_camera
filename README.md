@@ -10,7 +10,6 @@ Repository to manipulate cameras using the XCORE.AI sensor
 ```
 git clone 
 cd ./fwk_camera
-add submodules
 git submodule update --init --recursive
 sh launch_cmake.sh
 ```
