@@ -1,8 +1,10 @@
-import numpy as np
 import cv2
-from exifread.utils import Ratio
 import matplotlib.pyplot as plt
-import cv2
+import numpy as np
+from exifread.utils import Ratio
+from skimage.metrics import peak_signal_noise_ratio
+from skimage.metrics import structural_similarity as ssim
+
 
 def gammaCorrection(src, gamma):
     invGamma = 1 / gamma
@@ -251,7 +253,7 @@ def white_balance(normalized_image, as_shot_neutral, cfa_pattern):
     white_balanced_image = np.clip(white_balanced_image, 0.0, 1.0)
     return white_balanced_image
 
-def simple_white_balance(norm_img, as_shot_neutral=None, cfa_pattern=[0, 1, 1, 2]): #RGGB
+def simple_white_balance(norm_img, as_shot_neutral=None, cfa_pattern=[2, 1, 1, 0]): #RGGB
     if as_shot_neutral is None:
         as_shot_neutral = [0.5666090846, 1, 0.7082979679] 
 
@@ -415,7 +417,7 @@ def old_run_histogram_equalization(img_bgr):
 
 
 def run_histogram_equalization(img_bgr):
-    clahe_model = cv2.createCLAHE(clipLimit=3, tileGridSize=(3,3))
+    clahe_model = cv2.createCLAHE(clipLimit=2, tileGridSize=(3,3))
     # For ease of understanding, we explicitly equalize each channel individually
     colorimage_b = clahe_model.apply(img_bgr[:,:,0])
     colorimage_g = clahe_model.apply(img_bgr[:,:,1])
@@ -643,12 +645,23 @@ def get_real_image():
     path='/mnt/c/Users/albertoisorna/exec/'
     input_name = path+image_name
     
-    input_name = "/home/albertoisorna/xalbertoisorna/cpp/files/img_raw8.bin"
+    #input_name = "/home/albertoisorna/xalbertoisorna/cpp/files/img_raw8.bin"
     
     width = 640
     height = 480
 
     with open(input_name, "rb") as f:
+        data = f.read()
+        buffer = np.frombuffer(data, dtype=np.uint8)
+        
+    return buffer, (height, width)
+
+
+def get_image_path(path):
+    width = 640
+    height = 480
+
+    with open(path, "rb") as f:
         data = f.read()
         buffer = np.frombuffer(data, dtype=np.uint8)
         
@@ -669,6 +682,8 @@ def downsample_channels(channels, k=4):
 
 
 import math
+
+
 def bilinear_resize(image, k):
   """
   `image` is a 2-D numpy array
@@ -788,3 +803,43 @@ def pipeline_nodemosaic(img):
     # hist equalization
     # img = run_histogram_equalization(img)
     return img
+
+
+def mult_temp(M,img):
+    R,G,B = img[:,:,0], img[:,:,1], img[:,:,2] 
+    a1,a2,a3,a4,a5,a6,a7,a8,a9 = M.flatten()
+    
+    X = a1*R + a2*G + a3*B
+    Y = a4*R + a5*G + a6*B
+    Z = a7*R + a8*G + a9*B
+    
+    X = X[..., np.newaxis]
+    Y = Y[..., np.newaxis]
+    Z = Z[..., np.newaxis]
+    
+    f = np.concatenate((X,Y,Z), axis=-1).reshape(img.shape)
+    f.clip(0,1)
+    return f
+
+def new_color_correction(img):
+    RAW_to_XYZ = np.array(
+                [[0.66369444,  0.24726221,  0.08904335],
+                [ 0.13562966,  1.09600039, -0.23163006],
+                [-0.09836362, -0.32482671,  1.42319032]]
+                ).reshape(3,3)     
+    RAW_to_XYZ = RAW_to_XYZ / np.sum(RAW_to_XYZ, axis=-1, keepdims=True)
+    
+    XYZ_to_sGRB = np.array(
+                [[3.2404542, -1.5371385, -0.4985314],
+                [-0.9692660,  1.8760108,  0.0415560],
+                [0.0556434,  -0.2040259,  1.0572252]]
+                ).reshape(3,3)
+    XYZ_to_sGRB = XYZ_to_sGRB / np.sum(XYZ_to_sGRB, axis=-1, keepdims=True)
+    
+    # multiply
+    img_xyz  = mult_temp(RAW_to_XYZ, img)
+    img_srgb = mult_temp(XYZ_to_sGRB, img_xyz)    
+    return img_srgb
+
+if __name__ == '__main__':
+    pass
