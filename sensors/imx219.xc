@@ -1,10 +1,13 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <assert.h>
+
 #include <xs1.h>
 #include "i2c.h"
 #include "imx219.h"
 #include "imx219_reg.h"
 
+#define GAIN_DB 40
 
 static int i2c_write(client interface i2c_master_if i2c, int reg, int value)
 {
@@ -91,11 +94,20 @@ static int i2c_write_table_val(client interface i2c_master_if i2c,
 
 
 
-void read(client interface i2c_master_if i2c){
-i2c_regop_res_t res;
-// res = i2c.write_reg(GC2145_I2C_ADDR, 0xFE, (page & 0x03));
+int imx219_read(client interface i2c_master_if i2c, uint16_t addr){
+    i2c_regop_res_t res;
+    uint16_t val = i2c.read_reg16(IMX219_I2C_ADDR, addr, res);
+    assert(res == 0);
+    return val;
 }
 
+void imx219_read_gains(client interface i2c_master_if i2c, uint16_t values[5]){
+    values[0] = imx219_read(i2c, 0x0157);
+    values[1] = imx219_read(i2c, 0x0158);
+    values[2] = imx219_read(i2c, 0x0159);
+    values[3] = imx219_read(i2c, 0x015A);
+    values[4] = imx219_read(i2c, 0x015B);
+}
 
 
 /// -------------------------------------------------------------------------------
@@ -107,20 +119,23 @@ int imx219_init(client interface i2c_master_if i2c)
     ret = i2c_write_table_val(i2c, imx219_common_regs, sizeof(imx219_common_regs) / sizeof(imx219_common_regs[0]));
     // Configure two or four Lane mode
     ret = i2c_write_table_val(i2c, imx219_lanes_regs, sizeof(imx219_lanes_regs) / sizeof(imx219_lanes_regs[0]));
+    // set gain
+    ret = imx219_set_gain_dB(i2c, GAIN_DB);
     return ret;
 }
 
-int imx219_configure_mode_0(client interface i2c_master_if i2c)
+int imx219_configure_mode(client interface i2c_master_if i2c)
 {
     int ret = 0;
     // Apply default values of current mode
-    ret = i2c_write_table_val(i2c, mode_640_480_regs, sizeof(mode_640_480_regs) / sizeof(mode_640_480_regs[0]));
+    ret = i2c_write_table_val(i2c, CONFIG_REG, sizeof(CONFIG_REG) / sizeof(CONFIG_REG[0]));
     // set frame format register
-    ret = i2c_write_table_val(i2c, raw10_framefmt_regs, sizeof(raw10_framefmt_regs) / sizeof(raw10_framefmt_regs[0]));
+    ret = i2c_write_table_val(i2c, DATA_FORMAT_REGS, sizeof(DATA_FORMAT_REGS) / sizeof(DATA_FORMAT_REGS[0]));
     // set binning
     ret = i2c_write_table_val(i2c, binning_regs, sizeof(binning_regs) / sizeof(binning_regs[0]));
     return ret;
 }
+
 
 int imx219_stream_start(client interface i2c_master_if i2c){
     int ret = 0;

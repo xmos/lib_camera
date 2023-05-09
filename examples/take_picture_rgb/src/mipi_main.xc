@@ -24,6 +24,10 @@
 // Image 
 #include "process_frame.h"
 
+#define RED 0
+#define GREEN 1
+#define BLUE 2
+
 // Globals
 char end_transmission = 0;
 mipi_data_type_t p_data_type = 0;
@@ -59,7 +63,9 @@ void save_image_to_file(chanend flag)
     case flag :> int i:
       {
       // write to a file
-      write_image();
+      // raw_to_rgb();
+      // write_image();
+      write_image_rgb();
       delay_microseconds(200); // for stability //TODO maybe inside the function
       exit(1); // end the program here
       break;
@@ -111,11 +117,32 @@ void handle_packet(
           if (img_rx->line_number >= MIPI_IMAGE_HEIGHT_PIXELS){
             break; // let pass the rest until next frame
           }
+          // copy thepending of the row
+          uint16_t newline = (img_rx->line_number >> 1);
+          uint16_t temp    = newline * (MIPI_LINE_WIDTH_BYTES/4); // aritmetic pointer conversion
+
+          for (uint16_t i = 0; i < MIPI_LINE_WIDTH_BYTES - 2; i = i + 4){
+            uint16_t index = temp + (i >> 1);
+            if ((img_rx->line_number % 2) == 0){ // even
+              //FINAL_IMAGE[newline][(i >> 1)][RED] = pkt->payload[i]; //RED
+              //FINAL_IMAGE[newline][(i >> 1)][GREEN] = pkt->payload[i+1]; //GREEN
+              rgb_image[index][0] = pkt->payload[i]; //RED
+              rgb_image[index][1] = pkt->payload[i+1]; //RED
+            }
+            else{
+              rgb_image[index][2] = pkt->payload[i+1];
+              // FINAL_IMAGE[newline][i][RED]; //GREEN 2
+              // FINAL_IMAGE[newline][(i >> 1)][BLUE] = pkt->payload[i+1]; //BLUE
+            }
+          }
+          
+          /*
           // then copy
           not_silly_memcpy(
               &FINAL_IMAGE[img_rx->line_number][0],
               &pkt->payload[0],
               MIPI_LINE_WIDTH_BYTES); // here is data width
+          */
           img_rx->line_number++;
           break;
         }

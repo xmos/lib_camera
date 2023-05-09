@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define FINAL_IMAGE_FILENAME "img_raw.bin"
+#define FINAL_IMAGE_FILENAME "out.raw"
 uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
 
 // Write image to disk. This is called by camera main () to do the work

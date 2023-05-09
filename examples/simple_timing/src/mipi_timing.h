@@ -2,9 +2,8 @@
 
 #include <stdint.h>
 #include "mipi.h"
-
 #include "sensor.h"
-
+#include <xccompat.h>
 ///TODO this is inside lib_mipi
 #ifndef MIPI_CLKBLK
 #define MIPI_CLKBLK XS1_CLKBLK_1
@@ -36,5 +35,7 @@ static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
 #define gMipiPacketRx(...)  MipiPacketRxnrev(__VA_ARGS__) // define your own function to use
 
 #ifdef __XC__
+
 void mipi_main(client interface i2c_master_if i2c);
+
 #endif
