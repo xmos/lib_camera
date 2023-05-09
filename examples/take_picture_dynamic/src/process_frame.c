@@ -16,7 +16,7 @@
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 float new_exp = 35;
-Stadistics st = {0};
+Stadistics st = {{0}};
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image(uint8_t *image)
@@ -72,7 +72,7 @@ void process_image(uint8_t *image, chanend_t c){
   }
 
   // write it to a file
-  if (measure_time() - initial_t >= 604435538){
+  if (measure_time() - initial_t >= 600000000){
     write_image(image);
   }
 }

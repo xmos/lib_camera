@@ -87,7 +87,8 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
         }
     }
 
-    stadistics -> mean = (uint8_t) temp_mean << 2; // Values *4 to return to 0-255
+    // Values *4 to return to 0-255
+    stadistics -> mean = (uint8_t) temp_mean << 2; 
     stadistics -> min = (uint8_t) temp_min << 2;
     stadistics -> max = (uint8_t) temp_max << 2; 
 }
