@@ -1,6 +1,6 @@
 #include "stadistics.h"
 
-#define STEP 16
+//#define STEP 16
 #define BINS 64 // changing the number of bins leads to change in implementation
 
 #define row(x,w) (x / w)
@@ -12,7 +12,7 @@
 
 Stadistics *Stadistics_alloc(void) {
     Stadistics *point;
-    point = (Stadistics *) malloc(sizeof(*point));
+    point = malloc(sizeof(*point));
     if (point == NULL) {
         return NULL;
     }
@@ -24,15 +24,22 @@ void Stadistics_free(Stadistics *self) {
     free(self);
 }
 
-void Stadistics_compute_histogram(uint32_t buffsize, uint8_t *buffer, Stadistics *stadistics){
+Stadistics Stadistics_initialize(void) {
+    Stadistics s = {{0}};
+    return s;
+}
+
+void Stadistics_compute_histogram(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Stadistics *stadistics)
+{
     // fill the histogram
-    for (uint32_t i=0; i< buffsize; i = i + STEP){
+    for (uint32_t i=0; i< buffsize; i = i + step){
         stadistics->histogram[buffer[i] / 4] += 1; // because 255/4 = 64
     }
 
     // normalize
-    for (uint8_t j=0; j< 64; j++){
-        stadistics->histogram[j] /= (buffsize/STEP); 
+    float factor = buffsize/step;
+    for (uint8_t j=0; j < BINS; j++){
+        stadistics->histogram[j] /= factor; 
     }
 }
 
@@ -87,14 +94,13 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
         }
     }
 
-    // Values *4 to return to 0-255
-    stadistics -> mean = (uint8_t) temp_mean << 2; 
+    stadistics -> mean = (uint8_t) temp_mean << 2; // Values *4 to return to 0-255
     stadistics -> min = (uint8_t) temp_min << 2;
     stadistics -> max = (uint8_t) temp_max << 2; 
 }
 
-void Stadistics_compute_all(uint32_t buffsize, uint8_t *buffer, Stadistics *stadistics){
-    Stadistics_compute_histogram(buffsize, buffer, stadistics);
+void Stadistics_compute_all(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Stadistics *stadistics){
+    Stadistics_compute_histogram(buffsize, step, buffer, stadistics);
     Stadistics_compute_skewness(stadistics);
     Stadistics_compute_minmaxavg(stadistics);
 }

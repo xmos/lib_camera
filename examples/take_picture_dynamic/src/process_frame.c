@@ -8,11 +8,12 @@
 #include "process_frame.h"
 #include "stadistics.h"       // for skewness and
 #include "utils.h"            // for measuring time
-#include "auto_exposure.h"    // setting auto_exposure
+#include "isp.h"              // setting auto_exposure, AWB
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
 #define AE_MARGIN 0.1
 #define ENABLE_AE 1
+#define STEP 16
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 float new_exp = 35;
@@ -46,7 +47,7 @@ void process_image(uint8_t *image, chanend_t c){
   static int print_msg = 0;
 
   // compute stadistics
-  Stadistics_compute_all(img_len, image, (Stadistics *) &st);
+  Stadistics_compute_all(img_len, STEP, image, (Stadistics *) &st);
   float sk = st.skewness;
   
   // print information
@@ -61,7 +62,7 @@ void process_image(uint8_t *image, chanend_t c){
   }
   else{
       // adjust exposure
-      new_exp = false_position_step(new_exp, sk);
+      new_exp = isp_false_position_step(new_exp, sk);
 
       // put exposure
       #if ENABLE_AE
