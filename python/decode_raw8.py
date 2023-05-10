@@ -16,10 +16,12 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image  # just to avoid color BGR issues when writting
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
 
 from utils import *
 
-input_name = "./test_imgs/img_raw8_640_480_cube3.xbin"
+input_name = os.getenv('BINARY_IMG_PATH')
 
 width, height = 640, 480
 
