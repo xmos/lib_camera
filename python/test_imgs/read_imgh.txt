@@ -1,0 +1,2 @@
+with open("test_imgs/imgh.npy", "rb") as f: 
+    imgh = np.load(f)

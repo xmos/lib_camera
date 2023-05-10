@@ -1,10 +1,11 @@
+import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from exifread.utils import Ratio
 from skimage.metrics import peak_signal_noise_ratio
 from skimage.metrics import structural_similarity as ssim
-
+from pathlib import Path
 
 def gammaCorrection(src, gamma):
     invGamma = 1 / gamma
@@ -639,14 +640,12 @@ def get_test_image2():
     final_image = np.array(range(height*width))
     return final_image, (height, width)
 
-def get_real_image():
-    image_name = "img_raw8_cube3.bin"
-    #image_name = "c_img_raw.bin"
-    path='/mnt/c/Users/albertoisorna/exec/'
-    input_name = path+image_name
-    
-    #input_name = "/home/albertoisorna/xalbertoisorna/cpp/files/img_raw8.bin"
-    
+def get_real_image(path=None):
+    if path is None:
+        top_path   = Path(__file__).resolve().parent
+        imgs_path  = os.path.join(top_path, "test_imgs/") #TODO .env
+        input_name = imgs_path + "img_raw8_640_480_cube3.xbin"
+        
     width = 640
     height = 480
 
@@ -840,6 +839,19 @@ def new_color_correction(img):
     img_xyz  = mult_temp(RAW_to_XYZ, img)
     img_srgb = mult_temp(XYZ_to_sGRB, img_xyz)    
     return img_srgb
+
+def gray_world(img):
+    Ravg = img[:,:,0].mean()
+    Gavg = img[:,:,1].mean()
+    Bavg = img[:,:,2].mean()
+
+    alfa = Gavg/Ravg
+    beta = Gavg/Bavg
+
+    img[:,:,0] = alfa*img[:,:,0]
+    img[:,:,2] = beta*img[:,:,2]
+    # img[:,:,1] = 
+    return img
 
 if __name__ == '__main__':
     pass
