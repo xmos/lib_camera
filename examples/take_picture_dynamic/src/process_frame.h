@@ -1,8 +1,5 @@
 #pragma once
 
-
-//#include <platform.h>
-//#include <xcore/channel.h>
 #include <stdint.h>
 #include "mipi_main.h"
 

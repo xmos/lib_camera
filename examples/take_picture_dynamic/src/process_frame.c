@@ -6,16 +6,18 @@
 #include <xcore/channel.h>
 
 #include "process_frame.h"
-#include "histogram.h"
-#include "utils.h" // for measuring time
-#include "auto_exposure.h"
+#include "stadistics.h"       // for skewness and
+#include "utils.h"            // for measuring time
+#include "isp.h"              // setting auto_exposure, AWB
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
 #define AE_MARGIN 0.1
 #define ENABLE_AE 1
+#define STEP 16
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 float new_exp = 35;
+Stadistics st = {{0}};
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image(uint8_t *image)
@@ -36,20 +38,18 @@ void write_image(uint8_t *image)
 }
 
 
+
 void process_image(uint8_t *image, chanend_t c){
   static int initial_t = 0;
   if (initial_t == 0){
     initial_t = measure_time();
   }
-
   static int print_msg = 0;
-  // compute histogram
-  float hist[64] = {0};
-  compute_hist_64_norm(img_len, image, hist);  
 
-  // compute skewness
-  float sk = skew_fast(hist);
-
+  // compute stadistics
+  Stadistics_compute_all(img_len, STEP, image, (Stadistics *) &st);
+  float sk = st.skewness;
+  
   // print information
   printf("texp=%f , skewness=%f\n", new_exp, sk);
 
@@ -62,7 +62,7 @@ void process_image(uint8_t *image, chanend_t c){
   }
   else{
       // adjust exposure
-      new_exp = false_position_step(new_exp, sk);
+      new_exp = isp_false_position_step(new_exp, sk);
 
       // put exposure
       #if ENABLE_AE
@@ -73,12 +73,10 @@ void process_image(uint8_t *image, chanend_t c){
   }
 
   // write it to a file
-  if (measure_time() - initial_t >= 604435538){
-      write_image(image);
+  if (measure_time() - initial_t >= 600000000){
+    write_image(image);
   }
-
 }
-
 
 // This is called when want to memcpy from Xc to C
 void c_memcpy(
@@ -88,38 +86,3 @@ void c_memcpy(
 {
   memcpy(dst, src, size);
 }
-
-
-/*
-void set_exposure(chanend_t c){
-  printf("hello world");
-  int ret = chan_in_word(c_otp);
-  printf("ret  = %d\n", ret);
-}
-*/
-
-
-/*
-void user_input(void){
-  printf("Enter the character 'c' to capture the frame : ");
-  int c = getchar();
-  if(c != 99){ // == ascii "c"
-    exit(0);
-  }
-}
-*/
-
-/*
-  // compute histogram
-  //int t0 = measure_time();    
-  float hist[64] = {0};
-  compute_hist_64_norm(img_len, image, hist);  
-  //int t1 = measure_time();
-  //PRINT_TIME(t0, t1);
-
-  // compute skewness
-  //t0 = measure_time();
-  float sk = skew_fast(hist);
-  //t1 = measure_time();
-  //PRINT_TIME(t0, t1);
-*/

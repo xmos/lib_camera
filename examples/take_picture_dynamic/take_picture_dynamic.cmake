@@ -4,6 +4,7 @@
 
 # <--- Set the executable
 set(TARGET example_take_picture_dynamic)  
+set(DEST_FOLDER /mnt/c/Users/albertoisorna/exec/)  # to post build command
 
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
 set(APP_INCLUDES
@@ -71,8 +72,10 @@ create_debug_target(${TARGET})
 create_flash_app_target(${TARGET})
 create_install_target(${TARGET})
 
-# then custom command line
-add_custom_command(TARGET ${TARGET} POST_BUILD  
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_BINARY_DIR}/*.xe  /mnt/c/Users/albertoisorna/exec/)
+# then custom command line to copy .xe file to custom folder
+if(EXISTS ${DEST_FOLDER})
+    add_custom_command(TARGET ${TARGET} POST_BUILD  
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/*.xe  ${DEST_FOLDER})
+endif()
 
