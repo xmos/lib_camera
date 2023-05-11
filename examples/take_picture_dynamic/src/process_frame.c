@@ -11,9 +11,9 @@
 #include "isp.h"              // setting auto_exposure, AWB
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
-#define AE_MARGIN 0.1
-#define ENABLE_AE 0
-#define STEP 16
+#define AE_MARGIN 0.1         // defaukt marging for the auto exposure error
+#define ENABLE_AE 1           // enable auto exposure 
+#define STEP      16          // step size for the histogram
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 float new_exp = 35;
@@ -51,7 +51,9 @@ void process_image(uint8_t *image, chanend_t c){
   float sk = st.skewness;
   
   // print information
-  printf("texp=%f , skewness=%f\n", new_exp, sk);
+  // 
+  printf("min:%d, max:%d, mean:%d, percentile:%d, exposure:%f, skewness:%f\n", 
+        st.min, st.max, st.mean, st.percentile, new_exp, sk);
 
   // exit condition
   if (sk < AE_MARGIN && sk > -AE_MARGIN){
