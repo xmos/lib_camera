@@ -12,7 +12,7 @@
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
 #define AE_MARGIN 0.1
-#define ENABLE_AE 1
+#define ENABLE_AE 0
 #define STEP 16
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
