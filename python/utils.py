@@ -736,7 +736,7 @@ def split_planes(img):
     g1  = img[0::2, 1::2]
     g2  = img[1::2, 0::2]
     b   = img[1::2, 1::2]
-    return (r,g1,g2,b)
+    return np.array((r,g1,g2,b))
             
             
 def reverse_split_planes(channels, height, width):
@@ -757,26 +757,27 @@ def pipeline(img, demosaic_opt=True): #it takes a RAW IMAGE
     cfa_pattern = [0, 1, 1, 2] 
     # black level substraction
     img = normalize(img, 15, 254, np.uint8)  
-    # white balancing
-    img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
     # demosaic
     if demosaic_opt:
         img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
     else:
         # demosaic avoiding blue
         channels = split_planes(img)
-        rggb = np.array(channels)
-        h,w,x = channels[0].shape
+        h,w = channels.shape[1:]
         rgb = np.zeros((h,w,3))
-        rgb[:,:,0] = rggb[0].squeeze()
-        rgb[:,:,1] = rggb[1].squeeze()
-        rgb[:,:,2] = rggb[3].squeeze()
+        rgb[:,:,0] = channels[0,:,:]
+        rgb[:,:,1] = channels[1,:,:]
+        rgb[:,:,2] = channels[3,:,:]
         img = rgb
+    
+    # white balancing
+    # img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
+    img = gray_world(img)
     # color transforms
     #img = apply_color_space_transform(img)
     #img = transform_xyz_to_srgb(img)
     # gamma
-    img = img ** (1.0 / 2)
+    img = img ** (1.0 / 2.2)
     # clip the image
     img = np.clip(255*img, 0, 255).astype(np.uint8)
     # hist equalization

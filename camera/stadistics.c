@@ -1,7 +1,7 @@
 #include "stadistics.h"
 
-//#define STEP 16
-#define BINS 64 // changing the number of bins leads to change in implementation
+#define BINS 64                 // changing the number of bins leads to change in implementation
+#define PERCENTILE_VALUE 0.05   // value selected for the percentile distribution
 
 #define row(x,w) (x / w)
 #define col(x,w) (x % w)
@@ -71,13 +71,13 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
     uint8_t temp_max = 0;
 
     // mean
-    for (int k = 0; k < BINS; k++)
+    for (uint8_t k = 0; k < BINS; k++)
     {
         temp_mean += stadistics->histogram[k] * (k+1); // assuming histogram is normalized
     }
     
     // min 
-    for (int k = 0; k < BINS; k++)
+    for (uint8_t k = 0; k < BINS; k++)
     {
         if (stadistics->histogram[k]){
             temp_min = k;
@@ -86,7 +86,7 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
     }
 
     // max 
-    for (int k = BINS -1; k > 0; k--)
+    for (uint8_t k = BINS -1; k > 0; k--)
     {
         if (stadistics->histogram[k]){
             temp_max = k;
@@ -99,10 +99,25 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
     stadistics -> max = (uint8_t) temp_max << 2; 
 }
 
+void Stadistics_compute_percentile(Stadistics *stadistics){
+    float sump = 0.0;
+    uint8_t k = 0;
+    // percentile
+    for (k = BINS - 1; k > 0; k--)
+    {
+        sump += stadistics->histogram[k];
+        if (sump > PERCENTILE_VALUE){   // I assume histogram is normalized to 0-1
+            break;
+        }
+    }
+    stadistics -> percentile = (k << 2); // Values *4 to return to 0-255
+}
+
 void Stadistics_compute_all(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Stadistics *stadistics){
     Stadistics_compute_histogram(buffsize, step, buffer, stadistics);
     Stadistics_compute_skewness(stadistics);
     Stadistics_compute_minmaxavg(stadistics);
+    Stadistics_compute_percentile(stadistics);
 }
 
 static char get_rgb_color(uint32_t pos, uint16_t width) {

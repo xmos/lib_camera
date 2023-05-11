@@ -12,6 +12,7 @@ typedef struct Stadistics{
     uint8_t mean;
     uint8_t max;
     uint8_t min;
+    uint8_t percentile;
 } Stadistics;
 
 Stadistics *Stadistics_alloc(void);
@@ -23,6 +24,7 @@ void Stadistics_compute_all(const uint32_t buffsize, const uint8_t step, uint8_t
 void Stadistics_compute_histogram(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Stadistics *stadistics);
 void Stadistics_compute_skewness(Stadistics *stadistics);
 void Stadistics_compute_minmaxavg(Stadistics *stadistics);
+void Stadistics_compute_percentile(Stadistics *stadistics);
 
 // aux functions
 static char get_rgb_color(uint32_t pos, uint16_t width);
