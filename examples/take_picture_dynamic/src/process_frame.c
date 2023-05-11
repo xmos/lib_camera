@@ -51,7 +51,6 @@ void process_image(uint8_t *image, chanend_t c){
   float sk = st.skewness;
   
   // print information
-  // 
   printf("min:%d, max:%d, mean:%d, percentile:%d, exposure:%f, skewness:%f\n", 
         st.min, st.max, st.mean, st.percentile, new_exp, sk);
 
