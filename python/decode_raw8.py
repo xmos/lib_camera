@@ -29,8 +29,16 @@ flip = False
 
 as_shot_neutral = [0.6301882863, 1, 0.6555861831]
 
+flip_mode = {
+    0: [0, 1, 1, 2], # R G G B
+    1: [1, 0, 2, 1], # G R B G
+    2: [1, 2, 0, 1], # G B R G
+    3: [2, 1, 1, 0], # B G G R
+}
+
 #cfa_pattern = [2, 1, 1, 0] # raspberry
 cfa_pattern = [0, 1, 1, 2] # explorer board
+cfa_pattern = flip_mode[1]
 
 # read the data
 with open(input_name, "rb") as f:

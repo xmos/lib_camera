@@ -6,6 +6,7 @@ from exifread.utils import Ratio
 from skimage.metrics import peak_signal_noise_ratio
 from skimage.metrics import structural_similarity as ssim
 from pathlib import Path
+import math
 
 def gammaCorrection(src, gamma):
     invGamma = 1 / gamma
@@ -14,7 +15,41 @@ def gammaCorrection(src, gamma):
     table = np.array(table, np.uint8)
     return cv2.LUT(src, table)
 
+def new_gamma_correction(img):
+    mean = img.mean()
+    gamma = math.log(0.5*255)/math.log(255*mean)
+    print("gamma = ", gamma)
 
+    # do gamma correction
+    img_gamma1 = np.power(img, 1/gamma) #.clip(0,255).astype(np.uint8)
+    return img_gamma1
+
+def log_tranform(img):
+    img = (255*img).astype(np.uint8)
+    c = 160/np.log(1+img.max())
+    img = c*np.log(1+img)
+    img = img/255
+    return img
+
+def ch_op(ch):
+    a = 0
+    b = 1
+    c = np.percentile(ch,2)
+    d = np.percentile(ch,98)
+    ratio = 0.5*((b-a)/(d-c))
+    ch = (ch - c)*ratio
+    return ch
+    
+def img_contrast(img):
+    r = ch_op(img[:,:,0])
+    g = ch_op(img[:,:,1])
+    b = ch_op(img[:,:,2])
+    img[:,:,0] = r
+    img[:,:,1] = g
+    img[:,:,2] = b
+    return img
+    
+    
 def pixel (img):
     img = img.astype(np.float64) 
     pixel = lambda x,y : {
@@ -449,9 +484,7 @@ def show_histogram_by_channel_ax(image, ax):
 
     # Plot the histograms using plt.hist
     for i, col in enumerate(['r', 'g', 'b']):
-        # ax.subplot(1, 3, i+1)
-        # ax.title(f'{col.upper()} Histogram')
-        ax.axis(xmin=0,xmax=255)
+        ax.axis(xmin=-1,xmax=256)
         ax.hist(image[:,:,i].ravel(), bins=hist_size, range=hist_range, color=col)
 
 

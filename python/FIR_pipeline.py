@@ -114,7 +114,7 @@ def create_filter():
 
 if __name__ == '__main__':
 
-    ENABLE_SHOW = False
+    ENABLE_SHOW = True
     
     # get test_image
     img, (height, width) = get_real_image()
@@ -169,12 +169,17 @@ if __name__ == '__main__':
     
     # gamma
     img = img ** (1.0 / 2.2)
+    #img = log_tranform(img)
+    #img = new_gamma_correction(img)
+    #img = img_contrast(img).clip(0,1)
     # sharpen
     kernel = np.array([[0, -1, 0],
                 [-1, 10,-1],
                 [0, -1, 0]])
     kernel = kernel / 4
     #img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel)
+    #img = new_color_correction(img)
+    
     # clip the image
     img = np.clip(255*img, 0, 255).astype(np.uint8)
     ###################################
