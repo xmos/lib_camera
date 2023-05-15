@@ -12,9 +12,13 @@
  
 
 // ********** input with measurement do you want to perform
-#define MEASURE_T4 // T4 == line, T3 == frame
+// T1 == time of a frame (without blank)
+// T2 == time doing operations in a line
+// T3 == time between frames
+// T4 == time between lines 
+#define MEASURE_T4 
 #define DO_MEMCPY 0
-#define TICKS_DELAY 800
+#define TICKS_DELAY 1
 // ***********
 
 // I2C
@@ -32,9 +36,6 @@
 #define TIME_MSG_1 "elapsed\t%.6f\t[ms]\t%d\t[ticks]\n"
 #define PRINT_TIME(y) printf("%d\n", y)
 #define MS_MULTIPLIER 0.00001 
-
-
-
 
 // Image 
 #include "process_frame.h"

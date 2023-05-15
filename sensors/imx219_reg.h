@@ -6,14 +6,14 @@
 #define TRSTUS 200
 
 // CSI LANE
-#define CSI_LANE_MODE_REG 0x0114
+#define CSI_LANE_MODE_REG   0x0114
 #define CSI_LANE_MODE_2_LANES 1 
 #define CSI_LANE_MODE_4_LANES 3
 
 // BINNING
-#define BINNING_MODE_REG 0x0174
-#define BINNING_NONE	 0x0000
-#define BINNING_2X2		 0x0101
+#define BINNING_MODE_REG    0x0174
+#define BINNING_NONE	    0x0000
+#define BINNING_2X2		    0x0101
 
 #define BINNING_MODE BINNING_2X2
 
@@ -25,9 +25,27 @@
 #define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 // Gain params
-#define GAIN_MIN_DB       0
-#define GAIN_MAX_DB      84
-#define GAIN_DEFAULT_DB  50
+#define GAIN_MIN_DB         0
+#define GAIN_MAX_DB         84
+#define GAIN_DEFAULT_DB     50
+
+// Orientation
+#define ORIENTATION_REG		0x0172
+                            //  H | V
+#define FLIP_NONE           (0 | (0 << 1))
+#define FLIP_HORIZONTAL     (1 | (0 << 1))
+#define FLIP_VERTICAL       (0 | (1 << 1))
+#define FLIP_BOTH           (1 | (1 << 1))
+#define SELECTED_FLIP       FLIP_NONE
+
+/*
+typedef enum {
+    FLIP_NONE
+    FLIP_HORIZONTAL
+    FLIP_VERTICAL
+    FLIP_BOTH
+} flip_modes_t;
+*/
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static imx219_settings_t imx219_common_regs[] = {
@@ -56,9 +74,9 @@ static imx219_settings_t imx219_common_regs[] = {
 	{ 0x0309,   0x0A }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
 	{ 0x030B,   0x01 }, /* OPSYCK_DIV           1, has to be 1? */
     
-    // pck clock
+    // min_line_blanking_pck
     {0x1148,    0x00},    
-    {0x1149,    0xF0},
+    {0x1149,    0xA8},
     
 
 	/* Undocumented registers */

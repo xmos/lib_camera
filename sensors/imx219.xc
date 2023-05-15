@@ -37,7 +37,7 @@ static int i2c_write_table(client interface i2c_master_if i2c,
         }
         if (address & 0x8000) {
             address &= 0x7fff;
-            ret  = i2c_write(i2c, address,   value >> 8); // B1 B2 B3 B4 -> B1 B2
+            ret  = i2c_write(i2c, address,   value >> 8);   // B1 B2 B3 B4 -> B1 B2
             ret |= i2c_write(i2c, address+1, value & 0xff); // B1 B2 B3 B4 -> B3 B4
         } else {
             ret = i2c_write(i2c, address, value);
@@ -133,7 +133,10 @@ int imx219_configure_mode(client interface i2c_master_if i2c)
     ret = i2c_write_table_val(i2c, DATA_FORMAT_REGS, sizeof(DATA_FORMAT_REGS) / sizeof(DATA_FORMAT_REGS[0]));
     // set binning
     ret = i2c_write_table_val(i2c, binning_regs, sizeof(binning_regs) / sizeof(binning_regs[0]));
+    // set flip
+    ret = imx219_set_flip(i2c, SELECTED_FLIP);
     return ret;
+
 }
 
 
@@ -185,5 +188,11 @@ int imx219_set_gain_dB(client interface i2c_master_if i2c,
     return ret;
 }
 
+
+int imx219_set_flip(client interface i2c_master_if i2c, uint8_t flip_mode){
+    int ret = 0;
+    ret |= i2c_write(i2c, ORIENTATION_REG, flip_mode);
+    return ret;
+}
 
 // https://github.com/torvalds/linux/blob/63355b9884b3d1677de6bd1517cd2b8a9bf53978/drivers/media/i2c/imx219.c#L993
