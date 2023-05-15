@@ -31,11 +31,12 @@
 
 // Orientation
 #define ORIENTATION_REG		0x0172
-#define FLIP_NONE           0x00
-#define FLIP_HORIZONTAL     0x01
-#define FLIP_VERTICAL       0x10
-#define FLIP_BOTH           0x11
-#define SELECTED_FLIP       FLIP_BOTH
+                            //  H | V
+#define FLIP_NONE           (0 | (0 << 1))
+#define FLIP_HORIZONTAL     (1 | (0 << 1))
+#define FLIP_VERTICAL       (0 | (1 << 1))
+#define FLIP_BOTH           (1 | (1 << 1))
+#define SELECTED_FLIP       FLIP_NONE
 
 /*
 typedef enum {

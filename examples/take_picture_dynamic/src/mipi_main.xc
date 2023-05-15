@@ -63,26 +63,6 @@ void control_exposure(chanend_t ch, client interface i2c_master_if i2c){
 
 unsafe {
 
-// Saves the image to a file. This is a bit tricky because we don't want to use an endless loop
-void save_image_to_file(chanend flag, uint8_t* unsafe image)
-{
-  select
-  {
-    case flag :> int i:
-      
-      // write to a file
-      // write_image(image);
-      printf("-- Im here 1 --\n");
-      //process_image(image);
-      
-      //delay_microseconds(200); // for stability //TODO maybe inside the function
-      //exit(1); // end the program here
-      break;
-      
-  }
-  printf("-- Im here 2 --\n");
-}
-
 static
 void handle_packet(
     image_rx_t* img_rx,
@@ -131,6 +111,10 @@ void handle_packet(
           }
           // then copy
           uint32_t pos = (img_rx->line_number) * MIPI_LINE_WIDTH_BYTES;
+          // *** horizontal / vertical filtering ****
+
+
+          // *******************************
           c_memcpy(&img_raw_ptr[pos], &pkt->payload[0], MIPI_LINE_WIDTH_BYTES); 
           // increase line number
           img_rx->line_number++;

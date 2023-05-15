@@ -37,7 +37,7 @@ static int i2c_write_table(client interface i2c_master_if i2c,
         }
         if (address & 0x8000) {
             address &= 0x7fff;
-            ret  = i2c_write(i2c, address,   value >> 8); // B1 B2 B3 B4 -> B1 B2
+            ret  = i2c_write(i2c, address,   value >> 8);   // B1 B2 B3 B4 -> B1 B2
             ret |= i2c_write(i2c, address+1, value & 0xff); // B1 B2 B3 B4 -> B3 B4
         } else {
             ret = i2c_write(i2c, address, value);

@@ -38,7 +38,7 @@ flip_mode = {
 
 #cfa_pattern = [2, 1, 1, 0] # raspberry
 cfa_pattern = [0, 1, 1, 2] # explorer board
-cfa_pattern = flip_mode[1]
+cfa_pattern = flip_mode[2]
 
 # read the data
 with open(input_name, "rb") as f:
