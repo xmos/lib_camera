@@ -6,9 +6,9 @@
 #define row(x,w) (x / w)
 #define col(x,w) (x % w)
 
-#define RED 0
+#define RED   0
 #define GREEN 1
-#define BLUE 2
+#define BLUE  2
 
 Stadistics *Stadistics_alloc(void) {
     Stadistics *point;
@@ -71,9 +71,9 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
     uint8_t temp_max = 0;
 
     // mean
-    for (uint8_t k = 0; k < BINS; k++)
+    for (uint8_t k = 1; k < BINS; k++) // k=0 does not contribute to mean value
     {
-        temp_mean += stadistics->histogram[k] * (k+1); // assuming histogram is normalized
+        temp_mean += stadistics->histogram[k] * k; // assuming histogram is normalized
     }
     
     // min 
@@ -94,7 +94,8 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
         }
     }
 
-    stadistics -> mean = (uint8_t) temp_mean << 2; // Values *4 to return to 0-255
+    // Values *4 to return to 0-255
+    stadistics -> mean = (uint8_t) (temp_mean+0.5) << 2; // +0.5 to avoid ceiling
     stadistics -> min = (uint8_t) temp_min << 2;
     stadistics -> max = (uint8_t) temp_max << 2; 
 }
@@ -111,6 +112,22 @@ void Stadistics_compute_percentile(Stadistics *stadistics){
         }
     }
     stadistics -> percentile = (k << 2); // Values *4 to return to 0-255
+}
+
+uint16_t Stadistics_compute_variance(Stadistics *stadistics){
+    uint8_t mean      = stadistics->mean / 4;
+    float   diff      = 0.0;
+    double  variance  = 0;
+
+    for (uint8_t k = 0; k < BINS; k++){
+        if (stadistics->histogram[k]){
+            diff = (k  - mean);
+            diff = diff*diff;
+            variance += stadistics->histogram[k]*diff;
+        }
+    }
+    variance = (uint16_t)(variance * 16); // Values *16 to return to 0-255
+    return variance;
 }
 
 void Stadistics_compute_all(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Stadistics *stadistics){
