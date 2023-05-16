@@ -116,7 +116,7 @@ void isp_AWB_percentile(const uint32_t buffsize,
 * @param buffsize - Size of the buffer to operate on.
 * @param img - * Pointer to the image to operate on. Modified
 */
-void isp_gamma_4(const uint32_t buffsize, uint8_t *img){
+void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img){
     // gamma naming: 1p8_s1 = gamma 1.8 , with a stride of 1
     // 1p8_s4 => img^(1/1.8) (in a normalizeed 0-1 image)
     const uint8_t gamma_1p8_s1[255] =  {
@@ -145,7 +145,7 @@ void isp_gamma_4(const uint32_t buffsize, uint8_t *img){
 * @param buffsize - Size of the buffer to operate on.
 * @param img - * Pointer to the image to operate on. Modified
 */
-void isp_gamma_1(const uint32_t buffsize, uint8_t *img){
+void isp_gamma_stride4(const uint32_t buffsize, uint8_t *img){
     // gamma naming: 1p8_s4 = gamma 1.8 , with a stride of 4 (values have to be predivided and multiplied then by 4)
     // 1p8_s4 => img^(1/1.8) (in a normalizeed 0-1 image)
     const uint8_t gamma_1p8_s4[64] =  {

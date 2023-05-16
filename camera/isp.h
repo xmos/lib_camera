@@ -22,7 +22,7 @@ void isp_AWB_percentile(const uint32_t buffsize, uint8_t *red, uint8_t *green, u
 void isp_AWB_static(const uint32_t buffsize, uint8_t *red, uint8_t *green, uint8_t *blue, float alfa, float beta, float delta);
 
 // ---------------------------------- GAMMA ------------------------------
-void isp_gamma_4(const uint32_t buffsize, uint8_t *img);
-void isp_gamma_1(const uint32_t buffsize, uint8_t *img);
+void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img);
+void isp_gamma_stride4(const uint32_t buffsize, uint8_t *img);
 
 #endif
