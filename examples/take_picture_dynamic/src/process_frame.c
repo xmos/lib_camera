@@ -8,15 +8,16 @@
 #include "process_frame.h"
 #include "stadistics.h"       // for skewness and
 #include "utils.h"            // for measuring time
-#include "auto_exposure.h"    // setting auto_exposure
+#include "isp.h"              // setting auto_exposure, AWB
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
-#define AE_MARGIN 0.1
-#define ENABLE_AE 1
+#define AE_MARGIN 0.1         // defaukt marging for the auto exposure error
+#define ENABLE_AE 1           // enable auto exposure 
+#define STEP      16          // step size for the histogram
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 float new_exp = 35;
-Stadistics st = {0};
+Stadistics st = {{0}};
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image(uint8_t *image)
@@ -46,11 +47,12 @@ void process_image(uint8_t *image, chanend_t c){
   static int print_msg = 0;
 
   // compute stadistics
-  Stadistics_compute_all(img_len, image, (Stadistics *) &st);
+  Stadistics_compute_all(img_len, STEP, image, (Stadistics *) &st);
   float sk = st.skewness;
   
   // print information
-  printf("texp=%f , skewness=%f\n", new_exp, sk);
+  printf("min:%d, max:%d, mean:%d, percentile:%d, exposure:%f, skewness:%f\n", 
+        st.min, st.max, st.mean, st.percentile, new_exp, sk);
 
   // exit condition
   if (sk < AE_MARGIN && sk > -AE_MARGIN){
@@ -61,7 +63,7 @@ void process_image(uint8_t *image, chanend_t c){
   }
   else{
       // adjust exposure
-      new_exp = false_position_step(new_exp, sk);
+      new_exp = isp_false_position_step(new_exp, sk);
 
       // put exposure
       #if ENABLE_AE
@@ -72,7 +74,7 @@ void process_image(uint8_t *image, chanend_t c){
   }
 
   // write it to a file
-  if (measure_time() - initial_t >= 604435538){
+  if (measure_time() - initial_t >= 600000000){
     write_image(image);
   }
 }

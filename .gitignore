@@ -79,3 +79,7 @@ tools/ai/ai_tools
 temp
 
 !CMakeLists.txt
+
+# dotenv
+.env
+.png

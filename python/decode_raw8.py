@@ -12,15 +12,16 @@ SBGGR10_CSI2P :
     few padding bytes on the end of every row to match bits
 """
 
-import matplotlib.pyplot as plt
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image # just to avoid color BGR issues when writting
+from PIL import Image  # just to avoid color BGR issues when writting
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+
 from utils import *
 
-image_name = "img_raw.bin"
-path='/mnt/c/Users/albertoisorna/exec/'
-input_name = path+image_name
+input_name = os.getenv('BINARY_IMG_PATH')
 
 width, height = 640, 480
 
@@ -28,14 +29,21 @@ flip = False
 
 as_shot_neutral = [0.6301882863, 1, 0.6555861831]
 
+flip_mode = {
+    0: [0, 1, 1, 2], # R G G B
+    1: [1, 0, 2, 1], # G R B G
+    2: [1, 2, 0, 1], # G B R G
+    3: [2, 1, 1, 0], # B G G R
+}
+
 #cfa_pattern = [2, 1, 1, 0] # raspberry
 cfa_pattern = [0, 1, 1, 2] # explorer board
+cfa_pattern = flip_mode[2]
 
 # read the data
 with open(input_name, "rb") as f:
     data = f.read()
 
-from create_test import FINAL_IMAGE
 
 # unpack
 buffer = np.frombuffer(data, dtype=np.uint8)
@@ -50,7 +58,7 @@ name = f"{input_name}_unprocessesed_.png"
 Image.fromarray(img_raw_RGB).save(name) # option 1 pillow
 # -->
 
-# Then, continue with the pipeline
+# ------ The ISP pipeline -------------------------
 # black level substraction
 img = normalize(img, 15, 254, np.uint8)  
 # white balancing
@@ -59,18 +67,18 @@ img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
 img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
 img_demoisaic = img
 # color transforms
-img = old_apply_color_space_transform(img)
-img = old_transform_xyz_to_srgb(img)
+img = new_color_correction(img)
 # gamma
 img = img ** (1.0 / 2)
 # clip the image
 img = np.clip(255*img, 0, 255).astype(np.uint8)
 
 # hist equalization (optional)
-#img = run_histogram_equalization(img)
+# img = run_histogram_equalization(img)
 # resize bilinear (optional)
 kfactor = 1
 img = cv2.resize(img, (width // kfactor, height // kfactor), interpolation=cv2.INTER_AREA)
+# ------ The ISP pipeline -------------------------
 
 
 

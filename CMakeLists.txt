@@ -36,7 +36,7 @@ add_subdirectory(sensors)
 message("Adding sensors/")
 
 ## Add cameras
-add_subdirectory(lib_camera)
+add_subdirectory(camera)
 message("Adding camera/")
 
 

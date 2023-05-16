@@ -1,8 +1,12 @@
-import numpy as np
+import os
 import cv2
-from exifread.utils import Ratio
 import matplotlib.pyplot as plt
-import cv2
+import numpy as np
+from exifread.utils import Ratio
+from skimage.metrics import peak_signal_noise_ratio
+from skimage.metrics import structural_similarity as ssim
+from pathlib import Path
+import math
 
 def gammaCorrection(src, gamma):
     invGamma = 1 / gamma
@@ -11,7 +15,41 @@ def gammaCorrection(src, gamma):
     table = np.array(table, np.uint8)
     return cv2.LUT(src, table)
 
+def new_gamma_correction(img):
+    mean = img.mean()
+    gamma = math.log(0.5*255)/math.log(255*mean)
+    print("gamma = ", gamma)
 
+    # do gamma correction
+    img_gamma1 = np.power(img, 1/gamma) #.clip(0,255).astype(np.uint8)
+    return img_gamma1
+
+def log_tranform(img):
+    img = (255*img).astype(np.uint8)
+    c = 160/np.log(1+img.max())
+    img = c*np.log(1+img)
+    img = img/255
+    return img
+
+def ch_op(ch):
+    a = 0
+    b = 1
+    c = np.percentile(ch,2)
+    d = np.percentile(ch,98)
+    ratio = 0.5*((b-a)/(d-c))
+    ch = (ch - c)*ratio
+    return ch
+    
+def img_contrast(img):
+    r = ch_op(img[:,:,0])
+    g = ch_op(img[:,:,1])
+    b = ch_op(img[:,:,2])
+    img[:,:,0] = r
+    img[:,:,1] = g
+    img[:,:,2] = b
+    return img
+    
+    
 def pixel (img):
     img = img.astype(np.float64) 
     pixel = lambda x,y : {
@@ -251,7 +289,7 @@ def white_balance(normalized_image, as_shot_neutral, cfa_pattern):
     white_balanced_image = np.clip(white_balanced_image, 0.0, 1.0)
     return white_balanced_image
 
-def simple_white_balance(norm_img, as_shot_neutral=None, cfa_pattern=[0, 1, 1, 2]): #RGGB
+def simple_white_balance(norm_img, as_shot_neutral=None, cfa_pattern=[2, 1, 1, 0]): #RGGB
     if as_shot_neutral is None:
         as_shot_neutral = [0.5666090846, 1, 0.7082979679] 
 
@@ -415,7 +453,7 @@ def old_run_histogram_equalization(img_bgr):
 
 
 def run_histogram_equalization(img_bgr):
-    clahe_model = cv2.createCLAHE(clipLimit=3, tileGridSize=(3,3))
+    clahe_model = cv2.createCLAHE(clipLimit=2, tileGridSize=(3,3))
     # For ease of understanding, we explicitly equalize each channel individually
     colorimage_b = clahe_model.apply(img_bgr[:,:,0])
     colorimage_g = clahe_model.apply(img_bgr[:,:,1])
@@ -446,9 +484,7 @@ def show_histogram_by_channel_ax(image, ax):
 
     # Plot the histograms using plt.hist
     for i, col in enumerate(['r', 'g', 'b']):
-        # ax.subplot(1, 3, i+1)
-        # ax.title(f'{col.upper()} Histogram')
-        ax.axis(xmin=0,xmax=255)
+        ax.axis(xmin=-1,xmax=256)
         ax.hist(image[:,:,i].ravel(), bins=hist_size, range=hist_range, color=col)
 
 
@@ -637,18 +673,27 @@ def get_test_image2():
     final_image = np.array(range(height*width))
     return final_image, (height, width)
 
-def get_real_image():
-    image_name = "img_raw8_cube3.bin"
-    #image_name = "c_img_raw.bin"
-    path='/mnt/c/Users/albertoisorna/exec/'
-    input_name = path+image_name
-    
-    input_name = "/home/albertoisorna/xalbertoisorna/cpp/files/img_raw8.bin"
-    
+def get_real_image(path=None):
+    if path is None:
+        top_path   = Path(__file__).resolve().parent
+        imgs_path  = os.path.join(top_path, "test_imgs/") #TODO .env
+        input_name = imgs_path + "img_raw8_640_480_cube3.xbin"
+        
     width = 640
     height = 480
 
     with open(input_name, "rb") as f:
+        data = f.read()
+        buffer = np.frombuffer(data, dtype=np.uint8)
+        
+    return buffer, (height, width)
+
+
+def get_image_path(path):
+    width = 640
+    height = 480
+
+    with open(path, "rb") as f:
         data = f.read()
         buffer = np.frombuffer(data, dtype=np.uint8)
         
@@ -669,6 +714,8 @@ def downsample_channels(channels, k=4):
 
 
 import math
+
+
 def bilinear_resize(image, k):
   """
   `image` is a 2-D numpy array
@@ -722,7 +769,7 @@ def split_planes(img):
     g1  = img[0::2, 1::2]
     g2  = img[1::2, 0::2]
     b   = img[1::2, 1::2]
-    return (r,g1,g2,b)
+    return np.array((r,g1,g2,b))
             
             
 def reverse_split_planes(channels, height, width):
@@ -743,26 +790,27 @@ def pipeline(img, demosaic_opt=True): #it takes a RAW IMAGE
     cfa_pattern = [0, 1, 1, 2] 
     # black level substraction
     img = normalize(img, 15, 254, np.uint8)  
-    # white balancing
-    img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
     # demosaic
     if demosaic_opt:
         img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
     else:
         # demosaic avoiding blue
         channels = split_planes(img)
-        rggb = np.array(channels)
-        h,w,x = channels[0].shape
+        h,w = channels.shape[1:]
         rgb = np.zeros((h,w,3))
-        rgb[:,:,0] = rggb[0].squeeze()
-        rgb[:,:,1] = rggb[1].squeeze()
-        rgb[:,:,2] = rggb[3].squeeze()
+        rgb[:,:,0] = channels[0,:,:]
+        rgb[:,:,1] = channels[1,:,:]
+        rgb[:,:,2] = channels[3,:,:]
         img = rgb
+    
+    # white balancing
+    # img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
+    img = gray_world(img)
     # color transforms
     #img = apply_color_space_transform(img)
     #img = transform_xyz_to_srgb(img)
     # gamma
-    img = img ** (1.0 / 2)
+    img = img ** (1.0 / 2.2)
     # clip the image
     img = np.clip(255*img, 0, 255).astype(np.uint8)
     # hist equalization
@@ -788,3 +836,56 @@ def pipeline_nodemosaic(img):
     # hist equalization
     # img = run_histogram_equalization(img)
     return img
+
+
+def mult_temp(M,img):
+    R,G,B = img[:,:,0], img[:,:,1], img[:,:,2] 
+    a1,a2,a3,a4,a5,a6,a7,a8,a9 = M.flatten()
+    
+    X = a1*R + a2*G + a3*B
+    Y = a4*R + a5*G + a6*B
+    Z = a7*R + a8*G + a9*B
+    
+    X = X[..., np.newaxis]
+    Y = Y[..., np.newaxis]
+    Z = Z[..., np.newaxis]
+    
+    f = np.concatenate((X,Y,Z), axis=-1).reshape(img.shape)
+    f.clip(0,1)
+    return f
+
+def new_color_correction(img):
+    RAW_to_XYZ = np.array(
+                [[0.66369444,  0.24726221,  0.08904335],
+                [ 0.13562966,  1.09600039, -0.23163006],
+                [-0.09836362, -0.32482671,  1.42319032]]
+                ).reshape(3,3)     
+    RAW_to_XYZ = RAW_to_XYZ / np.sum(RAW_to_XYZ, axis=-1, keepdims=True)
+    
+    XYZ_to_sGRB = np.array(
+                [[3.2404542, -1.5371385, -0.4985314],
+                [-0.9692660,  1.8760108,  0.0415560],
+                [0.0556434,  -0.2040259,  1.0572252]]
+                ).reshape(3,3)
+    XYZ_to_sGRB = XYZ_to_sGRB / np.sum(XYZ_to_sGRB, axis=-1, keepdims=True)
+    
+    # multiply
+    img_xyz  = mult_temp(RAW_to_XYZ, img)
+    img_srgb = mult_temp(XYZ_to_sGRB, img_xyz)    
+    return img_srgb
+
+def gray_world(img):
+    Ravg = img[:,:,0].mean()
+    Gavg = img[:,:,1].mean()
+    Bavg = img[:,:,2].mean()
+
+    alfa = Gavg/Ravg
+    beta = Gavg/Bavg
+
+    img[:,:,0] = alfa*img[:,:,0]
+    img[:,:,2] = beta*img[:,:,2]
+    # img[:,:,1] = 
+    return img
+
+if __name__ == '__main__':
+    pass

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 #define PRINT_TIME(a,b) printf("%d\n", b - a);
