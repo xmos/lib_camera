@@ -16,19 +16,13 @@
 uint8_t csign(float x);
 uint8_t isp_false_position_step(float exposure, float skewness);
 
-
 // ---------------------------------- AWB ------------------------------
-void isp_AWB_dynamic(const uint32_t buffsize, 
-                    uint8_t *red, 
-                    uint8_t *green, 
-                    uint8_t *blue);
+void isp_AWB_gray_world(const uint32_t buffsize, uint8_t *red, uint8_t *green, uint8_t *blue);
+void isp_AWB_percentile(const uint32_t buffsize, uint8_t *red, uint8_t *green, uint8_t *blue);
+void isp_AWB_static(const uint32_t buffsize, uint8_t *red, uint8_t *green, uint8_t *blue, float alfa, float beta, float delta);
 
-
-void isp_AWB_static(const uint32_t buffsize, 
-                    uint8_t *red, 
-                    uint8_t *green, 
-                    uint8_t *blue, 
-                    float alfa, 
-                    float beta);
+// ---------------------------------- GAMMA ------------------------------
+void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img);
+void isp_gamma_stride4(const uint32_t buffsize, uint8_t *img);
 
 #endif
