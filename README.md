@@ -25,7 +25,6 @@ sh launch_cmake.sh
 ```
 
 ## Useful commands
-- build : ```sh launch_cmake.sh```
 - run (explorer board):  ```xrun --xscope example_take_picture.xe```
 - run (simulation):  ```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
 
