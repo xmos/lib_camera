@@ -37,9 +37,10 @@ void Stadistics_compute_histogram(const uint32_t buffsize, const uint8_t step, u
     }
 
     // normalize
-    float factor = buffsize/step;
+    //float factor = buffsize/step;
+    float inv_factor = step/buffsize;
     for (uint8_t j=0; j < BINS; j++){
-        stadistics->histogram[j] /= factor; 
+        stadistics->histogram[j] *= inv_factor; 
     }
 }
 
@@ -115,7 +116,7 @@ void Stadistics_compute_percentile(Stadistics *stadistics){
 }
 
 uint16_t Stadistics_compute_variance(Stadistics *stadistics){
-    uint8_t mean      = stadistics->mean / 4;
+    uint8_t mean      = stadistics->mean >> 2; // /4 to return to histogram range 0-64
     float   diff      = 0.0;
     double  variance  = 0;
 

@@ -160,3 +160,71 @@ void isp_gamma_stride4(const uint32_t buffsize, uint8_t *img){
         img[i] = (uint8_t)(stride*gamma_1p8_s4[idx]);
     }
 }
+
+
+// -------------------------- ROTATE/RESIZE -------------------------------------
+void xmodf(float a, int *b, float *c, int *bp)
+{
+    // split integer and decimal part
+    *b = (int)(a);
+    *c = a - *b;
+    // last operand for convinience 
+    *bp = *b + 1;
+}
+
+void isp_bilinear_resize(
+    const uint16_t in_width,
+    const uint16_t in_height,
+    uint8_t *img,
+    const uint16_t out_width,
+    const uint16_t out_height,
+    uint8_t *out_img)
+{
+    // https://chao-ji.github.io/jekyll/update/2018/07/19/BilinearResize.html
+    const float x_ratio = ((in_width - 1) / (float)(out_width - 1));
+    const float y_ratio = ((in_height - 1) / (float)(out_height - 1));
+
+    int x_l, y_l, x_h, y_h;
+    float xw, yw;
+    uint8_t a,b,c,d;
+
+    for (uint16_t i = 0; i < out_height; i++)
+    {
+        for (uint16_t j = 0; j < out_width; j++)
+        {
+
+            float incrx = (x_ratio * j);
+            float incry = (y_ratio * i);
+
+            xmodf(incrx, &x_l, &xw, &x_h);
+            xmodf(incry, &y_l, &yw, &y_h);
+
+            a = img(y_l, x_l, in_width);
+            b = img(y_l, x_h, in_width);
+            c = img(y_h, x_l, in_width);
+            d = img(y_h, x_h, in_width);
+
+            uint8_t pixel = (uint8_t)(a * (1 - xw) * (1 - yw) +
+                                      b * xw * (1 - yw) +
+                                      c * yw * (1 - xw) +
+                                      d * xw * yw);
+
+            out_img(i, j, out_width) = pixel;
+            printf("%d,", pixel);
+        }
+    }
+}
+
+
+void isp_rotate_image(const uint8_t* src, uint8_t* dest, int width, int height) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            // Calculate the new coordinates after rotation
+            int new_x = height - 1 - y;
+            int new_y = x;
+
+            // Copy the pixel value to the new position
+            dest[new_y * height + new_x] = src[y * width + x];
+        }
+    }
+}
