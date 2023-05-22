@@ -11,9 +11,7 @@
 #include "isp.h"              // setting auto_exposure, AWB
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
-#define AE_MARGIN 0.1         // defaukt marging for the auto exposure error
-#define ENABLE_AE 1           // enable auto exposure 
-#define STEP      16          // step size for the histogram
+
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 float new_exp = 35;

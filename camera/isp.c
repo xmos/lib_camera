@@ -163,6 +163,9 @@ void isp_gamma_stride4(const uint32_t buffsize, uint8_t *img){
 
 
 // -------------------------- ROTATE/RESIZE -------------------------------------
+#define img(row, col, WIDTH) img[(WIDTH) * (row) + (col)]
+#define out_img(row, col, WIDTH) out_img[(WIDTH) * (row) + (col)]
+
 void xmodf(float a, int *b, float *c, int *bp)
 {
     // split integer and decimal part

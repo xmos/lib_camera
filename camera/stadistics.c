@@ -33,12 +33,11 @@ void Stadistics_compute_histogram(const uint32_t buffsize, const uint8_t step, u
 {
     // fill the histogram
     for (uint32_t i=0; i< buffsize; i = i + step){
-        stadistics->histogram[buffer[i] / 4] += 1; // because 255/4 = 64
+        stadistics->histogram[(buffer[i] >> 2)] += 1; // because 255/4 = 64
     }
 
     // normalize
-    //float factor = buffsize/step;
-    float inv_factor = step/buffsize;
+    float inv_factor = (float)step / (float)buffsize;
     for (uint8_t j=0; j < BINS; j++){
         stadistics->histogram[j] *= inv_factor; 
     }
