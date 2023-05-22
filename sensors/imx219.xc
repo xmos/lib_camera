@@ -7,7 +7,7 @@
 #include "imx219.h"
 #include "imx219_reg.h"
 
-#define GAIN_DB 48
+#define GAIN_DB 50
 
 static int i2c_write(client interface i2c_master_if i2c, int reg, int value)
 {

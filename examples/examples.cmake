@@ -5,6 +5,7 @@ set(EXAMPLES
         simple_timing
         take_picture_rgb
         take_picture_dynamic
+        take_picture_dynamic_crop
     )
 
 # add all the examples that you need
