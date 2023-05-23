@@ -18,7 +18,9 @@ kernel_sharpen = np.array([
                     [-1, -1, -1],
                     [-1, 10, -1],
                     [-1, -1, -1]])/10 # /10 to soft the response
-    
+
+kernel_sharpen_5 = np.array([-0.00391,-0.01563,-0.02344,-0.01563,-0.00391,-0.01563,-0.06250,-0.09375,-0.06250,-0.01563,-0.02344,-0.09375, 1.85980,-0.09375,-0.02344,-0.01563,-0.06250,-0.09375,-0.06250,-0.01563,-0.0391,-0.01563,-0.02344,-0.01563,-0.00391])
+kernel_sharpen_5 = kernel_sharpen_5.reshape(5,5)
 
 def calculate_2dft(input):
     # https://thepythoncodingbook.com/2021/08/30/2d-fourier-transform-in-python-and-fourier-synthesis-of-images/
@@ -157,10 +159,10 @@ if __name__ == '__main__':
     
     # sharpen (optional)
     kernel_sharpen = kernel_sharpen/np.sum(kernel_sharpen)
-    img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel_sharpen)
+    img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel_sharpen_5)
     
     # Color correction (optional)
-    # img = new_color_correction(img)
+    #img = new_color_correction(img)
     
     # clip the image
     img = np.clip(255*img, 0, 255).astype(np.uint8)
