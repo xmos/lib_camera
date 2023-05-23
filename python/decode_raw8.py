@@ -23,7 +23,7 @@ from utils import *
 
 input_name = os.getenv('BINARY_IMG_PATH')
 
-width, height = 320, 240
+width, height = 640, 480
 
 flip = False
 

@@ -1,9 +1,9 @@
 
 # edit subfolder, put your examples here
+#TODO replace by glob
 set(EXAMPLES 
-        take_picture #TODO replace by glob
         simple_timing
-        take_picture_rgb
+        take_picture
         take_picture_dynamic
         take_picture_dynamic_crop
     )
