@@ -6,20 +6,17 @@ that means :
     BGGR is the order of the Bayer pattern
     few padding bytes on the end of every row to match bits
 """
-import matplotlib.pyplot as plt
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image # just to avoid color BGR issues when writting
+from PIL import Image  # just to avoid color BGR issues when writting
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+
 from utils import *
 
-image_name = "img_raw10.bin"
-path = "/home/albertoisorna/xalbertoisorna/rawtreatment/newimgs/"
-path='/mnt/c/Users/albertoisorna/exec/'
+input_name = os.getenv('BINARY_IMG_PATH')
 
-image_name = "img_640_480_10_0008.raw"
-path = "/home/albertoisorna/xalbertoisorna/rawtreatment/images_binning/adquisition_2_raw/"
-
-input_name = path+image_name
 width = 640
 height = 480
 bit_width = 10
