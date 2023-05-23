@@ -18,10 +18,14 @@ typedef struct
 #ifdef __XC__
 
 // configure registers
-#if ((CONFIG_MODE == 0) || (CONFIG_MODE == 1))
+#if ((CONFIG_MODE == MODE_VGA_RAW8) || (CONFIG_MODE == MODE_VGA_RAW10))
     #define CONFIG_REG      mode_640_480_regs
-#elif (CONFIG_MODE == 2)
+#elif (CONFIG_MODE == MODE_UXGA_RAW8)
     #define CONFIG_REG      mode_1640_1232_regs
+#elif (CONFIG_MODE == MODE_WQSXGA_RAW8)
+    #define CONFIG_REG      mode_3280x2464_regs
+#elif (CONFIG_MODE == MODE_1920_1080)
+    #define CONFIG_REG      mode_1920_1080_regs
 #else
     #error "Invalid configuration mode"
 #endif
@@ -37,7 +41,7 @@ typedef struct
 
 // configure FPS
 #if   defined(FPS_13) 
-    #define PLL_VT_MPY  0x0030   
+    #define PLL_VT_MPY  0x0020  
 #elif defined(FPS_24)
     #define PLL_VT_MPY  0x0047
 #elif defined(FPS_30)
