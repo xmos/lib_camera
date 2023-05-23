@@ -14,16 +14,18 @@ Repository to manipulate cameras using the XCORE.AI sensor
 - git submodules 
 
 ## Installation
+Some dependent components are included as git submodules. These can be obtained by cloning this repository with the following command:
+(make sure you have the correct ssh access to clone)
 ```
-git clone 
-cd ./fwk_camera
-add submodules
-git submodule update --init --recursive
+git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
+```
+
+## Build
+```
 sh launch_cmake.sh
 ```
 
 ## Useful commands
-- build : ```sh launch_cmake.sh```
 - run (explorer board):  ```xrun --xscope example_take_picture.xe```
 - run (simulation):  ```xsim --xscope "-offline trace.xmt" build/example_take_picture.xe```
 
