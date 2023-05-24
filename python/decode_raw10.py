@@ -56,15 +56,8 @@ img = white_balance(img, as_shot_neutral, cfa_pattern)
 img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
 img_demoisaic = img
 
-# color space transformation
-color_matrix_1 = [0.9762914777, -0.2504389584, -0.1018426344, 
-                  -0.1751390547, 0.9807397723, 0.1705771685, 
-                  0.04482413828, 0.1344814152, 0.4878755212]
-
-#img = old_apply_color_space_transform(img, color_matrix_1)
-
-# color transform 2
-# img = old_transform_xyz_to_srgb(img)
+# color transforms
+img = new_color_correction(img)
 
 # gamma
 img = img ** (1.0 / 2.2)
