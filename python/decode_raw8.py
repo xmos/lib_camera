@@ -67,20 +67,14 @@ img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
 # demosaic
 img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
 img_demoisaic = img
-# wb
-#img = gray_world(img)
 # color transforms
 img = new_color_correction(img)
-
-
-
 # gamma
 img = img ** (1.0 / 1.8)
 # clip the image
 img = np.clip(255*img, 0, 255).astype(np.uint8)
-
 # hist equalization (optional)
-# img = run_histogram_equalization(img)
+#   img = run_histogram_equalization(img)
 # resize bilinear (optional)
 kfactor = 1
 img = cv2.resize(img, (width // kfactor, height // kfactor), interpolation=cv2.INTER_AREA)
