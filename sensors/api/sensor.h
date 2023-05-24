@@ -101,6 +101,7 @@
 #define MIPI_LINE_WIDTH_BYTES MIPI_IMAGE_WIDTH_BYTES
 #define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
 #define MIPI_TILE 1
+#define EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
 
 // SRAM Image storage (do not edit)
 //TODO check maximum storage size for the image
