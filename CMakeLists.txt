@@ -11,9 +11,7 @@ project(fwk_camera)
 ## Enable languages for project
 enable_language(CXX C ASM)
 
-if(NOT ${CMAKE_SYSTEM_PROCESSOR} STREQUAL XCORE_XS3A)
-    message(FATAL_ERROR "Only XCORE_XS3A build is supported!")
-endif()
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL XCORE_XS3A)
 
 ## Add frameworks
 add_subdirectory(modules)
@@ -27,4 +25,6 @@ add_subdirectory(camera)
 ## Add top level project targets
 if(PROJECT_IS_TOP_LEVEL)
     include(examples/examples.cmake)
-endif()
+endif() # top level
+
+endif() # xs3a
