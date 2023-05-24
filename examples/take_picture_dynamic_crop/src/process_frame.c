@@ -6,7 +6,7 @@
 #include <xcore/channel.h>
 
 #include "process_frame.h"
-#include "stadistics.h"       // for skewness and
+#include "statistics.h"       // for skewness and
 #include "utils.h"            // for measuring time
 #include "isp.h"              // setting auto_exposure, AWB
 
@@ -23,7 +23,7 @@
 // Global definitions
 const uint32_t img_len = IMG_W*IMG_H;
 float new_exp = 35;
-Stadistics st = {{0}};
+Statistics st = {{0}};
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image(uint8_t *image)
@@ -52,8 +52,8 @@ void process_image(uint8_t *image, chanend_t c){
   }
   static int print_msg = 0;
 
-  // compute stadistics
-  Stadistics_compute_all(img_len, STEP, image, (Stadistics *) &st);
+  // compute statistics
+  Statistics_compute_all(img_len, STEP, image, (Statistics *) &st);
   float sk = st.skewness;
   
   // print information

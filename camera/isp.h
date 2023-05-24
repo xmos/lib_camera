@@ -5,7 +5,7 @@
 #include <stdio.h>  // null 
 #include <stdint.h>
 
-#include "stadistics.h" // for dynamic AWB
+#include "statistics.h" // for dynamic AWB
 
 // ----------------- ISP SETTINGS -------------------------------
 #define DEFAULT_ALFA    1.58682     // default red gain (not used for the moment)
