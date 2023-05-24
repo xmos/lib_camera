@@ -1,5 +1,5 @@
 # Camera framework
-Repository to manipulate cameras using the XCORE.AI sensor
+This repository serves as a comprehensive software solution for camera manipulation using the XCORE.AI sensor.
 
 ## Structure
 - **examples**    : examples for taking pictures with the explorer board
