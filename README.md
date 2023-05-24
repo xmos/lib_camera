@@ -1,7 +1,7 @@
 # Camera framework
 This repository serves as a comprehensive software solution for camera manipulation using the XCORE.AI sensor.
 
-## Structure
+## Repository Structure
 - **examples**    : examples for taking pictures with the explorer board
 - **lib_camera**  : useful functions to manipulate images
 - **modules**     : dependencies folder
@@ -23,6 +23,8 @@ git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
 ## Build
 ```
 sh launch_cmake.sh
+cd build/
+make {YOUR_EXAMPLE}
 ```
 
 ## Useful commands
