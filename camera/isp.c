@@ -68,15 +68,15 @@ void isp_AWB_gray_world(const uint32_t buffsize,
                     uint8_t *green, 
                     uint8_t *blue)
 {
-    // compute stadistics by channel
-    Stadistics st_red; 
-    Stadistics st_green;
-    Stadistics st_blue;
+    // compute statistics by channel
+    Statistics st_red; 
+    Statistics st_green;
+    Statistics st_blue;
     uint8_t step = 1;
 
-    Stadistics_compute_all(buffsize, step, red, &st_red);
-    Stadistics_compute_all(buffsize, step, red, &st_green);
-    Stadistics_compute_all(buffsize, step, red, &st_blue);
+    Statistics_compute_all(buffsize, step, red, &st_red);
+    Statistics_compute_all(buffsize, step, red, &st_green);
+    Statistics_compute_all(buffsize, step, red, &st_blue);
 
     // apply white balancing
     float alfa = (st_green.mean)/(st_red.mean);
@@ -89,15 +89,15 @@ void isp_AWB_percentile(const uint32_t buffsize,
                     uint8_t *green, 
                     uint8_t *blue)
 {
-    // compute stadistics by channel
-    Stadistics st_red; 
-    Stadistics st_green;
-    Stadistics st_blue;
+    // compute statistics by channel
+    Statistics st_red; 
+    Statistics st_green;
+    Statistics st_blue;
     uint8_t step = 1;
 
-    Stadistics_compute_all(buffsize, step, red, &st_red);
-    Stadistics_compute_all(buffsize, step, red, &st_green);
-    Stadistics_compute_all(buffsize, step, red, &st_blue);
+    Statistics_compute_all(buffsize, step, red, &st_red);
+    Statistics_compute_all(buffsize, step, red, &st_green);
+    Statistics_compute_all(buffsize, step, red, &st_blue);
 
     // apply white balancing
     float alfa  = 255/(st_red.percentile);

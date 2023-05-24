@@ -18,24 +18,30 @@ typedef struct
 #ifdef __XC__
 
 // configure registers
-#if ((CONFIG_MODE == MODE_VGA_RAW8) || (CONFIG_MODE == MODE_VGA_RAW10))
+#if (CONFIG_MODE == MODE_VGA_640x480)
     #define CONFIG_REG      mode_640_480_regs
-#elif (CONFIG_MODE == MODE_UXGA_RAW8)
+
+#elif (CONFIG_MODE == MODE_UXGA_1640x1232)
     #define CONFIG_REG      mode_1640_1232_regs
-#elif (CONFIG_MODE == MODE_WQSXGA_RAW8)
+
+#elif (CONFIG_MODE == MODE_WQSXGA_3280x2464)
     #define CONFIG_REG      mode_3280x2464_regs
-#elif (CONFIG_MODE == MODE_1920_1080)
+
+#elif (CONFIG_MODE == MODE_FHD_1920x1080)
     #define CONFIG_REG      mode_1920_1080_regs
+
 #else
-    #error "Invalid configuration mode"
+    #error CONFIG_MODE_NOT_VALID
 #endif
 
 // Configure formats
-#if EXPECTED_FORMAT == MIPI_DT_RAW10
+#if CONFIG_MIPI_FORMAT == MIPI_DT_RAW10
     #define DATA_FORMAT_REGS raw10_framefmt_regs
 
-#elif EXPECTED_FORMAT == MIPI_DT_RAW8
+#elif CONFIG_MIPI_FORMAT == MIPI_DT_RAW8
     #define DATA_FORMAT_REGS  raw8_framefmt_regs
+#else
+    #error CONFIG_MIPI_NOT_VALID
     
 #endif
 
@@ -53,7 +59,7 @@ typedef struct
 #elif defined(FPS_76)
     #define PLL_VT_MPY  0x00E0 
 #else
-    #warning fps not defined, selecting default value
+    #warning "fps not defined, selecting default value"
     #define PLL_VT_MPY  0x0027   
 #endif
 

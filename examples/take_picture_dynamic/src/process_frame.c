@@ -6,7 +6,7 @@
 #include <xcore/channel.h>
 
 #include "process_frame.h"
-#include "stadistics.h"       // for skewness and
+#include "statistics.h"       // for skewness and
 #include "utils.h"            // for measuring time
 #include "isp.h"              // setting auto_exposure, AWB
 
@@ -15,7 +15,7 @@
 
 const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
 float new_exp = 35;
-Stadistics st = {{0}};
+Statistics st = {{0}};
 
 // Write image to disk. This is called by camera main () to do the work
 void write_image(uint8_t *image)
@@ -44,13 +44,13 @@ void process_image(uint8_t *image, chanend_t c){
   }
   static int print_msg = 0;
 
-  // compute stadistics
-  Stadistics_compute_all(img_len, STEP, image, (Stadistics *) &st);
+  // compute statistics
+  Statistics_compute_all(img_len, STEP, image, (Statistics *) &st);
   float sk = st.skewness;
   
   // print information
-  printf("min:%d, max:%d, mean:%d, percentile:%d, exposure:%f, skewness:%f\n", 
-        st.min, st.max, st.mean, st.percentile, new_exp, sk);
+  Statistics_print_info(&st);
+  printf("exposure:%f, skewness:%f\n", new_exp, sk);
 
   // exit condition
   if (sk < AE_MARGIN && sk > -AE_MARGIN){

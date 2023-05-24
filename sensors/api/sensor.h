@@ -1,34 +1,25 @@
 // Sensor.h settings needed for custom sensor configuration
-
-#pragma once
+#ifndef SENSOR_H
+#define SENSOR_H
 
 #define XSTR(x) STR(x)
 #define STR(x) #x
 
-// ----- minimal comom definitions
-#define ON                   1
-#define OFF                  0
-
-#define MODE_VGA_RAW10       0      // 640x480
-#define MODE_VGA_RAW8        1      // 640x480
-#define MODE_UXGA_RAW8       2      // 1640x1232
-#define MODE_WQSXGA_RAW8     3      // 3280x2464
-#define MODE_1920_1080       4
-
-#define MIPI_DT_RAW8         0x2A
-#define MIPI_DT_RAW10        0x2B
-
 // -------------- Sensor abstraction layer. --------------
+#include "sensor_defs.h"
+
 // This is user defined
-#define CONFIG_IMX219_SUPPORT   ON
-#define CONFIG_GC2145_SUPPORT   OFF
-#define CONFIG_MODE             MODE_VGA_RAW8
+#define CONFIG_IMX219_SUPPORT   ENABLED
+#define CONFIG_GC2145_SUPPORT   DISABLED
+#define CROP_ENABLED            DISABLED
+
+#define CONFIG_MODE             MODE_VGA_640x480
+#define CONFIG_MIPI_FORMAT      MIPI_DT_RAW8
+
 #define MIPI_PKT_BUFFER_COUNT   4 
-#define CROP_ENABLED            OFF
 
 // FPS settings
-// allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
-#define FPS_13
+#define FPS_13 // allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
 
 // Inlcude custom libraries
 #if CONFIG_IMX219_SUPPORT
@@ -40,36 +31,48 @@
 #endif
 
 
-// Modes definition
-#if (CONFIG_MODE == MODE_VGA_RAW10)
-    #define EXPECTED_FORMAT MIPI_DT_RAW10   // RAW 10 bit data identifier
+// Modes configurations
+#ifndef CONFIG_MODE
+    #error CONFIG_MODE has to be defined
+#endif
+
+#if (CONFIG_MODE == MODE_VGA_640x480)
     #define MIPI_IMAGE_WIDTH_PIXELS         640 // csi2 packed (stride 800) 
     #define MIPI_IMAGE_HEIGHT_PIXELS        480
 
-#elif (CONFIG_MODE == MODE_VGA_RAW8)
-    #define EXPECTED_FORMAT MIPI_DT_RAW8    // RAW 8 bit data identifier
-    #define MIPI_IMAGE_WIDTH_PIXELS         640
-    #define MIPI_IMAGE_HEIGHT_PIXELS        480
-   
-#elif (CONFIG_MODE == MODE_UXGA_RAW8)
-    #define EXPECTED_FORMAT MIPI_DT_RAW8   // RAW 8 bit data identifier
+#elif (CONFIG_MODE == MODE_UXGA_1640x1232)
     #define MIPI_IMAGE_WIDTH_PIXELS         1640 // csi2 packed (stride 800) 
     #define MIPI_IMAGE_HEIGHT_PIXELS        1232
 
-#elif (CONFIG_MODE == MODE_WQSXGA_RAW8)
-    #define EXPECTED_FORMAT MIPI_DT_RAW8   // RAW 8 bit data identifier
+#elif (CONFIG_MODE == MODE_WQSXGA_3280x2464)
     #define MIPI_IMAGE_WIDTH_PIXELS         3280 // csi2 packed (stride 800) 
     #define MIPI_IMAGE_HEIGHT_PIXELS        2464
 
-#elif (CONFIG_MODE == MODE_1920_1080)
-    #define EXPECTED_FORMAT MIPI_DT_RAW8   // RAW 8 bit data identifier
+#elif (CONFIG_MODE == MODE_FHD_1920x1080)
     #define MIPI_IMAGE_WIDTH_PIXELS         1920 // csi2 packed (stride 800) 
     #define MIPI_IMAGE_HEIGHT_PIXELS        1080
 
+#else 
+    #error Unknown configuration mode
+#endif
+
+// Pixel format configurations
+#ifndef CONFIG_MIPI_FORMAT
+    #error CONFIG_MIPI_FORMAT has to be specified
+#else
+    #if CONFIG_MIPI_FORMAT == MIPI_DT_RAW10
+        #define MIPI_IMAGE_WIDTH_BYTES (((MIPI_IMAGE_WIDTH_PIXELS) >> 2) * 5) // by 5/4
+
+    #elif CONFIG_MIPI_FORMAT == MIPI_DT_RAW8
+        #define MIPI_IMAGE_WIDTH_BYTES MIPI_IMAGE_WIDTH_PIXELS // same size
+
+    #else
+        #error CONFIG_MIPI_FORMAT not supported
+    #endif
 #endif
 
 
-// Cropping mode
+// Cropping configurations
 #if (CROP_ENABLED)
     #define CROP_WIDTH_PIXELS               320
     #define CROP_HEIGHT_PIXELS              240
@@ -94,21 +97,11 @@
 #define camera_start(x)                 imx219_stream_start(x)
 #define camera_configure(x)             imx219_configure_mode(x)
 
-
-// -------------------------------------------------------------------------------
-#if EXPECTED_FORMAT == MIPI_DT_RAW10
-    #define MIPI_IMAGE_WIDTH_BYTES (((MIPI_IMAGE_WIDTH_PIXELS) >> 2) * 5) // by 5/4
-
-#elif EXPECTED_FORMAT == MIPI_DT_RAW8
-    #define MIPI_IMAGE_WIDTH_BYTES MIPI_IMAGE_WIDTH_PIXELS // same size
-#else
-    #error Unknown format specified
-#endif
-
 // Camera dependant (do not edit)
 #define MIPI_LINE_WIDTH_BYTES MIPI_IMAGE_WIDTH_BYTES
 #define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
 #define MIPI_TILE 1
+#define EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
 
 // SRAM Image storage (do not edit)
 //TODO check maximum storage size for the image
@@ -119,3 +112,4 @@
 #endif
 
 
+#endif // sensor_H

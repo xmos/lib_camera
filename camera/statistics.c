@@ -1,4 +1,4 @@
-#include "stadistics.h"
+#include "statistics.h"
 
 #define BINS 64                 // changing the number of bins leads to change in implementation
 #define PERCENTILE_VALUE 0.05   // value selected for the percentile distribution
@@ -10,8 +10,8 @@
 #define GREEN 1
 #define BLUE  2
 
-Stadistics *Stadistics_alloc(void) {
-    Stadistics *point;
+Statistics *Statistics_alloc(void) {
+    Statistics *point;
     point = malloc(sizeof(*point));
     if (point == NULL) {
         return NULL;
@@ -20,30 +20,30 @@ Stadistics *Stadistics_alloc(void) {
     return point;
 }
 
-void Stadistics_free(Stadistics *self) {
+void Statistics_free(Statistics *self) {
     free(self);
 }
 
-Stadistics Stadistics_initialize(void) {
-    Stadistics s = {{0}};
+Statistics Statistics_initialize(void) {
+    Statistics s = {{0}};
     return s;
 }
 
-void Stadistics_compute_histogram(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Stadistics *stadistics)
+void Statistics_compute_histogram(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Statistics *statistics)
 {
     // fill the histogram
     for (uint32_t i=0; i< buffsize; i = i + step){
-        stadistics->histogram[(buffer[i] >> 2)] += 1; // because 255/4 = 64
+        statistics->histogram[(buffer[i] >> 2)] += 1; // because 255/4 = 64
     }
 
     // normalize
     float inv_factor = (float)step / (float)buffsize;
     for (uint8_t j=0; j < BINS; j++){
-        stadistics->histogram[j] *= inv_factor; 
+        statistics->histogram[j] *= inv_factor; 
     }
 }
 
-void Stadistics_compute_skewness(Stadistics *stadistics)
+void Statistics_compute_skewness(Statistics *statistics)
 {
     const float zk_values[] = {
         -1.0,-0.907753,-0.821362,-0.740633,-0.665375,-0.595396,-0.530504,-0.470508,-0.415214,-0.364431,
@@ -57,14 +57,14 @@ void Stadistics_compute_skewness(Stadistics *stadistics)
     float skew = 0.0;
     for (int k = 0; k < BINS; k++)
     {
-        float pzk = stadistics->histogram[k]; // we asssumed values are normalized
+        float pzk = statistics->histogram[k]; // we asssumed values are normalized
         skew += zk_values[k] * pzk;
     }
-    stadistics -> skewness = skew;
+    statistics -> skewness = skew;
 }
 
 
-void Stadistics_compute_minmaxavg(Stadistics *stadistics){
+void Statistics_compute_minmaxavg(Statistics *statistics){
     
     float temp_mean = 0;
     uint8_t temp_min = 0;
@@ -73,13 +73,13 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
     // mean
     for (uint8_t k = 1; k < BINS; k++) // k=0 does not contribute to mean value
     {
-        temp_mean += stadistics->histogram[k] * k; // assuming histogram is normalized
+        temp_mean += statistics->histogram[k] * k; // assuming histogram is normalized
     }
     
     // min 
     for (uint8_t k = 0; k < BINS; k++)
     {
-        if (stadistics->histogram[k]){
+        if (statistics->histogram[k]){
             temp_min = k;
             break;
         }
@@ -88,53 +88,53 @@ void Stadistics_compute_minmaxavg(Stadistics *stadistics){
     // max 
     for (uint8_t k = BINS -1; k > 0; k--)
     {
-        if (stadistics->histogram[k]){
+        if (statistics->histogram[k]){
             temp_max = k;
             break;
         }
     }
 
     // Values *4 to return to 0-255
-    stadistics -> mean = (uint8_t) (temp_mean+0.5) << 2; // +0.5 to avoid ceiling
-    stadistics -> min = (uint8_t) temp_min << 2;
-    stadistics -> max = (uint8_t) temp_max << 2; 
+    statistics -> mean = (uint8_t) (temp_mean+0.5) << 2; // +0.5 to avoid ceiling
+    statistics -> min = (uint8_t) temp_min << 2;
+    statistics -> max = (uint8_t) temp_max << 2; 
 }
 
-void Stadistics_compute_percentile(Stadistics *stadistics){
+void Statistics_compute_percentile(Statistics *statistics){
     float sump = 0.0;
     uint8_t k = 0;
     // percentile
     for (k = BINS - 1; k > 0; k--)
     {
-        sump += stadistics->histogram[k];
+        sump += statistics->histogram[k];
         if (sump > PERCENTILE_VALUE){   // I assume histogram is normalized to 0-1
             break;
         }
     }
-    stadistics -> percentile = (k << 2); // Values *4 to return to 0-255
+    statistics -> percentile = (k << 2); // Values *4 to return to 0-255
 }
 
-uint16_t Stadistics_compute_variance(Stadistics *stadistics){
-    uint8_t mean      = stadistics->mean >> 2; // /4 to return to histogram range 0-64
+uint16_t Statistics_compute_variance(Statistics *statistics){
+    uint8_t mean      = statistics->mean >> 2; // /4 to return to histogram range 0-64
     float   diff      = 0.0;
     double  variance  = 0;
 
     for (uint8_t k = 0; k < BINS; k++){
-        if (stadistics->histogram[k]){
+        if (statistics->histogram[k]){
             diff = (k  - mean);
             diff = diff*diff;
-            variance += stadistics->histogram[k]*diff;
+            variance += statistics->histogram[k]*diff;
         }
     }
     variance = (uint16_t)(variance * 16); // Values *16 to return to 0-255
     return variance;
 }
 
-void Stadistics_compute_all(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Stadistics *stadistics){
-    Stadistics_compute_histogram(buffsize, step, buffer, stadistics);
-    Stadistics_compute_skewness(stadistics);
-    Stadistics_compute_minmaxavg(stadistics);
-    Stadistics_compute_percentile(stadistics);
+void Statistics_compute_all(const uint32_t buffsize, const uint8_t step, uint8_t *buffer, Statistics *statistics){
+    Statistics_compute_histogram(buffsize, step, buffer, statistics);
+    Statistics_compute_skewness(statistics);
+    Statistics_compute_minmaxavg(statistics);
+    Statistics_compute_percentile(statistics);
 }
 
 static char get_rgb_color(uint32_t pos, uint16_t width) {
@@ -143,4 +143,13 @@ static char get_rgb_color(uint32_t pos, uint16_t width) {
     uint32_t y = pos / width;
     uint8_t index = ((y & 1) << 1) | (x & 1);
     return color_table[index];
+}
+
+
+void Statistics_print_info(Statistics *st){
+    printf("min:%d, max:%d, mean:%d, percentile:%d", 
+        st->min, 
+        st->max, 
+        st->mean,
+        st->percentile);
 }
