@@ -3,7 +3,7 @@
 #**********************
 
 # <--- Set the executable
-set(TARGET example_take_picture_rgb)  
+set(TARGET example_take_picture_crop)  
 
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
 set(APP_INCLUDES
@@ -47,6 +47,7 @@ set(APP_COMMON_LINK_LIBRARIES
         mipi::lib_mipi
         i2c::lib_i2c
         sensors::lib_imx 
+        camera::lib_camera 
     )
 
 
@@ -60,18 +61,3 @@ target_compile_definitions(${TARGET} PRIVATE ${APP_COMPILE_DEFINITIONS})
 target_compile_options(${TARGET} PRIVATE ${APP_COMPILER_FLAGS})
 target_link_libraries(${TARGET} PUBLIC ${APP_COMMON_LINK_LIBRARIES})
 target_link_options(${TARGET} PRIVATE ${APP_LINK_OPTIONS})
-
-
-#**********************
-# Create run and debug targets
-#**********************
-create_run_target(${TARGET})
-create_debug_target(${TARGET})
-create_flash_app_target(${TARGET})
-create_install_target(${TARGET})
-
-# then custom command line
-add_custom_command(TARGET ${TARGET} POST_BUILD  
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_BINARY_DIR}/*.xe  /mnt/c/Users/albertoisorna/exec/)
-

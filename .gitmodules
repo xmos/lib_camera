@@ -1,16 +1,16 @@
 [submodule "xmos_cmake_toolchain"]
 	path = xmos_cmake_toolchain
-	url = https://github.com/xalbertoisorna/xmos_cmake_toolchain
+	url  = git@github.com:xalbertoisorna/xmos_cmake_toolchain # grouping some CMAKE utilities
 	branch = main
 [submodule "modules/i2c"]
 	path = modules/i2c
-	url = https://github.com/xalbertoisorna/lib_i2c
+	url  = git@github.com:xalbertoisorna/lib_i2c			 # adding lib assert and cmake to the repo 
 	branch = develop
 [submodule "modules/mipi"]
 	path = modules/mipi
-	url = https://github.com/xalbertoisorna/lib_mipi
+	url  = git@github.com:xalbertoisorna/lib_mipi			# same adding cmake to the repo
 	branch = master
 [submodule "modules/core"]
 	path = modules/core
-	url = git@github.com:xmos/fwk_core
+	url  = git@github.com:xmos/fwk_core						# xcore math inside the repo
 	branch = develop

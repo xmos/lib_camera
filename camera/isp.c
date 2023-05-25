@@ -68,15 +68,15 @@ void isp_AWB_gray_world(const uint32_t buffsize,
                     uint8_t *green, 
                     uint8_t *blue)
 {
-    // compute stadistics by channel
-    Stadistics st_red; 
-    Stadistics st_green;
-    Stadistics st_blue;
+    // compute statistics by channel
+    Statistics st_red; 
+    Statistics st_green;
+    Statistics st_blue;
     uint8_t step = 1;
 
-    Stadistics_compute_all(buffsize, step, red, &st_red);
-    Stadistics_compute_all(buffsize, step, red, &st_green);
-    Stadistics_compute_all(buffsize, step, red, &st_blue);
+    Statistics_compute_all(buffsize, step, red, &st_red);
+    Statistics_compute_all(buffsize, step, red, &st_green);
+    Statistics_compute_all(buffsize, step, red, &st_blue);
 
     // apply white balancing
     float alfa = (st_green.mean)/(st_red.mean);
@@ -89,15 +89,15 @@ void isp_AWB_percentile(const uint32_t buffsize,
                     uint8_t *green, 
                     uint8_t *blue)
 {
-    // compute stadistics by channel
-    Stadistics st_red; 
-    Stadistics st_green;
-    Stadistics st_blue;
+    // compute statistics by channel
+    Statistics st_red; 
+    Statistics st_green;
+    Statistics st_blue;
     uint8_t step = 1;
 
-    Stadistics_compute_all(buffsize, step, red, &st_red);
-    Stadistics_compute_all(buffsize, step, red, &st_green);
-    Stadistics_compute_all(buffsize, step, red, &st_blue);
+    Statistics_compute_all(buffsize, step, red, &st_red);
+    Statistics_compute_all(buffsize, step, red, &st_green);
+    Statistics_compute_all(buffsize, step, red, &st_blue);
 
     // apply white balancing
     float alfa  = 255/(st_red.percentile);
@@ -116,7 +116,7 @@ void isp_AWB_percentile(const uint32_t buffsize,
 * @param buffsize - Size of the buffer to operate on.
 * @param img - * Pointer to the image to operate on. Modified
 */
-void isp_gamma_4(const uint32_t buffsize, uint8_t *img){
+void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img){
     // gamma naming: 1p8_s1 = gamma 1.8 , with a stride of 1
     // 1p8_s4 => img^(1/1.8) (in a normalizeed 0-1 image)
     const uint8_t gamma_1p8_s1[255] =  {
@@ -132,7 +132,7 @@ void isp_gamma_4(const uint32_t buffsize, uint8_t *img){
     211,212,213,213,214,215,215,216,217,217,218,218,219,220,220,221,222,222,223,
     223,224,225,225,226,226,227,228,228,229,230,230,231,231,232,233,233,234,234,
     235,236,236,237,237,238,238,239,240,240,241,241,242,243,243,244,244,245,245,
-    246,247,247,248,248,249,249,250,251,251,252,252,253,253,254,254,255};
+    246,247,247,248,248,249,249,250,251,251,252,252,253,253,254,255};
 
     for(uint32_t i=0; i<buffsize; i++){
         img[i] = gamma_1p8_s1[img[i]];
@@ -145,7 +145,7 @@ void isp_gamma_4(const uint32_t buffsize, uint8_t *img){
 * @param buffsize - Size of the buffer to operate on.
 * @param img - * Pointer to the image to operate on. Modified
 */
-void isp_gamma_1(const uint32_t buffsize, uint8_t *img){
+void isp_gamma_stride4(const uint32_t buffsize, uint8_t *img){
     // gamma naming: 1p8_s4 = gamma 1.8 , with a stride of 4 (values have to be predivided and multiplied then by 4)
     // 1p8_s4 => img^(1/1.8) (in a normalizeed 0-1 image)
     const uint8_t gamma_1p8_s4[64] =  {
@@ -158,5 +158,76 @@ void isp_gamma_1(const uint32_t buffsize, uint8_t *img){
     for(uint32_t i=0; i<buffsize; i++){
         uint8_t idx = (uint8_t) img[i]/stride;
         img[i] = (uint8_t)(stride*gamma_1p8_s4[idx]);
+    }
+}
+
+
+// -------------------------- ROTATE/RESIZE -------------------------------------
+#define img(row, col, WIDTH) img[(WIDTH) * (row) + (col)]
+#define out_img(row, col, WIDTH) out_img[(WIDTH) * (row) + (col)]
+
+void xmodf(float a, int *b, float *c, int *bp)
+{
+    // split integer and decimal part
+    *b = (int)(a);
+    *c = a - *b;
+    // last operand for convinience 
+    *bp = *b + 1;
+}
+
+void isp_bilinear_resize(
+    const uint16_t in_width,
+    const uint16_t in_height,
+    uint8_t *img,
+    const uint16_t out_width,
+    const uint16_t out_height,
+    uint8_t *out_img)
+{
+    // https://chao-ji.github.io/jekyll/update/2018/07/19/BilinearResize.html
+    const float x_ratio = ((in_width - 1) / (float)(out_width - 1));
+    const float y_ratio = ((in_height - 1) / (float)(out_height - 1));
+
+    int x_l, y_l, x_h, y_h;
+    float xw, yw;
+    uint8_t a,b,c,d;
+
+    for (uint16_t i = 0; i < out_height; i++)
+    {
+        for (uint16_t j = 0; j < out_width; j++)
+        {
+
+            float incrx = (x_ratio * j);
+            float incry = (y_ratio * i);
+
+            xmodf(incrx, &x_l, &xw, &x_h);
+            xmodf(incry, &y_l, &yw, &y_h);
+
+            a = img(y_l, x_l, in_width);
+            b = img(y_l, x_h, in_width);
+            c = img(y_h, x_l, in_width);
+            d = img(y_h, x_h, in_width);
+
+            uint8_t pixel = (uint8_t)(a * (1 - xw) * (1 - yw) +
+                                      b * xw * (1 - yw) +
+                                      c * yw * (1 - xw) +
+                                      d * xw * yw);
+
+            out_img(i, j, out_width) = pixel;
+            printf("%d,", pixel);
+        }
+    }
+}
+
+
+void isp_rotate_image(const uint8_t* src, uint8_t* dest, int width, int height) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            // Calculate the new coordinates after rotation
+            int new_x = height - 1 - y;
+            int new_y = x;
+
+            // Copy the pixel value to the new position
+            dest[new_y * height + new_x] = src[y * width + x];
+        }
     }
 }

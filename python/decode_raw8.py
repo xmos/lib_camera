@@ -38,7 +38,8 @@ flip_mode = {
 
 #cfa_pattern = [2, 1, 1, 0] # raspberry
 cfa_pattern = [0, 1, 1, 2] # explorer board
-cfa_pattern = flip_mode[2]
+cfa_pattern = flip_mode[0]
+print("ensure CFA pattern is correct")
 
 # read the data
 with open(input_name, "rb") as f:
@@ -69,12 +70,11 @@ img_demoisaic = img
 # color transforms
 img = new_color_correction(img)
 # gamma
-img = img ** (1.0 / 2)
+img = img ** (1.0 / 1.8)
 # clip the image
 img = np.clip(255*img, 0, 255).astype(np.uint8)
-
 # hist equalization (optional)
-# img = run_histogram_equalization(img)
+#   img = run_histogram_equalization(img)
 # resize bilinear (optional)
 kfactor = 1
 img = cv2.resize(img, (width // kfactor, height // kfactor), interpolation=cv2.INTER_AREA)

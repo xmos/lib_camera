@@ -6,20 +6,17 @@ that means :
     BGGR is the order of the Bayer pattern
     few padding bytes on the end of every row to match bits
 """
-import matplotlib.pyplot as plt
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image # just to avoid color BGR issues when writting
+from PIL import Image  # just to avoid color BGR issues when writting
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+
 from utils import *
 
-image_name = "img_raw10.bin"
-path = "/home/albertoisorna/xalbertoisorna/rawtreatment/newimgs/"
-path='/mnt/c/Users/albertoisorna/exec/'
+input_name = os.getenv('BINARY_IMG_PATH')
 
-image_name = "img_640_480_10_0008.raw"
-path = "/home/albertoisorna/xalbertoisorna/rawtreatment/images_binning/adquisition_2_raw/"
-
-input_name = path+image_name
 width = 640
 height = 480
 bit_width = 10
@@ -59,15 +56,8 @@ img = white_balance(img, as_shot_neutral, cfa_pattern)
 img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
 img_demoisaic = img
 
-# color space transformation
-color_matrix_1 = [0.9762914777, -0.2504389584, -0.1018426344, 
-                  -0.1751390547, 0.9807397723, 0.1705771685, 
-                  0.04482413828, 0.1344814152, 0.4878755212]
-
-#img = old_apply_color_space_transform(img, color_matrix_1)
-
-# color transform 2
-# img = old_transform_xyz_to_srgb(img)
+# color transforms
+img = new_color_correction(img)
 
 # gamma
 img = img ** (1.0 / 2.2)

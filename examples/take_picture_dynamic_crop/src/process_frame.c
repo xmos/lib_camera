@@ -12,8 +12,16 @@
 
 #define FINAL_IMAGE_FILENAME "img_raw.bin"
 
+#if (CROP_ENABLED)
+  #define IMG_W CROP_WIDTH_PIXELS
+  #define IMG_H CROP_HEIGHT_PIXELS
+#else
+  #define IMG_W MIPI_LINE_WIDTH_BYTES
+  #define IMG_H MIPI_IMAGE_HEIGHT_PIXELS
+#endif
 
-const uint32_t img_len = MIPI_LINE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS;
+// Global definitions
+const uint32_t img_len = IMG_W*IMG_H;
 float new_exp = 35;
 Statistics st = {{0}};
 
@@ -22,15 +30,15 @@ void write_image(uint8_t *image)
 {
   static FILE* img_file = NULL;
   img_file = fopen(FINAL_IMAGE_FILENAME, "wb");
-  for(uint16_t k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
-    for(uint16_t j = 0; j < MIPI_IMAGE_WIDTH_BYTES; j++){
-      uint32_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
+  for(uint16_t k = 0; k < IMG_H; k++){
+    for(uint16_t j = 0; j < IMG_W; j++){
+      uint32_t pos = k * IMG_W + j;
       fwrite(&image[pos], sizeof(uint8_t), 1, img_file);
       }
   }
   fclose(img_file);
   printf("Outfile %s\n", FINAL_IMAGE_FILENAME);
-  printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
+  printf("image size (%dx%d)\n", IMG_W, IMG_H);
   free(image);
   exit(1);
 }
@@ -49,8 +57,8 @@ void process_image(uint8_t *image, chanend_t c){
   float sk = st.skewness;
   
   // print information
-  Statistics_print_info(&st);
-  printf("exposure:%f, skewness:%f\n", new_exp, sk);
+  printf("min:%d, max:%d, mean:%d, percentile:%d, exposure:%f, skewness:%f\n", 
+        st.min, st.max, st.mean, st.percentile, new_exp, sk);
 
   // exit condition
   if (sk < AE_MARGIN && sk > -AE_MARGIN){

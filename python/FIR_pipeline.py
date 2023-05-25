@@ -14,6 +14,14 @@ RED     = 0
 GREEN   = 1
 BLUE    = 2
 
+kernel_sharpen = np.array([ 
+                    [-1, -1, -1],
+                    [-1, 10, -1],
+                    [-1, -1, -1]])/10 # /10 to soft the response
+
+kernel_sharpen_5 = np.array([-0.00391,-0.01563,-0.02344,-0.01563,-0.00391,-0.01563,-0.06250,-0.09375,-0.06250,-0.01563,-0.02344,-0.09375, 1.85980,-0.09375,-0.02344,-0.01563,-0.06250,-0.09375,-0.06250,-0.01563,-0.0391,-0.01563,-0.02344,-0.01563,-0.00391])
+kernel_sharpen_5 = kernel_sharpen_5.reshape(5,5)
+
 def calculate_2dft(input):
     # https://thepythoncodingbook.com/2021/08/30/2d-fourier-transform-in-python-and-fourier-synthesis-of-images/
     ft = np.fft.ifftshift(input)
@@ -71,21 +79,6 @@ def convolve_v(j:int, i:int, img, filter:list):
 
 
 def create_filter():
-    fil_h_5t  = [0.00539473, 0, 0.18786418, 0, 0.61348217, 0, 0.18786418, 0, 0.00539473]
-    fil_h_3t  = [0.04622150, 0, 0.90755700, 0, 0.04622150]
-    
-    sigma =  0.3*(3/2 - 1) + 0.5
-    SIGMA  = 1
-    TAPS_V = 5
-    TAPS_H = 3
-    
-    v_filter    =  create_fir_filter(TAPS_V, 3)
-    h_filter    =  create_fir_filter(TAPS_H, 2)
-    #h_filter    = np.array([-1, 2, -1]) 
-    #v_filter    =  create_gaussian_filter(TAPS_V, sigma)
-    # h_filter    =  create_gaussian_filter(TAPS_H, px)
-    h_filter     =  intercalate_zeros(h_filter)
-    
     # horizontal
     h1 = [0.20872991, 0, 0.58254019, 0, 0.20872991]  
     h2 = [0.04622150, 0, 0.90755700, 0, 0.04622150]
@@ -101,20 +94,14 @@ def create_filter():
     
     KV = (len(v_filter) -1) //2
     KH = (len(h_filter) -1) //2
-    
-    #v_filter          = [0.0462215, 0.907557, 0.0462215];
-    #h_filter          = [0.0462215, OFF, 0.907557, OFF, 0.0462215];
-    #print(v_filter)
-    #print(h_filter)
-
-    
-    assert(TAPS_H % 2 != 0)
-    return h_filter, v_filter, KV, KH, TAPS_V, TAPS_H
+        
+    assert(KH % 2 == 0)
+    return h_filter, v_filter, KV, KH
 
 
 if __name__ == '__main__':
 
-    ENABLE_SHOW = True
+    ENABLE_IMSHOW = True
     
     # get test_image
     img, (height, width) = get_real_image()
@@ -124,7 +111,7 @@ if __name__ == '__main__':
     imgv = np.zeros((height//4, width//4, 3))
 
     # create the filters
-    h_filter, v_filter, KV, KH, TAPS_V, TAPS_H = create_filter()
+    h_filter, v_filter, KV, KH = create_filter()
     print(h_filter, v_filter)
     
     # horizontal filtering
@@ -162,34 +149,32 @@ if __name__ == '__main__':
     img = imgv
     
     
-    # post processing
-    #########################
+    # 
+    ########### post processing ##############
     # black level substraction
     img = normalize(img, 15, 254, np.uint8)  
     
     # gamma
-    img = img ** (1.0 / 2.2)
-    #img = log_tranform(img)
-    #img = new_gamma_correction(img)
-    #img = img_contrast(img).clip(0,1)
-    # sharpen
-    kernel = np.array([[0, -1, 0],
-                [-1, 10,-1],
-                [0, -1, 0]])
-    kernel = kernel / 4
-    #img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel)
+    img = img ** (1.0 / 2)
+    
+    # sharpen (optional)
+    kernel_sharpen = kernel_sharpen/np.sum(kernel_sharpen)
+    img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel_sharpen_5)
+    
+    # Color correction (optional)
     #img = new_color_correction(img)
     
     # clip the image
     img = np.clip(255*img, 0, 255).astype(np.uint8)
-    ###################################
+    ########### post processing ##############
     
-    plt.imshow(img)
-    if ENABLE_SHOW:
+    
+    if ENABLE_IMSHOW:
+        plt.imshow(img)
         plt.show()
 
     # save image
-    name = f"out_h{TAPS_H}_v{TAPS_V}.png"
+    name = f"out.png"
     #print(name)
     Image.fromarray(img).save(name) # option 1 pillow
 
