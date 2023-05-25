@@ -40,6 +40,7 @@ void write_image(uint8_t *image)
   printf("Outfile %s\n", FINAL_IMAGE_FILENAME);
   printf("image size (%dx%d)\n", IMG_W, IMG_H);
   free(image);
+  yuv_to_rgb(2,2,2);
   exit(1);
 }
 
