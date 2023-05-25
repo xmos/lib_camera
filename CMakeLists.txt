@@ -22,6 +22,9 @@ add_subdirectory(sensors)
 ## Add cameras
 add_subdirectory(camera)
 
+## Add tests
+add_subdirectory(tests)
+
 ## Add top level project targets
 if(PROJECT_IS_TOP_LEVEL)
     include(examples/examples.cmake)

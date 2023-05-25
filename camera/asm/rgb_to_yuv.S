@@ -1,7 +1,6 @@
 /*
 Converts signed yuv (-127..127, -127..127, -127..127) into signed rgb. 
 Returns an int with 3 x int8_t
-
   int rgb_to_yuv(
       int r, 
       int g, 
@@ -49,8 +48,6 @@ ldap r11, Yconv                                               // Load effective 
 retsp 8
 
 // the values correspond to the matrix values *255
-// https://en.wikipedia.org/wiki/YUV
-// https://softpixel.com/~cwright/programming/colorspace/yuv/
 /*
 Yconv: .word 157,  -131,   -26, 0, 0,0,0,0    
 grnConv: .word -38,  -74,   111, 0, 0,0,0,0
@@ -61,3 +58,10 @@ Uconv: .word -43,  -84,   128, 0, 0,0,0,0
 Vconv: .word  76,  150,    29, 0, 0,0,0,0  
 
 .cc_bottom rgb_to_yuv.func
+
+
+// References
+// https://en.wikipedia.org/wiki/YUV
+// https://softpixel.com/~cwright/programming/colorspace/yuv/
+// https://www.mikekohn.net/file_formats/yuv_rgb_converter.php
+//
