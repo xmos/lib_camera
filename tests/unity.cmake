@@ -1,6 +1,6 @@
 # ##############################################################################
 # Target name
-set(LIB_NAME lib_Unity)
+set(LIB_NAME Unity)
 set(LIB_PATH ${CMAKE_CURRENT_LIST_DIR}/Unity/src)
 
 # Source files
@@ -24,4 +24,4 @@ target_sources(${LIB_NAME}
         ${SOURCES_ASM}
 )
 
-add_library(tests::Unity ALIAS ${LIB_NAME})
+add_library(Unity::framework ALIAS ${LIB_NAME})

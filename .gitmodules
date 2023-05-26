@@ -16,5 +16,5 @@
 	branch = develop
 [submodule "tests/Unity"]
 	path = tests/Unity
-	url  = git@github.com:xmos/Unity						# unit testing
+	url  = https://github.com/ThrowTheSwitch/Unity.git		# unit testing
 	branch = develop
