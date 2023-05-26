@@ -14,3 +14,7 @@
 	path = modules/core
 	url  = git@github.com:xmos/fwk_core						# xcore math inside the repo
 	branch = develop
+[submodule "tests/Unity"]
+	path = tests/Unity
+	url  = git@github.com:xmos/Unity						# unit testing
+	branch = develop
