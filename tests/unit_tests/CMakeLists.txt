@@ -44,3 +44,7 @@ target_compile_definitions(${TARGET} PRIVATE ${APP_COMPILE_DEFINITIONS})
 target_compile_options(${TARGET} PRIVATE ${APP_COMPILER_FLAGS})
 target_link_libraries(${TARGET} PUBLIC ${APP_COMMON_LINK_LIBRARIES})
 target_link_options(${TARGET} PRIVATE ${APP_LINK_OPTIONS})
+
+
+# enable testing functionality
+add_test(NAME ${TARGET} COMMAND ${TARGET})
