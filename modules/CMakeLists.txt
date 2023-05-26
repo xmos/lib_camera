@@ -1,3 +1,5 @@
 add_subdirectory(core)
 add_subdirectory(mipi)
-add_subdirectory(i2c)
+#add_subdirectory(i2c)
+include(xassert.cmake)
+include(i2c.cmake)
