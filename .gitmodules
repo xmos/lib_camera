@@ -17,3 +17,8 @@
 [submodule "modules/xassert"]
 	path = modules/xassert
 	url = git@github.com:xmos/lib_xassert.git
+[submodule "tests/Unity"]
+	path = tests/Unity
+	url  = git@github.com:xmos/Unity						# unit testing
+	branch = develop
+  

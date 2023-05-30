@@ -3,7 +3,7 @@
 #**********************
 
 # <--- Set the executable
-set(TARGET example_take_picture_dynamic)  
+set(TARGET example_timing)  
 
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
 set(APP_INCLUDES
@@ -21,9 +21,11 @@ set(APP_COMPILER_FLAGS
     -fxscope
     -mcmodel=large
     -Wno-xcore-fptrgroup
-    ${CMAKE_CURRENT_LIST_DIR}/src/config.xscope
-    ${CMAKE_CURRENT_LIST_DIR}/XCORE-AI-EXPLORER.xn
+    -target=${XCORE_TARGET}
+    ${CONFIG_XSCOPE_PATH}/config.xscope
 )
+
+
 set(APP_COMPILE_DEFINITIONS
     configENABLE_DEBUG_PRINTF=1
     PLATFORM_SUPPORTS_TILE_0=1
@@ -35,10 +37,10 @@ set(APP_COMPILE_DEFINITIONS
     XUD_CORE_CLOCK=600
 )
 
-set(APP_LINK_OPTIONS
-    -report
-    ${CMAKE_CURRENT_LIST_DIR}/XCORE-AI-EXPLORER.xn
-    ${CMAKE_CURRENT_LIST_DIR}/src/config.xscope
+set(APP_LINK_OPTIONS 
+    "-report" 
+    "-target=${XCORE_TARGET}"
+    "${CONFIG_XSCOPE_PATH}/config.xscope"
 )
 
 # <--- Link libraries
@@ -47,7 +49,6 @@ set(APP_COMMON_LINK_LIBRARIES
         mipi::lib_mipi
         i2c::lib_i2c
         sensors::lib_imx 
-        camera::lib_camera 
     )
 
 

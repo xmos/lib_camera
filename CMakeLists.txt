@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
+## Set the target 
+set(XCORE_TARGET "XCORE-AI-EXPLORER")
+
 ## Disable in-source build.
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source build is not allowed! Please specify a build folder.\n\tex:cmake -B build")
@@ -22,9 +25,10 @@ add_subdirectory(sensors)
 ## Add cameras
 add_subdirectory(camera)
 
-## Add top level project targets
-if(PROJECT_IS_TOP_LEVEL)
-    include(examples/examples.cmake)
-endif() # top level
+## Add tests
+add_subdirectory(tests)
+
+## Add examples
+add_subdirectory(examples)
 
 endif() # xs3a

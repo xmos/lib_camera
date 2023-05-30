@@ -1,7 +1,6 @@
 /*
 Converts signed yuv (-127..127, -127..127, -127..127) into signed rgb. 
 Returns an int with 3 x int8_t
-
   int rgb_to_yuv(
       int r, 
       int g, 
@@ -36,7 +35,7 @@ rgb_to_yuv:
 
 { ldc r1, 24                  ; vclrdr                      }   // load in R1 24 ; Sets the contents of vD and vR in the vector unit to all zeroes.
 { neg r1, r1                  ; vldc r11[0]                 }   // signed negation ; load first opdfand
-ldap r11, Yconv                                               // Load effective address relative to the program counter.
+ldap r11, Vconv                                               // Load effective address relative to the program counter.
 { add r11, r11, r3            ; vlmaccr r11[0]              }   
 { add r11, r11, r3            ; vlmaccr r11[0]              }
 { ldaw r11, sp[0]             ; vlmaccr r11[0]              }
@@ -49,15 +48,21 @@ ldap r11, Yconv                                               // Load effective 
 retsp 8
 
 // the values correspond to the matrix values *255
-// https://en.wikipedia.org/wiki/YUV
-// https://softpixel.com/~cwright/programming/colorspace/yuv/
 /*
-Yconv: .word 157,  -131,   -26, 0, 0,0,0,0    
-grnConv: .word -38,  -74,   111, 0, 0,0,0,0
-redConv: .word  76,  150,    29, 0, 0,0,0,0  
+Yconv: .word 157,  -132,   -26, 0, 0,0,0,0    
+Uconv: .word -38,  -74,   112, 0, 0,0,0,0
+Vconv: .word  77,  150,    29, 0, 0,0,0,0  
 */
-Yconv: .word 128,  -107,   -21, 0, 0,0,0,0    
-Uconv: .word -43,  -84,   128, 0, 0,0,0,0
-Vconv: .word  76,  150,    29, 0, 0,0,0,0  
+
+Vconv: .word 128,  -107,   -21, 0, 0,0,0,0    
+Uconv: .word -43,  -85,   128, 0, 0,0,0,0
+Yconv: .word  77,  150,    29, 0, 0,0,0,0  
 
 .cc_bottom rgb_to_yuv.func
+
+
+// References
+// https://en.wikipedia.org/wiki/YUV
+// https://softpixel.com/~cwright/programming/colorspace/yuv/
+// https://www.mikekohn.net/file_formats/yuv_rgb_converter.php
+//
