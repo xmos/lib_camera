@@ -7,12 +7,12 @@ color_table_t ct_test = {16, 100, 16, 65, 100, 92}; // R G B Y U V
 
 void setUp(void)
 {
-    // set stuff up here
+     
 }
 
 void tearDown(void)
 {
-    // clean stuff up here
+    
 }
 
 void test_yuv_to_rgb()
