@@ -13,8 +13,9 @@ set(APP_COMMON_LINK_LIBRARIES
 # ##############################################################################
 # Flags
 # ##############################################################################
-set(APP_LINK_OPTIONS -report 
-    ${CMAKE_CURRENT_LIST_DIR}/XCORE-AI-EXPLORER.xn
+set(APP_LINK_OPTIONS 
+    "-report" 
+    "-target=${XCORE_TARGET}"
     ${CMAKE_CURRENT_LIST_DIR}/config.xscope
 )
 
@@ -26,7 +27,6 @@ set(APP_COMPILER_FLAGS
     -mcmodel=large
     -Wno-xcore-fptrgroup
     ${CMAKE_CURRENT_LIST_DIR}/config.xscope
-    ${CMAKE_CURRENT_LIST_DIR}/XCORE-AI-EXPLORER.xn
 )
 
 set(APP_COMPILE_DEFINITIONS

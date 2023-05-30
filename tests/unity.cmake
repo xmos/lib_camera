@@ -13,7 +13,13 @@ add_library(${LIB_NAME} STATIC)
 
 target_include_directories(
     ${LIB_NAME} PUBLIC 
-    ${CMAKE_CURRENT_LIST_DIR}/Unity/src/
+    ${LIB_PATH}
+)
+
+target_link_options(
+    ${LIB_NAME} 
+    PRIVATE 
+    "-target=${XCORE_TARGET}"
 )
 
 target_sources(${LIB_NAME}
