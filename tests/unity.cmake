@@ -16,12 +16,6 @@ target_include_directories(
     ${LIB_PATH}
 )
 
-target_link_options(
-    ${LIB_NAME} 
-    PRIVATE 
-    "-target=${XCORE_TARGET}"
-)
-
 target_sources(${LIB_NAME}
     PRIVATE
         ${SOURCES_C}
