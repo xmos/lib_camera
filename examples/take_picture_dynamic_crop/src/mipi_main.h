@@ -40,11 +40,7 @@ typedef struct
   unsigned line_number;
 } image_rx_t;
 
-
 static mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
-
-// Functions definitions
-#define gMipiPacketRx(...)  MipiPacketRxnrev(__VA_ARGS__) // define your own function to use
 
 #ifdef __XC__
 

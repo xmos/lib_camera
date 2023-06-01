@@ -6,10 +6,6 @@
 	path = modules/i2c
 	url  = git@github.com:xmos/lib_i2c			 # adding lib assert and cmake to the repo 
 	branch = develop
-[submodule "modules/mipi"]
-	path = modules/mipi
-	url  = git@github.com:xalbertoisorna/lib_mipi			# same adding cmake to the repo
-	branch = master
 [submodule "modules/core"]
 	path = modules/core
 	url  = git@github.com:xmos/fwk_core						# xcore math inside the repo
