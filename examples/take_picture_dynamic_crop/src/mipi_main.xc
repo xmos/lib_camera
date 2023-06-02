@@ -15,7 +15,6 @@
 
 // MIPI
 #include "mipi_main.h"
-#include "MipiPacket.h"
 
 // Sensor
 #define MSG_SUCCESS "Stream start OK\n"
@@ -233,7 +232,7 @@ void mipi_main(client interface i2c_master_if i2c)
   // start the different jobs (packet controller, handler, and post_process)
   par
   {
-    gMipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+    MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, img_raw_ptr, ch_exp);
     //save_image_to_file(flag, img_raw_ptr);
     control_exposure(ch_exp, i2c);
