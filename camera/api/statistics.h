@@ -60,5 +60,3 @@ void statistics_thread(
 #if defined(__XC__) || defined(__cplusplus)
 }
 #endif
-
-

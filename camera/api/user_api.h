@@ -6,6 +6,8 @@
 #define H APP_IMAGE_HEIGHT_PIXELS
 #define W APP_IMAGE_WIDTH_PIXELS
 
+#define RAW_CAPTURE 1
+
 // Image structure
 typedef struct {
   int8_t pix[CH][H][W];
@@ -23,3 +25,7 @@ void camera_api_request_complete();
 void camera_api_request_update(
     const int8_t image_row[CH][W],
     const unsigned row_index);
+
+// RAW
+void camera_api_request_update_raw(uint16_t line_number, uint8_t *img_row_ptr);
+void camera_api_request_complete_raw();

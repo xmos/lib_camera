@@ -13,22 +13,13 @@
 #include "sensor.h"
 
 
-#define RAW_CAPTURE 1
 
-#if (RAW_CAPTURE)
-  uint8_t image_raw[MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES];
-#endif
-
-/**
- * State needed for the vertical filter
- */
+// State needed for the vertical filter
 static
 vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
 
 
-/**
- * Contains the local state info for the packet handler thread.
- */
+// Contains the local state info for the packet handler thread.
 static struct {
   unsigned wait_for_frame_start;
   unsigned frame_number;
@@ -59,9 +50,11 @@ static
 void handle_unknown_packet(
     const mipi_packet_t* pkt)
 {
-  // Do nothing
+  //TODO: manage uknown packets
+  // uknown packets could be the following:
+  // 1 - sensor specific packets (this could be useful for having more information about the frame)
+  // 2 - error packets (in this case mipi reciever will raise an exception, but in the future we want to handle them here)
 }
-
 
 /**
  * Handle a row of pixel data.
@@ -177,16 +170,16 @@ void handle_no_expected_lines(){
         }
 }
 
-
+// send the line number and the actual raw to the user api
 void handle_expected_format_raw(const mipi_packet_t* pkt){
-    uint32_t pos = (ph_state.in_line_number) * MIPI_LINE_WIDTH_BYTES;
-    memcpy(&image_raw[pos], &pkt->payload[0], MIPI_LINE_WIDTH_BYTES); 
+  camera_api_request_update_raw(
+    (uint16_t) ph_state.in_line_number, 
+    (uint8_t *) &pkt->payload[0]);
 }
 
-
+// end of frame
 void handle_frame_end_raw(){
-  write_image_raw("capture_raw.bin", image_raw);
-  exit(0);
+  camera_api_request_complete_raw();
 }
 
 /**

@@ -128,6 +128,3 @@ void image_hfilter(
                 HFILTER_INPUT_STRIDE,
                 APP_IMAGE_WIDTH_PIXELS);
 }
-
-
-

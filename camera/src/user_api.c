@@ -11,7 +11,12 @@
 static image_t *user_image;
 streaming_chanend_t c_user_api;
 
+#if (RAW_CAPTURE)
+  uint8_t image_raw[MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES];
+#endif
 
+
+// ----------------------------------------------------------------
 void camera_api_init(
     streaming_chanend_t c_api)
 {
@@ -60,20 +65,24 @@ unsigned camera_capture_image(
   return s_chan_in_word(c_cam_api);
 }
 
-unsigned camera_capture_image_raw(
-    int8_t image_buff[CH][H][W],
-    streaming_chanend_t c_cam_api)
-{
-  int8_t *p_image = &image_buff[0][0][0];
-
-  s_chan_out_word(c_cam_api, (unsigned)p_image);
-  return s_chan_in_word(c_cam_api);
-}
-
 void camera_api_request_complete()
 {
   if(user_image){
     s_chan_out_word(c_user_api, 1);
     user_image = NULL;
   }
+}
+
+
+// ----------------------------------------------------------------
+void camera_api_request_update_raw(uint16_t line_number, uint8_t* img_row_ptr){
+  uint32_t pos = (line_number) * MIPI_LINE_WIDTH_BYTES;
+  c_memcpy((void*) &image_raw[pos], 
+         (void*) &img_row_ptr[0], 
+         MIPI_LINE_WIDTH_BYTES); 
+}
+
+void camera_api_request_complete_raw(){
+  write_image_raw("capture.bin", image_raw);
+  exit(0);
 }
