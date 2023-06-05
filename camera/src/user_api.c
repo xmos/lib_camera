@@ -60,6 +60,16 @@ unsigned camera_capture_image(
   return s_chan_in_word(c_cam_api);
 }
 
+unsigned camera_capture_image_raw(
+    int8_t image_buff[CH][H][W],
+    streaming_chanend_t c_cam_api)
+{
+  int8_t *p_image = &image_buff[0][0][0];
+
+  s_chan_out_word(c_cam_api, (unsigned)p_image);
+  return s_chan_in_word(c_cam_api);
+}
+
 void camera_api_request_complete()
 {
   if(user_image){

@@ -12,6 +12,13 @@
 #include "utils.h"
 #include "sensor.h"
 
+
+#define RAW_CAPTURE 1
+
+#if (RAW_CAPTURE)
+  uint8_t image_raw[MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES];
+#endif
+
 /**
  * State needed for the vertical filter
  */
@@ -48,7 +55,6 @@ void handle_frame_start(
 }
 
 
-
 static
 void handle_unknown_packet(
     const mipi_packet_t* pkt)
@@ -56,7 +62,7 @@ void handle_unknown_packet(
   // Do nothing
 }
 
-#define BYPASS_HFILTER 0
+
 /**
  * Handle a row of pixel data.
  * 
@@ -171,6 +177,18 @@ void handle_no_expected_lines(){
         }
 }
 
+
+void handle_expected_format_raw(const mipi_packet_t* pkt){
+    uint32_t pos = (ph_state.in_line_number) * MIPI_LINE_WIDTH_BYTES;
+    memcpy(&image_raw[pos], &pkt->payload[0], MIPI_LINE_WIDTH_BYTES); 
+}
+
+
+void handle_frame_end_raw(){
+  write_image_raw("capture_raw.bin", image_raw);
+  exit(0);
+}
+
 /**
  * Process a single packet.
  * 
@@ -247,6 +265,61 @@ void handle_packet(
 }
 
 
+static
+void handle_packet_raw(
+    const mipi_packet_t* pkt,
+    streaming_chanend_t c_out_row)
+{
+
+  __attribute__((aligned(8)))
+  static int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
+  static unsigned out_dex = 0;
+
+
+  // definitions
+  const mipi_header_t header = pkt->header;
+  const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
+
+  // At start-up we usually want to wait for a new frame before processing
+  // anything
+  if(ph_state.wait_for_frame_start 
+     && data_type != MIPI_DT_FRAME_START) return;
+
+  /*
+    The idea here is that logic that keeps the packet handler in a coherent
+    state, like tracking frame and line numbers, should go directly in here, but
+    logic that actually interprets, processes or reacts to packet data should go
+    into the individual functions.
+  */
+  switch(data_type)
+  {
+    case MIPI_DT_FRAME_START: 
+      ph_state.wait_for_frame_start = 0;
+      ph_state.in_line_number = 0;
+      ph_state.out_line_number = 0;
+      ph_state.frame_number++;
+      break;
+
+    case MIPI_DT_FRAME_END:   
+      handle_frame_end_raw();
+      out_dex = 1 - out_dex;
+      break;
+
+    case MIPI_EXPECTED_FORMAT:     
+      handle_no_expected_lines();
+      handle_expected_format_raw(pkt);
+
+      ph_state.in_line_number++;
+      break;
+
+    default:              
+        // We've received a packet we don't know how to interpret.
+      handle_unknown_packet(pkt);   
+      break;
+  }
+}
+
+
 /**
  * Top level of the packet handling thread. Receives MIPI packets from the
  * packet receiver and passes them to `handle_packet()` for parsing and
@@ -284,7 +357,11 @@ void mipi_packet_handler(
     //const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
     // unsigned time_start = measure_time();
-    handle_packet(pkt, c_out_row);
+    #if (RAW_CAPTURE)
+      handle_packet_raw(pkt, c_out_row);
+    #else
+      handle_packet(pkt, c_out_row);
+    #endif
     // unsigned time_proc = measure_time() - time_start;
 
   }

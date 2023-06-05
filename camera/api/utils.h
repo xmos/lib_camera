@@ -23,6 +23,8 @@ void write_image(
     uint8_t image[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]);
 void c_memcpy(void *dst, void *src, size_t size);
 void writeBMP(const char *filename, uint8_t img[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]);
+void write_image_raw(const char* filename,uint8_t *image);
+
 
 #if defined(__XC__) || defined(__cplusplus)
 }

@@ -112,9 +112,9 @@ void writeBMP(const char* filename, uint8_t img[APP_IMAGE_CHANNEL_COUNT][APP_IMA
     for (i = height - 1; i >= 0; i--) {
         for (j = 0; j < width; j++) {
             // Write the pixel data (assuming RGB order)
-            fwrite(&img[0][i][j], sizeof(unsigned char), 1, file); // Blue
+            fwrite(&img[2][i][j], sizeof(unsigned char), 1, file); // Blue
             fwrite(&img[1][i][j], sizeof(unsigned char), 1, file); // Green
-            fwrite(&img[2][i][j], sizeof(unsigned char), 1, file); // Red
+            fwrite(&img[0][i][j], sizeof(unsigned char), 1, file); // Red
             // For 4-channel images, you can write the alpha channel here
             // fwrite(&img[index + 3], sizeof(unsigned char), 1, file); // Alpha
         }
@@ -130,4 +130,24 @@ void writeBMP(const char* filename, uint8_t img[APP_IMAGE_CHANNEL_COUNT][APP_IMA
     printf("Outfile %s\n", filename);
     printf("image size (%dx%d)\n", APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_HEIGHT_PIXELS);
     free(img);
+}
+
+
+// Write image to disk. This is called by camera main () to do the work
+void write_image_raw(
+  const char* filename,
+  uint8_t *image)
+{
+  static FILE* img_file = NULL;
+  img_file = fopen(filename, "wb");
+  for(uint16_t k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
+    for(uint16_t j = 0; j < MIPI_LINE_WIDTH_BYTES; j++){
+      uint32_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
+      fwrite(&image[pos], sizeof(uint8_t), 1, img_file);
+      }
+  }
+  fclose(img_file);
+  printf("Outfile %s\n", filename);
+  printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
+  free(image);
 }
