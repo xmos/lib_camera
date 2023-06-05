@@ -12,7 +12,9 @@ static image_t *user_image;
 streaming_chanend_t c_user_api;
 
 #if (RAW_CAPTURE)
-  uint8_t image_raw[MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES];
+  static uint8_t image_raw[MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES];
+#else 
+  static uint8_t image_raw[0]; // Not needed
 #endif
 
 

@@ -17,7 +17,7 @@ file(GLOB_RECURSE SOURCES_ASM "*.S")
 
 add_library(${LIB_NAME} STATIC)
 
-target_include_directories(${LIB_NAME} PUBLIC . api)
+target_include_directories(${LIB_NAME} PUBLIC api)
 
 target_sources(${LIB_NAME}
     PRIVATE

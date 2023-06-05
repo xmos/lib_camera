@@ -6,7 +6,7 @@
 #define H APP_IMAGE_HEIGHT_PIXELS
 #define W APP_IMAGE_WIDTH_PIXELS
 
-#define RAW_CAPTURE 1
+// #define RAW_CAPTURE 0
 
 // Image structure
 typedef struct {

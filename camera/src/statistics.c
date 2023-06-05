@@ -33,9 +33,12 @@ void update_histogram(
 }
 
 
+
 /**
- * //TODO
- */
+* Compute skewness of channel. 
+* This is used by auto exposure
+* @param stats - * Pointer to channel statistics to update.
+*/
 void compute_skewness(channel_stats_t *stats)
 {
   const float zk_values[] = {
@@ -61,9 +64,11 @@ void compute_skewness(channel_stats_t *stats)
 }
 
 
+
 /**
- * //TODO
- */
+* Compute simple statistics for a set of data. 
+* @param stats - * Pointer to the channel statistics to be computed
+*/
 void compute_simple_stats(channel_stats_t *stats)
 {
   // Calculate the histogram
@@ -100,9 +105,8 @@ void find_percentile(channel_stats_t *stats, const float fraction)
   stats -> percentile = (uint8_t) result;
 }
 
-////////////////////////////
 
-
+// Main thread for the statistics
 void statistics_thread(
     streaming_chanend_t c_img_in,
     CLIENT_INTERFACE(sensor_control_if, sc_if))
@@ -148,18 +152,13 @@ void statistics_thread(
     else{
       // adjust exposure
       new_exp = AE_compute_new_exposure((float) new_exp, sk);
+      printf("new exp = %d\n", new_exp);
       sensor_control_set_exposure(sc_if, (uint8_t) new_exp);
     }
 
     // Adjust AWB 
     AWB_compute_gains(&global_stats, &awb_gains);
     AWB_print_gains(&awb_gains);
-
-    // Adjust AWB 
-    //float alfa  = 255.0/global_stats[0].percentile; // RED
-    //float beta  = 255.0/global_stats[1].percentile; // GREEN
-    //float gamma = 255.0/global_stats[2].percentile; // BLUE
-    //printf("awb:%f,%f,%f\n",alfa,beta,gamma);
 
   }
 }

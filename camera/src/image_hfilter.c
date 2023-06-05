@@ -21,7 +21,7 @@
 // must be zero, in each case.
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
 
-// float hfilter_coef[3] = { 0.20872991, 0.58254019, 0.20872991 };
+//Note: for filter coefficients reference : python/filters.txt
 
 #define A (0x1B)
 #define B (0x4B)
@@ -41,14 +41,9 @@ const int8_t hfilter_coef_bayered_odd[32] = {
   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 };
 
-
-//#define RED_GAIN    1
-//#define GREEN_GAIN  1
-//#define BLUE_GAIN   1
-
-#define RED_GAIN    1//1.3
-#define GREEN_GAIN  0.8//1
-#define BLUE_GAIN   1//1.3
+#define RED_GAIN    1.3
+#define GREEN_GAIN  0.8
+#define BLUE_GAIN   1.3
 
 int8_t hfilter_red[32] = {
   0x1B,0x00,0x4B,0x00,0x1B,0x00,0x00,0x00,

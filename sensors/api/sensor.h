@@ -92,12 +92,6 @@
 
 // ----------------------- Settings dependant of each sensor library
 
-// Camera functions to be called from main program
-#define camera_init(x)                  imx219_init(x)
-#define camera_start(x)                 imx219_stream_start(x)
-#define camera_configure(x)             imx219_configure_mode(x)
-#define camera_set_exposure(iic,ex)     imx219_set_gain_dB(iic,ex)
-
 // Camera dependant (do not edit)
 #define MIPI_LINE_WIDTH_BYTES MIPI_IMAGE_WIDTH_BYTES
 #define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)

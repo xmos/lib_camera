@@ -15,7 +15,7 @@ float AE_compute_mean_skewness(global_stats_t *gstats){
     sk += (*gstats)[0].skewness;
     sk += (*gstats)[1].skewness;
     sk += (*gstats)[2].skewness;
-    sk = sk / 3;
+    sk = sk / 3.0;
     return sk;
 }
 
@@ -42,7 +42,7 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
     c  = b - fb*((b - a)/(fb - fa));
 
     // each X samples, restart AE algorithm
-    if (count < 20){
+    if (count < 5){
         count = count + 1;
     }
     else{
@@ -53,7 +53,7 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
         b = 80;
         fb = 1;
     }
-    return (uint8_t)c;
+    return c;
 }
 
 

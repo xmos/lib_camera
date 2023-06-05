@@ -7,10 +7,7 @@
 
 #define USE_SIMPLE_FILTER 0
 
-// float vfilter_coef[5] = {
-//   0.0248892,  0.2528858,  0.44445, 0.2528858,  0.0248892
-// };
-
+//Note: for filter coefficients reference : python/filters.txt
 
 #if USE_SIMPLE_FILTER
 

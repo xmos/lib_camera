@@ -8,10 +8,11 @@ void user_app(streaming_chanend_t c_cam_api){
   int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
   uint8_t out_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
 
-  for(int8_t k = 0; k < APP_IMAGE_CHANNEL_COUNT; k++){
-    memset(&image_buffer[k][0][0], -128, APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS); // important to set to 0 in int8 (-128)
-  }
-  
+
+  // set the input image to 0
+  memset(image_buffer, -128, APP_IMAGE_CHANNEL_COUNT * APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS);
+
+  // Wait for the image to set exposure
   delay_milliseconds(5000);
   printf("Requesting image...\n");
   camera_capture_image(image_buffer, c_cam_api);
