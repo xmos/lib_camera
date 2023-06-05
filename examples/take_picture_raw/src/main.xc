@@ -5,7 +5,7 @@
 
 #include "i2c.h"
 #include "camera.h"
-
+#include "app_raw.h"
 
 // I2C interface ports
 #define Kbps 400
@@ -31,7 +31,7 @@ int main(void)
   par {
     on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, Kbps);
 
-    on tile[MIPI_TILE]: camera_main(tile[MIPI_TILE],
+    on tile[MIPI_TILE]: camera_main_raw(tile[MIPI_TILE],
                                     p_mipi_clk, 
                                     p_mipi_rxa, 
                                     p_mipi_rxv, 
@@ -39,6 +39,8 @@ int main(void)
                                     clk_mipi, 
                                     i2c[0], 
                                     c_cam_api);
+
+    on tile[MIPI_TILE]: user_app_raw(c_cam_api);
   }
   return 0;
 }

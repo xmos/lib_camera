@@ -66,10 +66,6 @@ unsigned image_vfilter_process_row(
     vfilter_acc_t acc[],
     const int8_t pixel_data[]);
 
-// unsigned image_vfilter_process_row_null(
-//     int8_t output[],
-//     vfilter_acc_t acc[]);
-
 unsigned image_vfilter_drain(
     int8_t output[],
     vfilter_acc_t acc[]);

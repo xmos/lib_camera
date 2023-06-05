@@ -264,11 +264,6 @@ void handle_packet_raw(
     streaming_chanend_t c_out_row)
 {
 
-  __attribute__((aligned(8)))
-  static int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
-  static unsigned out_dex = 0;
-
-
   // definitions
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
@@ -295,7 +290,6 @@ void handle_packet_raw(
 
     case MIPI_DT_FRAME_END:   
       handle_frame_end_raw();
-      out_dex = 1 - out_dex;
       break;
 
     case MIPI_EXPECTED_FORMAT:     
@@ -306,7 +300,6 @@ void handle_packet_raw(
       break;
 
     default:              
-        // We've received a packet we don't know how to interpret.
       handle_unknown_packet(pkt);   
       break;
   }
@@ -350,16 +343,54 @@ void mipi_packet_handler(
     //const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
     // unsigned time_start = measure_time();
-    #if (RAW_CAPTURE)
-      handle_packet_raw(pkt, c_out_row);
-    #else
-      handle_packet(pkt, c_out_row);
-    #endif
+    handle_packet(pkt, c_out_row);
     // unsigned time_proc = measure_time() - time_start;
 
   }
 }
 
+
+/**
+ * Top level of the packet handling thread. Receives MIPI packets from the
+ * packet receiver and passes them to `handle_packet()` for parsing and
+ * processing.
+ */
+void mipi_packet_handler_raw(
+    streaming_chanend_t c_pkt, 
+    streaming_chanend_t c_ctrl,
+    streaming_chanend_t c_out_row,
+    streaming_chanend_t c_user_api)
+{
+  /*
+   * These buffers will be used to hold received MIPI packets while they're
+   * being processed.
+   */
+  __attribute__((aligned(8)))
+  mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
+  unsigned pkt_idx = 0;
+
+  camera_api_init(c_user_api);
+  
+  // Give the MIPI packet receiver a first buffer
+  s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
+
+  while(1) {
+    pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT-1);
+
+    mipi_packet_t * pkt = (mipi_packet_t*) s_chan_in_word(c_pkt);
+    // Swap buffers with the receiver thread. Give it the next buffer
+    // to fill and take the last filled buffer from it.    
+    s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
+
+    // Process the packet
+    //const mipi_header_t header = pkt->header;
+    //const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
+
+    // unsigned time_start = measure_time();
+    handle_packet_raw(pkt, c_out_row);
+    // unsigned time_proc = measure_time() - time_start;
+  }
+}
 
 
 // NOTES

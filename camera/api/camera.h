@@ -46,4 +46,14 @@ void camera_main(
     client interface i2c_master_if i2c,
     streaming chanend c_user_api);
 
+void camera_main_raw(
+    tileref mipi_tile,
+    in port p_mipi_clk,
+    in port p_mipi_rxa,
+    in port p_mipi_rxv,
+    buffered in port:32 p_mipi_rxd,
+    clock clk_mipi,
+    client interface i2c_master_if i2c,
+    streaming chanend c_user_api);
+
 #endif //__XC__

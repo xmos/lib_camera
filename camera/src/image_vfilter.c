@@ -125,36 +125,6 @@ unsigned image_vfilter_process_row(
 }
 
 /**
- * 
- * 
- */
-unsigned image_vfilter_process_row_null(
-    int8_t output[],
-    vfilter_acc_t acc[])
-{
-  for(int k = 0; k < VFILTER_ACC_COUNT; k++){
-    acc[k].next_tap++;
-  }
-
-  for(int k = 0; k < VFILTER_ACC_COUNT; k++){
-    if(acc[k].next_tap != VFILTER_TAP_COUNT) continue;
-
-    // produce an output row from accumulator
-    pixel_vfilter_complete(output,
-                            acc[k].buff,
-                            vfilter_shift,
-                            APP_IMAGE_WIDTH_PIXELS);
-
-    // reset the accumulator
-    image_vfilter_reset(&acc[k]);
-
-    return 1;
-  }
-
-  return 0;
-}
-
-/**
  * After the last line of the image, some of the accumulators will be midway
  * through processing the image but still need to be output without maccing
  * any more inputs.

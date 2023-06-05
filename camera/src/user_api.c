@@ -8,15 +8,12 @@
 #include "utils.h"
 #include "user_api.h"
 
+// Pointers to both downsampled or raw
 static image_t *user_image;
+static int8_t  *image_raw_ptr; 
+
+// In order to interface the handler and api
 streaming_chanend_t c_user_api;
-
-#if (RAW_CAPTURE)
-  static uint8_t image_raw[MIPI_IMAGE_HEIGHT_PIXELS*MIPI_LINE_WIDTH_BYTES];
-#else 
-  static uint8_t image_raw[0]; // Not needed
-#endif
-
 
 // ----------------------------------------------------------------
 void camera_api_init(
@@ -77,14 +74,24 @@ void camera_api_request_complete()
 
 
 // ----------------------------------------------------------------
+unsigned camera_capture_image_raw(
+  int8_t image_buff[H_RAW*W_RAW],
+  streaming_chanend_t c_cam_api
+)
+{
+  image_raw_ptr = (int8_t*)&image_buff[0];
+  c_user_api = c_cam_api;
+  unsigned tmp = s_chan_in_word(c_cam_api);
+  return tmp;
+}
+
 void camera_api_request_update_raw(uint16_t line_number, uint8_t* img_row_ptr){
   uint32_t pos = (line_number) * MIPI_LINE_WIDTH_BYTES;
-  c_memcpy((void*) &image_raw[pos], 
+  c_memcpy((void*) &image_raw_ptr[pos], 
          (void*) &img_row_ptr[0], 
          MIPI_LINE_WIDTH_BYTES); 
 }
 
 void camera_api_request_complete_raw(){
-  write_image_raw("capture.bin", image_raw);
-  exit(0);
+  s_chan_out_word(c_user_api, 1);
 }

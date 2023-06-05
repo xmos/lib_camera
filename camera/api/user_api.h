@@ -6,6 +6,9 @@
 #define H APP_IMAGE_HEIGHT_PIXELS
 #define W APP_IMAGE_WIDTH_PIXELS
 
+#define H_RAW MIPI_IMAGE_WIDTH_PIXELS
+#define W_RAW MIPI_IMAGE_HEIGHT_PIXELS
+
 // #define RAW_CAPTURE 0
 
 // Image structure
@@ -26,6 +29,9 @@ void camera_api_request_update(
     const int8_t image_row[CH][W],
     const unsigned row_index);
 
+
+
 // RAW
+unsigned camera_capture_image_raw(int8_t image_buff[H_RAW * W_RAW], streaming_chanend_t c_cam_api);
 void camera_api_request_update_raw(uint16_t line_number, uint8_t *img_row_ptr);
 void camera_api_request_complete_raw();

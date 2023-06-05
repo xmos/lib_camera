@@ -136,14 +136,14 @@ void writeBMP(const char* filename, uint8_t img[APP_IMAGE_CHANNEL_COUNT][APP_IMA
 // Write image to disk. This is called by camera main () to do the work
 void write_image_raw(
   const char* filename,
-  uint8_t *image)
+  int8_t *image)
 {
   static FILE* img_file = NULL;
   img_file = fopen(filename, "wb");
   for(uint16_t k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
     for(uint16_t j = 0; j < MIPI_LINE_WIDTH_BYTES; j++){
       uint32_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
-      fwrite(&image[pos], sizeof(uint8_t), 1, img_file);
+      fwrite(&image[pos], sizeof(int8_t), 1, img_file);
       }
   }
   fclose(img_file);

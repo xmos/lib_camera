@@ -125,6 +125,7 @@ void statistics_thread(
       if(row == NULL) 
         break;
 
+      // Update histogram
       for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
         update_histogram(
           &global_stats[channel].histogram, 
@@ -132,6 +133,7 @@ void statistics_thread(
           );
       }
     }
+    
     // End of frame
     for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
       compute_skewness(&global_stats[channel]);
