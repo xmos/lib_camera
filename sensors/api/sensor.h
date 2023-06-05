@@ -96,19 +96,71 @@
 #define camera_init(x)                  imx219_init(x)
 #define camera_start(x)                 imx219_stream_start(x)
 #define camera_configure(x)             imx219_configure_mode(x)
+#define camera_set_exposure(iic,ex)     imx219_set_gain_dB(iic,ex)
 
 // Camera dependant (do not edit)
 #define MIPI_LINE_WIDTH_BYTES MIPI_IMAGE_WIDTH_BYTES
 #define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
 #define MIPI_TILE 1
 #define EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
-
+#define MIPI_EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
 // SRAM Image storage (do not edit)
 //TODO check maximum storage size for the image
 #define MAX_MEMORY_SIZE 500000 << 2 //becasue half needed is code
 
 #if MIPI_IMAGE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS > MAX_MEMORY_SIZE
     #warning "The image appears to be too large for the available internal RAM.!"
+#endif
+
+
+
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+#define SENSOR_BIT_DEPTH        (8)
+#define SENSOR_RAW_IMAGE_WIDTH_PIXELS MIPI_IMAGE_WIDTH_PIXELS
+#define SENSOR_RAW_IMAGE_HEIGHT_PIXELS MIPI_IMAGE_HEIGHT_PIXELS
+
+#define APP_DECIMATION_FACTOR    (4)
+
+#define APP_IMAGE_WIDTH_PIXELS   (SENSOR_RAW_IMAGE_WIDTH_PIXELS \
+                                  / APP_DECIMATION_FACTOR)
+
+#define APP_IMAGE_HEIGHT_PIXELS   (SENSOR_RAW_IMAGE_HEIGHT_PIXELS \
+                                   / APP_DECIMATION_FACTOR)
+
+#define APP_IMAGE_CHANNEL_COUNT   (3)
+
+#define APP_IMAGE_SIZE_PIXELS     (APP_IMAGE_WIDTH_PIXELS \
+                                   * APP_IMAGE_HEIGHT_PIXELS)
+
+#define APP_IMAGE_SIZE_BYTES      (APP_IMAGE_SIZE_PIXELS \
+                                   * APP_IMAGE_CHANNEL_COUNT )
+
+
+#define CHAN_RED    0
+#define CHAN_GREEN  1
+#define CHAN_BLUE   2
+
+// Number of bits to collapse channel cardinality (larger value results in fewer
+// histogram bins)
+#ifndef APP_HISTOGRAM_QUANTIZATION_BITS
+#define APP_HISTOGRAM_QUANTIZATION_BITS   (2)
+#endif
+
+
+// Not every pixel of the image will be sampled. This is the distance between
+// sampled values in a row.
+#ifndef APP_HISTOGRAM_SAMPLE_STEP
+#define APP_HISTOGRAM_SAMPLE_STEP   (1)
+#endif
+
+// The percentile to look for when applying white balance adjustments, as a
+// fraction. (0.95 will find the value which 95% of pixels are less than or
+// equal to)
+#ifndef APP_WB_PERCENTILE
+#define APP_WB_PERCENTILE   (0.95)
 #endif
 
 

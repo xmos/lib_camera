@@ -3,7 +3,7 @@
 #**********************
 
 # <--- Set the executable
-set(TARGET example_take_picture_dynamic)  
+set(TARGET example_take_picture_downsample)  
 
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
 set(APP_INCLUDES
@@ -24,6 +24,7 @@ set(APP_COMPILER_FLAGS
     -target=${XCORE_TARGET}
     ${CONFIG_XSCOPE_PATH}/config.xscope
 )
+
 
 set(APP_COMPILE_DEFINITIONS
     configENABLE_DEBUG_PRINTF=1
