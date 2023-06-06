@@ -464,15 +464,15 @@ def run_histogram_equalization(img_bgr):
 
 def show_histogram_by_channel(image):
     # Set the histogram bins to 256, the range to 0-255
-    hist_size = 256
-    hist_range = (0, 256)
+    hist_size = 260
+    hist_range = (0, 255)
 
     # Plot the histograms using plt.hist
     plt.figure(figsize=(10, 5))
     for i, col in enumerate(['r', 'g', 'b']):
         plt.subplot(1, 3, i+1)
         plt.title(f'{col.upper()} Histogram')
-        plt.xlim([0, 255])
+        plt.xlim([0, hist_size])
         plt.hist(image[:,:,i].ravel(), bins=hist_size, range=hist_range, color=col)
     plt.show()
 
@@ -480,7 +480,7 @@ def show_histogram_by_channel(image):
 def show_histogram_by_channel_ax(image, ax):
     # Set the histogram bins to 256, the range to 0-255
     hist_size = 256
-    hist_range = (0, 256)
+    hist_range = (0, hist_size)
 
     # Plot the histograms using plt.hist
     for i, col in enumerate(['r', 'g', 'b']):
@@ -489,6 +489,7 @@ def show_histogram_by_channel_ax(image, ax):
 
 
 def plot_imgs(img, img_raw_RGB, flip, ax=None):
+    hist_size = 256
     if ax is None:
         fig, ax = plt.subplots(2, 2, figsize=(16, 8))
     if flip:
@@ -503,9 +504,9 @@ def plot_imgs(img, img_raw_RGB, flip, ax=None):
     # plt.show()
 
     # plot histogram
-    ax3.hist(img.mean(axis=2).flatten(), 255)
-    ax3.hist(img_raw_RGB.mean(axis=2).flatten(), 255)
-    ax3.axis(xmin=0,xmax=255)
+    ax3.hist(img.mean(axis=2).flatten(), hist_size)
+    ax3.hist(img_raw_RGB.mean(axis=2).flatten(), hist_size)
+    ax3.axis(xmin=0,xmax=hist_size)
     ax3.legend(["processed", "unprocessed"])
 
     # show histogram for 3 channels

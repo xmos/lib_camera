@@ -25,5 +25,23 @@ typedef struct {
 
 void AWB_compute_gains(global_stats_t *gstats, AWB_gains_t *gains);
 void AWB_print_gains(AWB_gains_t *gains);
+int8_t AWB_compute_filter_gain(int8_t coeff, float factor);
 
-#endif
+
+// ---------------------------------- GAMMA ------------------------------
+extern const uint8_t gamma_1p8_s1[255];
+void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img);
+
+
+// -------------------------- ROTATE/RESIZE -------------------------------------
+void isp_bilinear_resize(
+    const uint16_t in_width, 
+    const uint16_t in_height, 
+    uint8_t *img, 
+    const uint16_t out_width, 
+    const uint16_t out_height, 
+    uint8_t *out_img);
+
+void isp_rotate_image(const uint8_t *src, uint8_t *dest, int width, int height);
+
+#endif // ISP_H

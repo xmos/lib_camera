@@ -161,7 +161,10 @@ void statistics_thread(
     // Adjust AWB 
     AWB_compute_gains(&global_stats, &awb_gains);
     AWB_print_gains(&awb_gains);
-
+    // Apply gains
+    //RED_GAIN = 1.4;//= awb_gains.alfa;
+    //GREEN_GAIN = awb_gains.beta;
+    //BLUE_GAIN = awb_gains.gamma;
   }
 }
 

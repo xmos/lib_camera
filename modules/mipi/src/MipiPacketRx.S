@@ -2,8 +2,8 @@
 #include <xs1.h>
 #include <xs3a_registers.h>
 
-// XOR VERSION
-// BYTEREV DISABLED
+// XOR      ENABLED
+// BYTEREV  DISABLED
 
 /****************************************************
  ****************************************************

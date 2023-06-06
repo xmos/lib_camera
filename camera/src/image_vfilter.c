@@ -5,47 +5,21 @@
 
 #include "image_vfilter.h"
 
-#define USE_SIMPLE_FILTER 0
-
 //Note: for filter coefficients reference : python/filters.txt
+static
+const int32_t vfilter_acc_offset = 0;
 
-#if USE_SIMPLE_FILTER
+static
+const int8_t vfilter_coef[5][16] = {
+  {  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,},
+  { 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,},
+  {114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,},
+  { 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,},
+  {  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,},
+};
 
-    static
-    const int32_t vfilter_acc_offset = 0;
-
-    static
-    const int8_t vfilter_coef[5][16] = {
-      {0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1},
-      {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0},
-      {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0},
-      {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0},
-      {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0},
-    };
-
-    static
-    const int16_t vfilter_shift[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-
-#else 
-
-    static
-    const int32_t vfilter_acc_offset = 0;
-
-    static
-    const int8_t vfilter_coef[5][16] = {
-      {  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,},
-      { 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,},
-      {114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,114,},
-      { 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,},
-      {  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,},
-    };
-
-    static
-    const int16_t vfilter_shift[16] = {8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,};
-
-#endif
-
-
+static
+const int16_t vfilter_shift[16] = {8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,};
 
 /**
  * Prepare the provided accumulator struct for accumulation.

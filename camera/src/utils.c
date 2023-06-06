@@ -7,7 +7,13 @@
 
 #include "utils.h"
 
-// Write image to disk. This is called by camera main () to do the work
+
+/**
+* Write image to a binary file containing RGB data
+* 
+* @param filename -Name of the image
+* @param image - Image corresponding to a 3D array of uint8_t 
+*/
 void write_image(
     const char* filename,
     uint8_t image[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS])
@@ -27,8 +33,32 @@ void write_image(
   fclose(img_file);
   printf("Outfile %s\n", filename);
   printf("image size (%dx%d)\n", APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_HEIGHT_PIXELS);
-  free(image);
 }
+
+
+/**
+* Write image to a binary file containing RAW data
+* 
+* @param filename -Name of the image
+* @param image - Pointer to 1D uint8 array
+*/
+void write_image_raw(
+  const char* filename,
+  int8_t *image)
+{
+  static FILE* img_file = NULL;
+  img_file = fopen(filename, "wb");
+  for(uint16_t k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
+    for(uint16_t j = 0; j < MIPI_LINE_WIDTH_BYTES; j++){
+      uint32_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
+      fwrite(&image[pos], sizeof(int8_t), 1, img_file);
+      }
+  }
+  fclose(img_file);
+  printf("Outfile %s\n", filename);
+  printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
+}
+
 
 
 // This is called when want to memcpy from Xc to C
@@ -41,8 +71,35 @@ void c_memcpy(
 }
 
 
+/**
+* Rotate the image by 90 degrees. This is useful for rotating images that are stored in a 3x3 array of uint8_t
+* 
+* @param filename - Name of the file to rotate
+* @param image - Array of uint8_t that is to be
+*/
+void rotate_image(
+  const char* filename,
+  uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS])
+{
+  for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++) {
+    for(int k = 0; k < APP_IMAGE_HEIGHT_PIXELS/2; k++) {
+      for(int j = 0; j < APP_IMAGE_WIDTH_PIXELS; j++) {
+        uint8_t a = image_buffer[c][k][j];
+        uint8_t b = image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1];
+        image_buffer[c][k][j] = b;
+        image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1] = a;
+      }
+    } 
+  }
+}
 
-// Function to write the image data to a BMP file
+
+/**
+* Writes BMP image to file. This function is used to write a bmp image to a file.
+* 
+* @param filename - Name of file to write to. The file must end with. bmp
+* @param img - Array of uint8_t that contains the image
+*/
 void writeBMP(const char* filename, uint8_t img[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]) {
     int width = APP_IMAGE_WIDTH_PIXELS;
     int height = APP_IMAGE_HEIGHT_PIXELS;
@@ -129,25 +186,22 @@ void writeBMP(const char* filename, uint8_t img[APP_IMAGE_CHANNEL_COUNT][APP_IMA
     fclose(file);
     printf("Outfile %s\n", filename);
     printf("image size (%dx%d)\n", APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_HEIGHT_PIXELS);
-    free(img);
 }
 
 
-// Write image to disk. This is called by camera main () to do the work
-void write_image_raw(
-  const char* filename,
-  int8_t *image)
+// Convert int8_t to uint8_t image
+void img_int8_to_uint8(
+  int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS],
+  uint8_t out_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]
+)
 {
-  static FILE* img_file = NULL;
-  img_file = fopen(filename, "wb");
-  for(uint16_t k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
-    for(uint16_t j = 0; j < MIPI_LINE_WIDTH_BYTES; j++){
-      uint32_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
-      fwrite(&image[pos], sizeof(int8_t), 1, img_file);
+  // Add 128 to all elements
+  for(uint16_t c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++){
+    for(uint16_t k = 0; k < APP_IMAGE_HEIGHT_PIXELS; k++){
+      for(uint16_t j = 0; j < APP_IMAGE_WIDTH_PIXELS; j++){
+        int8_t val = image_buffer[c][k][j];
+        out_buffer[c][k][j] = val + 128;
       }
+    }
   }
-  fclose(img_file);
-  printf("Outfile %s\n", filename);
-  printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
-  free(image);
 }
