@@ -1,0 +1,42 @@
+"""
+Info of RAW streams
+
+SBGGR8:
+    640x480 : pixels
+    BGGR is the order of the Bayer pattern
+    
+SBGGR10_CSI2P :
+    640x480 stride 800 : bytes per line
+    SBGGR10_CSI2P : 10bits per pixel, CSI2 packed format
+    BGGR is the order of the Bayer pattern
+    few padding bytes on the end of every row to match bits
+"""
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image  # just to avoid color BGR issues when writting
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+
+from utils import *
+
+input_name = os.getenv('BINARY_IMG_PATH')
+
+# read the data
+with open(input_name, "rb") as f:
+    data = f.read()
+
+# unpack
+width, height = 160, 120
+buffer = np.frombuffer(data, dtype=np.uint8)
+img = buffer.reshape(height, width, 3)
+print("unpacked_data")
+
+# show image
+plt.figure()
+plt.imshow(img)
+plt.show()
+
+# show histograms
+show_histogram_by_channel(img)

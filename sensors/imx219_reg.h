@@ -6,47 +6,28 @@
 #define TRSTUS 200
 
 // CSI LANE
-#define CSI_LANE_MODE_REG   0x0114
+#define CSI_LANE_MODE_REG 0x0114
 #define CSI_LANE_MODE_2_LANES 1 
 #define CSI_LANE_MODE_4_LANES 3
 
 // BINNING
-#define BINNING_MODE_REG    0x0174	// HORIZONTAL | VERTICAL
-#define BINNING_NONE	    0x0000
-#define BINNING_2X2		    0x0101
-#define BINNING_4X4		    0x0202
-#define BINNING_2Sx2		0x0302
-#define BINNING_2X2_AN		0x0303
+#define BINNING_MODE_REG 0x0174
+#define BINNING_NONE	 0x0000
+#define BINNING_2X2		 0x0101
 
-#if ((CONFIG_MODE == MODE_1920_1080) || (CONFIG_MODE == MODE_WQSXGA_RAW8))
-    #define BINNING_MODE BINNING_NONE
-    #define VTPXCK_DIV  0x05
-#else
-    #define BINNING_MODE BINNING_2X2
-    #define VTPXCK_DIV  0x0A
-#endif
+#define BINNING_MODE BINNING_2X2
 
 // PLL settings
 #define PREPLLCK_VT_DIV_REG 0x0304 
+#define PREPLLCK_OP_DIV     0x0305 
+#define PREDVIDE_2          0x02
 #define PLL_VT_MPY_REG      0x0306 
+#define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 // Gain params
-#define GAIN_MIN_DB         0
-#define GAIN_MAX_DB         84
-#define GAIN_DEFAULT_DB     28
-#define GAIN_DB             GAIN_DEFAULT_DB
-
-// Orientation
-#define ORIENTATION_REG		0x0172
-                            //  H | V
-#define FLIP_NONE           (0 | (0 << 1))
-#define FLIP_HORIZONTAL     (1 | (0 << 1))
-#define FLIP_VERTICAL       (0 | (1 << 1))
-#define FLIP_BOTH           (1 | (1 << 1))
-#define SELECTED_FLIP       FLIP_NONE
-
-
-
+#define GAIN_MIN_DB       0
+#define GAIN_MAX_DB      84
+#define GAIN_DEFAULT_DB  50
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static imx219_settings_t imx219_common_regs[] = {
@@ -65,19 +46,20 @@ static imx219_settings_t imx219_common_regs[] = {
 	{0x30eb, 0x09},
 
 	/* PLL Clock Table */
-	{ 0x812A, 0x1800 }, // EXCK_FREQ        24.00, for 24 Mhz 
-	{ 0x0304, 0x02 }, // PREPLLCK_VT_DIV      2, for pre divide by 2 
-	{ 0x0305, 0x02 }, // PREPLLCK_OP_DIV      2, for pre divide by 2 
-	{ 0x8306, PLL_VT_MPY}, // PLL_VT_MPY        0x27, for multiply by 39, pixclk=187.2 MHz 
-	{ 0x830C, 0x40}, // PLL_OP_MPY        0x40, for multiply by 64, MIPI clk=768 MHz 
-	{ 0x0301, VTPXCK_DIV}, // VTPXCK_DIV           5, // Options: 05, 08 or 0A (higher the slowest)
-	{ 0x0303, 0x01 }, // VTSYCK_DIV           1, ? 
-	{ 0x0309, 0x08 }, // OPPXCK_DIV           8, has to match RAW8 if you have raw8
-	{ 0x030B, 0x01 }, // OPSYCK_DIV           1, has to be 1? 
+	{ 0x812A, 0x1800 }, /* EXCK_FREQ        24.00, for 24 Mhz */
+	{ 0x0304,   0x02 }, /* PREPLLCK_VT_DIV      2, for pre divide by 2 */
+	{ 0x0305,   0x02 }, /* PREPLLCK_OP_DIV      2, for pre divide by 2 */
+	{ 0x8306,  PLL_VT_MPY}, /* PLL_VT_MPY        0x27, for multiply by 39, pixclk=187.2 MHz */
+	{ 0x830C,  PLL_OP_MPY}, /* PLL_OP_MPY        0x40, for multiply by 64, MIPI clk=768 MHz */
+	{ 0x0301,   0x0A }, /* VTPXCK_DIV           5, ? */
+	{ 0x0303,   0x01 }, /* VTSYCK_DIV           1, ? */
+	{ 0x0309,   0x0A }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
+	{ 0x030B,   0x01 }, /* OPSYCK_DIV           1, has to be 1? */
     
-    // min_line_blanking_pck
+    // pck clock
     {0x1148,    0x00},    
-    {0x1149,    0xA8},
+    {0x1149,    0xF0},
+    
 
 	/* Undocumented registers */
 	{0x455e, 0x00},
@@ -107,9 +89,12 @@ static imx219_settings_t imx219_common_regs[] = {
 };
 
 
+
+
 static imx219_settings_t imx219_lanes_regs[] = {
     {CSI_LANE_MODE_REG, CSI_LANE_MODE_2_LANES}
 };
+
 
 
 static imx219_settings_t mode_640_480_regs[] = {
@@ -150,43 +135,6 @@ static imx219_settings_t mode_1640_1232_regs[] = {
 	{0x0627, 0xd0},
 };
 
-static imx219_settings_t mode_1920_1080_regs[] = {
-	{0x0164, 0x02},
-	{0x0165, 0xa8},
-	{0x0166, 0x0a},
-	{0x0167, 0x27},
-	{0x0168, 0x02},
-	{0x0169, 0xb4},
-	{0x016a, 0x06},
-	{0x016b, 0xeb},
-	{0x016c, 0x07},
-	{0x016d, 0x80},
-	{0x016e, 0x04},
-	{0x016f, 0x38},
-	{0x0624, 0x07},
-	{0x0625, 0x80},
-	{0x0626, 0x04},
-	{0x0627, 0x38},
-};
-
-static imx219_settings_t mode_3280x2464_regs[] = {
-	{0x0164, 0x00},
-	{0x0165, 0x00},
-	{0x0166, 0x0c},
-	{0x0167, 0xcf},
-	{0x0168, 0x00},
-	{0x0169, 0x00},
-	{0x016a, 0x09},
-	{0x016b, 0x9f},
-	{0x016c, 0x0c},
-	{0x016d, 0xd0},
-	{0x016e, 0x09},
-	{0x016f, 0xa0},
-	{0x0624, 0x0c},
-	{0x0625, 0xd0},
-	{0x0626, 0x09},
-	{0x0627, 0xa0},
-};
 
 static imx219_settings_t raw10_framefmt_regs[] = {
 	{0x018c, 0x0a},
