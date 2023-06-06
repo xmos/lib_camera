@@ -5,7 +5,7 @@
 # <--- Set the executable
 set(TARGET example_timing)  
 
-file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
+file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.xc)
 set(APP_INCLUDES
     ${CMAKE_CURRENT_LIST_DIR}/src
 )
@@ -48,7 +48,9 @@ set(APP_COMMON_LINK_LIBRARIES
         core::general                           
         mipi::lib_mipi
         i2c::lib_i2c
-        sensors::lib_imx 
+        sensors::lib_imx
+        fwk_camera::utils
+        fwk_camera::xscope_fileio
     )
 
 
