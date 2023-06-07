@@ -2,6 +2,8 @@
 #include <xs1.h>
 #include <xs3a_registers.h>
 
+// XOR      ENABLED
+// BYTEREV  DISABLED
 
 /****************************************************
  ****************************************************
@@ -150,6 +152,13 @@ FUNCTION_NAME:
   
 #endif
 
+ldc r8, 0x80
+shl r9, r8, 8
+or r8, r8, r9
+shl r9, r8, 16
+or r8, r8, r9
+
+
 .L_GET_NEXT_BUFFER:
 
 { in BUFF, res[C_PKT]         ;                             }
@@ -182,6 +191,7 @@ FUNCTION_NAME:
 { in S0, res[P_RXD]           ; add BUFF, BUFF, 4           }
 .L_RX_LONG_LOOP:
   // { byterev S0, S0              ;                             }
+  { xor S0, S0, r8              ;                             }
   { add BUFF, BUFF, 4           ; stw S0, BUFF[0]             }
   { in S0, res[P_RXD]           ; bu .L_RX_LONG_LOOP          }
 
@@ -263,7 +273,7 @@ FUNCTION_NAME:
 //   it can just look in the buffer.
 // 
 // Actually, for now, just assert on any errors.
-{ out res[C_PKT], BUFF_HEAD   ; ecallt S0                   }
+{ out res[C_PKT], BUFF_HEAD   ;                    }
 
 // And now we need a new buffer
 // Also reenable events.

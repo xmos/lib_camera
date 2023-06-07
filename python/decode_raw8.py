@@ -47,7 +47,9 @@ with open(input_name, "rb") as f:
 
 
 # unpack
-buffer = np.frombuffer(data, dtype=np.uint8)
+buffer = np.frombuffer(data, dtype=np.int8) + 128 # convert to uint8 
+buffer = buffer.astype(np.uint8)
+
 img = buffer.reshape(height, width, 1)
 print("unpacked_data")
 

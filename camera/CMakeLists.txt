@@ -17,7 +17,7 @@ file(GLOB_RECURSE SOURCES_ASM "*.S")
 
 add_library(${LIB_NAME} STATIC)
 
-target_include_directories(${LIB_NAME} PUBLIC . asm)
+target_include_directories(${LIB_NAME} PUBLIC api)
 
 target_sources(${LIB_NAME}
     PRIVATE
@@ -27,4 +27,12 @@ target_sources(${LIB_NAME}
         ${SOURCES_ASM}
 )
 
+target_compile_options(${LIB_NAME}
+  PUBLIC
+    -Os
+    -g
+    -fxscope
+    -mcmodel=large )
+
+target_link_libraries(${LIB_NAME} PUBLIC mipi::lib_mipi sensors::lib_imx)
 add_library(camera::lib_camera ALIAS ${LIB_NAME})
