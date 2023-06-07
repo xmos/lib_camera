@@ -44,8 +44,7 @@ set(APP_LINK_OPTIONS
 )
 
 # <--- Link libraries
-set(APP_COMMON_LINK_LIBRARIES
-        core::general                           
+set(APP_COMMON_LINK_LIBRARIES                     
         mipi::lib_mipi
         i2c::lib_i2c
         sensors::lib_imx 
