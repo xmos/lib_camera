@@ -5,9 +5,10 @@
 #include <xcore/channel_streaming.h>
 // user
 #include "mipi.h"
-#include "utils.h"
+//#include "utils.h"
 #include "user_api.h"
 #include "app_raw.h"
+#include "utils_new.h"
 
 void user_app_raw(streaming_chanend_t c_cam_api){
     
@@ -24,6 +25,7 @@ void user_app_raw(streaming_chanend_t c_cam_api){
     printf("Image captured...\n");
     
     // Save the image to a file
-    write_image_raw("capture.bin", image_buffer);
+    //write_image_raw("capture.bin", image_buffer);
+    write_image_new("capture.bin", image_buffer, MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES);
     exit(0);
 }
