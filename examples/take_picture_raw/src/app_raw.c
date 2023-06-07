@@ -15,8 +15,8 @@ void user_app_raw(streaming_chanend_t c_cam_api){
     int8_t image_buffer[H_RAW*W_RAW];
     memset(image_buffer, -128, H_RAW*W_RAW);
 
-    // wait for set the camera
-    delay_milliseconds(500);
+    // wait for the camera to set I2C parameters
+    delay_milliseconds(2500);
 
     // Request an image
     printf("Requesting image...\n");
