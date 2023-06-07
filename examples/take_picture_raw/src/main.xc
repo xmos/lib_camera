@@ -12,6 +12,9 @@
 on tile[0]: port p_scl = XS1_PORT_1N;
 on tile[0]: port p_sda = XS1_PORT_1O;
 
+extern "C" {
+#include "xscope_io_device.h"
+}
 
 /**
 * Declaration of the MIPI interface ports:
@@ -28,7 +31,9 @@ int main(void)
 {
   streaming chan c_cam_api;
   i2c_master_if i2c[1];
+  chan xscope_chan;
   par {
+    xscope_host_data(xscope_chan);
     on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, Kbps);
 
     on tile[MIPI_TILE]: camera_main_raw(tile[MIPI_TILE],
@@ -40,6 +45,7 @@ int main(void)
                                     i2c[0], 
                                     c_cam_api);
 
+    on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
     on tile[MIPI_TILE]: user_app_raw(c_cam_api);
   }
   return 0;
