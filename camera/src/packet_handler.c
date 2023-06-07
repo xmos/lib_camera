@@ -32,6 +32,19 @@ static struct {
   .out_line_number = 0,
 };
 
+hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
+
+// Initial channel scales
+#define AWB_gain_RED    1.3
+#define AWB_gain_BLUE   0.8
+#define AWB_gain_GREEN  1.3
+
+float channel_scales[APP_IMAGE_CHANNEL_COUNT] = {
+  AWB_gain_RED,
+  AWB_gain_GREEN,
+  AWB_gain_BLUE
+};
+
 
 static 
 void handle_frame_start(
@@ -39,6 +52,8 @@ void handle_frame_start(
 {
   // New frame is starting, reset the vertical filter accumulator states.
   for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++){
+    image_hfilter_update_scale(&hfilter_state[c], channel_scales[c], 
+                               (c == 0)? 0 : 1);
     image_vfilter_frame_init(&vfilter_accs[c][0]);
   }
 
@@ -80,8 +95,8 @@ unsigned handle_pixel_data(
   if(pattern == 0){ // Packet contains RGRGRGRGRGRGRGRGRG...
     ////// RED
     image_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  CHAN_RED);
+                  &hfilter_state[CHAN_RED],
+                  (int8_t*) &pkt->payload[0]);
     
     image_vfilter_process_row(&output_buffer[CHAN_RED][0],
                               &vfilter_accs[CHAN_RED][0],
@@ -89,8 +104,8 @@ unsigned handle_pixel_data(
 
     ////// GREEN
     image_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  CHAN_GREEN);
+                  &hfilter_state[CHAN_GREEN],
+                  (int8_t*) &pkt->payload[0]);
 
     // we now it is not the las row [2]
     image_vfilter_process_row(&output_buffer[CHAN_GREEN][0],
@@ -101,8 +116,8 @@ unsigned handle_pixel_data(
   else { // Packet contains GBGBGBGBGBGBGBGBGBGB...
     ////// BLUE
     image_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  CHAN_BLUE);
+                  &hfilter_state[CHAN_BLUE],
+                  (int8_t*) &pkt->payload[0]);
 
     unsigned new_row = image_vfilter_process_row(
                             &output_buffer[CHAN_BLUE][0],

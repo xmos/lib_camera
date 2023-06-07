@@ -10,42 +10,40 @@ extern "C" {
 #endif
 
 
+#define COEF_B0   (0.58254019f)
+#define COEF_B1   (0.20872991f)
+
+
 void pixel_hfilter(
     int8_t output[],
     const int8_t input[],
     const int8_t coef[32],
-    const int16_t acc_hi[16],
-    const int16_t acc_lo[16],
-    const int16_t acc_shr[16],
+    const int32_t acc_init,
+    const unsigned shift,
     const int32_t input_stride,
     const unsigned output_count);
 
+typedef struct {
+  int32_t acc_init;
+  int8_t coef[32];
+  unsigned shift;
+} hfilter_state_t;
+
+
+void image_hfilter_update_scale(
+    hfilter_state_t* state,
+    const float gain,
+    const unsigned offset);
+
+// astew: I'm confused about this function now...this is in the camera
+//        code, but it's referencing macros that only make sense in the
+//        context of an application, because applications should be able to
+//        have different APP_IMAGE_WIDTH_PIXELS settings..
 void image_hfilter(
     int8_t pix_out[APP_IMAGE_WIDTH_PIXELS],
-    const int8_t pix_in[SENSOR_RAW_IMAGE_WIDTH_PIXELS],
-    const unsigned channel_index);
+    const hfilter_state_t* state,
+    const int8_t pix_in[SENSOR_RAW_IMAGE_WIDTH_PIXELS]);
     
-
-
-extern
-const int8_t hfilter_coef_bayered_even[32];
-
-extern
-int8_t hfilter_red[32];
-extern
-int8_t hfilter_green[32];
-extern
-int8_t hfilter_blue[32];
-
-extern
-const int8_t hfilter_coef_bayered_odd[32];
-
-extern
-const int16_t hfilter_acc_init[2][16];
-
-extern
-const int16_t hfilter_shift[16];
-
 
 #if defined(__XC__) || defined(__cplusplus)
 }
