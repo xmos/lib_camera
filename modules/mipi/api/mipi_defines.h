@@ -13,6 +13,8 @@ typedef unsigned mipi_header_t;
 
 #define MIPI_GET_WORD_COUNT(HEADER)   ( ((HEADER) >> 8) & 0xFFFF )
 
+
+
 /**
  * 0x00 to 0x07 - Synchronization Short Packet Data Types
  * 0x08 to 0x0F - Generic Short Packet Data Types
@@ -119,9 +121,42 @@ typedef enum xMIPI_DemuxMode_t {
     XMIPI_DEMUXMODE_14TO16   = 3, 
     XMIPI_DEMUXMODE_565TO88  = 4, 
     XMIPI_DEMUXMODE_8TO10    = 5, 
-    XMIPI_DEMUXMODE_12TO8    = 6, 
-    XMIPI_DEMUXMODE_14TO8    = 7
+    XMIPI_DEMUXMODE_12TO8    = 6, // These are not in the shim documentation
+    XMIPI_DEMUXMODE_14TO8    = 7  // These are not in the shim documentation
 } xMIPI_DemuxMode_t;
+
+/*
+  MIPI DPHY configuration register layout (MIPI_DPHY_CFG3) 
+
+    Bits    Name                    Meaning
+    14      _ENABLE_LAN1            Set to 0 to disable lane 1 receiver
+    13      _ENABLE_LAN0            Set to 0 to disable lane 0 receiver
+    12      _ENABLE_CLK             Set to 0 to disable clock receiver
+    11      _DPDN_SWAP_LAN1         Set to 1 to swap lane 1 polarity
+    10      _DPDN_SWAP_LAN0         Set to 1 to swap lane 0 polarity
+     9      _DPDN_SWAP_CLK          Set to 1 to swap clock polarity
+    8:6     _LANE_SWAP_LAN1         The pin over which to input lane 1
+    5:3     _LANE_SWAP_LAN0         The pin over which to input lane 0
+    2:0     _LANE_SWAP_CLK          The pin over which to input clock
+*/
+
+/*
+  MIPI Shim configuration register layout (MIPI_SHIM_CFG0) 
+
+    Bits    Name                    Meaning
+    23      _BIAS                   Bias output pixels for VPU usage
+    22      _DEMUX_STUFF            Add zero byte after every RGB pixel
+    21:16   _PIXEL_DEMUX_MODE       Set demuxing mode
+    15:8    _PIXEL_DEMUX_DATATYPE   CSI-2 packet type to demux
+    0       _PIXEL_DEMUX_EN         Enable pixel demuxing   
+*/
+#define MIPI_SHIM_CFG0_PACK(DMUX_EN, DMUX_DT, DMUX_MODE, DMUX_STFF, DMUX_BIAS) \
+    ( (((DMUX_EN)   & 0x1  ) << 0)      \
+    | (((DMUX_DT)   & 0xFF ) << 8)      \
+    | (((DMUX_MODE) & 0x3F ) << 16)     \
+    | (((DMUX_STFF) & 0x1  ) << 22)     \
+    | (((DMUX_BIAS) & 0x1  ) << 23))
+
 
 
 // Mipi shim configuration

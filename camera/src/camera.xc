@@ -40,7 +40,13 @@ void camera_main(
   // Assigning lanes and polarities
   write_node_config_reg(mipi_tile,
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
-                        DEFAULT_MIPI_SHIM_CFG); 
+                        DEFAULT_MIPI_SHIM_CFG);
+
+  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(DEMUX_EN, 
+                                                DEMUX_DATATYPE, 
+                                                DEMUX_MODE, 
+                                                0, 
+                                                (DEMUX_MODE));
 
   // send packet to MIPI shim
   MipiPacketRx_init(mipi_tile,
@@ -49,11 +55,9 @@ void camera_main(
                     p_mipi_rxa,
                     p_mipi_clk,
                     clk_mipi,
-                    DEMUX_EN,
-                    DEMUX_DATATYPE,
-                    DEMUX_MODE,
+                    mipi_shim_cfg0,
                     MIPI_CLK_DIV,
-                    MIPI_CFG_CLK_DIV);
+                    MIPI_CFG_CLK_DIV); 
 
   // Start camera and its configurations
   int r = 0;
@@ -101,6 +105,12 @@ void camera_main_raw(
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
                         DEFAULT_MIPI_SHIM_CFG); //TODO decompose into different values
 
+  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(DEMUX_EN, 
+                                                DEMUX_DATATYPE, 
+                                                DEMUX_MODE, 
+                                                0, 
+                                                (DEMUX_MODE));
+
   // send packet to MIPI shim
   MipiPacketRx_init(mipi_tile,
                     p_mipi_rxd,
@@ -108,9 +118,7 @@ void camera_main_raw(
                     p_mipi_rxa,
                     p_mipi_clk,
                     clk_mipi,
-                    DEMUX_EN,
-                    DEMUX_DATATYPE,
-                    DEMUX_MODE,
+                    mipi_shim_cfg0,
                     MIPI_CLK_DIV,
                     MIPI_CFG_CLK_DIV);
 
