@@ -13,8 +13,8 @@
 void user_app_raw(streaming_chanend_t c_cam_api){
     
     // set the input image to 0
-    int8_t image_buffer[H_RAW*W_RAW];
-    memset(image_buffer, -128, H_RAW*W_RAW);
+    int8_t image_buffer[H_RAW * W_RAW];
+    memset(image_buffer, -128, H_RAW * W_RAW);
 
     // wait for set the camera
     delay_milliseconds(500);
@@ -25,8 +25,7 @@ void user_app_raw(streaming_chanend_t c_cam_api){
     printf("Image captured...\n");
     
     // Save the image to a file
-    printf("before writing mage\n");
-    //write_image_raw("capture.bin", image_buffer);
-    write_image_new("capture.bin", image_buffer, MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES);
+    size_t img_size = MIPI_IMAGE_HEIGHT_PIXELS * MIPI_LINE_WIDTH_BYTES * sizeof(uint8_t);
+    write_image_new("capture.bin", (uint8_t * ) &image_buffer[0], img_size, MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES);
     exit(0);
 }

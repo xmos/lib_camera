@@ -10,7 +10,7 @@ extern "C" {
 
 #include "xscope_io_device.h"
 
-void write_image_new(char * filename, uint8_t * image, const size_t height, const size_t width);
+void write_image_new(char * filename, uint8_t * image, const size_t size, const size_t height, const size_t width);
 void c_memcpy(void * dst, void * src, size_t size);
 
 #ifdef __XC__

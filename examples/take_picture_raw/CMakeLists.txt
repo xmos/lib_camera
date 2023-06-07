@@ -3,7 +3,7 @@
 #**********************
 
 # <--- Set the executable
-set(TARGET example_take_picture)  
+set(TARGET example_take_picture_raw)  
 
 #**********************
 # Flags

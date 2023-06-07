@@ -3,7 +3,7 @@
 #**********************
 
 # <--- Set the executable
-set(TARGET example_timing)  
+set(TARGET example_simple_timing)  
 
 #**********************
 # Flags
