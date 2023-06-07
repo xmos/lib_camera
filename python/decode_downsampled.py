@@ -1,15 +1,7 @@
 """
-Info of RAW streams
-
-SBGGR8:
-    640x480 : pixels
-    BGGR is the order of the Bayer pattern
-    
-SBGGR10_CSI2P :
-    640x480 stride 800 : bytes per line
-    SBGGR10_CSI2P : 10bits per pixel, CSI2 packed format
-    BGGR is the order of the Bayer pattern
-    few padding bytes on the end of every row to match bits
+Downsampled image info:
+    * 160x120
+    * R G B
 """
 
 import cv2

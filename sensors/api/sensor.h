@@ -8,20 +8,25 @@
 // -------------- Sensor abstraction layer. --------------
 #include "sensor_defs.h"
 
-// This is user defined
+// Camera support
 #define CONFIG_IMX219_SUPPORT   ENABLED
 #define CONFIG_GC2145_SUPPORT   DISABLED
+
+// Crop selection
 #define CROP_ENABLED            DISABLED
-
 #define CONFIG_MODE             MODE_VGA_640x480
-#define CONFIG_MIPI_FORMAT      MIPI_DT_RAW8
 
+// Mipi format and mode
+#define CONFIG_MIPI_FORMAT      MIPI_DT_RAW8
+#define CONFIG_DEMUX_MODE       BIAS_ENABLED
 #define MIPI_PKT_BUFFER_COUNT   4 
 
 // FPS settings
 #define FPS_13 // allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
 
-// Inlcude custom libraries
+// --------------------------------------------------------
+
+// Include custom libraries
 #if CONFIG_IMX219_SUPPORT
     #include "imx219.h"
 #endif

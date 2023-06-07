@@ -122,3 +122,28 @@ typedef enum xMIPI_DemuxMode_t {
     XMIPI_DEMUXMODE_12TO8    = 6, 
     XMIPI_DEMUXMODE_14TO8    = 7
 } xMIPI_DemuxMode_t;
+
+
+// Mipi shim configuration
+#define _ENABLE_LAN1       (1 << 14)
+#define _ENABLE_LAN0       (1 << 13)
+#define _ENABLE_CLK        (1 << 12)
+#define _DPDN_SWAP_LAN1    (1 << 11)
+#define _DPDN_SWAP_LAN0    (1 << 10)
+#define _DPDN_SWAP_CLK     (1 << 9)
+
+#define _LANE_SWAP_LAN1_DEFAULT (1 << 6)
+#define _LANE_SWAP_LAN0_DEFAULT (0 << 3)
+#define _LANE_SWAP_CLK_DEFAULT  (2 << 0)
+
+#define DEFAULT_MIPI_SHIM_CFG ( \
+  _ENABLE_LAN1  |\
+  _ENABLE_LAN0  |\
+  _ENABLE_CLK   |\
+  _DPDN_SWAP_LAN1 |\
+  _DPDN_SWAP_LAN0 |\
+  _DPDN_SWAP_CLK |\
+  _LANE_SWAP_LAN1_DEFAULT |\
+  _LANE_SWAP_LAN0_DEFAULT |\
+  _LANE_SWAP_CLK_DEFAULT \
+)

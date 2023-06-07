@@ -9,3 +9,6 @@
 
 #define MIPI_DT_RAW8             0x2A
 #define MIPI_DT_RAW10            0x2B
+
+#define BIAS_DISABLED           0x00  // no demux
+#define BIAS_ENABLED            0x80  // bias
