@@ -36,10 +36,12 @@
 #define PRINT_TIME(y) printf("%d\n", y)
 #define MS_MULTIPLIER 0.00001 
 
-// Image 
-#include "process_frame.h"
+// Utils
+#include "utils.h"
 
 // Globals
+#define FINAL_IMAGE_FILENAME "out.raw"
+uint8_t FINAL_IMAGE[MIPI_IMAGE_HEIGHT_PIXELS][MIPI_LINE_WIDTH_BYTES];
 char end_transmission = 0;
 char found = 0;
 mipi_data_type_t p_data_type = 0;
@@ -75,7 +77,7 @@ void save_image_to_file(chanend flag)
     case flag :> int i:
       {
       // write to a file
-      write_image();
+      write_image(FINAL_IMAGE_FILENAME, &FINAL_IMAGE[0][0], MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES);
       delay_microseconds(200); // for stability
       exit(1); // end the program here
       break;

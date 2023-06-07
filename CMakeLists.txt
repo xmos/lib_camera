@@ -25,10 +25,16 @@ add_subdirectory(sensors)
 ## Add cameras
 add_subdirectory(camera)
 
+if(PROJECT_IS_TOP_LEVEL)
+## utils for examples and testing
+add_subdirectory(utils)
+
 ## Add tests
 add_subdirectory(tests)
 
 ## Add examples
 add_subdirectory(examples)
+
+endif() # top level
 
 endif() # xs3a
