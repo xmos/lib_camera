@@ -8,7 +8,7 @@
 //#include "utils.h"
 #include "user_api.h"
 #include "app_raw.h"
-#include "utils_new.h"
+#include "io_utils.h"
 
 void user_app_raw(streaming_chanend_t c_cam_api){
     
@@ -26,6 +26,6 @@ void user_app_raw(streaming_chanend_t c_cam_api){
     
     // Save the image to a file
     size_t img_size = MIPI_IMAGE_HEIGHT_PIXELS * MIPI_LINE_WIDTH_BYTES * sizeof(uint8_t);
-    write_image_new("capture.bin", (uint8_t * ) &image_buffer[0], img_size, MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES);
+    write_image_file("capture.bin", (uint8_t * ) &image_buffer[0], img_size, MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES);
     exit(0);
 }

@@ -50,7 +50,7 @@ set(APP_COMMON_LINK_LIBRARIES
 #**********************
 # Tile Targets
 #**********************
-add_executable(${TARGET} EXCLUDE_FROM_ALL)
+add_executable(${TARGET})
 target_sources(${TARGET}
     PRIVATE
         src/app.c
