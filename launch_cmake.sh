@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # clean everything
-sudo rm -r build/
+rm -r build/
 
 
 # build again

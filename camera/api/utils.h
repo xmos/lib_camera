@@ -30,9 +30,6 @@ void img_int8_to_uint8(
   uint8_t out_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]
 );
 
-void write_image_raw(const char* filename, int8_t *image);
-
-
 #if defined(__XC__) || defined(__cplusplus)
 }
 #endif

@@ -22,6 +22,7 @@ load_dotenv()  # take environment variables from .env.
 from utils import *
 
 input_name = os.getenv('BINARY_IMG_PATH')
+#input_name = Path(__file__).parent / "capture.bin"
 
 width, height = 640, 480
 
