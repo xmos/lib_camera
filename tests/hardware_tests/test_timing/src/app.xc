@@ -21,12 +21,10 @@
 #include <xscope.h>
 
 #include "i2c.h"
-#include "app.h"
 
 // Sensor
 #define MSG_SUCCESS "Stream start OK\n"
 #define MSG_FAIL "Stream start Failed\n"
-
 
 ////////////////////////////////////////////////////////////////
 // if true, print warnings when unexpected packet sequences are observed
@@ -72,6 +70,12 @@
 
  
 #define TABLE_ROWS  (12020)
+
+#define CSV_FORMATTING      "0x%08X,0x%08X,0x%08X\n"
+#define CSV_FORMATTING_LEN  33
+#define CSV_HEADER          "HEADER,START,END\n"
+#define CSV_HEADER_LEN      17
+
 ////////////////////////////////////////////////////////////////
 
 // Start port declarations
@@ -380,13 +384,18 @@ void writePacketLog(
     return;
   }
 
+  // WRITE HEADER
+  fwrite(CSV_HEADER, CSV_HEADER_LEN, 1, log_file);
+
   for(int k = 0; k < N; k++){
-    fprintf(log_file, "0x%08X,0x%08X,0x%08X\n", 
+    fprintf(log_file, CSV_FORMATTING, 
       packet[k].header, packet[k].start_time, packet[k].end_time);
   }
   
   fclose(move(log_file));
 }
+
+
 
 
 static inline
@@ -549,6 +558,7 @@ void mipi_main(
     printf("Writing packet log to %s..\n", PACKET_LOG_FILE);
     writePacketLog(PACKET_LOG_FILE, packet_log, TABLE_ROWS);
     printf("  ...done.\n\n");
+
   }
 
   exit(0);

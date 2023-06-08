@@ -4,7 +4,8 @@
 #include <stdint.h>
 
 #include "mipi.h"
-#include "camera.h"
+
+#define MIPI_TILE  1
 
 #ifndef MIPI_CLKBLK
 # define MIPI_CLKBLK                  XS1_CLKBLK_1

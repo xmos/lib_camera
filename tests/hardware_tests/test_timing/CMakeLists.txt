@@ -44,7 +44,7 @@ set(APP_COMPILE_DEFINITIONS
 set(APP_LINK_OPTIONS 
     "-report" 
     "-target=${XCORE_TARGET}"
-    "${CONFIG_XSCOPE_PATH}/config.xscope"
+    "${CONFIG_XSCOPE_PATH_TEST}/config.xscope"
 )
 
 
@@ -53,7 +53,7 @@ set(APP_COMMON_LINK_LIBRARIES
         mipi::lib_mipi
         i2c::lib_i2c
         sensors::lib_imx 
-        camera::lib_camera 
+        camera::lib_camera
     )
 
 
