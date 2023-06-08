@@ -25,6 +25,7 @@ def get_adapter_id():
     for i, expected_line in enumerate(expected_header):
         if xrun_out[i] != expected_line:
             header_match = False
+            break
 
     if not header_match:
         raise RuntimeError(
@@ -35,7 +36,7 @@ def get_adapter_id():
     try:
         if "No Available Devices Found" in xrun_out[4]:
             raise RuntimeError(f"Error: No available devices found\n")
-            return
+
     except IndexError:
         raise RuntimeError(f"Error: xrun output is too short:\n{xrun_out}\n")
 

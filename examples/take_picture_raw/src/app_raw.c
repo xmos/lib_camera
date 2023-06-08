@@ -25,7 +25,6 @@ void user_app_raw(streaming_chanend_t c_cam_api){
     printf("Image captured...\n");
     
     // Save the image to a file
-    size_t img_size = MIPI_IMAGE_HEIGHT_PIXELS * MIPI_LINE_WIDTH_BYTES * sizeof(uint8_t);
-    write_image_file("capture.bin", (uint8_t * ) &image_buffer[0], img_size, MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES);
+    write_image_file("capture.bin", (uint8_t * ) &image_buffer[0], MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES, 1);
     exit(0);
 }
