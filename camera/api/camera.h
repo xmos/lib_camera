@@ -29,7 +29,7 @@
  * thread to store received packets.
  */
 #define DEMUX_DATATYPE    0     // RESERVED
-#define DEMUX_MODE        0x00  // no demux
+#define DEMUX_MODE        CONFIG_DEMUX_MODE // xor bias or not
 #define DEMUX_EN          0     // DISABLE DEMUX
 #define MIPI_CLK_DIV      1     // CLK DIVIDER
 #define MIPI_CFG_CLK_DIV  3     // CFG DIVIDER

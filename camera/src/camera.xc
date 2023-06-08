@@ -36,11 +36,11 @@ void camera_main(
   // chan c_sensor_control;
   
   // See AN for MIPI shim
-  // 0x7E42 >> 0111 1110 0100 0010
-  // in the explorer BOARD DPDN is swap
+  // 0x7E42 >> 0 1 1 1 1 1 1 001 000 010 //
+  // Assigning lanes and polarities
   write_node_config_reg(mipi_tile,
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
-                        0x7E42); //TODO decompose into different values
+                        DEFAULT_MIPI_SHIM_CFG3); 
 
   // send packet to MIPI shim
   MipiPacketRx_init(mipi_tile,
@@ -99,7 +99,7 @@ void camera_main_raw(
   // in the explorer BOARD DPDN is swap
   write_node_config_reg(mipi_tile,
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
-                        0x7E42); //TODO decompose into different values
+                        DEFAULT_MIPI_SHIM_CFG3); //TODO decompose into different values
 
   // send packet to MIPI shim
   MipiPacketRx_init(mipi_tile,

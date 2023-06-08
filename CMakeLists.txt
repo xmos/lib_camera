@@ -14,6 +14,9 @@ project(fwk_camera)
 ## Enable languages for project
 enable_language(CXX C ASM)
 
+## Fixes unnecessary recompilation of .xc files in Windows builds.
+string(REPLACE "-MD" "-MMD" CMAKE_DEPFILE_FLAGS_C ${CMAKE_DEPFILE_FLAGS_C})
+
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL XCORE_XS3A)
 
 ## Add frameworks
