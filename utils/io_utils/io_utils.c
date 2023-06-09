@@ -39,11 +39,11 @@ void write_image_file(char * filename, uint8_t * image, const size_t height, con
     printf("Image dimentions: %d x %d\n", width, height);
 }
 
-
 void write_bmp_file(char * filename, uint8_t * image, const size_t height, const size_t width, const size_t channels)
 {
     const size_t file_header_len = 14;
     const size_t info_header_len = 40;
+    const size_t img_offset = file_header_len + info_header_len;
 
     // Define BMP file header and info header
     unsigned char bmpFileHeader[file_header_len] = {
@@ -51,11 +51,11 @@ void write_bmp_file(char * filename, uint8_t * image, const size_t height, const
         0, 0, 0, 0, // File size (to be filled later)
         0, 0, // Reserved
         0, 0, // Reserved
-        54, 0, 0, 0 // Offset to image data
+        img_offset, 0, 0, 0 // Offset to image data
     };
 
     unsigned char bmpInfoHeader[info_header_len] = {
-        40, 0, 0, 0, // Info header size
+        info_header_len, 0, 0, 0, // Info header size
         0, 0, 0, 0, // Image width (to be filled later)
         0, 0, 0, 0, // Image height (to be filled later)
         1, 0, // Number of color planes
@@ -74,23 +74,23 @@ void write_bmp_file(char * filename, uint8_t * image, const size_t height, const
     size_t rowSizeWithPadding = rowSize + paddingSize;
 
     // Calculate the file size
-    size_t fileSize = 54 + (rowSizeWithPadding * height);
+    size_t fileSize = img_offset + (rowSizeWithPadding * height);
 
     // Update the file size in the BMP file header
     bmpFileHeader[2] = (unsigned char)(fileSize);
-    bmpFileHeader[3] = (unsigned char)(fileSize >> 8);
+    bmpFileHeader[3] = (unsigned char)(fileSize >>  8);
     bmpFileHeader[4] = (unsigned char)(fileSize >> 16);
     bmpFileHeader[5] = (unsigned char)(fileSize >> 24);
 
     // Update the image width in the BMP info header
     bmpInfoHeader[4] = (unsigned char)(width);
-    bmpInfoHeader[5] = (unsigned char)(width >> 8);
+    bmpInfoHeader[5] = (unsigned char)(width >>  8);
     bmpInfoHeader[6] = (unsigned char)(width >> 16);
     bmpInfoHeader[7] = (unsigned char)(width >> 24);
 
     // Update the image height in the BMP info header
-    bmpInfoHeader[8] = (unsigned char)(height);
-    bmpInfoHeader[9] = (unsigned char)(height >> 8);
+    bmpInfoHeader[8] =  (unsigned char)(height);
+    bmpInfoHeader[9] =  (unsigned char)(height >>  8);
     bmpInfoHeader[10] = (unsigned char)(height >> 16);
     bmpInfoHeader[11] = (unsigned char)(height >> 24);
 
@@ -107,12 +107,12 @@ void write_bmp_file(char * filename, uint8_t * image, const size_t height, const
         {
             // Write the pixel data (assuming RGB order)
 	        size_t offset = i * (channels * width) + j * channels - 1;
-            xscope_fwrite(&fp, &image[offset + 2], 1 * sizeof(unsigned char)); // Blue
-            xscope_fwrite(&fp, &image[offset + 1], 1 * sizeof(unsigned char)); // Green
-            xscope_fwrite(&fp, &image[offset + 0], 1 * sizeof(unsigned char)); // Red
+            xscope_fwrite(&fp, &image[offset + 2], 1 * sizeof(uint8_t)); // Blue
+            xscope_fwrite(&fp, &image[offset + 1], 1 * sizeof(uint8_t)); // Green
+            xscope_fwrite(&fp, &image[offset + 0], 1 * sizeof(uint8_t)); // Red
             // For 4-channel images, you can write the alpha channel here
             // not sure about the comemnt below
-            //xscope_fwrite(&fp, &image[offset + 3], 1 * sizeof(unsigned char)); // Alpha
+            //xscope_fwrite(&fp, &image[offset + 3], 1 * sizeof(uint8_t)); // Alpha
         }
         if(paddingSize)
         {
