@@ -103,17 +103,18 @@ void write_bmp_file(char * filename, uint8_t * image, const size_t height, const
 
     unsigned char padding_array[paddingSize];
     memset(padding_array, (int)'\0', paddingSize);
-    for(size_t i = height - 1; i >= 0; i--)
+    for(int64_t i = height - 1; i >= 0; i--)
     {
         for(size_t j = 0; j < width; j++)
         {
             // Write the pixel data (assuming RGB order)
-            xscope_fwrite(&fp, &img[i][j][2], 1 * sizeof(unsigned char)); // Blue
-            xscope_fwrite(&fp, &img[i][j][1], 1 * sizeof(unsigned char)); // Green
-            xscope_fwrite(&fp, &img[i][j][0], 1 * sizeof(unsigned char)); // Red
+	    size_t offset = i * (channels * width) + j * channels - 1;
+            xscope_fwrite(&fp, &image[offset + 2], 1 * sizeof(unsigned char)); // Blue
+            xscope_fwrite(&fp, &image[offset + 1], 1 * sizeof(unsigned char)); // Green
+            xscope_fwrite(&fp, &image[offset + 0], 1 * sizeof(unsigned char)); // Red
             // For 4-channel images, you can write the alpha channel here
             // not sure about the comemnt below
-            //xscope_fwrite(&fp, &img[i][j][3], 1 * sizeof(unsigned char)); // Alpha
+            //xscope_fwrite(&fp, &image[offset + 3], 1 * sizeof(unsigned char)); // Alpha
         }
         xscope_fwrite(&fp, padding_array, paddingSize * sizeof(unsigned char));
     }
