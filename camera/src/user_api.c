@@ -23,7 +23,7 @@ void camera_api_init()
 }
 
 void camera_api_new_row_raw(
-    const int8_t pixel_data[H_RAW],
+    const int8_t pixel_data[W_RAW],
     const unsigned row_index)
 {
   int8_t* user_pixel_data;
@@ -63,7 +63,7 @@ void camera_api_new_row_decimated(
 }
 
 unsigned camera_capture_row_raw(
-    int8_t pixel_data[H_RAW])
+    int8_t pixel_data[W_RAW])
 {
   s_chan_out_word(c_user_api[CHAN_RAW].end_b, (unsigned) &pixel_data[0]);
   unsigned sdf = s_chan_in_word(c_user_api[CHAN_RAW].end_b);
