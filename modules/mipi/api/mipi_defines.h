@@ -171,7 +171,7 @@ typedef enum xMIPI_DemuxMode_t {
 #define _LANE_SWAP_LAN0_DEFAULT (0 << 3)
 #define _LANE_SWAP_CLK_DEFAULT  (2 << 0)
 
-#define DEFAULT_MIPI_SHIM_CFG3 ( \
+#define DEFAULT_MIPI_DPHY_CFG3 ( \
   _ENABLE_LAN1  |\
   _ENABLE_LAN0  |\
   _ENABLE_CLK   |\
