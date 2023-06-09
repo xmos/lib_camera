@@ -8,6 +8,7 @@
 **/*.eggs/*
 **/.ipynb_checkpoints/*
 .venv
+.python-version
 
 # Build & debug cruft
 **/.build*/*
@@ -81,4 +82,4 @@ temp
 
 # dotenv
 .env
-.png
+**/*.png

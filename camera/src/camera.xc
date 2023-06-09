@@ -40,7 +40,7 @@ void camera_main(
   // Assigning lanes and polarities
   write_node_config_reg(mipi_tile,
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
-                        DEFAULT_MIPI_SHIM_CFG);
+                        DEFAULT_MIPI_DPHY_CFG3);
 
   unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(DEMUX_EN, 
                                                 DEMUX_DATATYPE, 
@@ -103,7 +103,7 @@ void camera_main_raw(
   // in the explorer BOARD DPDN is swap
   write_node_config_reg(mipi_tile,
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
-                        DEFAULT_MIPI_SHIM_CFG); //TODO decompose into different values
+                        DEFAULT_MIPI_DPHY_CFG3); //TODO decompose into different values
 
   unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(DEMUX_EN, 
                                                 DEMUX_DATATYPE, 
