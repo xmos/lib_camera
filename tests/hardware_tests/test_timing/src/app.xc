@@ -495,10 +495,6 @@ void printPacketLogSummary(
 static
 packet_timing_t packet_log[TABLE_ROWS];
 
-#define DEMUX_DATATYPE 0
-#define DEMUX_MODE     0x00     // no demux
-#define DEMUX_EN       0
-
 #define MIPI_CLK_DIV 1
 #define MIPI_CFG_CLK_DIV 2
 
@@ -509,11 +505,17 @@ void mipi_main(
   write_node_config_reg(tile[MIPI_TILE], 
       XS1_SSWITCH_MIPI_DPHY_CFG3_NUM , 0x7E42);
 
+  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(0,0,0,0,0);
 
   MipiPacketRx_init(tile[MIPI_TILE],
-                    p_mipi_rxd, p_mipi_rxv, p_mipi_rxa, p_mipi_clk, clk_mipi,
-                    DEMUX_EN, DEMUX_DATATYPE, DEMUX_MODE,
-                    MIPI_CLK_DIV, MIPI_CFG_CLK_DIV);
+                    p_mipi_rxd, 
+                    p_mipi_rxv, 
+                    p_mipi_rxa, 
+                    p_mipi_clk, 
+                    clk_mipi,
+                    mipi_shim_cfg0,
+                    MIPI_CLK_DIV, 
+                    MIPI_CFG_CLK_DIV);
 
   // Start camera and its configurations
   int r = 0;

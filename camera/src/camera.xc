@@ -42,13 +42,13 @@ void camera_main(
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
                         DEFAULT_MIPI_DPHY_CFG3);
 
-  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(DEMUX_EN, 
-                                                DEMUX_DATATYPE, 
-                                                DEMUX_MODE, 
-                                                0, 
-                                                (DEMUX_MODE));
+  // Configure MIPI shim
+  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(MIPI_SHIM_DEMUX_EN,
+                                                MIPI_SHIM_DEMUX_DATATYPE,  
+                                                MIPI_SHIM_DEMUX_MODE, 
+                                                MIPI_SHIM_STUFF_ENABLE,
+                                                1); // enable bias
 
-  // send packet to MIPI shim
   MipiPacketRx_init(mipi_tile,
                     p_mipi_rxd,
                     p_mipi_rxv,
@@ -105,11 +105,11 @@ void camera_main_raw(
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
                         DEFAULT_MIPI_DPHY_CFG3); //TODO decompose into different values
 
-  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(DEMUX_EN, 
-                                                DEMUX_DATATYPE, 
-                                                DEMUX_MODE, 
-                                                0, 
-                                                (DEMUX_MODE));
+  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(MIPI_SHIM_DEMUX_EN,
+                                                MIPI_SHIM_DEMUX_DATATYPE,  
+                                                MIPI_SHIM_DEMUX_MODE, 
+                                                MIPI_SHIM_STUFF_ENABLE,
+                                                0); // disable bias
 
   // send packet to MIPI shim
   MipiPacketRx_init(mipi_tile,

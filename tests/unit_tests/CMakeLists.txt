@@ -38,7 +38,7 @@ set(APP_COMPILE_DEFINITIONS
 # ##############################################################################
 # Create executable
 # ##############################################################################
-add_executable(${TARGET} EXCLUDE_FROM_ALL)
+add_executable(${TARGET} )
 target_sources(${TARGET} PUBLIC ${APP_SOURCES})
 target_include_directories(${TARGET} PUBLIC ${APP_INCLUDES})
 target_compile_definitions(${TARGET} PRIVATE ${APP_COMPILE_DEFINITIONS})

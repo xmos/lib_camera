@@ -190,8 +190,6 @@ or r8, r8, r9
 
 { in S0, res[P_RXD]           ; add BUFF, BUFF, 4           }
 .L_RX_LONG_LOOP:
-  // { byterev S0, S0              ;                             }
-  // { xor S0, S0, r8              ;                             }
   { add BUFF, BUFF, 4           ; stw S0, BUFF[0]             }
   { in S0, res[P_RXD]           ; bu .L_RX_LONG_LOOP          }
 

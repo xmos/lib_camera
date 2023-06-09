@@ -151,11 +151,11 @@ typedef enum xMIPI_DemuxMode_t {
     0       _PIXEL_DEMUX_EN         Enable pixel demuxing   
 */
 #define MIPI_SHIM_CFG0_PACK(DMUX_EN, DMUX_DT, DMUX_MODE, DMUX_STFF, DMUX_BIAS) \
-    ( (((DMUX_EN)   & 0x1  ) << 0)      \
-    | (((DMUX_DT)   & 0xFF ) << 8)      \
-    | (((DMUX_MODE) & 0x3F ) << 16)     \
-    | (((DMUX_STFF) & 0x1  ) << 22)     \
-    | (((DMUX_BIAS) & 0x1  ) << 23))
+    ( (((DMUX_EN != 0)   & 0x1  ) << 0)     \
+    | (((DMUX_DT)   & 0xFF ) << 8)          \
+    | (((DMUX_MODE) & 0x3F ) << 16)         \
+    | (((DMUX_STFF != 0) & 0x1  ) << 22)    \
+    | (((DMUX_BIAS != 0) & 0x1  ) << 23))
 
 
 
