@@ -84,3 +84,6 @@ temp
 # dotenv
 .env
 **/*.png
+
+#documentation
+!doc/images/*.png
