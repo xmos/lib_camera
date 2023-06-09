@@ -9,7 +9,7 @@
 #include <xccompat.h>
  
 #include "i2c.h"
-#include "camera.h"
+#include "camera_main.h"
 #include "mipi_defines.h"
 #include "packet_handler.h"
 #include "statistics.h"

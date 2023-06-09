@@ -6,7 +6,7 @@
 
 #include "xccompat.h"
 
-#include "camera.h"
+#include "camera_main.h"
 
 #ifdef __XC__
 extern "C" {

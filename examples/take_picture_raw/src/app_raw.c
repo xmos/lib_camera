@@ -6,7 +6,7 @@
 // user
 #include "mipi.h"
 //#include "utils.h"
-#include "user_api.h"
+#include "camera_api.h"
 #include "app_raw.h"
 #include "io_utils.h"
 

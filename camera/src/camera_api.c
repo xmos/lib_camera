@@ -6,7 +6,7 @@
 // user
 #include "mipi.h"
 #include "utils.h"
-#include "user_api.h"
+#include "camera_api.h"
 
 // Pointers to both downsampled or raw
 static image_t *user_image;
