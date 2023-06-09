@@ -35,12 +35,12 @@ static struct {
 hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
 // Initial channel scales
-#define AWB_gain_RED    1.3
-#define AWB_gain_GREEN  1.3
-#define AWB_gain_BLUE   0.8
-// #define AWB_gain_RED    1.0
-// #define AWB_gain_GREEN  1.0
-// #define AWB_gain_BLUE   1.0
+// #define AWB_gain_RED    1.3
+// #define AWB_gain_GREEN  1.3
+// #define AWB_gain_BLUE   0.8
+#define AWB_gain_RED    1.0
+#define AWB_gain_GREEN  1.0
+#define AWB_gain_BLUE   1.0
 
 isp_params_t isp_params = {
   .channel_gain = {
