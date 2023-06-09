@@ -30,7 +30,7 @@ void user_app(streaming_chanend_t c_cam_api){
   write_image_file("capture.bin", io_buff, APP_IMAGE_HEIGHT_PIXELS, APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_CHANNEL_COUNT);
 
   //save it to bmp
-  writeBMP("capture.bmp", temp_buffer);
+  write_bmp_file("capture.bmp", io_buff, APP_IMAGE_HEIGHT_PIXELS, APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_CHANNEL_COUNT);
 
   // end here
   exit(0);
