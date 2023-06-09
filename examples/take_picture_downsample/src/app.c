@@ -15,7 +15,7 @@ void user_app(streaming_chanend_t c_cam_api){
   delay_milliseconds(5000);
   printf("Requesting image...\n");
   camera_capture_image(image_buffer, c_cam_api);
-  printf("Image captured...\n");
+  printf("Image captured.\n");
 
   // Rotate 180 degrees
   // rotate_image(image_buffer);

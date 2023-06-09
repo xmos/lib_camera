@@ -44,4 +44,19 @@ void isp_bilinear_resize(
 
 void isp_rotate_image(const uint8_t *src, uint8_t *dest, int width, int height);
 
+// -------------------------- COLOR CONVERSION -------------------------------------
+// Macro arguments
+#define MASK8           0xFF
+#define MASK24          0x00FFFFFF
+#define GET_R(x) ((int8_t)((x & MASK24)) & MASK8)
+#define GET_G(x) ((int8_t)((x & MASK24) >> 8) & MASK8)
+#define GET_B(x) ((int8_t)((x & MASK24) >> 16) & MASK8)
+#define GET_Y(x) GET_R(x)
+#define GET_U(x) GET_G(x)
+#define GET_V(x) GET_B(x)
+
+// Converts signed yuv or rgb (-127..127, -127..127, -127..127) into signed rgb / yuv. 
+extern int yuv_to_rgb(int y, int u, int v);
+extern int rgb_to_yuv(int r, int g, int b);
+
 #endif // ISP_H

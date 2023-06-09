@@ -50,7 +50,6 @@ static int i2c_write_table(client interface i2c_master_if i2c,
 }
 
 
-
 static int i2c_write_table_val(client interface i2c_master_if i2c,
                     imx219_settings_t table[],
                     int N) {
@@ -72,8 +71,8 @@ static int i2c_write_table_val(client interface i2c_master_if i2c,
                 address &= 0x7fff;
             }
             mode = 'c';
-            printf("mode=%c , address  = 0x%04x, value = 0x%02x\n", mode, address, value >> 8);
-            printf("mode=%c , address+ = 0x%04x, value = 0x%02x\n", mode, address+1, value & 0xff);   
+            //printf("mode=%c , address  = 0x%04x, value = 0x%02x\n", mode, address, value >> 8);
+            //printf("mode=%c , address+ = 0x%04x, value = 0x%02x\n", mode, address+1, value & 0xff);   
             // continous writte
             ret  = i2c_write(i2c, address,   value >> 8); // B1 B2 B3 B4 -> B1 B2
             ret |= i2c_write(i2c, address+1, value & 0xff); // B1 B2 B3 B4 -> B3 B4 
@@ -83,7 +82,7 @@ static int i2c_write_table_val(client interface i2c_master_if i2c,
             // single writte
             mode = 's';
             ret = i2c_write(i2c, address, value);
-            printf("mode=%c , address = 0x%04x, value = 0x%02x\n", mode, address, value);
+            //printf("mode=%c , address = 0x%04x, value = 0x%02x\n", mode, address, value);
         }    
 		if (ret < 0) {
 			return ret;
@@ -91,7 +90,6 @@ static int i2c_write_table_val(client interface i2c_master_if i2c,
 	}
 	return 0;
 }
-
 
 
 int imx219_read(client interface i2c_master_if i2c, uint16_t addr){
@@ -109,9 +107,7 @@ void imx219_read_gains(client interface i2c_master_if i2c, uint16_t values[5]){
     values[4] = imx219_read(i2c, 0x015B);
 }
 
-
 /// -------------------------------------------------------------------------------
-
 int imx219_init(client interface i2c_master_if i2c)
 {
     int ret = 0;
@@ -184,6 +180,3 @@ int imx219_set_gain_dB(client interface i2c_master_if i2c,
 
     return ret;
 }
-
-
-// https://github.com/torvalds/linux/blob/63355b9884b3d1677de6bd1517cd2b8a9bf53978/drivers/media/i2c/imx219.c#L993

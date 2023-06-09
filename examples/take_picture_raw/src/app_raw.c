@@ -22,9 +22,10 @@ void user_app_raw(streaming_chanend_t c_cam_api){
     // Request an image
     printf("Requesting image...\n");
     camera_capture_image_raw(image_buffer, c_cam_api);
-    printf("Image captured...\n");
+    printf("Image captured.\n");
     
     // Save the image to a file
+    img_int8_to_uint8_inplace(W_RAW, H_RAW, image_buffer);
     write_image_file("capture.bin", (uint8_t * ) &image_buffer[0], MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES, 1);
     exit(0);
 }

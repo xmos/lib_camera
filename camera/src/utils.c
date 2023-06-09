@@ -179,3 +179,18 @@ void img_int8_to_uint8(
     }
   }
 }
+
+
+// Convert int8_t to uint8_t image
+void img_int8_to_uint8_inplace(
+  const size_t width,
+  const size_t height,
+  int8_t* image_buffer
+)
+{
+  // Add 128 to all elements
+  for (size_t i = 0; i < width * height; i++) 
+  {
+    image_buffer[i] = (uint8_t)(image_buffer[i] + 128);
+  }
+}
