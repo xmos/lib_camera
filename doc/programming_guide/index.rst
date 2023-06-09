@@ -1,4 +1,4 @@
-.. Fwk camera Programming Guide Documentation
+Fwk camera Programming Guide Documentation
 
 .. toctree::
    :maxdepth: 2

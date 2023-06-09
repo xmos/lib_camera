@@ -9,10 +9,13 @@ Introduction
 System Architecture
 --------------------
 
-.. image:: images/overview.drawio.png
-   :alt: System architecture
-   :width: 300
-   :height: 200
+.. figure:: images/overviewdrawio.png
+   :alt: Alternative Text
+   :figwidth: 400px
+   :figclass: custom-class
+
+   Caption for the Figure.
+
 
 
 Module Descriptions
