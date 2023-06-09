@@ -12,31 +12,33 @@
 
 #include "camera.h"
 
-TEST_GROUP_RUNNER(image_hfilter) {
-  RUN_TEST_CASE(image_hfilter, pixel_hfilter__basic);
-  RUN_TEST_CASE(image_hfilter, pixel_hfilter__acc_init);
-  RUN_TEST_CASE(image_hfilter, pixel_hfilter__apply_shift);
-  RUN_TEST_CASE(image_hfilter, pixel_hfilter__input_stride);
-  RUN_TEST_CASE(image_hfilter, pixel_hfilter__out_count);
-  RUN_TEST_CASE(image_hfilter, pixel_hfilter__alt_coef);
+TEST_GROUP_RUNNER(pixel_hfilter) {
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__basic);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__acc_init);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__apply_shift);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__input_stride);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__out_count);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__alt_coef);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__timing);
 
-  RUN_TEST_CASE(image_hfilter, image_hfilter_update_scale__case1);
-  RUN_TEST_CASE(image_hfilter, image_hfilter_update_scale__case2);
-  RUN_TEST_CASE(image_hfilter, image_hfilter_update_scale__case3);
-  RUN_TEST_CASE(image_hfilter, image_hfilter_update_scale__case4);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter_update_scale__case1);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter_update_scale__case2);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter_update_scale__case3);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter_update_scale__case4);
+  RUN_TEST_CASE(pixel_hfilter, pixel_hfilter_update_scale__timing);
 
-  // RUN_TEST_CASE(image_hfilter, image_hfilter__case1);
+  // RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__case1);
 }
 
-TEST_GROUP(image_hfilter);
-TEST_SETUP(image_hfilter) { fflush(stdout); }
-TEST_TEAR_DOWN(image_hfilter) {}
+TEST_GROUP(pixel_hfilter);
+TEST_SETUP(pixel_hfilter) { fflush(stdout); }
+TEST_TEAR_DOWN(pixel_hfilter) {}
 
 
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, pixel_hfilter__basic)
+TEST(pixel_hfilter, pixel_hfilter__basic)
 {
   static const int8_t coef_count = 32;
   static const unsigned output_count = 16;
@@ -65,7 +67,7 @@ TEST(image_hfilter, pixel_hfilter__basic)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, pixel_hfilter__acc_init)
+TEST(pixel_hfilter, pixel_hfilter__acc_init)
 {
   static const int8_t coef_count = 32;
   static const unsigned output_count = 16;
@@ -95,7 +97,7 @@ TEST(image_hfilter, pixel_hfilter__acc_init)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, pixel_hfilter__apply_shift)
+TEST(pixel_hfilter, pixel_hfilter__apply_shift)
 {
   static const int8_t coef_count = 32;
   static const unsigned output_count = 16;
@@ -125,7 +127,7 @@ TEST(image_hfilter, pixel_hfilter__apply_shift)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, pixel_hfilter__input_stride)
+TEST(pixel_hfilter, pixel_hfilter__input_stride)
 {
   static const int8_t coef_count = 32;
   static const unsigned output_count = 16;
@@ -154,7 +156,7 @@ TEST(image_hfilter, pixel_hfilter__input_stride)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, pixel_hfilter__out_count)
+TEST(pixel_hfilter, pixel_hfilter__out_count)
 {
   static const int8_t coef_count = 32;
   static const unsigned output_count = 64;
@@ -183,7 +185,7 @@ TEST(image_hfilter, pixel_hfilter__out_count)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, pixel_hfilter__alt_coef)
+TEST(pixel_hfilter, pixel_hfilter__alt_coef)
 {
   static const int8_t coef_count = 32;
   static const unsigned output_count = 32;
@@ -224,7 +226,37 @@ TEST(image_hfilter, pixel_hfilter__alt_coef)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, image_hfilter_update_scale__case1)
+TEST(pixel_hfilter, pixel_hfilter__timing)
+{
+  int8_t coef[32] = {0};
+  int8_t input[32] = {0};
+  int8_t output[64] = {0};
+
+  unsigned t_16x[4];
+
+  for(int k = 0; k < 4; k++){
+    unsigned ts = measure_time();
+    pixel_hfilter(output, input, coef, 0, 0 , 0, 16*(k+1));
+    unsigned te = measure_time();
+    t_16x[k] = te - ts;
+  }
+
+  printf("\n");
+  printf("\tout_count:     16       32       48       64\n");
+  printf("\tticks:   %8u %8u %8u %8u\n", 
+          t_16x[0], t_16x[1], t_16x[2], t_16x[3]);
+
+}
+
+
+
+
+
+
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+TEST(pixel_hfilter, pixel_hfilter_update_scale__case1)
 {
   hfilter_state_t state;
 
@@ -232,7 +264,7 @@ TEST(image_hfilter, image_hfilter_update_scale__case1)
 
   const float gain = 0.0f;
 
-  image_hfilter_update_scale(&state, gain, 0);
+  pixel_hfilter_update_scale(&state, gain, 0);
 
   const unsigned exp_shift = 9;
   const int32_t exp_acc_init = -128 * (1<<exp_shift);
@@ -248,7 +280,7 @@ TEST(image_hfilter, image_hfilter_update_scale__case1)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, image_hfilter_update_scale__case2)
+TEST(pixel_hfilter, pixel_hfilter_update_scale__case2)
 {
   hfilter_state_t state;
 
@@ -256,7 +288,7 @@ TEST(image_hfilter, image_hfilter_update_scale__case2)
 
   const float gain = 1.0f;
 
-  image_hfilter_update_scale(&state, gain, 1);
+  pixel_hfilter_update_scale(&state, gain, 1);
 
   const unsigned exp_shift = 7;
   const int32_t exp_acc_init = 0;
@@ -272,7 +304,7 @@ TEST(image_hfilter, image_hfilter_update_scale__case2)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, image_hfilter_update_scale__case3)
+TEST(pixel_hfilter, pixel_hfilter_update_scale__case3)
 {
   hfilter_state_t state;
 
@@ -280,7 +312,7 @@ TEST(image_hfilter, image_hfilter_update_scale__case3)
 
   const float gain = 1.2f;
 
-  image_hfilter_update_scale(&state, gain, 0);
+  pixel_hfilter_update_scale(&state, gain, 0);
 
   const unsigned exp_shift = 7;
   const int32_t exp_acc_init = 128 * (gain - 1.0f) * (1<<exp_shift);
@@ -296,7 +328,7 @@ TEST(image_hfilter, image_hfilter_update_scale__case3)
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
-TEST(image_hfilter, image_hfilter_update_scale__case4)
+TEST(pixel_hfilter, pixel_hfilter_update_scale__case4)
 {
   hfilter_state_t state;
 
@@ -304,7 +336,7 @@ TEST(image_hfilter, image_hfilter_update_scale__case4)
 
   const float gain = 0.8f;
 
-  image_hfilter_update_scale(&state, gain, 1);
+  pixel_hfilter_update_scale(&state, gain, 1);
 
   const unsigned exp_shift = 8;
   const int32_t exp_acc_init = 128 * (gain - 1.0f) * (1<<exp_shift);
@@ -317,35 +349,21 @@ TEST(image_hfilter, image_hfilter_update_scale__case4)
   TEST_ASSERT_EQUAL_INT32(exp_acc_init, state.acc_init);
 }
 
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+TEST(pixel_hfilter, pixel_hfilter_update_scale__timing)
+{
+  hfilter_state_t state;
 
-// ///////////////////////////////////////////////
-// ///////////////////////////////////////////////
-// ///////////////////////////////////////////////
-// TEST(image_hfilter, image_hfilter__case1)
-// {
-//   static const unsigned output_count = 16;
-//   static const int32_t input_stride = 4;
-//   static const unsigned input_count = 32 + (output_count-1)*input_stride;
+  memset(&state, 0, sizeof(state));
 
-//   hfilter_state_t state;
-//   memset(&state, 0, sizeof(state));
+  const float gain = 1.0f;
 
-//   // 1.0f should give coefficients  0x1B, 0x4B, 0x1B
-//   image_hfilter_update_scale(&state, 1.0f, 0);
+  unsigned ts = measure_time();
+  pixel_hfilter_update_scale(&state, gain, 1);
+  unsigned te = measure_time();
 
-//   int8_t input[input_count] = {0};
-//   int8_t output[output_count] = {0};
-//   int8_t expected[output_count] = {0};
-
-//   for(int k = 0; k < input_count; k++) 
-//     input[k] = k;
-
-//   image_hfilter(output, &state, input(
-
-
-//   pixel_hfilter(output, input, coef, 
-//                 acc_init, shift, input_stride, output_count);
-
-//   for(int k = 0; k < output_count; k++)   
-//     TEST_ASSERT_EQUAL_INT8(k, output[k]);
-// }
+  printf("\n");
+  printf("\tpixel_hfilter_update_scale: %u ticks\n", te - ts);
+}

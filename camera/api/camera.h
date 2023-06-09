@@ -37,6 +37,20 @@
 
 #ifdef __XC__
 
+/**
+ * Thread entry point for interfacing with the camera sensor.
+ * 
+ * This version of the camera thread will perform decimation and demosaicing.
+ * 
+ * @param mipi_tile   The tile on which the MIPI receiver is located
+ * @param p_mipi_clk  The MIPI clock input port
+ * @param p_mipi_rxa  The MIPI active input port
+ * @param p_mipi_rxv  The MIPI valid input port
+ * @param p_mipi_rxd  The MIPI data input port
+ * @param clk_mipi    The MIPI clock block
+ * @param i2c         The I2C client interface
+ * @param c_user_api  The user API channel
+ */
 void camera_main(
     tileref mipi_tile,
     in port p_mipi_clk,
@@ -47,6 +61,11 @@ void camera_main(
     client interface i2c_master_if i2c,
     streaming chanend c_user_api);
 
+/**
+ * Thread entry point for interfacing with the camera sensor.
+ * 
+ * This version of the camera thread will capture raw data.
+ */
 void camera_main_raw(
     tileref mipi_tile,
     in port p_mipi_clk,

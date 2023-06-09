@@ -48,13 +48,20 @@ void write_image_raw(
 {
   static FILE* img_file = NULL;
   img_file = fopen(filename, "wb");
+
+  uint8_t min = 255;
+  uint8_t max = 0;
+
   for(uint16_t k = 0; k < MIPI_IMAGE_HEIGHT_PIXELS; k++){
     for(uint16_t j = 0; j < MIPI_LINE_WIDTH_BYTES; j++){
       uint32_t pos = k * MIPI_LINE_WIDTH_BYTES + j;
+      min = (image[pos] < min) ? image[pos] : min;
+      max = (image[pos] > max) ? image[pos] : max;
       fwrite(&image[pos], sizeof(int8_t), 1, img_file);
       }
   }
   fclose(img_file);
+  printf("Min %d, Max %d\n", min, max);
   printf("Outfile %s\n", filename);
   printf("image size (%dx%d)\n", MIPI_LINE_WIDTH_BYTES, MIPI_IMAGE_HEIGHT_PIXELS);
 }

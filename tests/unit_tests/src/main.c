@@ -17,7 +17,7 @@ int main(
 
   printf("\n");
 
-  RUN_TEST_GROUP(image_hfilter);
+  RUN_TEST_GROUP(pixel_hfilter);
   RUN_TEST_GROUP(isp_tests);
   
   return UNITY_END();
