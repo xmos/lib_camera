@@ -78,12 +78,14 @@ tools/ai/ai_tools
 
 # temp folder
 temp
-
 !CMakeLists.txt
+
+# images
+*.png
 
 # dotenv
 .env
-**/*.png
 
 #documentation
-!doc/images/*.png
+!**/images/*.png
+
