@@ -42,17 +42,16 @@ isp_params_t isp_params;
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row,
-    streaming_chanend_t c_user_api);
+    streaming_chanend_t c_out_row);
 
-/**
- * Thread entry point for packet handling when capturing raw data.
- */
-void mipi_packet_handler_raw(
-    streaming_chanend_t c_pkt, 
-    streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row,
-    streaming_chanend_t c_user_api);
+// /**
+//  * Thread entry point for packet handling when capturing raw data.
+//  */
+// void mipi_packet_handler_raw(
+//     streaming_chanend_t c_pkt, 
+//     streaming_chanend_t c_ctrl,
+//     streaming_chanend_t c_out_row,
+//     streaming_chanend_t c_user_api);
     
 #ifdef __XC__
 }
