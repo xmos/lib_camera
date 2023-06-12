@@ -12,7 +12,13 @@
 #include "utils.h"
 #include "sensor.h"
 
+// Initial channel scales
+#define AWB_gain_RED    1.3
+#define AWB_gain_GREEN  0.8
+#define AWB_gain_BLUE   1.3
 
+// Filter stride
+#define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
 
 // State needed for the vertical filter
 static
@@ -34,13 +40,6 @@ static struct {
 
 hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
-// Initial channel scales
-#define AWB_gain_RED    1.3
-#define AWB_gain_GREEN  0.8
-#define AWB_gain_BLUE   1.3
-// #define AWB_gain_RED    1.0
-// #define AWB_gain_GREEN  1.0
-// #define AWB_gain_BLUE   1.0
 
 isp_params_t isp_params = {
   .channel_gain = {
@@ -76,7 +75,7 @@ void handle_unknown_packet(
   // 2 - error packets (in this case mipi reciever will raise an exception, but in the future we want to handle them here)
 }
 
-#define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
+
 
 /**
  * Handle a row of pixel data.
