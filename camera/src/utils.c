@@ -182,15 +182,12 @@ void img_int8_to_uint8(
 
 
 // Convert int8_t to uint8_t image
-void img_int8_to_uint8_inplace(
-  const size_t width,
-  const size_t height,
-  int8_t* image_buffer
-)
+void img_int8_to_uint8_inplace(int8_t image_buffer[H_RAW][W_RAW])
 {
   // Add 128 to all elements
-  for (size_t i = 0; i < width * height; i++) 
-  {
-    image_buffer[i] = (uint8_t)(image_buffer[i] + 128);
+  for (int i = 0; i < H_RAW; i++) {
+      for (int j = 0; j < W_RAW; j++) {
+          image_buffer[i][j] += 128;
+      }
   }
 }
