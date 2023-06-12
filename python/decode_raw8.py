@@ -21,7 +21,7 @@ load_dotenv()  # take environment variables from .env.
 
 from utils import *
 
-input_name = os.getenv('BINARY_IMG_PATH')
+input_name = os.getenv('BINARY_IMG_PATH') or "capture.bin"
 #input_name = Path(__file__).parent / "capture.bin"
 
 width, height = 640, 480
@@ -48,8 +48,7 @@ with open(input_name, "rb") as f:
 
 
 # unpack
-buffer = np.frombuffer(data, dtype=np.int8) + 128 # convert to uint8 
-buffer = buffer.astype(np.uint8)
+buffer = np.frombuffer(data, dtype=np.uint8)  # data is uint8 
 
 img = buffer.reshape(height, width, 1)
 print("unpacked_data")

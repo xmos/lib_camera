@@ -7,9 +7,6 @@
 
 #include "statistics.h"
 
-#define DEFAULT_ALFA 1.58682
-#define DEFAULT_BETA 1.52535
-
 
 // ---------------------------------- AE/AGC ------------------------------
 float AE_compute_mean_skewness(global_stats_t *gstats);
@@ -43,5 +40,25 @@ void isp_bilinear_resize(
     uint8_t *out_img);
 
 void isp_rotate_image(const uint8_t *src, uint8_t *dest, int width, int height);
+
+// -------------------------- COLOR CONVERSION -------------------------------------
+// Macro arguments to get color components from packed result in the assembly program
+#define GET_R(rgb) ((rgb >> 16) & 0xFF)
+#define GET_G(rgb) ((rgb >> 8) & 0xFF)
+#define GET_B(rgb) (rgb & 0xFF)
+
+#define GET_Y(yuv) GET_R(yuv)
+#define GET_U(yuv) GET_G(yuv)
+#define GET_V(yuv) GET_B(yuv)
+
+int yuv_to_rgb(
+    int y, 
+    int u, 
+    int v);
+
+int rgb_to_yuv(
+    int r, 
+    int g, 
+    int b);
 
 #endif // ISP_H

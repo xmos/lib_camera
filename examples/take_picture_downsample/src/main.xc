@@ -29,7 +29,6 @@ on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
 int main(void) 
 {
-  streaming chan c_cam_api;
   i2c_master_if i2c[1];
   chan xscope_chan;
   par {
@@ -42,11 +41,10 @@ int main(void)
                                     p_mipi_rxv, 
                                     p_mipi_rxd, 
                                     clk_mipi, 
-                                    i2c[0], 
-                                    c_cam_api);
+                                    i2c[0]);
                                     
     on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
-    on tile[MIPI_TILE]: user_app(c_cam_api);
+    on tile[MIPI_TILE]: user_app();
   }
   return 0;
 }

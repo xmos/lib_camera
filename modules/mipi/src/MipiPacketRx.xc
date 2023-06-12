@@ -9,17 +9,15 @@
 #include "mipi.h"
 
 void MipiPacketRx_init(
-    tileref tile,
-    buffered in port:32 p_mipi_rxd, 
-    in port p_mipi_rxv,
-    in port p_mipi_rxa, 
-    in port p_mipi_clk,
-    clock clk_mipi,
-    uint32_t demuxEn, 
-    uint32_t dataType,
-    xMIPI_DemuxMode_t demuxMode, 
+    tileref_t tile,
+    in_buffered_port_32_t p_mipi_rxd, 
+    in_port_t p_mipi_rxv,
+    in_port_t p_mipi_rxa, 
+    in_port_t p_mipi_clk,
+    xclock_t clk_mipi,
+    unsigned mipi_shim_cfg0,
     uint32_t mipiClkDiv,
-    uint32_t cfgClkDiv) 
+    uint32_t cfgClkDiv)
 {
   configure_in_port_strobed_slave(p_mipi_rxd, p_mipi_rxv, clk_mipi);
   set_clock_src(clk_mipi, p_mipi_clk);
@@ -36,9 +34,9 @@ void MipiPacketRx_init(
       XS1_SSWITCH_MIPI_CLK_DIVIDER_NUM, mipiClkDiv);
   write_node_config_reg(tile, 
       XS1_SSWITCH_MIPI_CFG_CLK_DIVIDER_NUM, cfgClkDiv);
-  /* Enable pixel demux */ 
-  unsigned shimCfg = (((demuxMode & 0xff) << 16) | ((dataType & 0xff) << 8) | demuxEn);
-  write_node_config_reg(tile, XS1_SSWITCH_MIPI_SHIM_CFG0_NUM, shimCfg);
+
+  // set shim config register
+  write_node_config_reg(tile, XS1_SSWITCH_MIPI_SHIM_CFG0_NUM, mipi_shim_cfg0);
 
   // Connect the xcore-ports to the MIPI demuxer/PHY.
   int val = getps(XS1_PS_XCORE_CTRL0);
