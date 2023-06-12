@@ -11,7 +11,7 @@ SBGGR10_CSI2P :
     BGGR is the order of the Bayer pattern
     few padding bytes on the end of every row to match bits
 """
-
+import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,7 +19,13 @@ from PIL import Image  # just to avoid color BGR issues when writting
 from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
-from utils import *
+from utils import (
+    normalize,
+    simple_white_balance,
+    demosaic,
+    new_color_correction,
+    plot_imgs
+)
 
 input_name = os.getenv('BINARY_IMG_PATH') or "capture.bin"
 #input_name = Path(__file__).parent / "capture.bin"
@@ -48,7 +54,9 @@ with open(input_name, "rb") as f:
 
 
 # unpack
-buffer = np.frombuffer(data, dtype=np.uint8)  # data is uint8 
+#buffer = np.frombuffer(data, dtype=np.int8) + 128 # convert to uint8 
+#buffer = buffer.astype(np.uint8)
+buffer = np.frombuffer(data, dtype=np.uint8)
 
 img = buffer.reshape(height, width, 1)
 print("unpacked_data")
@@ -82,9 +90,6 @@ kfactor = 1
 img = cv2.resize(img, (width // kfactor, height // kfactor), interpolation=cv2.INTER_AREA)
 # ------ The ISP pipeline -------------------------
 
-
-
-######################################################
 ################# PLOT ##############################
 
 # save image
@@ -92,6 +97,7 @@ if flip:
     imgs  = cv2.flip(img, 0)
 else:
     imgs = img
+    
 name = f"{input_name}_postprocess_.png"
 Image.fromarray(imgs).save(name) 
 print(name)

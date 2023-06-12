@@ -30,6 +30,8 @@ void img_int8_to_uint8(
   uint8_t out_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]
 );
 
+void img_int8_to_uint8_inplace(int8_t image_buffer[H_RAW][W_RAW]);
+
 #if defined(__XC__) || defined(__cplusplus)
 }
 #endif
