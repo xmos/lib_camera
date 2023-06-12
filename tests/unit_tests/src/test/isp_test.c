@@ -33,15 +33,6 @@ typedef struct
 } color_table_t;
 
 
-#define GET_R(rgb) ((rgb >> 16) & 0xFF)
-#define GET_G(rgb) ((rgb >> 8) & 0xFF)
-#define GET_B(rgb) (rgb & 0xFF)
-
-#define GET_Y(yuv) GET_R(yuv)
-#define GET_U(yuv) GET_G(yuv)
-#define GET_V(yuv) GET_B(yuv)
-
-
 void printColorTable(color_table_t* table) {
     printf("Color Table:\n");
     printf("R: %d, G: %d, B: %d\n", table->R, table->G, table->B);

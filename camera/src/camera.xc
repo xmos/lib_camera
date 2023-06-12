@@ -30,15 +30,12 @@ void camera_main(
   streaming chan c_pkt;
   streaming chan c_ctrl;
   streaming chan c_stat_thread;
-  
   sensor_control_if sc_if;
-  // chan c_sensor_control;
 
+  // set the channels for the camera api
   camera_api_init();
   
-  // See AN for MIPI shim
-  // 0x7E42 >> 0 1 1 1 1 1 1 001 000 010 //
-  // Assigning lanes and polarities
+  // Assign lanes and polarities
   write_node_config_reg(mipi_tile,
                         XS1_SSWITCH_MIPI_DPHY_CFG3_NUM,
                         DEFAULT_MIPI_DPHY_CFG3);
@@ -49,7 +46,7 @@ void camera_main(
                                                 MIPI_SHIM_DEMUX_MODE, 
                                                 MIPI_SHIM_STUFF_ENABLE,
                                                 1); // enable bias
-
+  // Initialize MIPI receiver
   MipiPacketRx_init(mipi_tile,
                     p_mipi_rxd,
                     p_mipi_rxv,

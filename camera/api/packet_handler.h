@@ -22,7 +22,9 @@ typedef struct
 } mipi_packet_t;
 
 
-// struct to hold the calculated parameters for the ISP
+/**
+ * struct to hold the calculated parameters for the ISP
+ */
 typedef struct {
   float channel_gain[APP_IMAGE_CHANNEL_COUNT];
 } isp_params_t;
@@ -43,15 +45,6 @@ void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
     streaming_chanend_t c_out_row);
-
-// /**
-//  * Thread entry point for packet handling when capturing raw data.
-//  */
-// void mipi_packet_handler_raw(
-//     streaming_chanend_t c_pkt, 
-//     streaming_chanend_t c_ctrl,
-//     streaming_chanend_t c_out_row,
-//     streaming_chanend_t c_user_api);
     
 #ifdef __XC__
 }

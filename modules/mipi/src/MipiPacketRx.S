@@ -2,7 +2,7 @@
 #include <xs1.h>
 #include <xs3a_registers.h>
 
-// XOR      ENABLED
+// XOR      DISABLED
 // BYTEREV  DISABLED
 
 /****************************************************
@@ -23,9 +23,15 @@ Then to receive a packet:
 - Return
   - Maybe it's a good idea to return the data type?
 
- ****************************************************
- ****************************************************
- */
+****************************************************
+****************************************************/
+
+/*
+In case we need byte reversal or xor for some reason, here's how to do it:
+  // { byterev S0, S0              ;                             }
+  // { xor S0, S0, r8              ;                             }
+After .L_RX_LONG_LOOP:
+*/
 
 /*
   See MIPI CSI section 9.1.2
