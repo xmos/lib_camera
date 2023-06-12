@@ -64,10 +64,10 @@
 #ifndef CONFIG_MIPI_FORMAT
     #error CONFIG_MIPI_FORMAT has to be specified
 #else
-    #if CONFIG_MIPI_FORMAT == MIPI_DT_RAW10
+    #if (CONFIG_MIPI_FORMAT == MIPI_DT_RAW10)
         #define MIPI_IMAGE_WIDTH_BYTES (((MIPI_IMAGE_WIDTH_PIXELS) >> 2) * 5) // by 5/4
 
-    #elif CONFIG_MIPI_FORMAT == MIPI_DT_RAW8
+    #elif (CONFIG_MIPI_FORMAT == MIPI_DT_RAW8)
         #define MIPI_IMAGE_WIDTH_BYTES MIPI_IMAGE_WIDTH_PIXELS // same size
 
     #else

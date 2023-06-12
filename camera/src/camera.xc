@@ -64,6 +64,8 @@ void camera_main(
   r |= camera_configure(i2c);
   delay_milliseconds(600);
   r |= camera_start(i2c);
+  assert(r == 0); // assert that camera is started and configured
+  printf("\nCamera_started and configured...\n");
   delay_milliseconds(2000);
 
   // start the different jobs (packet controller, handler, and post_process)
