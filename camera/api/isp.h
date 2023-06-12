@@ -43,12 +43,13 @@ void isp_rotate_image(const uint8_t *src, uint8_t *dest, int width, int height);
 
 // -------------------------- COLOR CONVERSION -------------------------------------
 // Macro arguments to get color components from packed result in the assembly program
-#define GET_R(x) ((int8_t)((x & MASK24)) & MASK8)
-#define GET_G(x) ((int8_t)((x & MASK24) >> 8) & MASK8)
-#define GET_B(x) ((int8_t)((x & MASK24) >> 16) & MASK8)
-#define GET_Y(x) GET_R(x)
-#define GET_U(x) GET_G(x)
-#define GET_V(x) GET_B(x)
+#define GET_R(rgb) ((rgb >> 16) & 0xFF)
+#define GET_G(rgb) ((rgb >> 8) & 0xFF)
+#define GET_B(rgb) (rgb & 0xFF)
+
+#define GET_Y(yuv) GET_R(yuv)
+#define GET_U(yuv) GET_G(yuv)
+#define GET_V(yuv) GET_B(yuv)
 
 int yuv_to_rgb(
     int y, 
