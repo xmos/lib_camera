@@ -3,7 +3,7 @@ Downsampled image info:
     * 160x120
     * R G B
 """
-
+import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,7 +11,7 @@ from PIL import Image  # just to avoid color BGR issues when writting
 from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
-from utils import *
+from utils import show_histogram_by_channel
 
 input_name = os.getenv('BINARY_IMG_PATH') or "capture.bin"
 

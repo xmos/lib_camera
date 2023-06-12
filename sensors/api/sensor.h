@@ -161,5 +161,12 @@
 #define APP_WB_PERCENTILE   (0.95)
 #endif
 
+// For simplicity here
+#define CH  (APP_IMAGE_CHANNEL_COUNT)
+#define H   (APP_IMAGE_HEIGHT_PIXELS)
+#define W   (APP_IMAGE_WIDTH_PIXELS)
+
+#define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
+#define W_RAW   (MIPI_IMAGE_WIDTH_PIXELS)
 
 #endif // sensor_H

@@ -5,7 +5,6 @@
 #include <xcore/channel_streaming.h>
 // user
 #include "mipi.h"
-//#include "utils.h"
 #include "user_api.h"
 #include "app_raw.h"
 #include "io_utils.h"
@@ -28,12 +27,8 @@ void user_app_raw(){
     printf("Image captured...\n");
 
     // Convert image from int8 to uint8 in-place
-    for (int i = 0; i < H_RAW; i++) {
-        for (int j = 0; j < W_RAW; j++) {
-            image_buffer[i][j] += 128;
-        }
-    }
-    
+    img_int8_to_uint8_inplace(image_buffer);
+
     // Save the image to a file
     write_image_file("capture.bin", (uint8_t * ) &image_buffer[0][0],   
             MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES, 1);

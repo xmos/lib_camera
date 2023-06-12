@@ -41,6 +41,7 @@
 *.swmem
 *.bin
 *.fs
+*.exe
 
 # Test cruft
 **/.pytest_cache/*
