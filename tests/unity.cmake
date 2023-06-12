@@ -1,27 +1,22 @@
 # ##############################################################################
 # Target name
 set(LIB_NAME Unity)
-set(LIB_PATH ${CMAKE_CURRENT_LIST_DIR}/Unity/src)
-
-# Source files
-file(GLOB_RECURSE SOURCES_C   ${LIB_PATH}/*.c)
-file(GLOB_RECURSE SOURCES_XC  ${LIB_PATH}/*.xc)
-file(GLOB_RECURSE SOURCES_CPP ${LIB_PATH}/*.cpp)
-file(GLOB_RECURSE SOURCES_ASM ${LIB_PATH}/*.S)
+set(LIB_PATH ${CMAKE_CURRENT_LIST_DIR}/Unity)
 
 add_library(${LIB_NAME} STATIC)
 
 target_include_directories(
     ${LIB_NAME} PUBLIC 
-    ${LIB_PATH}
+      ${LIB_PATH}/src
+      ${LIB_PATH}/extras/fixture/src
+      ${LIB_PATH}/extras/memory/src
 )
 
 target_sources(${LIB_NAME}
-    PRIVATE
-        ${SOURCES_C}
-        ${SOURCES_XC}
-        ${SOURCES_CPP}
-        ${SOURCES_ASM}
+    PUBLIC
+      ${LIB_PATH}/src/unity.c
+      ${LIB_PATH}/extras/fixture/src/unity_fixture.c
+      ${LIB_PATH}/extras/memory/src/unity_memory.c
 )
 
 add_library(Unity::framework ALIAS ${LIB_NAME})

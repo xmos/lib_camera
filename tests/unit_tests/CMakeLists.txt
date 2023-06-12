@@ -16,6 +16,7 @@ set(APP_COMMON_LINK_LIBRARIES
 set(APP_LINK_OPTIONS 
     "-report" 
     "-target=${XCORE_TARGET}"
+    -fcmdline-buffer-bytes=1024
     ${CMAKE_CURRENT_LIST_DIR}/config.xscope
 )
 
@@ -37,7 +38,7 @@ set(APP_COMPILE_DEFINITIONS
 # ##############################################################################
 # Create executable
 # ##############################################################################
-add_executable(${TARGET} EXCLUDE_FROM_ALL)
+add_executable(${TARGET} )
 target_sources(${TARGET} PUBLIC ${APP_SOURCES})
 target_include_directories(${TARGET} PUBLIC ${APP_INCLUDES})
 target_compile_definitions(${TARGET} PRIVATE ${APP_COMPILE_DEFINITIONS})

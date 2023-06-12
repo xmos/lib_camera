@@ -2,36 +2,93 @@
 #include "xccompat.h"
 #include "sensor.h"
 
-#define CH APP_IMAGE_CHANNEL_COUNT
-#define H APP_IMAGE_HEIGHT_PIXELS
-#define W APP_IMAGE_WIDTH_PIXELS
+#define CH  (APP_IMAGE_CHANNEL_COUNT)
+#define H   (APP_IMAGE_HEIGHT_PIXELS)
+#define W   (APP_IMAGE_WIDTH_PIXELS)
 
-#define H_RAW MIPI_IMAGE_WIDTH_PIXELS
-#define W_RAW MIPI_IMAGE_HEIGHT_PIXELS
+#define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
+#define W_RAW   (MIPI_IMAGE_WIDTH_PIXELS)
 
 // #define RAW_CAPTURE 0
 
-// Image structure
-typedef struct {
-  int8_t pix[CH][H][W];
-} image_t;
+#if defined(__XC__) || defined(__cplusplus)
+extern "C" {
+#endif
 
-// User-side API
-unsigned camera_capture_image(
-    int8_t image_buff[CH][H][W],
-    streaming_chanend_t c_cam_api);
+/**
+ * Initialize the camera API. Must be called before any other API functions.
+ */
+void camera_api_init();
 
-// Framework-side API
-void camera_api_init(streaming_chanend_t c_api);
-void camera_api_request_begin();
-void camera_api_request_complete();
-void camera_api_request_update(
-    const int8_t image_row[CH][W],
+/**
+ * SERVER SIDE
+ * 
+ * Called by the packet handler when a new row of raw image data is
+ * available. Typically this will be Bayered image data.
+ */
+void camera_api_new_row_raw(
+    const int8_t pixel_data[H_RAW],
     const unsigned row_index);
 
+/**
+ * SERVER SIDE
+ * 
+ * Called by the packet handler when a new row of decimated image data is
+ * available.
+ */
+void camera_api_new_row_decimated(
+    const int8_t pixel_data[CH][W],
+    const unsigned row_index);
+
+/**
+ * CLIENT SIDE
+ * 
+ * Called by the client to capture a row of raw image data.
+ * 
+ * @param pixel_data The buffer to store the row of pixels in
+ * 
+ * @return The row index of the captured row of pixels
+ */
+unsigned camera_capture_row_raw(
+    int8_t pixel_data[W_RAW]);
+
+/**
+ * CLIENT SIDE
+ * 
+ * Called by the client to capture a row of decimated image data.
+ * 
+ * @param pixel_data The buffer to store the row of pixels in
+ * 
+ * @return The row index of the captured row of pixels
+ */
+unsigned camera_capture_row_decimated(
+    int8_t pixel_data[CH][W]);
+
+/**
+ * CLIENT SIDE
+ * 
+ * Called by the client to capture a raw image.
+ * 
+ * @param image_buff The buffer to store the image in
+ * 
+ * @return Returns 0 on success, non-zero on failure
+ */
+unsigned camera_capture_image_raw(
+    int8_t image_buff[H_RAW][W_RAW]);
 
 
-// RAW
-unsigned camera_capture_image_raw(int8_t image_buff[H_RAW * W_RAW], streaming_chanend_t c_cam_api);
-void camera_api_request_update_raw(uint16_t line_number, uint8_t *img_row_ptr);
-void camera_api_request_complete_raw();
+/**
+ * CLIENT SIDE
+ * 
+ * Called by the client to capture a decimated image.
+ * 
+ * @param image_buff The buffer to store the image in
+ * 
+ * @return Returns 0 on success, non-zero on failure
+ */
+unsigned camera_capture_image(
+    int8_t image_buff[CH][H][W]);
+
+#if defined(__XC__) || defined(__cplusplus)
+}
+#endif

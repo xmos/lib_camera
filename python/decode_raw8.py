@@ -27,14 +27,8 @@ from utils import (
     plot_imgs
 )
 
-from pathlib import Path
-import os
-import cv2
-import numpy as np
-from PIL import Image
-
-#input_name = os.getenv('BINARY_IMG_PATH')
-input_name = Path(__file__).parent / "capture.bin"
+input_name = os.getenv('BINARY_IMG_PATH') or "capture.bin"
+#input_name = Path(__file__).parent / "capture.bin"
 
 width, height = 640, 480
 

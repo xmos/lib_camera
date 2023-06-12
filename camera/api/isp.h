@@ -7,9 +7,6 @@
 
 #include "statistics.h"
 
-#define DEFAULT_ALFA 1.58682
-#define DEFAULT_BETA 1.52535
-
 
 // ---------------------------------- AE/AGC ------------------------------
 float AE_compute_mean_skewness(global_stats_t *gstats);
@@ -45,18 +42,23 @@ void isp_bilinear_resize(
 void isp_rotate_image(const uint8_t *src, uint8_t *dest, int width, int height);
 
 // -------------------------- COLOR CONVERSION -------------------------------------
-// Macro arguments
-#define MASK8           0xFF
-#define MASK24          0x00FFFFFF
-#define GET_R(x) ((int8_t)((x & MASK24)) & MASK8)
-#define GET_G(x) ((int8_t)((x & MASK24) >> 8) & MASK8)
-#define GET_B(x) ((int8_t)((x & MASK24) >> 16) & MASK8)
-#define GET_Y(x) GET_R(x)
-#define GET_U(x) GET_G(x)
-#define GET_V(x) GET_B(x)
+// Macro arguments to get color components from packed result in the assembly program
+#define GET_R(rgb) ((rgb >> 16) & 0xFF)
+#define GET_G(rgb) ((rgb >> 8) & 0xFF)
+#define GET_B(rgb) (rgb & 0xFF)
 
-// Converts signed yuv or rgb (-127..127, -127..127, -127..127) into signed rgb / yuv. 
-extern int yuv_to_rgb(int y, int u, int v);
-extern int rgb_to_yuv(int r, int g, int b);
+#define GET_Y(yuv) GET_R(yuv)
+#define GET_U(yuv) GET_G(yuv)
+#define GET_V(yuv) GET_B(yuv)
+
+int yuv_to_rgb(
+    int y, 
+    int u, 
+    int v);
+
+int rgb_to_yuv(
+    int r, 
+    int g, 
+    int b);
 
 #endif // ISP_H

@@ -18,7 +18,6 @@
 
 // Mipi format and mode
 #define CONFIG_MIPI_FORMAT      MIPI_DT_RAW8
-#define CONFIG_DEMUX_MODE       BIAS_ENABLED
 #define MIPI_PKT_BUFFER_COUNT   4 
 
 // FPS settings

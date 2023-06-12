@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-void user_app(streaming_chanend_t c_cam_api){
+void user_app()
+{
   int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
   uint8_t out_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
 
@@ -14,8 +15,11 @@ void user_app(streaming_chanend_t c_cam_api){
   // Wait for the image to set exposure
   delay_milliseconds(5000);
   printf("Requesting image...\n");
-  camera_capture_image(image_buffer, c_cam_api);
-  printf("Image captured.\n");
+  if(camera_capture_image(image_buffer)){
+    printf("Error capturing image\n");
+    exit(1);
+  }
+  printf("Image captured...\n");
 
   // Rotate 180 degrees
   // rotate_image(image_buffer);

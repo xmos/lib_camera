@@ -13,7 +13,7 @@ load_dotenv()  # take environment variables from .env.
 
 from utils import show_histogram_by_channel
 
-input_name = os.getenv('BINARY_IMG_PATH')
+input_name = os.getenv('BINARY_IMG_PATH') or "capture.bin"
 
 # read the data
 with open(input_name, "rb") as f:
