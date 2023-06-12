@@ -6,9 +6,11 @@
 #include "sensor.h"
 
 
-
+// The number of non-zero taps in the vertical filter.
 #define VFILTER_TAP_COUNT   (5)
 
+// The effective decimation factor of the vertical filter.
+// Note that because of Bayering, this is half the horizontal decimation factor.
 #define VFILTER_DEC_FACTOR  (APP_DECIMATION_FACTOR / 2)
 
 // Required: Low-res image width must be multiple of 16 pixels
