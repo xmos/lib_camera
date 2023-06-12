@@ -29,24 +29,22 @@ on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
 int main(void) 
 {
-  streaming chan c_cam_api;
   i2c_master_if i2c[1];
   chan xscope_chan;
   par {
     xscope_host_data(xscope_chan);
     on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, Kbps);
 
-    on tile[MIPI_TILE]: camera_main_raw(tile[MIPI_TILE],
+    on tile[MIPI_TILE]: camera_main(tile[MIPI_TILE],
                                     p_mipi_clk, 
                                     p_mipi_rxa, 
                                     p_mipi_rxv, 
                                     p_mipi_rxd, 
                                     clk_mipi, 
-                                    i2c[0], 
-                                    c_cam_api);
+                                    i2c[0]);
 
     on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
-    on tile[MIPI_TILE]: user_app_raw(c_cam_api);
+    on tile[MIPI_TILE]: user_app_raw();
   }
   return 0;
 }

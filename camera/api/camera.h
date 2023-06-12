@@ -74,22 +74,21 @@ void camera_main(
     in port p_mipi_rxv,
     buffered in port:32 p_mipi_rxd,
     clock clk_mipi,
-    client interface i2c_master_if i2c,
-    streaming chanend c_user_api);
+    client interface i2c_master_if i2c);
 
-/**
- * Thread entry point for interfacing with the camera sensor.
- * 
- * This version of the camera thread will capture raw data.
- */
-void camera_main_raw(
-    tileref mipi_tile,
-    in port p_mipi_clk,
-    in port p_mipi_rxa,
-    in port p_mipi_rxv,
-    buffered in port:32 p_mipi_rxd,
-    clock clk_mipi,
-    client interface i2c_master_if i2c,
-    streaming chanend c_user_api);
+// /**
+//  * Thread entry point for interfacing with the camera sensor.
+//  * 
+//  * This version of the camera thread will capture raw data.
+//  */
+// void camera_main_raw(
+//     tileref mipi_tile,
+//     in port p_mipi_clk,
+//     in port p_mipi_rxa,
+//     in port p_mipi_rxv,
+//     buffered in port:32 p_mipi_rxd,
+//     clock clk_mipi,
+//     client interface i2c_master_if i2c,
+//     streaming chanend c_user_api);
 
 #endif //__XC__

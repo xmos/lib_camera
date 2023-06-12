@@ -63,8 +63,6 @@ void handle_frame_start(
 
     image_vfilter_frame_init(&vfilter_accs[c][0]);
   }
-
-  camera_api_request_begin();
 }
 
 
@@ -93,6 +91,9 @@ unsigned handle_pixel_data(
     const mipi_packet_t* pkt,
     int8_t output_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS])
 {
+
+  // First, service any raw requests.
+  camera_api_new_row_raw((int8_t*) &pkt->payload[0], ph_state.in_line_number);
 
   // Bayer pattern is RGGB; even index rows have RG data, 
   // odd index rows have GB data.
@@ -164,8 +165,8 @@ void on_new_output_row(
   // Pass the output row along for statistics processing
   s_chan_out_word(c_out_row, (unsigned) &pix_out[0][0] );
 
-  // Write image data to user buffer if there is one waiting
-  camera_api_request_update(pix_out, ph_state.out_line_number);
+  // Service and user requests for decimated output
+  camera_api_new_row_decimated(pix_out, ph_state.out_line_number);
 
   ph_state.out_line_number++;
 }
@@ -188,36 +189,19 @@ void handle_frame_end(
 
   // Signal statistics thread to do frame-end work by sending NULL.
   s_chan_out_word(c_out_row, (unsigned) NULL);
-
-  // If user is waiting for image, this signals that it's done.
-  camera_api_request_complete();
-
-  // printf("\n");
-  // printf("out lines: %u\n", ph_state.out_line_number);
-  // printf("in lines: %u\n", ph_state.in_line_number);
 }
 
 
-void handle_no_expected_lines(){
-      if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
-        // We've received more lines of image data than we expected.
-        #ifdef ASSERT_ON_TOO_MANY_LINES
-          assert(0);
-        #endif
-        }
+void handle_no_expected_lines()
+{
+  if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
+    // We've received more lines of image data than we expected.
+#ifdef ASSERT_ON_TOO_MANY_LINES
+      assert(0);
+#endif
+  }
 }
 
-// send the line number and the actual raw to the user api
-void handle_expected_format_raw(const mipi_packet_t* pkt){
-  camera_api_request_update_raw(
-    (uint16_t) ph_state.in_line_number, 
-    (uint8_t *) &pkt->payload[0]);
-}
-
-// end of frame
-void handle_frame_end_raw(){
-  camera_api_request_complete_raw();
-}
 
 /**
  * Process a single packet.
@@ -295,54 +279,6 @@ void handle_packet(
 }
 
 
-static
-void handle_packet_raw(
-    const mipi_packet_t* pkt,
-    streaming_chanend_t c_out_row)
-{
-
-  // definitions
-  const mipi_header_t header = pkt->header;
-  const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-
-  // At start-up we usually want to wait for a new frame before processing
-  // anything
-  if(ph_state.wait_for_frame_start 
-     && data_type != MIPI_DT_FRAME_START) return;
-
-  /*
-    The idea here is that logic that keeps the packet handler in a coherent
-    state, like tracking frame and line numbers, should go directly in here, but
-    logic that actually interprets, processes or reacts to packet data should go
-    into the individual functions.
-  */
-  switch(data_type)
-  {
-    case MIPI_DT_FRAME_START: 
-      ph_state.wait_for_frame_start = 0;
-      ph_state.in_line_number = 0;
-      ph_state.out_line_number = 0;
-      ph_state.frame_number++;
-      break;
-
-    case MIPI_DT_FRAME_END:   
-      handle_frame_end_raw();
-      break;
-
-    case MIPI_EXPECTED_FORMAT:     
-      handle_no_expected_lines();
-      handle_expected_format_raw(pkt);
-
-      ph_state.in_line_number++;
-      break;
-
-    default:              
-      handle_unknown_packet(pkt);   
-      break;
-  }
-}
-
-
 /**
  * Top level of the packet handling thread. Receives MIPI packets from the
  * packet receiver and passes them to `handle_packet()` for parsing and
@@ -351,8 +287,7 @@ void handle_packet_raw(
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row,
-    streaming_chanend_t c_user_api)
+    streaming_chanend_t c_out_row)
 {
   /*
    * These buffers will be used to hold received MIPI packets while they're
@@ -362,7 +297,7 @@ void mipi_packet_handler(
   mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
   unsigned pkt_idx = 0;
 
-  camera_api_init(c_user_api);
+  camera_api_init();
   
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
@@ -385,61 +320,3 @@ void mipi_packet_handler(
 
   }
 }
-
-
-/**
- * Top level of the packet handling thread. Receives MIPI packets from the
- * packet receiver and passes them to `handle_packet()` for parsing and
- * processing.
- */
-void mipi_packet_handler_raw(
-    streaming_chanend_t c_pkt, 
-    streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row,
-    streaming_chanend_t c_user_api)
-{
-  /*
-   * These buffers will be used to hold received MIPI packets while they're
-   * being processed.
-   */
-  __attribute__((aligned(8)))
-  mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
-  unsigned pkt_idx = 0;
-
-  camera_api_init(c_user_api);
-  
-  // Give the MIPI packet receiver a first buffer
-  s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
-
-  while(1) {
-    pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT-1);
-
-    mipi_packet_t * pkt = (mipi_packet_t*) s_chan_in_word(c_pkt);
-    // Swap buffers with the receiver thread. Give it the next buffer
-    // to fill and take the last filled buffer from it.    
-    s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
-
-    // Process the packet
-    //const mipi_header_t header = pkt->header;
-    //const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-
-    // unsigned time_start = measure_time();
-    handle_packet_raw(pkt, c_out_row);
-    // unsigned time_proc = measure_time() - time_start;
-  }
-}
-
-
-// NOTES
-//[1]
-/*
-  //  NOTE: If vertical filtering has to go into a separate thread, this buffer
-  //  will need to be passed to another thread and must be done differently.
-  //  NOTE: This buffer will only hold one color channel at a time because the
-  //  horizontal filter separates color planes.
-
-[2]
-// We don't need to watch for new rows from the vertical decimator here
-// because we know a priori that blue will be the last one out.
-
-*/
