@@ -24,8 +24,6 @@ void write_file(char * filename, uint8_t * data, const size_t size)
     xscope_file_t fp = xscope_open_file(filename, "wb");
 
     xscope_fwrite(&fp, data, size);
-
-    xscope_close_all_files();
 }
 
 void write_image_file(char * filename, uint8_t * image, const size_t height, const size_t width, const size_t channels)
@@ -122,7 +120,6 @@ void write_bmp_file(char * filename, uint8_t * image, const size_t height, const
         }
     }
     
-    xscope_close_all_files();
     printf("Image written into file: %s\n", filename);
     printf("Image dimentions: %d x %d\n", width, height);
 }
