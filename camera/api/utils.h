@@ -12,8 +12,8 @@ extern "C" {
 #endif
 
 static inline
-int measure_time(){
-  int y = 0;
+unsigned measure_time(){
+  unsigned y = 0;
   asm volatile("gettime %0": "=r"(y));
   return y;
 }

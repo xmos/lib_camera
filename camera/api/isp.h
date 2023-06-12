@@ -44,4 +44,14 @@ void isp_bilinear_resize(
 
 void isp_rotate_image(const uint8_t *src, uint8_t *dest, int width, int height);
 
+int yuv_to_rgb(
+    int y, 
+    int u, 
+    int v);
+
+int rgb_to_yuv(
+    int r, 
+    int g, 
+    int b);
+
 #endif // ISP_H
