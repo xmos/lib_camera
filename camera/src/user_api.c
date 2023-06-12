@@ -129,3 +129,45 @@ unsigned camera_capture_image(
 
   return 0;
 }
+
+
+
+unsigned camera_capture_image_cropped(
+    int8_t* image_buff,
+    const image_crop_params_t crop_params)
+{
+  const unsigned CROP_ROW = crop_params.origin.row;
+  const unsigned CROP_COL = crop_params.origin.col;
+  const unsigned CROP_H = crop_params.shape.height;
+  const unsigned CROP_W = crop_params.shape.width;
+
+  unsigned row_index;
+
+  int8_t pixel_data[CH][W];
+
+  int8_t (*image)[CROP_H][CROP_W] = 
+    (int8_t (*)[CROP_H][CROP_W]) image_buff;
+
+  // Loop, capturing rows until we get one 
+  // with row_index==crop_params.origin.row
+  do {
+    row_index = camera_capture_row_decimated(pixel_data);
+  } while (row_index != CROP_ROW);
+
+  for(int c = 0; c < CH; c++) 
+    c_memcpy(&image[c][0][0], &pixel_data[c][CROP_COL], CROP_W);
+
+  // Now capture the rest of the rows
+  for (unsigned row = 1; row < CROP_H; row++) {
+    row_index = camera_capture_row_decimated(pixel_data);
+    
+    // TODO handle errors better
+    if (row_index != row + crop_params.origin.row)  return 1; 
+
+    for(int c = 0; c < CH; c++)
+      c_memcpy(&image[c][row][0], &pixel_data[c][CROP_COL], CROP_W);
+      
+  }
+
+  return 0;
+}
