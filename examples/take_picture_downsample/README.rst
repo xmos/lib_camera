@@ -1,6 +1,6 @@
-=========================
-Example: Take picture RAW
-=========================
+================================
+Example: Take picture downsample
+================================
 
 This example set the basic settings for the sony sensor and grab a single frame. 
 By default the format is the following:
@@ -16,14 +16,14 @@ Run the following commands from the top level:
     .. code-block:: console
         
         cmake -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
-        make -C build example_take_picture_raw
+        make -C build example_take_picture_downsample
 
 .. tab:: Windows
 
     .. code-block:: console
 
         cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
-        ninja -C build example_take_picture_raw
+        ninja -C build example_take_picture_downsample
 
 ***************
 Running example
@@ -36,7 +36,7 @@ From the top level
     .. code-block:: console
 
         pip install -e utils/xscope_fileio
-        python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
+        python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
 
 .. tab:: Windows
 
@@ -47,11 +47,10 @@ From the top level
         cd utils/xscope_fileio/host
         cmake -G "Ninja" . && ninja
         cd ../../../
-        python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
-
+        python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
 
 ******
 Output
 ******
 
-The output file ``capture.bin`` will be generated at the top level the repository. It can be further processed using ``python/decode_raw8.py`` script.
+The output files ``capture.bin`` and ``capture.bmp`` will be generated at the top level the repository. ``capture.bin`` can be further processed using ``python/decode_downsampled.py`` script.
