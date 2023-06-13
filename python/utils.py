@@ -462,9 +462,9 @@ def run_histogram_equalization(img_bgr):
     return colorimage_clahe
 
 
-def show_histogram_by_channel(image):
+def show_histogram_by_channel(image, ylim=None):
     # Set the histogram bins to 256, the range to 0-255
-    hist_size = 260
+    hist_size = 265
     hist_range = (0, 255)
 
     # Plot the histograms using plt.hist
@@ -473,6 +473,8 @@ def show_histogram_by_channel(image):
         plt.subplot(1, 3, i+1)
         plt.title(f'{col.upper()} Histogram')
         plt.xlim([0, hist_size])
+        if ylim is not None:
+            plt.ylim([0, ylim])
         plt.hist(image[:,:,i].ravel(), bins=hist_size, range=hist_range, color=col)
     plt.show()
 

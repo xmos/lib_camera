@@ -25,6 +25,13 @@ extern "C" {
   #error HISTOGRAM_BIN_COUNT value not currently supported.
 #endif
 
+// The percentile to look for when applying white balance adjustments, as a
+// fraction. (0.95 will find the value which 95% of pixels are less than or
+// equal to)
+#ifndef APP_WB_PERCENTILE
+#define APP_WB_PERCENTILE   (0.94)
+#endif
+
 // Objects definitions
 typedef struct {
   int8_t pixels[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];

@@ -64,10 +64,10 @@
 #ifndef CONFIG_MIPI_FORMAT
     #error CONFIG_MIPI_FORMAT has to be specified
 #else
-    #if CONFIG_MIPI_FORMAT == MIPI_DT_RAW10
+    #if (CONFIG_MIPI_FORMAT == MIPI_DT_RAW10)
         #define MIPI_IMAGE_WIDTH_BYTES (((MIPI_IMAGE_WIDTH_PIXELS) >> 2) * 5) // by 5/4
 
-    #elif CONFIG_MIPI_FORMAT == MIPI_DT_RAW8
+    #elif (CONFIG_MIPI_FORMAT == MIPI_DT_RAW8)
         #define MIPI_IMAGE_WIDTH_BYTES MIPI_IMAGE_WIDTH_PIXELS // same size
 
     #else
@@ -152,13 +152,6 @@
 // sampled values in a row.
 #ifndef APP_HISTOGRAM_SAMPLE_STEP
 #define APP_HISTOGRAM_SAMPLE_STEP   (1)
-#endif
-
-// The percentile to look for when applying white balance adjustments, as a
-// fraction. (0.95 will find the value which 95% of pixels are less than or
-// equal to)
-#ifndef APP_WB_PERCENTILE
-#define APP_WB_PERCENTILE   (0.95)
 #endif
 
 // For simplicity here
