@@ -12,10 +12,6 @@
 #include "utils.h"
 #include "sensor.h"
 
-// Initial channel scales
-#define AWB_gain_RED    1.3
-#define AWB_gain_GREEN  0.8
-#define AWB_gain_BLUE   1.3
 
 // Filter stride
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
@@ -40,22 +36,13 @@ static struct {
 
 hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
-
-isp_params_t isp_params = {
-  .channel_gain = {
-    AWB_gain_RED,
-    AWB_gain_GREEN,
-    AWB_gain_BLUE
-  }
-};
-
-
 static 
 void handle_frame_start(
     const mipi_packet_t* pkt)
 {
   // New frame is starting, reset the vertical filter accumulator states.
   for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++){
+    // printf("isp params = %f\n", isp_params.channel_gain[c]);
     pixel_hfilter_update_scale(&hfilter_state[c], 
                                isp_params.channel_gain[c], 
                                (c == 0)? 0 : 1);

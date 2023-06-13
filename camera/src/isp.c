@@ -1,7 +1,7 @@
 #include "isp.h"
 
-#define AE_MARGIN 0.1         // defaukt marging for the auto exposure error
-
+#define AE_MARGIN 0.1          // default marging for the auto exposure error
+#define AE_INITIAL_EXPOSURE 35 // initial exposure value
 
 // ---------------------------------- utils ------------------------------
 static
@@ -10,6 +10,36 @@ uint8_t csign(float x) {
 }
 
 // ---------------------------------- AE / AGC ------------------------------
+void AE_control_exposure(
+    global_stats_t *global_stats,
+    CLIENT_INTERFACE(sensor_control_if, sc_if))
+{
+    // Initial exposure
+    static uint8_t new_exp = AE_INITIAL_EXPOSURE;
+    static uint8_t printf_info = 1;
+
+    // Compute skewness and adjust exposure if needed
+    float sk = AE_compute_mean_skewness(global_stats);
+    if (AE_is_adjusted(sk)){
+        if (printf_info){
+            printf("-----> adjustement done\n");
+            printf_info = 0;
+        }
+    }
+    else{ // Adjust exposure
+        new_exp = AE_compute_new_exposure((float)new_exp, sk);
+        sensor_control_set_exposure(sc_if, (uint8_t)new_exp);
+        printf_info = 1;
+    }
+}
+
+void AE_print_skewness(global_stats_t *gstats){
+      printf("skewness:%f,%f,%f\n",
+          (*gstats)[0].skewness,
+          (*gstats)[1].skewness,
+          (*gstats)[2].skewness);
+}
+
 float AE_compute_mean_skewness(global_stats_t *gstats){
     float sk = 0.0;
     sk += (*gstats)[0].skewness;
@@ -58,41 +88,80 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
 
 
 // ---------------------------------- AWB ------------------------------
-void AWB_compute_gains(global_stats_t *gstats, AWB_gains_t *gains){
+const float AWB_ceil = 255.0;
+const float AWB_MAX = 1.6;
+const float AWB_MIN = 0.8;
+
+isp_params_t isp_params = {
+  .channel_gain = {
+    AWB_gain_RED,
+    AWB_gain_GREEN,
+    AWB_gain_BLUE
+  }
+};
+
+static
+float AWB_clip_value(float tmp){
+    if (tmp > AWB_MAX){
+        tmp = AWB_MAX;
+    }
+    else if (tmp < AWB_MIN){
+        tmp = AWB_MIN;
+    }
+    return tmp;
+}
+
+static
+void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_params){
     // Adjust AWB 
-    const float ceil = 254.0;
-    gains->alfa  = ceil / (float)(*gstats)[0].percentile; // RED
-    gains->beta  = ceil / (float)(*gstats)[1].percentile; // GREEN
-    gains->gamma = ceil / (float)(*gstats)[2].percentile; // BLUE
+    float tmp1=1.3;
+    float tmp2=1.0;
+    float tmp3=1.3; 
+
+    // percentile adjustement
+    printf("%d,%d,%d,%d,%d,%d,\n", 
+        (*gstats)[0].min,
+        (*gstats)[0].max,
+        (*gstats)[1].min,
+        (*gstats)[1].max,
+        (*gstats)[2].min,
+        (*gstats)[2].max);
+    
+    tmp1 =  254 / (float)(*gstats)[0].percentile; // RED
+    tmp2 =  254 / (float)(*gstats)[1].percentile; // GREEN
+    tmp3 =  254 / (float)(*gstats)[2].percentile; // BLUE
+
+    tmp1 = 0.2*(1.3-tmp1)   + 1.3;
+    tmp2 = 0.2*(1-tmp2)     + 1;
+    tmp3 = 0.2*(1.3-tmp3)   + 1.3;
+
+    tmp1  = AWB_clip_value(tmp1);
+    tmp2  = AWB_clip_value(tmp2);
+    tmp3  = AWB_clip_value(tmp3);
+
+    isp_params->channel_gain[0] = tmp1;
+    isp_params->channel_gain[1] = tmp2;
+    isp_params->channel_gain[2] = tmp3;
 }
 
-void AWB_print_gains(AWB_gains_t *gains){
-    printf("awb:%f,%f,%f\n",gains->alfa,gains->beta,gains->gamma);
+void AWB_compute_gains(global_stats_t *gstats, isp_params_t *isp_params){
+    // Adjust AWB 
+    float tmp0=1.35;
+    float tmp1=1.0;
+    float tmp2=1.35; 
+
+    isp_params->channel_gain[0] = tmp0;
+    isp_params->channel_gain[1] = tmp1;
+    isp_params->channel_gain[2] = tmp2;
 }
 
-int8_t AWB_compute_filter_gain(int8_t coeff, float factor) {
-  // clip factor
-  const float maxf = 1.6;
-  const float minf = 1;
-
-  if (factor > maxf){
-    factor = maxf;
-  } 
-  else if (factor <= minf){
-    factor = minf;
-  }
-  
-  // compute the factor
-  float result = factor * (coeff + 128.0f);
-  if (result >= 255.0f) {
-    result = 127;  
-  } else if (result <= 0.0f) {
-    result = -128;
-  } else{
-    result -= 128;
-  }
-  return (int8_t)result;
+void AWB_print_gains(isp_params_t *isp_params){
+    printf("awb:%f,%f,%f\n",
+    isp_params->channel_gain[0],
+    isp_params->channel_gain[1],
+    isp_params->channel_gain[2]);
 }
+
 
 
 // ---------------------------------- GAMMA ------------------------------

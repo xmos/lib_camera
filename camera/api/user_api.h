@@ -7,6 +7,8 @@ extern "C" {
 #endif
 
 /**
+ * SERVER SIDE
+ * 
  * Initialize the camera API. Must be called before any other API functions.
  */
 void camera_api_init();
@@ -79,6 +81,37 @@ unsigned camera_capture_image_raw(
  */
 unsigned camera_capture_image(
     int8_t image_buff[CH][H][W]);
+
+    
+typedef struct {
+  struct {
+    unsigned row;
+    unsigned col;
+  } origin;
+  struct {
+    unsigned height;
+    unsigned width;
+  } shape;
+} image_crop_params_t;
+
+/**
+ * CLIENT SIDE
+ * 
+ * Called by the client to capture a portion of a decimated image. If only a 
+ * portion of the decimated image is required, using this function avoids the 
+ * need to store the entire decimated image in memory.
+ * 
+ * `image_buff` must be a 3D array of 
+ * size `[CH][crop_params.shape.height][crop_params.shape.width]`.
+ * 
+ * @param image_buff The buffer to store the image in
+ * @param crop_params The parameters of the crop
+ * 
+ * @return Returns 0 on success, non-zero on failure
+ */
+unsigned camera_capture_image_cropped(
+    int8_t* image_buff,
+    const image_crop_params_t crop_params);
 
 #if defined(__XC__) || defined(__cplusplus)
 }

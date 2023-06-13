@@ -7,22 +7,36 @@
 
 #include "statistics.h"
 
+// black level is sensor dependant (used by horizontal filter)
+#define BLACK_LEVEL 16
 
 // ---------------------------------- AE/AGC ------------------------------
+void AE_control_exposure(
+    global_stats_t *global_stats,
+    CLIENT_INTERFACE(sensor_control_if, sc_if));
+void AE_print_skewness(global_stats_t *gstats);
 float AE_compute_mean_skewness(global_stats_t *gstats);
 uint8_t AE_is_adjusted(float sk);
 uint8_t AE_compute_new_exposure(float exposure, float skewness);
 
-// ---------------------------------- AWB ------------------------------
-typedef struct {
-    float alfa;
-    float beta;
-    float gamma;
-} AWB_gains_t;
 
-void AWB_compute_gains(global_stats_t *gstats, AWB_gains_t *gains);
-void AWB_print_gains(AWB_gains_t *gains);
-int8_t AWB_compute_filter_gain(int8_t coeff, float factor);
+// ---------------------------------- AWB ------------------------------
+// Initial channel scales
+#define AWB_gain_RED    1
+#define AWB_gain_GREEN  1
+#define AWB_gain_BLUE   1
+
+/**
+ * struct to hold the calculated parameters for the ISP
+ */
+typedef struct {
+  float channel_gain[APP_IMAGE_CHANNEL_COUNT];
+} isp_params_t;
+
+
+extern isp_params_t isp_params;
+void AWB_compute_gains(global_stats_t *gstats, isp_params_t *isp_params);
+void AWB_print_gains(isp_params_t *isp_params);
 
 
 // ---------------------------------- GAMMA ------------------------------

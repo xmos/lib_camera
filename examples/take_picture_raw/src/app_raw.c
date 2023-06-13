@@ -27,7 +27,9 @@ void user_app_raw(){
     printf("Image captured...\n");
 
     // Convert image from int8 to uint8 in-place
-    img_int8_to_uint8_inplace(image_buffer);
+    vect_int8_to_uint8((uint8_t*) image_buffer,
+                      (int8_t*) image_buffer, 
+                      sizeof(image_buffer));
 
     // Save the image to a file
     write_image_file("capture.bin", (uint8_t * ) &image_buffer[0][0],   

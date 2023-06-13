@@ -228,23 +228,31 @@ TEST(pixel_hfilter, pixel_hfilter__alt_coef)
 ///////////////////////////////////////////////
 TEST(pixel_hfilter, pixel_hfilter__timing)
 {
+  static const unsigned max_blocks = 8;
+
   int8_t coef[32] = {0};
   int8_t input[32] = {0};
-  int8_t output[64] = {0};
+  int8_t output[16*max_blocks] = {0};
 
-  unsigned t_16x[4];
+  unsigned timing[max_blocks];
 
-  for(int k = 0; k < 4; k++){
+  static const char func_name[] = "pixel_hfilter()";
+  static const char row1_head[] = "out_count:";
+  static const char row2_head[] = "ticks:    ";
+
+  for(int k = 0; k < max_blocks; k++){
     unsigned ts = measure_time();
     pixel_hfilter(output, input, coef, 0, 0 , 0, 16*(k+1));
     unsigned te = measure_time();
-    t_16x[k] = te - ts;
+    timing[k] = te - ts;
   }
 
-  printf("\n");
-  printf("\tout_count:     16       32       48       64\n");
-  printf("\tticks:   %8u %8u %8u %8u\n", 
-          t_16x[0], t_16x[1], t_16x[2], t_16x[3]);
+  printf("\n\t%s timing:\n", func_name);
+  printf("\t\t%s", row1_head);
+  for(int k = 0; k < max_blocks; k++)   printf("%8u", 16*(k+1));
+  printf("\n\t\t%s", row2_head);
+  for(int k = 0; k < max_blocks; k++)   printf("%8u", timing[k]);
+  printf("\n\n");
 
 }
 
@@ -364,6 +372,7 @@ TEST(pixel_hfilter, pixel_hfilter_update_scale__timing)
   pixel_hfilter_update_scale(&state, gain, 1);
   unsigned te = measure_time();
 
-  printf("\n");
-  printf("\tpixel_hfilter_update_scale: %u ticks\n", te - ts);
+  static const char func_name[] = "pixel_hfilter_update_scale()";
+
+  printf("\n\t%s timing: %u ticks\n\n", func_name, te - ts);
 }

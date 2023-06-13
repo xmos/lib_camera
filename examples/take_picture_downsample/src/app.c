@@ -11,7 +11,7 @@ void user_app()
   uint8_t temp_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
 
   // set the input image to 0
-  memset(image_buffer, -128, APP_IMAGE_CHANNEL_COUNT * APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS);
+  memset(image_buffer, -128, sizeof(image_buffer));
 
   // Wait for the image to set exposure
   delay_milliseconds(5000);
@@ -26,16 +26,29 @@ void user_app()
   // rotate_image(image_buffer);
 
   // convert to uint8 with right dimentions
-  img_int8_to_uint8(image_buffer, temp_buffer);
+  // convert to uint8
+  vect_int8_to_uint8((uint8_t*) image_buffer,
+                     (int8_t*) image_buffer, 
+                     sizeof(image_buffer));
+
   uint8_t * io_buff = (uint8_t *) &image_buffer[0][0][0];
   // io_buff this will have [APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS][APP_IMAGE_CHANNEL_COUNT] dimentions
-  swap_dimentions((uint8_t *) &temp_buffer[0][0][0], io_buff, APP_IMAGE_HEIGHT_PIXELS, APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_CHANNEL_COUNT);
+  swap_dimentions((uint8_t *) &temp_buffer[0][0][0], io_buff,
+                    APP_IMAGE_HEIGHT_PIXELS,
+                    APP_IMAGE_WIDTH_PIXELS,
+                    APP_IMAGE_CHANNEL_COUNT);
 
-  // Write binary file and .bmp file
-  write_image_file("capture.bin", io_buff, APP_IMAGE_HEIGHT_PIXELS, APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_CHANNEL_COUNT);
+  // Write binary file
+  write_image_file("capture.bin", io_buff,
+                    APP_IMAGE_HEIGHT_PIXELS,
+                    APP_IMAGE_WIDTH_PIXELS,
+                    APP_IMAGE_CHANNEL_COUNT);
 
-  //save it to bmp
-  write_bmp_file("capture.bmp", io_buff, APP_IMAGE_HEIGHT_PIXELS, APP_IMAGE_WIDTH_PIXELS, APP_IMAGE_CHANNEL_COUNT);
+  // Write bmp file
+  write_bmp_file("capture.bmp", io_buff,
+                  APP_IMAGE_HEIGHT_PIXELS,
+                  APP_IMAGE_WIDTH_PIXELS,
+                  APP_IMAGE_CHANNEL_COUNT);
 
   printf("Images saved. Exiting.\n");
   xscope_close_all_files();

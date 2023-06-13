@@ -7,6 +7,7 @@
 #include "xccompat.h"
 
 #include "camera.h"
+#include "isp.h"
 
 #ifdef __XC__
 extern "C" {
@@ -22,12 +23,6 @@ typedef struct
 } mipi_packet_t;
 
 
-/**
- * struct to hold the calculated parameters for the ISP
- */
-typedef struct {
-  float channel_gain[APP_IMAGE_CHANNEL_COUNT];
-} isp_params_t;
 
 
 /**
