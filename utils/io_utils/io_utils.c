@@ -2,7 +2,7 @@
 #include "io_utils.h"
 #include <stdint.h>
 
-void swap_dimentions(uint8_t * image_in, uint8_t * image_out, const size_t height, const size_t width, const size_t channels)
+void swap_dimensions(uint8_t * image_in, uint8_t * image_out, const size_t height, const size_t width, const size_t channels)
 {
     printf("Swapping image dimentions...\n");
     for(size_t k = 0; k < height; k++)

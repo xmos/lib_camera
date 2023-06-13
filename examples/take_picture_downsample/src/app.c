@@ -31,9 +31,10 @@ void user_app()
                      (int8_t*) image_buffer, 
                      sizeof(image_buffer));
 
+  memcpy(temp_buffer, image_buffer, APP_IMAGE_CHANNEL_COUNT * APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS * sizeof(uint8_t));
   uint8_t * io_buff = (uint8_t *) &image_buffer[0][0][0];
   // io_buff this will have [APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS][APP_IMAGE_CHANNEL_COUNT] dimentions
-  swap_dimentions((uint8_t *) &temp_buffer[0][0][0], io_buff,
+  swap_dimensions((uint8_t *) &temp_buffer[0][0][0], io_buff,
                     APP_IMAGE_HEIGHT_PIXELS,
                     APP_IMAGE_WIDTH_PIXELS,
                     APP_IMAGE_CHANNEL_COUNT);

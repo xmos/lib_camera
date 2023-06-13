@@ -21,7 +21,7 @@ extern "C" {
 void write_file(char * filename, uint8_t * data, const size_t size);
 
 /**
- * @brief Swaps image dimentions from [channel][height][width]
+ * @brief Swaps image dimensions from [channel][height][width]
  * to [height][width][channel]
  * 
  * @param image_in  Input image
@@ -30,7 +30,7 @@ void write_file(char * filename, uint8_t * data, const size_t size);
  * @param width     Image width
  * @param channels  Number of channels
  */
-void swap_dimentions(uint8_t * image_in, uint8_t * image_out, const size_t height, const size_t width, const size_t channels);
+void swap_dimensions(uint8_t * image_in, uint8_t * image_out, const size_t height, const size_t width, const size_t channels);
 
 /**
  * @brief Writes binary image file
