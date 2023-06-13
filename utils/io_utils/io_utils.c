@@ -4,15 +4,15 @@
 
 void swap_dimensions(uint8_t * image_in, uint8_t * image_out, const size_t height, const size_t width, const size_t channels)
 {
-    printf("Swapping image dimentions...\n");
+    printf("Swapping image dimensions...\n");
     for(size_t k = 0; k < height; k++)
     {
         for(size_t j = 0; j < width; j++)
         {
             for(size_t c = 0; c < channels; c++)
             {
-                size_t index_in = c * (height * width) + k * width  + j - 1;
-                size_t index_out = k * (width * channels) + j * channels + c - 1;
+                size_t index_in =  c * (height * width)   + k * width    + j;
+                size_t index_out = k * (width * channels) + j * channels + c;
                 image_out[index_out] = image_in[index_in];
             }
         }
@@ -104,7 +104,7 @@ void write_bmp_file(char * filename, uint8_t * image, const size_t height, const
         for(size_t j = 0; j < width; j++)
         {
             // Write the pixel data (assuming RGB order)
-	        size_t offset = i * (channels * width) + j * channels - 1;
+	        size_t offset = i * (channels * width) + j * channels;
             xscope_fwrite(&fp, &image[offset + 2], 1 * sizeof(uint8_t)); // Blue
             xscope_fwrite(&fp, &image[offset + 1], 1 * sizeof(uint8_t)); // Green
             xscope_fwrite(&fp, &image[offset + 0], 1 * sizeof(uint8_t)); // Red
