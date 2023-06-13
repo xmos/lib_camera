@@ -62,12 +62,12 @@ FUNCTION_NAME:
   std tmp, tmp, r11[1]
   std tmp, tmp, r11[2]
   std tmp, tmp, r11[3]
-{ shr r5, len, 4              ; vldr r11[0]                 }
+{ shr r5, len, 4              ; vldd r11[0]                 }
   std value, value, r11[0]
   std value, value, r11[1]
   std value, value, r11[2]
   std value, value, r11[3]
-{ zext len, 4                 ; vldd r11[0]                 }
+{ zext len, 4                 ; vldr r11[0]                 }
 
 // for now, assume the len is multiple of 16 and raise an exception if not.
 //    Part of the problem with supporting a tail is that if it is supported here
