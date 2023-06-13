@@ -36,5 +36,6 @@ void user_app_raw(){
             MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES, 1);
 
     printf("Image saved. Exiting.\n");
+    xscope_close_all_files();
     exit(0);
 }

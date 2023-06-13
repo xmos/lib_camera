@@ -18,46 +18,11 @@ unsigned measure_time(){
   return y;
 }
 
-/**
-* Writes BMP image to file. This function is used to write a bmp image to a
-* file.
-* 
-* @param filename - Name of file to write to. The file must end with. bmp
-* @param img - Array of uint8_t that contains the image
-* @param height - Height of the image
-* @param width - Width of the image
-*/
-void writeBMP(
-    const char* filename, 
-    uint8_t img[],
-    const unsigned height,
-    const unsigned width);
-
-
-/**
-* Write image to a binary file containing RGB data
-* 
-* @param filename -Name of the image
-* @param image - Image corresponding to a 3D array of uint8_t 
-* @param channels - Number of channels in the image
-* @param height - Height of the image
-* @param width - Width of the image
-*/
-void write_image(
-    const char* filename,
-    uint8_t image[],
-    const unsigned channels,
-    const unsigned height,
-    const unsigned width);
-
-
 void c_memcpy(void *dst, void *src, size_t size);
 
 void rotate_image(
     const char *filename, 
     uint8_t image[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]);
-
-
 
 /**
  * Convert an array of int8 to an array of uint8.
