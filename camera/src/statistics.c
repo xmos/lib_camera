@@ -73,13 +73,25 @@ void compute_skewness(channel_stats_t *stats)
 void compute_simple_stats(channel_stats_t *stats)
 {
   // Calculate the histogram
+  uint8_t temp_min = 0;
+  uint8_t temp_max = 0;
+
   for(int k = 0; k < HISTOGRAM_BIN_COUNT; k++){
     unsigned bin = stats->histogram.bins[k];
+    // mean
     stats->mean += bin * k;
-    stats->max = (stats->max >= bin)? stats->max : bin;
-    stats->min = (stats->min <= bin)? stats->min : bin;
+    // max and min
+    if (bin != 0){ 
+      temp_max = k;
+      if (temp_min == 0){
+        temp_min = k;
+      }
+    }
+    //stats->max = (stats->max >= bin)? stats->max : bin;
+    //stats->min = (stats->min <= bin)? stats->min : bin;
   }
-
+  stats->max = temp_max;
+  stats->min = temp_min;
   // biased downwards due to truncation
   stats->max <<= APP_HISTOGRAM_QUANTIZATION_BITS;
   stats->min <<= APP_HISTOGRAM_QUANTIZATION_BITS;
@@ -119,23 +131,18 @@ void statistics_thread(
 {
   // Outer loop iterates over frames
   while(1){
-    // Declare new stats
     global_stats_t global_stats = {{0}};
     // Inner loop iterates over rows within a frame
     while(1){
 
       low_res_image_row_t* row = (low_res_image_row_t*) s_chan_in_word(c_img_in);
 
-      // Signal end of frame [1]
-      if(row == NULL) 
+      if(row == NULL) // Signal end of frame [1]
         break;
 
       // Update histogram
       for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
-        update_histogram(
-          &global_stats[channel].histogram, 
-          &row->pixels[channel][0]
-          );
+        update_histogram(&global_stats[channel].histogram, &row->pixels[channel][0]);
       }
     }
     

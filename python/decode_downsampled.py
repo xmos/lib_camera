@@ -31,4 +31,4 @@ plt.imshow(img)
 plt.show()
 
 # show histograms
-show_histogram_by_channel(img)
+show_histogram_by_channel(img, 3000)

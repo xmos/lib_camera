@@ -16,18 +16,22 @@ void AE_control_exposure(
 {
     // Initial exposure
     static uint8_t new_exp = AE_INITIAL_EXPOSURE;
+    static uint8_t printf_info = 1;
+
+    // Compute skewness and adjust exposure if needed
     float sk = AE_compute_mean_skewness(global_stats);
     if (AE_is_adjusted(sk)){
-      printf("-----> adjustement done\n");
+        if (printf_info){
+            printf("-----> adjustement done\n");
+            printf_info = 0;
+        }
     }
-    else{
-      // adjust exposure
-      new_exp = AE_compute_new_exposure((float) new_exp, sk);
-      // printf("new exp = %d\n", new_exp);
-      sensor_control_set_exposure(sc_if, (uint8_t) new_exp);
+    else{ // Adjust exposure
+        new_exp = AE_compute_new_exposure((float)new_exp, sk);
+        sensor_control_set_exposure(sc_if, (uint8_t)new_exp);
+        printf_info = 1;
     }
 }
-
 
 void AE_print_skewness(global_stats_t *gstats){
       printf("skewness:%f,%f,%f\n",
@@ -84,7 +88,7 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
 
 
 // ---------------------------------- AWB ------------------------------
-const float AWB_ceil = 254.0;
+const float AWB_ceil = 255.0;
 const float AWB_MAX = 1.6;
 const float AWB_MIN = 0.8;
 
@@ -107,16 +111,26 @@ float AWB_clip_value(float tmp){
     return tmp;
 }
 
-
-void AWB_compute_gains(global_stats_t *gstats, isp_params_t *isp_params){
+static
+void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_params){
     // Adjust AWB 
-    float tmp1, tmp2, tmp3; 
+    float tmp1=1.3;
+    float tmp2=1.0;
+    float tmp3=1.3; 
 
-    tmp1 = AWB_ceil / (float)(*gstats)[0].percentile; // RED
-    tmp2 = AWB_ceil / (float)(*gstats)[1].percentile; // GREEN
-    tmp3 = AWB_ceil / (float)(*gstats)[2].percentile; // BLUE
+    // percentile adjustement
+    printf("%d,%d,%d,%d,%d,%d,\n", 
+        (*gstats)[0].min,
+        (*gstats)[0].max,
+        (*gstats)[1].min,
+        (*gstats)[1].max,
+        (*gstats)[2].min,
+        (*gstats)[2].max);
+    
+    tmp1 =  254 / (float)(*gstats)[0].percentile; // RED
+    tmp2 =  254 / (float)(*gstats)[1].percentile; // GREEN
+    tmp3 =  254 / (float)(*gstats)[2].percentile; // BLUE
 
-    // Proportional control with saturation to the white reference
     tmp1 = 0.2*(1.3-tmp1)   + 1.3;
     tmp2 = 0.2*(1-tmp2)     + 1;
     tmp3 = 0.2*(1.3-tmp3)   + 1.3;
@@ -128,6 +142,17 @@ void AWB_compute_gains(global_stats_t *gstats, isp_params_t *isp_params){
     isp_params->channel_gain[0] = tmp1;
     isp_params->channel_gain[1] = tmp2;
     isp_params->channel_gain[2] = tmp3;
+}
+
+void AWB_compute_gains(global_stats_t *gstats, isp_params_t *isp_params){
+    // Adjust AWB 
+    float tmp0=1.35;
+    float tmp1=1.0;
+    float tmp2=1.35; 
+
+    isp_params->channel_gain[0] = tmp0;
+    isp_params->channel_gain[1] = tmp1;
+    isp_params->channel_gain[2] = tmp2;
 }
 
 void AWB_print_gains(isp_params_t *isp_params){

@@ -7,7 +7,8 @@
 
 #include "statistics.h"
 
-
+// black level is sensor dependant (used by horizontal filter)
+#define BLACK_LEVEL 16
 
 // ---------------------------------- AE/AGC ------------------------------
 void AE_control_exposure(
@@ -21,9 +22,9 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness);
 
 // ---------------------------------- AWB ------------------------------
 // Initial channel scales
-#define AWB_gain_RED    1.3
-#define AWB_gain_GREEN  0.8
-#define AWB_gain_BLUE   1.3
+#define AWB_gain_RED    1
+#define AWB_gain_GREEN  1
+#define AWB_gain_BLUE   1
 
 /**
  * struct to hold the calculated parameters for the ISP

@@ -154,13 +154,6 @@
 #define APP_HISTOGRAM_SAMPLE_STEP   (1)
 #endif
 
-// The percentile to look for when applying white balance adjustments, as a
-// fraction. (0.95 will find the value which 95% of pixels are less than or
-// equal to)
-#ifndef APP_WB_PERCENTILE
-#define APP_WB_PERCENTILE   (0.95)
-#endif
-
 // For simplicity here
 #define CH  (APP_IMAGE_CHANNEL_COUNT)
 #define H   (APP_IMAGE_HEIGHT_PIXELS)
