@@ -4,7 +4,7 @@ Example: Take picture downsample
 
 This example set the basic settings for the sony sensor and grab a single frame. 
 By default the format is the following:
-- 640x480 RAW8
+- 160x120x3 RGB
 
 *************
 Build example
