@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "io_utils.h"
 
-void user_app()
+void user_app(chanend c_stop)
 {
   int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
   uint8_t temp_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
@@ -21,6 +21,8 @@ void user_app()
     exit(1);
   }
   printf("Image captured...\n");
+
+  s_chan_out_word(c_stop, 1);
 
   // Rotate 180 degrees
   // rotate_image(image_buffer);

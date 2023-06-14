@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include <xcore/select.h>
 #include <xcore/channel_streaming.h>
 
 #include "packet_handler.h"
@@ -201,6 +202,8 @@ void handle_packet(
     const mipi_packet_t* pkt,
     streaming_chanend_t c_out_row)
 {
+  if(pkt == NULL)
+    s_chan_out_word(c_out_row, 1);
 
   /*
    * These buffers store rows of the fully decimated image. They are passed
@@ -273,7 +276,8 @@ void handle_packet(
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row)
+    streaming_chanend_t c_out_row,
+    chanend c_stop)
 {
   /*
    * These buffers will be used to hold received MIPI packets while they're
@@ -293,8 +297,24 @@ void mipi_packet_handler(
 
     mipi_packet_t * pkt = (mipi_packet_t*) s_chan_in_word(c_pkt);
     // Swap buffers with the receiver thread. Give it the next buffer
-    // to fill and take the last filled buffer from it.    
-    s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
+    // to fill and take the last filled buffer from it.
+
+    mipi_packet_t * pkt_to_mipi = &packet_buffer[pkt_idx];
+
+    SELECT_RES(
+      CASE_THEN(c_stop, stop_mipi),
+      DEFAULT_THEN(default_pkt)
+    )
+    {
+      stop_mipi:
+        pkt_to_mipi = NULL;
+        pkt = NULL;
+        break;
+      default_pkt:
+        break;
+    }
+
+    s_chan_out_word(c_pkt, (unsigned) pkt_to_mipi);
 
     // Process the packet
     //const mipi_header_t header = pkt->header;
@@ -304,5 +324,8 @@ void mipi_packet_handler(
     handle_packet(pkt, c_out_row);
     // unsigned time_proc = measure_time() - time_start;
 
+    if((pkt_to_mipi == NULL) && (pkt == NULL))
+      break;
   }
+  printf("packet_handler thread stopped\n");
 }

@@ -24,7 +24,8 @@ void camera_main(
     in port p_mipi_rxv,
     buffered in port:32 p_mipi_rxd,
     clock clk_mipi,
-    client interface i2c_master_if i2c)
+    client interface i2c_master_if i2c,
+    chanend c_stop)
 {
 
   streaming chan c_pkt;
@@ -72,7 +73,7 @@ void camera_main(
   par
   {
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-    mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
+    mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread, c_stop);
     statistics_thread(c_stat_thread, sc_if);
     sensor_control(sc_if, i2c);
   }

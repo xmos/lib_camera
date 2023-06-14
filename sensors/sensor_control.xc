@@ -15,6 +15,9 @@ void sensor_control(
       case sc.set_exposure(unsigned exposure):
         camera_set_exposure(i2c, exposure);
         break;
+      case sc.stop():
+        printf("exiting sensor_control thread\n");
+        return;
     }
   }
 }
@@ -25,4 +28,10 @@ void sensor_control_set_exposure(
     unsigned exposure)
 {
   sc.set_exposure(exposure);
+}
+
+void sensor_stop(
+    CLIENT_INTERFACE(sensor_control_if, sc))
+{
+  sc.stop();
 }

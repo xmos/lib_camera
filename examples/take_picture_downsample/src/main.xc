@@ -31,6 +31,7 @@ int main(void)
 {
   i2c_master_if i2c[1];
   chan xscope_chan;
+  chan c_stop;
   par {
     xscope_host_data(xscope_chan);
     on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, Kbps);
@@ -41,10 +42,11 @@ int main(void)
                                     p_mipi_rxv, 
                                     p_mipi_rxd, 
                                     clk_mipi, 
-                                    i2c[0]);
+                                    i2c[0],
+                                    c_stop);
                                     
     on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
-    on tile[MIPI_TILE]: user_app();
+    on tile[MIPI_TILE]: user_app(c_stop);
   }
   return 0;
 }

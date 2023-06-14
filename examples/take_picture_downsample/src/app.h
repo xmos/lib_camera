@@ -4,4 +4,4 @@
 
 #include "camera.h"
 
-void user_app();
+void user_app(chanend c_ctrl);

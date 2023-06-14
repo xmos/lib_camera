@@ -22,15 +22,11 @@ typedef struct
   uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
 } mipi_packet_t;
 
-
-
-
 /**
  * isp_params_t instance owned by the packet handler.
  */
 extern
 isp_params_t isp_params;
-
 
 /**
  * Thread entry point for packet handling when decimation and demosaicing are
@@ -39,7 +35,8 @@ isp_params_t isp_params;
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row);
+    streaming_chanend_t c_out_row,
+    chanend c_stop);
     
 #ifdef __XC__
 }

@@ -59,7 +59,8 @@ void camera_main(
     in port p_mipi_rxv,
     buffered in port:32 p_mipi_rxd,
     clock clk_mipi,
-    client interface i2c_master_if i2c);
+    client interface i2c_master_if i2c,
+    chanend c_ctrl);
 
 
 #endif //__XC__

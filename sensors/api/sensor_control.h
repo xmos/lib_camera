@@ -8,6 +8,7 @@
 
 typedef interface sensor_control_if {
     void set_exposure(unsigned exposure);
+    void stop(void);
 } sensor_control_if;
 
 void sensor_control(
@@ -20,4 +21,8 @@ void sensor_control(
 void sensor_control_set_exposure(
     CLIENT_INTERFACE(sensor_control_if, sc),
     const unsigned exposure
-    );
+);
+
+void sensor_stop(
+    CLIENT_INTERFACE(sensor_control_if, sc)
+);
