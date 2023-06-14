@@ -49,7 +49,7 @@ float AE_compute_mean_skewness(global_stats_t *gstats){
     return sk;
 }
 
-uint8_t AE_is_adjusted(float sk) {
+inline uint8_t AE_is_adjusted(float sk) {
     return (sk < AE_MARGIN && sk > -AE_MARGIN) ? 1 : 0;
 }
 
@@ -250,21 +250,6 @@ void isp_bilinear_resize(
         }
     }
 }
-
-
-void isp_rotate_image(const uint8_t* src, uint8_t* dest, int width, int height) {
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            // Calculate the new coordinates after rotation
-            int new_x = height - 1 - y;
-            int new_y = x;
-
-            // Copy the pixel value to the new position
-            dest[new_y * height + new_x] = src[y * width + x];
-        }
-    }
-}
-
 
 void rotate_image_90(
   const char* filename,
