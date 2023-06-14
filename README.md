@@ -12,6 +12,7 @@ This repository serves as a comprehensive software solution for camera manipulat
 - CMAKE
 - XMOS tools
 - git submodules 
+- Ninja (Windows)
 
 ## Installation
 Some dependent components are included as git submodules. These can be obtained by cloning this repository with the following command:
@@ -21,10 +22,17 @@ git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
 ```
 
 ## Build
+Linux, Mac
 ```
 sh launch_cmake.sh
 cd build/
 make {YOUR_EXAMPLE}
+```
+Windows
+```
+cmake -G Ninja -B build -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake
+cd build/
+ninja
 ```
 
 ## Useful commands
