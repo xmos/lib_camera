@@ -18,7 +18,6 @@
 *.dylib
 *.xe
 *.vcd
-*.s
 *.xi
 *.i
 *.xmt
@@ -42,6 +41,7 @@
 *.swmem
 *.bin
 *.fs
+*.exe
 
 # Test cruft
 **/.pytest_cache/*

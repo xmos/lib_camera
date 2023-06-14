@@ -25,6 +25,13 @@ extern "C" {
   #error HISTOGRAM_BIN_COUNT value not currently supported.
 #endif
 
+// The percentile to look for when applying white balance adjustments, as a
+// fraction. (0.95 will find the value which 95% of pixels are less than or
+// equal to)
+#ifndef APP_WB_PERCENTILE
+#define APP_WB_PERCENTILE   (0.94)
+#endif
+
 // Objects definitions
 typedef struct {
   int8_t pixels[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
@@ -46,8 +53,23 @@ typedef struct {
 typedef channel_stats_t global_stats_t[APP_IMAGE_CHANNEL_COUNT];
 
 // Statistics compute funtions
+
+/**
+* Compute skewness of channel. 
+* This is used by auto exposure
+* @param stats - * Pointer to channel statistics to update.
+*/
 void compute_skewness(channel_stats_t *stats);
+
+/**
+* Compute simple statistics for a set of data. 
+* @param stats - * Pointer to the channel statistics to be computed
+*/
 void compute_simple_stats(channel_stats_t *stats);
+
+/**
+ * Find the value for which (fraction) portion of pixels fall below that value. 
+ */
 void find_percentile(channel_stats_t *stats, const float fraction);
 
 

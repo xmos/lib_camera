@@ -98,13 +98,7 @@ unsigned image_vfilter_process_row(
   return 0;
 }
 
-/**
- * After the last line of the image, some of the accumulators will be midway
- * through processing the image but still need to be output without maccing
- * any more inputs.
- * 
- * Keep calling this until it returns 0.
- */
+
 unsigned image_vfilter_drain(
     int8_t output[],
     vfilter_acc_t acc[])

@@ -1,97 +1,174 @@
 // std
 #include <stdio.h>
+#include <string.h>
 // xcore
 #include <xcore/select.h>
 #include <xcore/channel_streaming.h>
 // user
 #include "mipi.h"
-#include "utils.h"
+#include "camera_utils.h"
 #include "camera_api.h"
 
-// Pointers to both downsampled or raw
-static image_t *user_image;
-static int8_t  *image_raw_ptr; 
+
+#define CHAN_RAW 0
+#define CHAN_DEC 1
 
 // In order to interface the handler and api
-streaming_chanend_t c_user_api;
+streaming_channel_t c_user_api[2];
 
-// ----------------------------------------------------------------
-void camera_api_init(
-    streaming_chanend_t c_api)
+
+void camera_api_init()
 {
-  user_image = NULL;
-  c_user_api = c_api;
+  c_user_api[CHAN_RAW] = s_chan_alloc();
+  c_user_api[CHAN_DEC] = s_chan_alloc();
 }
 
-void camera_api_request_update(
-    const int8_t image_row[CH][W],
+void camera_api_new_row_raw(
+    const int8_t pixel_data[W_RAW],
     const unsigned row_index)
 {
-  if (user_image)
-  {
-    for (int k = 0; k < CH; k++)
-    {
-      c_memcpy((void*) &user_image->pix[k][row_index][0],
-               (void*) &image_row[k][0],
-               sizeof(int8_t) * W);
-    }
-  }
-}
+  int8_t* user_pixel_data;
 
-void camera_api_request_begin()
-{
-  unsigned tmp;
   SELECT_RES(
-      CASE_THEN(c_user_api, user_handler),
+      CASE_THEN(c_user_api[CHAN_RAW].end_a, user_handler),
       DEFAULT_THEN(default_handler))
     {
       user_handler:
-        tmp = s_chan_in_word(c_user_api);
-        user_image = (image_t*) tmp;
+        user_pixel_data = (int8_t*) s_chan_in_word(c_user_api[CHAN_RAW].end_a);
+        memcpy(user_pixel_data, (void*) pixel_data, W_RAW);
+        s_chan_out_word(c_user_api[CHAN_RAW].end_a, row_index);
         break;
       default_handler:
         break;
     }
 }
 
-unsigned camera_capture_image(
-    int8_t image_buff[CH][H][W],
-    streaming_chanend_t c_cam_api)
+void camera_api_new_row_decimated(
+    const int8_t pixel_data[CH][W],
+    const unsigned row_index)
 {
-  int8_t *p_image = &image_buff[0][0][0];
+  int8_t* user_pixel_data;
 
-  s_chan_out_word(c_cam_api, (unsigned)p_image);
-  return s_chan_in_word(c_cam_api);
+  SELECT_RES(
+      CASE_THEN(c_user_api[CHAN_DEC].end_a, user_handler),
+      DEFAULT_THEN(default_handler))
+    {
+      user_handler:
+        user_pixel_data = (int8_t*) s_chan_in_word(c_user_api[CHAN_DEC].end_a);
+        memcpy(user_pixel_data, (void*) pixel_data, CH*W);
+        s_chan_out_word(c_user_api[CHAN_DEC].end_a, row_index);
+        break;
+      default_handler:
+        break;
+    }
 }
 
-void camera_api_request_complete()
+unsigned camera_capture_row_raw(
+    int8_t pixel_data[W_RAW])
 {
-  if(user_image){
-    s_chan_out_word(c_user_api, 1);
-    user_image = NULL;
-  }
+  s_chan_out_word(c_user_api[CHAN_RAW].end_b, (unsigned) &pixel_data[0]);
+  unsigned sdf = s_chan_in_word(c_user_api[CHAN_RAW].end_b);
+  return sdf;
 }
 
 
-// ----------------------------------------------------------------
+
+unsigned camera_capture_row_decimated(
+    int8_t pixel_data[CH][W])
+{
+  s_chan_out_word(c_user_api[CHAN_DEC].end_b, (unsigned) &pixel_data[0][0]);
+  return s_chan_in_word(c_user_api[CHAN_DEC].end_b);
+}
+
+
 unsigned camera_capture_image_raw(
-  int8_t image_buff[H_RAW*W_RAW],
-  streaming_chanend_t c_cam_api
-)
+    int8_t image_buff[H_RAW][W_RAW])
 {
-  image_raw_ptr = (int8_t*)&image_buff[0];
-  c_user_api = c_cam_api;
-  unsigned tmp = s_chan_in_word(c_cam_api);
-  return tmp;
+  unsigned row_index;
+
+  // Loop, capturing rows until we get one with row_index==0
+  do {
+    row_index = camera_capture_row_raw(&image_buff[0][0]);
+  } while (row_index != 0);
+
+  // Now capture the rest of the rows
+  for (unsigned i=1; i<H_RAW; i++) {
+    row_index = camera_capture_row_raw(&image_buff[i][0]);
+    if (row_index != i) {
+      return 1; // TODO handle errors better
+    }
+  }
+
+  return 0;
 }
 
-void camera_api_request_update_raw(uint16_t line_number, uint8_t* img_row_ptr){
-  uint32_t pos = (line_number) * MIPI_LINE_WIDTH_BYTES;
-  c_memcpy((void*) &image_raw_ptr[pos], 
-         (void*) &img_row_ptr[0], 
-         MIPI_LINE_WIDTH_BYTES); 
+unsigned camera_capture_image(
+    int8_t image_buff[CH][H][W])
+{
+  unsigned row_index;
+
+  int8_t pixel_data[CH][W];
+
+  // Loop, capturing rows until we get one with row_index==0
+  do {
+    row_index = camera_capture_row_decimated(pixel_data);
+  } while (row_index != 0);
+
+  for(int c = 0; c < CH; c++) 
+    memcpy(&image_buff[c][0][0], &pixel_data[c][0], W);
+
+  // Now capture the rest of the rows
+  for (unsigned row = 1; row < H; row++) {
+    row_index = camera_capture_row_decimated(pixel_data);
+
+    if (row_index != row)      return 1; // TODO handle errors better
+
+    for(int c = 0; c < CH; c++)
+      memcpy(&image_buff[c][row][0], &pixel_data[c][0], W);
+      
+  }
+
+  return 0;
 }
 
-void camera_api_request_complete_raw(){
-  s_chan_out_word(c_user_api, 1);
+
+
+unsigned camera_capture_image_cropped(
+    int8_t* image_buff,
+    const image_crop_params_t crop_params)
+{
+  const unsigned CROP_ROW = crop_params.origin.row;
+  const unsigned CROP_COL = crop_params.origin.col;
+  const unsigned CROP_H = crop_params.shape.height;
+  const unsigned CROP_W = crop_params.shape.width;
+
+  unsigned row_index;
+
+  int8_t pixel_data[CH][W];
+
+  int8_t (*image)[CROP_H][CROP_W] = 
+    (int8_t (*)[CROP_H][CROP_W]) image_buff;
+
+  // Loop, capturing rows until we get one 
+  // with row_index==crop_params.origin.row
+  do {
+    row_index = camera_capture_row_decimated(pixel_data);
+  } while (row_index != CROP_ROW);
+
+  for(int c = 0; c < CH; c++) 
+    memcpy(&image[c][0][0], &pixel_data[c][CROP_COL], CROP_W);
+
+  // Now capture the rest of the rows
+  for (unsigned row = 1; row < CROP_H; row++) {
+    row_index = camera_capture_row_decimated(pixel_data);
+    
+    // TODO handle errors better
+    if (row_index != row + crop_params.origin.row)  return 1; 
+
+    for(int c = 0; c < CH; c++)
+      memcpy(&image[c][row][0], &pixel_data[c][CROP_COL], CROP_W);
+      
+  }
+
+  return 0;
 }

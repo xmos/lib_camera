@@ -1,34 +1,60 @@
 
-#include "app.h"
-
+#include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-void user_app(streaming_chanend_t c_cam_api){
+#include "io_utils.h"
+#include "app.h"
+
+
+void user_app()
+{
   int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
-  uint8_t out_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
+  uint8_t temp_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
 
   // set the input image to 0
-  memset(image_buffer, -128, APP_IMAGE_CHANNEL_COUNT * APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS);
+  memset(image_buffer, -128, sizeof(image_buffer));
 
   // Wait for the image to set exposure
   delay_milliseconds(5000);
   printf("Requesting image...\n");
-  camera_capture_image(image_buffer, c_cam_api);
+  if(camera_capture_image(image_buffer)){
+    printf("Error capturing image\n");
+    exit(1);
+  }
   printf("Image captured...\n");
 
   // Rotate 180 degrees
   // rotate_image(image_buffer);
 
+  // convert to uint8 with right dimentions
   // convert to uint8
-  img_int8_to_uint8(image_buffer, out_buffer);
+  vect_int8_to_uint8((uint8_t*) image_buffer,
+                     (int8_t*) image_buffer, 
+                     sizeof(image_buffer));
 
-  // Write binary file and .bmp file
-  write_image("capture.bin", out_buffer);
+  memcpy(temp_buffer, image_buffer, APP_IMAGE_CHANNEL_COUNT * APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS * sizeof(uint8_t));
+  uint8_t * io_buff = (uint8_t *) &image_buffer[0][0][0];
+  // io_buff this will have [APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS][APP_IMAGE_CHANNEL_COUNT] dimentions
+  swap_dimensions((uint8_t *) &temp_buffer[0][0][0], io_buff,
+                    APP_IMAGE_HEIGHT_PIXELS,
+                    APP_IMAGE_WIDTH_PIXELS,
+                    APP_IMAGE_CHANNEL_COUNT);
 
-  //save it to bmp
-  writeBMP("capture.bmp", out_buffer);
+  // Write binary file
+  write_image_file("capture.bin", io_buff,
+                    APP_IMAGE_HEIGHT_PIXELS,
+                    APP_IMAGE_WIDTH_PIXELS,
+                    APP_IMAGE_CHANNEL_COUNT);
 
+  // Write bmp file
+  write_bmp_file("capture.bmp", io_buff,
+                  APP_IMAGE_HEIGHT_PIXELS,
+                  APP_IMAGE_WIDTH_PIXELS,
+                  APP_IMAGE_CHANNEL_COUNT);
+
+  printf("Images saved. Exiting.\n");
+  xscope_close_all_files();
   // end here
   exit(0);
 }

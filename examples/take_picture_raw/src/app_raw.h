@@ -4,4 +4,4 @@
 
 #include "camera_main.h"
 
-void user_app_raw(streaming_chanend_t c_cam_api);
+void user_app_raw();

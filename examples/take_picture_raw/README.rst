@@ -1,6 +1,6 @@
-=====================
-Example: Take picture
-=====================
+=========================
+Example: Take picture RAW
+=========================
 
 This example set the basic settings for the sony sensor and grab a single frame. 
 By default the format is the following:
@@ -23,7 +23,7 @@ Run the following commands from the top level:
     .. code-block:: console
 
         cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
-        ninja -C example_take_picture_raw
+        ninja -C build example_take_picture_raw
 
 ***************
 Running example
@@ -42,6 +42,7 @@ From the top level
 
     .. code-block:: console
 
+        # works with a cl compiler
         pip install -e utils/xscope_fileio
         cd utils/xscope_fileio/host
         cmake -G "Ninja" . && ninja

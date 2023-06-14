@@ -19,8 +19,10 @@ add_library(${LIB_NAME} STATIC)
 
 target_include_directories(${LIB_NAME}
     PUBLIC
-        .
         api
+        src
+        _galaxycore_gc2145
+        _sony_imx219
 )
 
 target_sources(${LIB_NAME}

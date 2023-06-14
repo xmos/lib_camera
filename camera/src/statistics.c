@@ -12,14 +12,14 @@
 #define HISTOGRAM_TOTAL_SAMPLES       (HISTOGRAM_SAMPLE_PER_ROW * APP_IMAGE_HEIGHT_PIXELS )
 // This is the normalization factor
 static const float histogram_norm_factor =  (1.0 / (float) HISTOGRAM_TOTAL_SAMPLES);
-// Initial exposure
-uint8_t new_exp = 35;
-
 
 
 /**
- * //TODO
- */
+* Update histogram based on pixel values. 
+* 
+* @param hist - * pointer to the histogram to update. Must be large enough to accommodate the number of pixels in the image.
+* @param pix - array of pixel values to update the histogram with
+*/
 void update_histogram(
     channel_histogram_t* hist,
     const int8_t pix[])
@@ -33,12 +33,6 @@ void update_histogram(
 }
 
 
-
-/**
-* Compute skewness of channel. 
-* This is used by auto exposure
-* @param stats - * Pointer to channel statistics to update.
-*/
 void compute_skewness(channel_stats_t *stats)
 {
   const float zk_values[] = {
@@ -64,21 +58,28 @@ void compute_skewness(channel_stats_t *stats)
 }
 
 
-
-/**
-* Compute simple statistics for a set of data. 
-* @param stats - * Pointer to the channel statistics to be computed
-*/
 void compute_simple_stats(channel_stats_t *stats)
 {
   // Calculate the histogram
+  uint8_t temp_min = 0;
+  uint8_t temp_max = 0;
+
   for(int k = 0; k < HISTOGRAM_BIN_COUNT; k++){
     unsigned bin = stats->histogram.bins[k];
+    // mean
     stats->mean += bin * k;
-    stats->max = (stats->max >= bin)? stats->max : bin;
-    stats->min = (stats->min <= bin)? stats->min : bin;
+    // max and min
+    if (bin != 0){ 
+      temp_max = k;
+      if (temp_min == 0){
+        temp_min = k;
+      }
+    }
+    //stats->max = (stats->max >= bin)? stats->max : bin;
+    //stats->min = (stats->min <= bin)? stats->min : bin;
   }
-
+  stats->max = temp_max;
+  stats->min = temp_min;
   // biased downwards due to truncation
   stats->max <<= APP_HISTOGRAM_QUANTIZATION_BITS;
   stats->min <<= APP_HISTOGRAM_QUANTIZATION_BITS;
@@ -86,9 +87,6 @@ void compute_simple_stats(channel_stats_t *stats)
 }
 
 
-/**
- * Find the value for which (fraction) portion of pixels fall below that value. 
- */
 void find_percentile(channel_stats_t *stats, const float fraction)
 {
   const unsigned threshold = fraction * HISTOGRAM_TOTAL_SAMPLES;
@@ -106,65 +104,49 @@ void find_percentile(channel_stats_t *stats, const float fraction)
 }
 
 
-// Main thread for the statistics
+/**
+* Thread that computes statistics for each pixel in the image. 
+* The statistics are stored in a struct which is used to perform
+* isp corrections
+* @param c_img_in - Channel end of the
+*/
 void statistics_thread(
     streaming_chanend_t c_img_in,
     CLIENT_INTERFACE(sensor_control_if, sc_if))
 {
   // Outer loop iterates over frames
   while(1){
-    // Declare new stats
     global_stats_t global_stats = {{0}};
-    AWB_gains_t    awb_gains    = {0};
     // Inner loop iterates over rows within a frame
     while(1){
 
       low_res_image_row_t* row = (low_res_image_row_t*) s_chan_in_word(c_img_in);
 
-      // Signal end of frame [1]
-      if(row == NULL) 
+      if(row == NULL) // Signal end of frame [1]
         break;
 
       // Update histogram
       for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
-        update_histogram(
-          &global_stats[channel].histogram, 
-          &row->pixels[channel][0]
-          );
+        update_histogram(&global_stats[channel].histogram, &row->pixels[channel][0]);
       }
     }
     
-    // End of frame
+    // End of frame, compute statistics
     for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
       compute_skewness(&global_stats[channel]);
       compute_simple_stats(&global_stats[channel]);
       find_percentile(&global_stats[channel], APP_WB_PERCENTILE);
     }
 
-    // TODO delete this os leave it as a function
-    printf("skewness:%f,%f,%f\n",
-          global_stats[0].skewness, 
-          global_stats[1].skewness,  
-          global_stats[2].skewness);
-    
-    float sk = AE_compute_mean_skewness(&global_stats);
-    if (AE_is_adjusted(sk)){
-      printf("-----> adjustement done\n");
-    }
-    else{
-      // adjust exposure
-      new_exp = AE_compute_new_exposure((float) new_exp, sk);
-      printf("new exp = %d\n", new_exp);
-      sensor_control_set_exposure(sc_if, (uint8_t) new_exp);
-    }
+    // Adjust AE
+    AE_control_exposure(&global_stats, sc_if);
 
     // Adjust AWB 
-    AWB_compute_gains(&global_stats, &awb_gains);
-    AWB_print_gains(&awb_gains);
-    // Apply gains
-    //RED_GAIN = 1.4;//= awb_gains.alfa;
-    //GREEN_GAIN = awb_gains.beta;
-    //BLUE_GAIN = awb_gains.gamma;
+    AWB_compute_gains(&global_stats, &isp_params);
+    
+    // Print ISP info
+    AWB_print_gains(&isp_params);
+    AE_print_skewness(&global_stats);
   }
 }
 
