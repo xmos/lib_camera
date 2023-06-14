@@ -54,11 +54,6 @@ Windows
    cd build/
    ninja
 
-Useful commands
----------------
-
-- run (explorer board):  ``xrun --xscope example_take_picture.xe``
-- run (simulation):  ``xsim --xscope "-offline trace.xmt" build/example_take_picture.xe``
 
 Supported Cameras
 -----------------
@@ -67,6 +62,8 @@ Supported Cameras
 | Model       | Max Resolution  | Output Formats  |
 +=============+=================+=================+
 | IMX219      | 640Hx480V == VGA (2x2 binning) | RAW8 |
++-------------+-----------------+-----------------+
+| IMX219      | 160Hx120V (2x2 binning), downsampled | RGB |
 +-------------+-----------------+-----------------+
 | GC2145      | 1600H x 1200V == 2MPX | YUV422 |
 +-------------+-----------------+-----------------+
