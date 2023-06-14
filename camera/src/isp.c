@@ -264,3 +264,20 @@ void isp_rotate_image(const uint8_t* src, uint8_t* dest, int width, int height) 
         }
     }
 }
+
+
+void rotate_image_90(
+  const char* filename,
+  uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS])
+{
+  for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++) {
+    for(int k = 0; k < APP_IMAGE_HEIGHT_PIXELS/2; k++) {
+      for(int j = 0; j < APP_IMAGE_WIDTH_PIXELS; j++) {
+        uint8_t a = image_buffer[c][k][j];
+        uint8_t b = image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1];
+        image_buffer[c][k][j] = b;
+        image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1] = a;
+      }
+    } 
+  }
+}

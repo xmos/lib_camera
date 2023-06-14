@@ -11,18 +11,15 @@
 extern "C" {
 #endif
 
-static inline
-unsigned measure_time(){
-  unsigned y = 0;
-  asm volatile("gettime %0": "=r"(y));
-  return y;
-}
 
-void c_memcpy(void *dst, void *src, size_t size);
+/**
+ * Measure the cpu ticks
+ * 
+ * @return ticks - Number of ticks
+ */
+unsigned measure_time();
 
-void rotate_image(
-    const char *filename, 
-    uint8_t image[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]);
+
 
 /**
  * Convert an array of int8 to an array of uint8.

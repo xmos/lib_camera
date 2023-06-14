@@ -55,6 +55,15 @@ void isp_bilinear_resize(
 
 void isp_rotate_image(const uint8_t *src, uint8_t *dest, int width, int height);
 
+
+/**
+* Rotate the image by 90 degrees. This is useful for rotating images that are stored in a 3x3 array of uint8_t
+* 
+* @param filename - Name of the file to rotate
+* @param image - Array of uint8_t that is to be
+*/
+void rotate_image_90(const char *filename, uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]);
+
 // -------------------------- COLOR CONVERSION -------------------------------------
 // Macro arguments to get color components from packed result in the assembly program
 #define GET_R(rgb) ((rgb >> 16) & 0xFF)
