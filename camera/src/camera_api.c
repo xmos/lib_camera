@@ -6,7 +6,7 @@
 // user
 #include "mipi.h"
 #include "utils.h"
-#include "user_api.h"
+#include "camera_api.h"
 
 
 #define CHAN_RAW 0

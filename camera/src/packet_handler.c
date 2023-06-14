@@ -8,7 +8,7 @@
 #include "packet_handler.h"
 #include "image_vfilter.h"
 #include "image_hfilter.h"
-#include "user_api.h"
+#include "camera_api.h"
 #include "utils.h"
 #include "sensor.h"
 

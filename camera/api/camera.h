@@ -20,7 +20,7 @@
 #include "image_vfilter.h"
 #include "packet_handler.h"
 #include "statistics.h"
-#include "user_api.h"
+#include "camera_api.h"
 #include "utils.h"
 #include "isp.h"
 
