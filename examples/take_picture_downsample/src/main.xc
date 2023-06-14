@@ -4,7 +4,7 @@
 #include <xscope.h>
 
 #include "i2c.h"
-#include "camera.h"
+#include "camera_main.h"
 #include "app.h"
 
 // I2C interface ports

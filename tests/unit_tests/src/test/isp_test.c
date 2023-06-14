@@ -10,7 +10,7 @@
 
 #include "unity_fixture.h"
 
-#include "camera.h"
+#include "camera_main.h"
 
 TEST_GROUP_RUNNER(isp_tests) {
   RUN_TEST_CASE(isp_tests, yuv_to_rgb);
@@ -96,5 +96,3 @@ TEST(isp_tests, rgb_to_yuv)
   TEST_ASSERT_INT_WITHIN(INV_DELTA, ct_ref.U, ct_result.U);
   TEST_ASSERT_INT_WITHIN(INV_DELTA, ct_ref.V, ct_result.V);
 }
-
-
