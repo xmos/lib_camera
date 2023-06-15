@@ -32,7 +32,7 @@ void user_app_raw(){
                       sizeof(image_buffer));
 
     // Save the image to a file
-    write_image_file("capture.bin", (uint8_t * ) &image_buffer[0][0],   
+    write_image_file("capture.raw", (uint8_t * ) &image_buffer[0][0],   
             MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES, 1);
 
     printf("Image saved. Exiting.\n");

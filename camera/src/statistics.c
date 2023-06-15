@@ -1,4 +1,4 @@
-
+#include <stdint.h>
 
 #include <xcore/channel_streaming.h>
 #include "xccompat.h"
@@ -63,29 +63,33 @@ void compute_simple_stats(channel_stats_t *stats)
   // Calculate the histogram
   uint8_t temp_min = 0;
   uint8_t temp_max = 0;
+  float temp_mean = 0;
 
   for(int k = 0; k < HISTOGRAM_BIN_COUNT; k++){
-    unsigned bin = stats->histogram.bins[k];
+    uint32_t bin_count = stats->histogram.bins[k];
     // mean
-    stats->mean += bin * k;
+    temp_mean += bin_count * k;
     // max and min
-    if (bin != 0){ 
+    if (bin_count != 0){ 
       temp_max = k;
       if (temp_min == 0){
         temp_min = k;
       }
     }
-    //stats->max = (stats->max >= bin)? stats->max : bin;
-    //stats->min = (stats->min <= bin)? stats->min : bin;
   }
-  stats->max = temp_max;
-  stats->min = temp_min;
   // biased downwards due to truncation
-  stats->max <<= APP_HISTOGRAM_QUANTIZATION_BITS;
-  stats->min <<= APP_HISTOGRAM_QUANTIZATION_BITS;
-  stats->mean *= (1<<APP_HISTOGRAM_QUANTIZATION_BITS) * histogram_norm_factor;
+  stats->max = (temp_max << APP_HISTOGRAM_QUANTIZATION_BITS);
+  stats->min = (temp_min << APP_HISTOGRAM_QUANTIZATION_BITS);
+  stats->mean = (temp_mean) *(1 << APP_HISTOGRAM_QUANTIZATION_BITS) * histogram_norm_factor;
 }
 
+void print_simple_stats(channel_stats_t *stats){
+  printf("Max: %d\n", stats->max);
+  printf("Min: %d\n", stats->min);
+  printf("Mean: %f\n", stats->mean);
+  printf("Skewness: %f\n", stats->skewness);
+  printf("Percentile: %d\n", stats->percentile);
+}
 
 void find_percentile(channel_stats_t *stats, const float fraction)
 {
@@ -136,14 +140,24 @@ void statistics_thread(
       compute_skewness(&global_stats[channel]);
       compute_simple_stats(&global_stats[channel]);
       find_percentile(&global_stats[channel], APP_WB_PERCENTILE);
+      // print_simple_stats(&global_stats[channel]);
     }
 
     // Adjust AE
-    AE_control_exposure(&global_stats, sc_if);
+    uint8_t ae_done = AE_control_exposure(&global_stats, sc_if);
 
     // Adjust AWB 
-    AWB_compute_gains(&global_stats, &isp_params);
+    AWB_compute_gains_static(&global_stats, &isp_params);
+    if (ae_done == 1){
+    //AWB_compute_gains_white_patch(&global_stats, &isp_params);
+    //AWB_compute_gains_gray_world(&global_stats, &isp_params);
+    //AWB_compute_gains_percentile(&global_stats, &isp_params);
+    //AWB_compute_gains_static(&global_stats, &isp_params);
+    }
     
+    // Apply gamma curve
+    //TODO
+
     // Print ISP info
     AWB_print_gains(&isp_params);
     AE_print_skewness(&global_stats);

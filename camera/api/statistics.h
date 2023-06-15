@@ -5,6 +5,7 @@
 #include <string.h> // memset
 #include <stdio.h>  // null 
 #include <stdlib.h> // free, alloc
+#include <stdint.h>
 
 #include "xccompat.h"
 
@@ -29,7 +30,7 @@ extern "C" {
 // fraction. (0.95 will find the value which 95% of pixels are less than or
 // equal to)
 #ifndef APP_WB_PERCENTILE
-#define APP_WB_PERCENTILE   (0.94)
+#define APP_WB_PERCENTILE   (0.98)
 #endif
 
 // Objects definitions
@@ -38,7 +39,7 @@ typedef struct {
 } low_res_image_row_t;
 
 typedef struct {
-  int bins[HISTOGRAM_BIN_COUNT];
+  uint32_t bins[HISTOGRAM_BIN_COUNT];
 } channel_histogram_t;
 
 typedef struct {
@@ -66,6 +67,8 @@ void compute_skewness(channel_stats_t *stats);
 * @param stats - * Pointer to the channel statistics to be computed
 */
 void compute_simple_stats(channel_stats_t *stats);
+
+void print_simple_stats(channel_stats_t *stats);
 
 /**
  * Find the value for which (fraction) portion of pixels fall below that value. 
