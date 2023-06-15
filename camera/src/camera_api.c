@@ -1,12 +1,13 @@
 // std
 #include <stdio.h>
+#include <string.h>
 // xcore
 #include <xcore/select.h>
 #include <xcore/channel_streaming.h>
 // user
 #include "mipi.h"
-#include "utils.h"
-#include "user_api.h"
+#include "camera_utils.h"
+#include "camera_api.h"
 
 
 #define CHAN_RAW 0
@@ -34,7 +35,7 @@ void camera_api_new_row_raw(
     {
       user_handler:
         user_pixel_data = (int8_t*) s_chan_in_word(c_user_api[CHAN_RAW].end_a);
-        c_memcpy(user_pixel_data, (void*) pixel_data, W_RAW);
+        memcpy(user_pixel_data, (void*) pixel_data, W_RAW);
         s_chan_out_word(c_user_api[CHAN_RAW].end_a, row_index);
         break;
       default_handler:
@@ -54,7 +55,7 @@ void camera_api_new_row_decimated(
     {
       user_handler:
         user_pixel_data = (int8_t*) s_chan_in_word(c_user_api[CHAN_DEC].end_a);
-        c_memcpy(user_pixel_data, (void*) pixel_data, CH*W);
+        memcpy(user_pixel_data, (void*) pixel_data, CH*W);
         s_chan_out_word(c_user_api[CHAN_DEC].end_a, row_index);
         break;
       default_handler:
@@ -114,7 +115,7 @@ unsigned camera_capture_image(
   } while (row_index != 0);
 
   for(int c = 0; c < CH; c++) 
-    c_memcpy(&image_buff[c][0][0], &pixel_data[c][0], W);
+    memcpy(&image_buff[c][0][0], &pixel_data[c][0], W);
 
   // Now capture the rest of the rows
   for (unsigned row = 1; row < H; row++) {
@@ -123,7 +124,7 @@ unsigned camera_capture_image(
     if (row_index != row)      return 1; // TODO handle errors better
 
     for(int c = 0; c < CH; c++)
-      c_memcpy(&image_buff[c][row][0], &pixel_data[c][0], W);
+      memcpy(&image_buff[c][row][0], &pixel_data[c][0], W);
       
   }
 
@@ -155,7 +156,7 @@ unsigned camera_capture_image_cropped(
   } while (row_index != CROP_ROW);
 
   for(int c = 0; c < CH; c++) 
-    c_memcpy(&image[c][0][0], &pixel_data[c][CROP_COL], CROP_W);
+    memcpy(&image[c][0][0], &pixel_data[c][CROP_COL], CROP_W);
 
   // Now capture the rest of the rows
   for (unsigned row = 1; row < CROP_H; row++) {
@@ -165,7 +166,7 @@ unsigned camera_capture_image_cropped(
     if (row_index != row + crop_params.origin.row)  return 1; 
 
     for(int c = 0; c < CH; c++)
-      c_memcpy(&image[c][row][0], &pixel_data[c][CROP_COL], CROP_W);
+      memcpy(&image[c][row][0], &pixel_data[c][CROP_COL], CROP_W);
       
   }
 

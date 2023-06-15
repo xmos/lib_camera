@@ -33,12 +33,6 @@ void update_histogram(
 }
 
 
-
-/**
-* Compute skewness of channel. 
-* This is used by auto exposure
-* @param stats - * Pointer to channel statistics to update.
-*/
 void compute_skewness(channel_stats_t *stats)
 {
   const float zk_values[] = {
@@ -64,12 +58,6 @@ void compute_skewness(channel_stats_t *stats)
 }
 
 
-
-
-/**
-* Compute simple statistics for a set of data. 
-* @param stats - * Pointer to the channel statistics to be computed
-*/
 void compute_simple_stats(channel_stats_t *stats)
 {
   // Calculate the histogram
@@ -99,9 +87,6 @@ void compute_simple_stats(channel_stats_t *stats)
 }
 
 
-/**
- * Find the value for which (fraction) portion of pixels fall below that value. 
- */
 void find_percentile(channel_stats_t *stats, const float fraction)
 {
   const unsigned threshold = fraction * HISTOGRAM_TOTAL_SAMPLES;

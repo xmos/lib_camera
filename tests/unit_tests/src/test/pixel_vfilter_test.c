@@ -10,7 +10,7 @@
 
 #include "unity_fixture.h"
 
-#include "camera.h"
+#include "camera_main.h"
 
 TEST_GROUP_RUNNER(pixel_vfilter) {
   RUN_TEST_CASE(pixel_vfilter, pixel_vfilter_acc_init__case0);

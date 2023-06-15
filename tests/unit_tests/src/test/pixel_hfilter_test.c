@@ -10,7 +10,8 @@
 
 #include "unity_fixture.h"
 
-#include "camera.h"
+#include "camera_main.h"
+#include "camera_utils.h"
 
 TEST_GROUP_RUNNER(pixel_hfilter) {
   RUN_TEST_CASE(pixel_hfilter, pixel_hfilter__basic);

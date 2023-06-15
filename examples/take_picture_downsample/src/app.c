@@ -1,9 +1,11 @@
 
-#include "app.h"
-
+#include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+
 #include "io_utils.h"
+#include "app.h"
+
 
 void user_app(chanend c_stop)
 {

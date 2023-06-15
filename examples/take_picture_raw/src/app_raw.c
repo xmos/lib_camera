@@ -5,7 +5,7 @@
 #include <xcore/channel_streaming.h>
 // user
 #include "mipi.h"
-#include "user_api.h"
+#include "camera_api.h"
 #include "app_raw.h"
 #include "io_utils.h"
 
