@@ -127,7 +127,6 @@ void statistics_thread(
       if(row == 1)
       {
         sensor_stop(sc_if);
-        printf("stopping satistics_thread\n");
         return;
       }
 

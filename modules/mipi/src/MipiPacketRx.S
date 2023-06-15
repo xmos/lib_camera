@@ -55,17 +55,6 @@ After .L_RX_LONG_LOOP:
 
 .issue_mode dual
 
-  .extern printf, "f{si}(p(c:uc),va)"
-  .section .cp.rodata, "ac", @progbits
-  .globl str, "a(12:c:uc)"
-  .cc_top str.data, str
-  .align 4
-str :
-  .asciiz "Hello world"
-.cc_bottom str.data
-  .globl str.globound
-  .set str.globound, 12
-
 #define FUNCTION_NAME   MipiPacketRx
 #define NSTACKWORDS     8
 
@@ -296,11 +285,6 @@ or r8, r8, r9
 
 
 .L_EXIT_THREAD:
-
-  ldaw r11, cp[str]
-  mov r0, r11
-  bl printf
-  ldc r0, 0
 
   ldd r8, r9, sp[3]
   ldd r6, r7, sp[2]

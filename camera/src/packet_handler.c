@@ -330,5 +330,4 @@ void mipi_packet_handler(
     if((pkt_to_mipi == NULL) && (pkt == NULL))
       break;
   }
-  printf("packet_handler thread stopped\n");
 }

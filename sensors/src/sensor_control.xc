@@ -16,7 +16,6 @@ void sensor_control(
         camera_set_exposure(i2c, exposure);
         break;
       case sc.stop():
-        printf("exiting sensor_control thread\n");
         return;
     }
   }
