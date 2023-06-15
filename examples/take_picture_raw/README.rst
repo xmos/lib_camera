@@ -2,7 +2,7 @@
 Example: Take picture RAW
 =========================
 
-This example set the basic settings for the sony sensor and grab a single frame. 
+This example set the basic settings for the sony sensor and grab a single frame.
 By default the format is the following:
 - 640x480 RAW8
 
@@ -16,7 +16,7 @@ Linux and Mac
 
 .. code-block:: console
         
-    cmake -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+    cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
     make -C build example_take_picture_raw
 
 Windows
@@ -24,14 +24,14 @@ Windows
 
 .. code-block:: console
 
-    cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+    cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
     ninja -C build example_take_picture_raw
 
 ***************
 Running example
 ***************
 
-From the top level
+Make sure you have XTC tools environment activated and run the following commands from the top level:
 
 Linux and Mac
 ~~~~~~~~~~~~~
