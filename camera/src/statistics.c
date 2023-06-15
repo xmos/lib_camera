@@ -124,7 +124,7 @@ void statistics_thread(
 
       if(row == NULL) // Signal end of frame [1]
         break;
-      if(row == 1)
+      if(row == (low_res_image_row_t *) 1)
       {
         sensor_stop(sc_if);
         return;
