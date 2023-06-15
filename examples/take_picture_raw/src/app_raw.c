@@ -9,7 +9,7 @@
 #include "app_raw.h"
 #include "io_utils.h"
 
-void user_app_raw(){
+void user_app_raw(chanend c_stop){
     
     // set the input image to 0
     int8_t image_buffer[H_RAW][W_RAW];
@@ -25,6 +25,8 @@ void user_app_raw(){
         exit(1);
     }
     printf("Image captured...\n");
+
+    s_chan_out_word(c_stop, 1);
 
     // Convert image from int8 to uint8 in-place
     vect_int8_to_uint8((uint8_t*) image_buffer,

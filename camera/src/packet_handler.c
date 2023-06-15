@@ -203,7 +203,10 @@ void handle_packet(
     streaming_chanend_t c_out_row)
 {
   if(pkt == NULL)
+  {
     s_chan_out_word(c_out_row, 1);
+    return;
+  }
 
   /*
    * These buffers store rows of the fully decimated image. They are passed

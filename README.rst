@@ -1,5 +1,5 @@
-Camera framework
-==================
+Camera Framework Repositoty
+===========================
 
 This repository serves as a comprehensive software solution for camera manipulation using the XCORE.AI sensor.
 
@@ -26,7 +26,7 @@ Installation
 Some dependent components are included as git submodules. These can be obtained by cloning this repository with the following command:
 (make sure you have the correct ssh access to clone)
 
-.. code-block:: bash
+.. code-block:: console
 
    git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
 
@@ -34,23 +34,23 @@ Build instructions
 ------------------
 
 The instructions below will build all modules, examples and tests.
-For building a specific example refer to examples/readme.rst.
+For building a specific example refer to ``examples/{example}/README.rst``.
 
 Linux, Mac
 ~~~~~~~~~~
 
-.. code-block:: bash
+.. code-block:: console
 
-   cmake -B build -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake
+   cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
    cd build/
    make
 
 Windows
-~~~~~~~~
+~~~~~~~
 
 .. code-block:: bash
 
-   cmake -G Ninja -B build -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake
+   cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
    cd build/
    ninja
 

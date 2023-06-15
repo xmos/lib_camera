@@ -11,19 +11,21 @@ Build example
 *************
 Run the following commands from the top level:
 
-.. tab:: Linux and Mac
+Linux and Mac
+~~~~~~~~~~~~~
 
-    .. code-block:: console
+.. code-block:: console
         
-        cmake -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
-        make -C build example_take_picture_raw
+    cmake -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+    make -C build example_take_picture_raw
 
-.. tab:: Windows
+Windows
+~~~~~~~
 
-    .. code-block:: console
+.. code-block:: console
 
-        cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
-        ninja -C build example_take_picture_raw
+    cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+    ninja -C build example_take_picture_raw
 
 ***************
 Running example
@@ -31,23 +33,25 @@ Running example
 
 From the top level
 
-.. tab:: Linux and Mac
+Linux and Mac
+~~~~~~~~~~~~~
 
-    .. code-block:: console
+.. code-block:: console
 
-        pip install -e utils/xscope_fileio
-        python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
+    pip install -e utils/xscope_fileio
+    python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
 
-.. tab:: Windows
+Windows
+~~~~~~~
 
-    .. code-block:: console
+.. code-block:: console
 
-        # works with a cl compiler
-        pip install -e utils/xscope_fileio
-        cd utils/xscope_fileio/host
-        cmake -G "Ninja" . && ninja
-        cd ../../../
-        python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
+    # works with a cl compiler
+    pip install -e utils/xscope_fileio
+    cd utils/xscope_fileio/host
+    cmake -G "Ninja" . && ninja
+    cd ../../../
+    python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
 
 
 ******
