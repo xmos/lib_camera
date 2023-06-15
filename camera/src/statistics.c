@@ -125,6 +125,11 @@ void statistics_thread(
       if(row == NULL) // Signal end of frame [1]
         break;
 
+      if(row == (low_res_image_row_t *) 1)
+      {
+        return;
+      }
+      
       // Update histogram
       for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
         update_histogram(&global_stats[channel].histogram, &row->pixels[channel][0]);

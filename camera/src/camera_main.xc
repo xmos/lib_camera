@@ -32,7 +32,7 @@ void camera_main(
   streaming chan c_stat_thread;
   sensor_control_if sc_if;
 
-  // set the channels for the camera api
+  // set the channel for the camera api
   camera_api_init();
   
   // Assign lanes and polarities

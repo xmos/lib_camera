@@ -1,6 +1,11 @@
 #pragma once
+
+// xcore
+// #include <xcore/channel_streaming.h>
 #include "xccompat.h"
+// user
 #include "sensor.h"
+
 
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {
@@ -12,6 +17,8 @@ extern "C" {
  * Initialize the camera API. Must be called before any other API functions.
  */
 void camera_api_init();
+void camera_stop();
+unsigned camera_api_check_stop();
 
 /**
  * SERVER SIDE
