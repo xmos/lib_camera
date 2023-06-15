@@ -140,9 +140,11 @@ void statistics_thread(
       if(row == NULL) // Signal end of frame [1]
         break;
       if(row == 1)
+      {
         sensor_stop(sc_if);
         printf("stopping satistics_thread\n");
         return;
+      }
 
       // Update histogram
       for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){

@@ -81,6 +81,7 @@ temp
 
 !CMakeLists.txt
 
-# dotenv
+# vision cruft
 .env
 **/*.png
+**/*.bmp
