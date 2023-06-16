@@ -24,7 +24,7 @@ void user_app()
   }
   printf("Image captured...\n");
 
-  camera_stop();
+  camera_api_stop();
   delay_milliseconds(100);
   // Rotate 180 degrees
   // rotate_image(image_buffer);

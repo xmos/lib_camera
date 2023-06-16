@@ -25,7 +25,7 @@ void user_app_raw(){
         exit(1);
     }
     printf("Image captured...\n");
-
+    camera_api_stop();
     // Convert image from int8 to uint8 in-place
     vect_int8_to_uint8((uint8_t*) image_buffer,
                       (int8_t*) image_buffer, 

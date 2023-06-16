@@ -17,7 +17,21 @@ extern "C" {
  * Initialize the camera API. Must be called before any other API functions.
  */
 void camera_api_init();
-void camera_stop();
+
+/**
+ * SERVER SIDE
+ * 
+ * Stop the camera API. Must be called before exiting the program.
+ */
+void camera_api_stop();
+
+/**
+ * SERVER SIDE
+ * 
+ * Check if the client has requested to stop the camera.
+ * 
+ * @return 1 if the client has requested to stop the camera, 0 otherwise
+ */
 unsigned camera_api_check_stop();
 
 /**

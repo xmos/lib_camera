@@ -122,11 +122,15 @@ void statistics_thread(
 
       low_res_image_row_t* row = (low_res_image_row_t*) s_chan_in_word(c_img_in);
 
-      if(row == NULL) // Signal end of frame [1]
+      if(row == NULL){ // Signal end of frame [1]
         break;
+      }
 
       if(row == (low_res_image_row_t *) 1)
       {
+        // stop the camera sensor
+        sensor_control_stop(sc_if);
+        // exit 
         return;
       }
       

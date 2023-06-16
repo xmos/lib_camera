@@ -37,7 +37,7 @@ unsigned camera_api_check_stop(){
     }
 }
 
-void camera_stop(){
+void camera_api_stop(){
   s_chan_out_word(c_user_api[CHAN_STOP].end_a, (unsigned) 1);
 }
 
