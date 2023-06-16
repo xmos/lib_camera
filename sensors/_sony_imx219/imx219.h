@@ -64,10 +64,8 @@ int imx219_read(CLIENT_INTERFACE(i2c_master_if, i2c), uint16_t addr);
 void imx219_read_gains(CLIENT_INTERFACE(i2c_master_if, i2c), uint16_t values[5]);
 
 
-#define camera_init(X)                imx219_init(X)
-#define camera_start(X)               imx219_stream_start(X)
-#define camera_configure(X)           imx219_configure_mode(X)
-#define camera_set_exposure(iic,ex)   imx219_set_gain_dB(iic,ex)
-
-
-
+#define camera_init(iic)                imx219_init(iic)
+#define camera_start(iic)               imx219_stream_start(iic)
+#define camera_stop(iic)                imx219_stream_stop(iic)
+#define camera_configure(iic)           imx219_configure_mode(iic)
+#define camera_set_exposure(iic,ex)     imx219_set_gain_dB(iic,ex)
