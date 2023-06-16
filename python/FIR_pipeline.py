@@ -10,7 +10,9 @@ from utils import (
     normalize, 
     gray_world, 
     get_real_image,
-    new_color_correction)
+    new_color_correction,
+    run_histogram_equalization,
+    iterative_wb)
 
 OFF     = 0
 STEP    = 4
@@ -96,7 +98,7 @@ def create_filter():
     v1 = [0.08626086, 0.23894391, 0.34959045, 0.23894391, 0.08626086]
     v2 = [0.0248892,  0.2528858,  0.44445  , 0.2528858,  0.0248892]
 
-    h_filter = h1
+    h_filter = h2
     v_filter = v2
     
     
@@ -144,7 +146,7 @@ def vertical_filer(imgh,height, width, v_filter, red, green, blue):
     return imgv
 
 
-def FIR_pipeline(img, height, width, ENABLE_IMSHOW=None):
+def FIR_pipeline_func(img, height, width, show=False):
     # create the filters
     h_filter, v_filter, KV, KH = create_filter()
     
@@ -152,7 +154,10 @@ def FIR_pipeline(img, height, width, ENABLE_IMSHOW=None):
     imgh = horizontal_filer(img, h_filter, height, width)
     
     # white balancing
-    imgh = gray_world(imgh)
+    # imgh = gray_world(imgh)
+    imgh = iterative_wb(imgh)
+    
+    
     red, green, blue = imgh[:,:,RED], imgh[:,:,GREEN], imgh[:,:,BLUE]
     
     # vertical filtering
@@ -160,23 +165,31 @@ def FIR_pipeline(img, height, width, ENABLE_IMSHOW=None):
     
     ########### post processing ##############
     # black level substraction
-    img = normalize(img, 15, 254, np.uint8)  
+    BLACK_LEVEL = 30
+    img = normalize(img, BLACK_LEVEL, 254, np.uint8)  
     
     # gamma
-    img = img ** (1.0 / 1.8)
+    # img = img ** (1.0 / 1.8)
     
     # sharpen (optional)
     #kernel_sharpen = kernel_sharpen/np.sum(kernel_sharpen)
     #img = cv2.filter2D(src=img, ddepth=-1, kernel=kernel_sharpen_5)
     
     # Color correction (optional)
-    img = new_color_correction(img)
+    # img = new_color_correction(img)
     
     # clip the image
     img = np.clip(255*img, 0, 255).astype(np.uint8)
+    
+    # image stretch 
+    # img = stretch_histogram(img)
+    
+    # histeq
+    img = run_histogram_equalization(img)
+    
     ##########################################
     
-    if ENABLE_IMSHOW:
+    if show:
         plt.imshow(img)
         plt.show()
         # save image
@@ -186,6 +199,23 @@ def FIR_pipeline(img, height, width, ENABLE_IMSHOW=None):
     
     return img
     
+def stretch_histogram(image):
+    stretched_image = np.zeros_like(image)
+
+    for i in range(3):  # Iterate over color channels (R, G, B)
+        channel = image[:, :, i]
+
+        # Calculate the minimum and maximum pixel values
+        min_val = np.min(channel)
+        max_val = np.max(channel)
+
+        # Apply contrast stretching to the channel
+        stretched_channel = ((channel - min_val) * (255.0 / (max_val - min_val))).astype(np.uint8)
+
+        # Assign the stretched channel to the output image
+        stretched_image[:, :, i] = stretched_channel
+
+    return stretched_image
 
 if __name__ == '__main__':
 
@@ -225,6 +255,8 @@ if __name__ == '__main__':
     
     # clip the image
     img = np.clip(255*img, 0, 255).astype(np.uint8)
+    
+
     ########### post processing ##############
     
     

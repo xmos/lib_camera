@@ -92,7 +92,6 @@ if __name__ == "__main__":
     args = parse_arguments()
     if (args.xe is None):
         build_folder = Path(__file__).parent.parent.resolve() / "build"
-        print(build_folder)
         choose_file_with_extension(build_folder, ".xe")
     else:   
         run(args.xe)

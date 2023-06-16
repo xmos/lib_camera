@@ -820,6 +820,32 @@ def pipeline(img, demosaic_opt=True): #it takes a RAW IMAGE
     # img = run_histogram_equalization(img)
     return img
 
+def pipeline_raw8(img, demosaic_opt=True): #it takes a RAW IMAGE
+    as_shot_neutral = [0.6301882863, 1, 0.6555861831]
+    width, height = 640, 480
+    cfa_pattern = [0, 1, 1, 2] # explorer board
+
+    # ------ The ISP pipeline -------------------------
+    # black level substraction
+    img = normalize(img, 15, 254, np.uint8)  
+    # white balancing
+    img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
+    # demosaic
+    img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
+    img_demoisaic = img
+    # color transforms
+    img = new_color_correction(img)
+    # gamma
+    img = img ** (1.0 / 1.8)
+    # clip the image
+    img = np.clip(255*img, 0, 255).astype(np.uint8)
+    # hist equalization (optional)
+    #   img = run_histogram_equalization(img)
+    # resize bilinear (optional)
+    kfactor = 1
+    img = cv2.resize(img, (width // kfactor, height // kfactor), interpolation=cv2.INTER_AREA)
+    # ------ The ISP pipeline -------------------------
+    return img
 
 
 def pipeline_nodemosaic(img):
@@ -889,6 +915,43 @@ def gray_world(img):
     img[:,:,2] = beta*img[:,:,2]
     # img[:,:,1] = 
     return img
+
+
+def iterative_wb(img):
+    img = img/255.0
+    
+    R =  img[:,:,0]
+    G =  img[:,:,1]
+    B =  img[:,:,2]
+    
+    # to YUV
+    a,b,c = 0.299,0.587,0.114
+    d,e,f = -0.147,-0.289,0.436
+    g,h,i = 0.615,-0.515,-0.100
+    
+    y = a*R + b*G + c*B
+    u = d*R + e*G + f*B
+    v = g*R + h*G + i*B
+    
+    loc = np.where(y > 0.4) # find high luminance values
+    
+    # compute luminance region
+    yl = y[loc]
+    ul = u[loc]
+    vl = v[loc]
+    
+    # local to RGB
+    R = yl + 1.140*vl
+    G = yl - 0.395*ul - 0.581*vl
+    B = yl + 2.032*ul
+    
+    img[:,:,0] /= R.mean()
+    img[:,:,1] /= G.mean()
+    img[:,:,2] /= B.mean()
+    
+    img = img.clip(0,1)*255.0
+    return img
+
 
 if __name__ == '__main__':
     pass
