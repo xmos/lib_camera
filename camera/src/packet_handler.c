@@ -283,9 +283,6 @@ void mipi_packet_handler(
   mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
   unsigned pkt_idx = 0;
 
-  // allocate camera api channends
-  // camera_api_init(); 
-  
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
 
