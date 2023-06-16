@@ -83,5 +83,8 @@ temp
 
 # dotenv
 .env
+
+# images
 **/*.png
 *.bmp
+*.raw

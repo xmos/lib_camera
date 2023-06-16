@@ -203,15 +203,6 @@ static imx219_settings_t binning_regs[] = {
 	{BINNING_MODE_REG, BINNING_MODE}
 };  
 
-
-static imx219_settings_t start[] = {
-    {0x0100, 0x01}, /* mode select streaming on */
-};
-
-static imx219_settings_t stop[] = {
-    {0x0100, 0x00}, /* mode select streaming off */
-};
-
 static imx219_settings_t start_regs[] = {
     {0x0100, 0x01}, /* mode select streaming on */
 };
@@ -322,5 +313,3 @@ static uint16_t gain_digital_gains[DIGITAL_GAINS + 1] = {
     0x0e20,
     0x0fd9,
 };
-
-
