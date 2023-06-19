@@ -28,7 +28,6 @@ from utils import (
 )
 
 input_name = os.getenv('BINARY_IMG_PATH') or "capture.raw"
-#input_name = Path(__file__).parent / "capture.bin"
 
 width, height = 640, 480
 

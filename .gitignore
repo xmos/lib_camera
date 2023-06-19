@@ -84,7 +84,13 @@ temp
 # dotenv
 .env
 
-# images
-**/*.png
+# ninja 
+.ninja_deps
+.ninja_log
+/build.ninja
+*.exe
+
+# Images
 *.bmp
 *.raw
+*.png

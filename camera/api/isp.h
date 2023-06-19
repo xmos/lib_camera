@@ -17,7 +17,7 @@
  * 
  * @param global_stats structure containing the global statistics
  */
-void AE_control_exposure(
+uint8_t AE_control_exposure(
     global_stats_t *global_stats,
     CLIENT_INTERFACE(sensor_control_if, sc_if));
 
@@ -77,7 +77,14 @@ extern isp_params_t isp_params;
  * @param gstats structure containing the global statistics
  * @param isp_params structure containing the current isp parameters
  */
-void AWB_compute_gains(global_stats_t *gstats, isp_params_t *isp_params);
+void AWB_compute_gains_static(global_stats_t *gstats, isp_params_t *isp_params);
+
+//TODO
+void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params);
+
+void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params);
+
+void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params);
 
 /**
  * @brief aux function to print the auto white balancing gains
@@ -86,6 +93,13 @@ void AWB_compute_gains(global_stats_t *gstats, isp_params_t *isp_params);
  */
 void AWB_print_gains(isp_params_t *isp_params);
 
+/**
+ * @brief auto white balance control function based on percentile
+ * 
+ * @param gstats structure containing the global statistics
+ * @param percentile percentile to compute
+ */
+void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_params);
 
 // ---------------------------------- GAMMA ------------------------------
 // Gamma correction table
@@ -99,6 +113,7 @@ extern const uint8_t gamma_1p8_s1[255];
  */
 void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img);
 
+void isp_gamma_1p8(uint8_t *img_in, const size_t height, const size_t width, const size_t channels);
 
 // -------------------------- ROTATE/RESIZE -------------------------------------
 
