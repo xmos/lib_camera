@@ -1,3 +1,2 @@
-:figure1: 1_high_level_view.png
-:figure2: 2_functional_object.png
-:figure3: myimage3.png
+.. |figure1| replace:: 1_high_level_view.png
+.. |figure2| replace:: 2_functional_object.png

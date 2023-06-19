@@ -9,7 +9,7 @@ Introduction
 System Architecture
 --------------------
 
-.. figure:: images/overviewdrawio.png
+.. figure:: images/|figure2|
    :alt: Alternative Text
    :figwidth: 400px
    :figclass: custom-class
