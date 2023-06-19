@@ -953,5 +953,16 @@ def iterative_wb(img):
     return img
 
 
+def compute_score(img_ref, img):
+    # if image is color, convert to gray
+    if img_ref.ndim == 3:
+        img_ref = cv2.cvtColor(img_ref, cv2.COLOR_RGB2GRAY)
+    if img.ndim == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    
+    score = ssim(img_ref, img)
+    return score
+    
+
 if __name__ == '__main__':
     pass

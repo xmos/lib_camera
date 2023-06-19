@@ -154,9 +154,8 @@ def FIR_pipeline_func(img, height, width, show=False):
     imgh = horizontal_filer(img, h_filter, height, width)
     
     # white balancing
-    # imgh = gray_world(imgh)
+    #imgh = gray_world(imgh)
     imgh = iterative_wb(imgh)
-    
     
     red, green, blue = imgh[:,:,RED], imgh[:,:,GREEN], imgh[:,:,BLUE]
     
@@ -165,11 +164,11 @@ def FIR_pipeline_func(img, height, width, show=False):
     
     ########### post processing ##############
     # black level substraction
-    BLACK_LEVEL = 30
+    BLACK_LEVEL = 16
     img = normalize(img, BLACK_LEVEL, 254, np.uint8)  
     
     # gamma
-    # img = img ** (1.0 / 1.8)
+    img = img ** (1.0 / 1.8)
     
     # sharpen (optional)
     #kernel_sharpen = kernel_sharpen/np.sum(kernel_sharpen)
@@ -185,17 +184,7 @@ def FIR_pipeline_func(img, height, width, show=False):
     # img = stretch_histogram(img)
     
     # histeq
-    img = run_histogram_equalization(img)
-    
-    ##########################################
-    
-    if show:
-        plt.imshow(img)
-        plt.show()
-        # save image
-        name = f"out.png"
-        #print(name)
-        Image.fromarray(img).save(name) # option 1 pillow
+    # img = run_histogram_equalization(img)
     
     return img
     
