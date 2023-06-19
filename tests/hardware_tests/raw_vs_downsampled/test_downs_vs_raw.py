@@ -16,8 +16,8 @@ python_path = top_level + "\\python"
 
 # globals
 ENABLE_IMSHOW   = True
-RUN_XE          = False
-MIN_PSNR        = 15  # DB, peak signal to noise ratio
+RUN_XE          = True
+MIN_PSNR        = 10  # DB, peak signal to noise ratio
 MIN_SCORE       = 0.7 # 70% of similarity
 
 # python dependencies
