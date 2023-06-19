@@ -1,6 +1,7 @@
 Architecture and Design
 =======================
 
+.. include:: images/image_names.rst
 .. contents:: Table of Contents
 
 Introduction
