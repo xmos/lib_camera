@@ -183,7 +183,6 @@ void statistics_thread(
 
     // Print ISP info
     AWB_print_gains(&isp_params);
-    //AE_print_skewness(&global_stats);
   }
 }
 

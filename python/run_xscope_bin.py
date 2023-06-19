@@ -15,7 +15,7 @@ def get_adapter_id():
         print('Error: %s' % e.output)
         assert False
     except FileNotFoundError:
-        msg = ("please ensure you have xcc tools activated in your environment")
+        msg = ("please ensure you have XMOS tools activated in your environment")
         assert False, msg
 
     xrun_out = xrun_out.split('\n')

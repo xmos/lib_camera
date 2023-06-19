@@ -5,9 +5,9 @@
 
 #include "io_utils.h"
 #include "app.h"
-//#include "isp.h"
+#include "isp.h"  // needed for gamma
 
-#define APPLY_GAMMA 0
+#define APPLY_GAMMA 1
 
 void user_app()
 {
