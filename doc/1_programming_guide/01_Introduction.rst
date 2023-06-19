@@ -42,6 +42,7 @@ Features
 Getting Started
 ----------------
 Hardware requirements:
+
 - XMOS device
 - Camera module
 - Power supply
@@ -49,6 +50,7 @@ Hardware requirements:
 - JTAG debugger
 
 Software requirements:
+
 - XMOS tools: https://www.xmos.ai/software-tools/
 - FWK_Camera repository
 - CMake, Ninja (Windows)
