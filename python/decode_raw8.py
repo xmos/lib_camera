@@ -27,8 +27,7 @@ from utils import (
     plot_imgs
 )
 
-input_name = os.getenv('BINARY_IMG_PATH') or "capture.bin"
-#input_name = Path(__file__).parent / "capture.bin"
+input_name = os.getenv('BINARY_IMG_PATH') or "capture.raw"
 
 width, height = 640, 480
 

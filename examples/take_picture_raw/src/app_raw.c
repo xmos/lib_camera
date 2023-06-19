@@ -31,6 +31,7 @@ void user_app_raw()
 
     // stop the threads and camera stream
     camera_api_stop();
+    delay_milliseconds(100);
     
     // Convert image from int8 to uint8 in-place
     vect_int8_to_uint8((uint8_t*) image_buffer,
@@ -38,7 +39,7 @@ void user_app_raw()
                       sizeof(image_buffer));
 
     // Save the image to a file
-    write_image_file("capture.bin", (uint8_t * ) &image_buffer[0][0],   
+    write_image_file("capture.raw", (uint8_t * ) &image_buffer[0][0],   
             MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES, 1);
 
     printf("Image saved. Exiting.\n");
