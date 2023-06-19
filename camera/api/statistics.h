@@ -30,7 +30,7 @@ extern "C" {
 // fraction. (0.95 will find the value which 95% of pixels are less than or
 // equal to)
 #ifndef APP_WB_PERCENTILE
-#define APP_WB_PERCENTILE   (0.98)
+#define APP_WB_PERCENTILE   (0.94)
 #endif
 
 // Objects definitions
@@ -68,7 +68,7 @@ void compute_skewness(channel_stats_t *stats);
 */
 void compute_simple_stats(channel_stats_t *stats);
 
-void print_simple_stats(channel_stats_t *stats);
+void print_simple_stats(channel_stats_t *stats, unsigned channel);
 
 /**
  * Find the value for which (fraction) portion of pixels fall below that value. 

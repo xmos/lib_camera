@@ -84,6 +84,8 @@ void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_par
 
 void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params);
 
+void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params);
+
 /**
  * @brief aux function to print the auto white balancing gains
  * 

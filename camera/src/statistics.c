@@ -83,12 +83,24 @@ void compute_simple_stats(channel_stats_t *stats)
   stats->mean = (temp_mean) *(1 << APP_HISTOGRAM_QUANTIZATION_BITS) * histogram_norm_factor;
 }
 
-void print_simple_stats(channel_stats_t *stats){
-  printf("Max: %d\n", stats->max);
-  printf("Min: %d\n", stats->min);
-  printf("Mean: %f\n", stats->mean);
-  printf("Skewness: %f\n", stats->skewness);
-  printf("Percentile: %d\n", stats->percentile);
+
+/*
+typedef struct {
+  uint8_t min;
+  uint8_t max;
+  uint8_t percentile;
+  float skewness;
+  float mean;
+  channel_histogram_t histogram;
+} channel_stats_t;
+*/
+void print_simple_stats(channel_stats_t *stats, unsigned channel){
+  printf("ch:%d,Min:%d,Max:%d,Mean:%f,Skew:%f\n", 
+    channel,
+    stats->min,
+    stats->max,
+    stats->mean,
+    stats->skewness);
 }
 
 void find_percentile(channel_stats_t *stats, const float fraction)
@@ -140,27 +152,29 @@ void statistics_thread(
       compute_skewness(&global_stats[channel]);
       compute_simple_stats(&global_stats[channel]);
       find_percentile(&global_stats[channel], APP_WB_PERCENTILE);
-      // print_simple_stats(&global_stats[channel]);
+      print_simple_stats(&global_stats[channel], channel);
     }
 
     // Adjust AE
     uint8_t ae_done = AE_control_exposure(&global_stats, sc_if);
 
     // Adjust AWB 
-    AWB_compute_gains_static(&global_stats, &isp_params);
-    if (ae_done == 1){
-    //AWB_compute_gains_white_patch(&global_stats, &isp_params);
-    //AWB_compute_gains_gray_world(&global_stats, &isp_params);
-    //AWB_compute_gains_percentile(&global_stats, &isp_params);
-    //AWB_compute_gains_static(&global_stats, &isp_params);
+    static unsigned run_once = 0;
+    if (ae_done == 1 && run_once == 0){
+    AWB_compute_gains_white_max(&global_stats, &isp_params);   //0
+    //AWB_compute_gains_white_patch(&global_stats, &isp_params); //1
+    //AWB_compute_gains_gray_world(&global_stats, &isp_params);  //2
+    //AWB_compute_gains_percentile(&global_stats, &isp_params);  //3
+    //AWB_compute_gains_static(&global_stats, &isp_params);      //4
+    run_once = 1; // set to 1 to just run once
     }
     
     // Apply gamma curve
-    //TODO
+    //TODO here instead of user app
 
     // Print ISP info
     AWB_print_gains(&isp_params);
-    AE_print_skewness(&global_stats);
+    //AE_print_skewness(&global_stats);
   }
 }
 

@@ -153,9 +153,9 @@ void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_para
         gains[i] = m*(sk - skmin) + gmax;
     }
 
-    //tmp0 = 0.7*tmp0 + 0.3*gains[0];
-    //tmp1 = 0.7*tmp1 + 0.3*gains[1];
-    //tmp2 = 0.7*tmp2 + 0.3*gains[2];
+    tmp0 = 0.7*tmp0 + 0.3*gains[0];
+    tmp1 = 0.7*tmp1 + 0.3*gains[1];
+    tmp2 = 0.7*tmp2 + 0.3*gains[2];
 
     tmp0  = AWB_clip_value(tmp0);
     tmp1  = AWB_clip_value(tmp1);
@@ -190,10 +190,62 @@ void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_par
     alfa   = AWB_clip_value(alfa);
     gamma  = AWB_clip_value(gamma);
 
+    // apply params
     isp_params->channel_gain[0] = alfa;
     isp_params->channel_gain[1] = beta;
     isp_params->channel_gain[2] = gamma;
 }
+
+
+void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params){
+    float alfa = 1.0;
+    const float beta = 1.0;
+    float gamma = 1.0;
+    
+    uint8_t Rmax = (*gstats)[0].max; // RED
+    uint8_t Gmax = (*gstats)[1].max; // GREEN
+    uint8_t Bmax = (*gstats)[2].max; // BLUE
+
+    // correct to have similar white max
+    uint32_t count_max_red = (*gstats)[0].histogram.bins[Rmax];
+    uint32_t count_max_green = (*gstats)[1].histogram.bins[Gmax];
+    uint32_t count_max_blue = (*gstats)[2].histogram.bins[Bmax];
+
+    // false values avoidance
+    if (count_max_red != 0 && count_max_green != 0 && count_max_blue != 0){
+        
+        if (count_max_green > count_max_red){
+            alfa = (count_max_green/(float)count_max_red);
+        }
+
+        if (count_max_green > count_max_blue){
+            gamma = (count_max_green/(float)count_max_blue);
+        }
+    }
+
+    // then compute the mean with grey world
+    float Ravg = (*gstats)[0].mean; // RED
+    float Gavg = (*gstats)[1].mean; // GREEN
+    float Bavg = (*gstats)[2].mean; // BLUE
+    float alfa2 = Gavg/Ravg;
+    float gamma2 = Gavg/Bavg;
+
+    // armonic mean
+    float gww = 0.7; // grey world weight
+    alfa = (1-gww)*alfa + gww*alfa2;
+    gamma = (1-gww)*gamma + gww*gamma2;
+
+    // clip the values
+    alfa   = AWB_clip_value(alfa);
+    gamma  = AWB_clip_value(gamma);
+
+    // apply params
+    isp_params->channel_gain[0] = alfa;
+    isp_params->channel_gain[1] = beta;
+    isp_params->channel_gain[2] = gamma;
+}
+
+
 
 void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params){
     printf("AWB --->");
@@ -202,7 +254,7 @@ void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_para
     float Bavg = (*gstats)[2].mean; // BLUE
 
     float alfa = Gavg/Ravg;
-    const float beta  = 0.9;
+    const float beta  = 1;
     float gamma = Gavg/Bavg;
 
     alfa   = AWB_clip_value(alfa);
@@ -212,7 +264,6 @@ void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_para
     isp_params->channel_gain[1] = beta;
     isp_params->channel_gain[2] = gamma;
 }
-
 
 void AWB_print_gains(isp_params_t *isp_params){
     printf("awb:%f,%f,%f\n",
