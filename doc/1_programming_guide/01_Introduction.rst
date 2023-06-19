@@ -63,7 +63,7 @@ Additional Resources
 .. _XMOSProgrammingGuide: https://www.xmos.ai/download/XMOS-Programming-Guide-(documentation)(E).pdf
 .. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 
-- MIPI CSI-2 specification:     `MIPI`_.
-- XMOS I2C library user guide:  `XMOSI2C`_.
-- XMOS Programming Guide:       `XMOSProgrammingGuide`_.
-- IMX219 datasheet:             `IMX219`_.
+- MIPI CSI-2 specification:     `MIPI`_
+- XMOS I2C library user guide:  `XMOSI2C`_
+- XMOS Programming Guide:       `XMOSProgrammingGuide`_
+- IMX219 datasheet:             `IMX219`_
