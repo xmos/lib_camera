@@ -10,12 +10,12 @@ Introduction
 System Architecture
 --------------------
 
-.. figure:: images/|figure2|
+.. figure:: images/2_functional_object.png
    :alt: Alternative Text
    :figwidth: 400px
    :figclass: custom-class
 
-   Caption for the Figure.
+   Class Diagram
 
 
 

@@ -16,10 +16,14 @@ The architecture consists of several key components that work together to facili
 - Image signal processing
 - I/O
 
-.. figure:: images/|figure1|
-    :alt: High Level Block Diagram
-    :figwidth: 400px
-    High Level Block Diagram
+.. figure:: images/1_high_level_view.png
+    :alt: Alternate text for the image
+    :width: 400px
+    :align: center
+
+    Caption for the image goes here.
+
+
 
 Conventions and Terminology
 ---------------------------
