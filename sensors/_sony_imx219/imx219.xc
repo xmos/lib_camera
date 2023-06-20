@@ -141,7 +141,7 @@ int imx219_stream_start(client interface i2c_master_if i2c){
 }
 
 int imx219_stream_stop(client interface i2c_master_if i2c){
-    return i2c_write_table(i2c, stop, sizeof(stop) / sizeof(stop[0]));
+    return i2c_write_table(i2c, stop_regs, sizeof(stop_regs) / sizeof(stop_regs[0]));
 }
 
 int imx219_set_gain_dB(client interface i2c_master_if i2c,

@@ -1,4 +1,3 @@
-// Copyright (c) 2020, XMOS Ltd, All rights reserved
 #include <xs1.h>
 #include <platform.h>
 #include <xscope.h>

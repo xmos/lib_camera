@@ -12,15 +12,33 @@
 
 #define CHAN_RAW 0
 #define CHAN_DEC 1
+#define CHAN_STOP 2
 
 // In order to interface the handler and api
-streaming_channel_t c_user_api[2];
+streaming_channel_t c_user_api[3];
 
 
 void camera_api_init()
 {
-  c_user_api[CHAN_RAW] = s_chan_alloc();
-  c_user_api[CHAN_DEC] = s_chan_alloc();
+  c_user_api[CHAN_RAW]   = s_chan_alloc();
+  c_user_api[CHAN_DEC]   = s_chan_alloc();
+  c_user_api[CHAN_STOP]  = s_chan_alloc();
+}
+
+unsigned camera_api_check_stop(){
+  SELECT_RES(
+      CASE_THEN(c_user_api[CHAN_STOP].end_b, user_handler),
+      DEFAULT_THEN(default_handler))
+    {
+      user_handler:
+        return 1;
+      default_handler:
+        return 0;
+    }
+}
+
+void camera_api_stop(){
+  s_chan_out_word(c_user_api[CHAN_STOP].end_a, (unsigned) 1);
 }
 
 void camera_api_new_row_raw(

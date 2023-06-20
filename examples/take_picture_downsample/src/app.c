@@ -5,10 +5,16 @@
 
 #include "io_utils.h"
 #include "app.h"
+#include "isp.h"  // needed for gamma
 
+#define APPLY_GAMMA 1
 
 void user_app()
 {
+
+  // Initialize camera api
+  camera_api_init();
+
   int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
   uint8_t temp_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
 
@@ -18,14 +24,16 @@ void user_app()
   // Wait for the image to set exposure
   delay_milliseconds(5000);
   printf("Requesting image...\n");
+  // grab a frame
   if(camera_capture_image(image_buffer)){
     printf("Error capturing image\n");
     exit(1);
   }
   printf("Image captured...\n");
 
-  // Rotate 180 degrees
-  // rotate_image(image_buffer);
+  // stop the threads and camera stream
+  camera_api_stop();
+  delay_milliseconds(100);
 
   // convert to uint8 with right dimentions
   // convert to uint8
@@ -36,6 +44,15 @@ void user_app()
   memcpy(temp_buffer, image_buffer, APP_IMAGE_CHANNEL_COUNT * APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS * sizeof(uint8_t));
   uint8_t * io_buff = (uint8_t *) &image_buffer[0][0][0];
   // io_buff this will have [APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS][APP_IMAGE_CHANNEL_COUNT] dimentions
+  
+  // apply gamma correction
+  #if APPLY_GAMMA
+    isp_gamma_1p8((uint8_t *) &temp_buffer[0][0][0],
+                          APP_IMAGE_HEIGHT_PIXELS,
+                          APP_IMAGE_WIDTH_PIXELS,
+                          APP_IMAGE_CHANNEL_COUNT);
+  #endif
+  
   swap_dimensions((uint8_t *) &temp_buffer[0][0][0], io_buff,
                     APP_IMAGE_HEIGHT_PIXELS,
                     APP_IMAGE_WIDTH_PIXELS,

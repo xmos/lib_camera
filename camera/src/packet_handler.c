@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include <xcore/channel_streaming.h>
+#include <xcore/select.h>
 
 #include "packet_handler.h"
 #include "image_vfilter.h"
@@ -264,7 +265,6 @@ void handle_packet(
   }
 }
 
-
 /**
  * Top level of the packet handling thread. Receives MIPI packets from the
  * packet receiver and passes them to `handle_packet()` for parsing and
@@ -283,19 +283,32 @@ void mipi_packet_handler(
   mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
   unsigned pkt_idx = 0;
 
-  camera_api_init();
-  
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
 
   while(1) {
     pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT-1);
 
-    mipi_packet_t * pkt = (mipi_packet_t*) s_chan_in_word(c_pkt);
     // Swap buffers with the receiver thread. Give it the next buffer
     // to fill and take the last filled buffer from it.    
-    s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx] );
-
+    mipi_packet_t * pkt = (mipi_packet_t*) s_chan_in_word(c_pkt);
+    
+    // Check is we are supose to stop or continue
+    unsigned stop = camera_api_check_stop();
+    
+    if (stop == 1){
+        // send stop to MipiReciever
+        s_chan_out_word(c_pkt, (unsigned) NULL);
+        // send stop to statistics
+        s_chan_out_word(c_out_row, (unsigned) 1);
+        // end thread
+        printf("\n\nMipiPacketHandler: stop\n\n");
+        return;
+    }
+    else{
+        // send info to MipiReciever
+        s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx]);
+    }
     // Process the packet
     //const mipi_header_t header = pkt->header;
     //const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
