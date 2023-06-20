@@ -40,5 +40,5 @@ void pixel_hfilter_update_scale(
 
   const float sum_b = b0 + 2*b1;
 
-  state->acc_init = (128 * (sum_b - shift_scale - BLACK_LEVEL));
+  state->acc_init = 128 * (sum_b - shift_scale) - SENSOR_BLACK_LEVEL * shift_scale;
 }
