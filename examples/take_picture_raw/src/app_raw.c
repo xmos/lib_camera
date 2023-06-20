@@ -9,8 +9,11 @@
 #include "app_raw.h"
 #include "io_utils.h"
 
-void user_app_raw(){
-    
+void user_app_raw()
+{    
+    // Initialize camera api
+    camera_api_init();
+
     // set the input image to 0
     int8_t image_buffer[H_RAW][W_RAW];
     memset(image_buffer, -128, H_RAW * W_RAW);
@@ -26,6 +29,9 @@ void user_app_raw(){
     }
     printf("Image captured...\n");
 
+    // stop the threads and camera stream
+    camera_api_stop();
+    
     // Convert image from int8 to uint8 in-place
     vect_int8_to_uint8((uint8_t*) image_buffer,
                       (int8_t*) image_buffer, 

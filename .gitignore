@@ -88,4 +88,5 @@ temp
 
 #documentation
 !**/images/*.png
-
+**/*.png
+*.bmp

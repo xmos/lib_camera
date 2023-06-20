@@ -31,9 +31,6 @@ void camera_main(
   streaming chan c_ctrl;
   streaming chan c_stat_thread;
   sensor_control_if sc_if;
-
-  // set the channels for the camera api
-  camera_api_init();
   
   // Assign lanes and polarities
   write_node_config_reg(mipi_tile,
@@ -57,16 +54,10 @@ void camera_main(
                     MIPI_CLK_DIV,
                     MIPI_CFG_CLK_DIV); 
 
-  // Start camera and its configurations
-  int r = 0;
-  r |= camera_init(i2c);
-  delay_milliseconds(100);
-  r |= camera_configure(i2c);
-  delay_milliseconds(600);
-  r |= camera_start(i2c);
-  assert(r == 0); // assert that camera is started and configured
+  // Initialize camera and its configurations
+  sensor_initialize(i2c);
   printf("\nCamera_started and configured...\n");
-  delay_milliseconds(2000);
+  delay_milliseconds(1000);
 
   // start the different jobs (packet controller, handler, and post_process)
   par
