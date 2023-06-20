@@ -1,12 +1,11 @@
 Introduction
 =============
 
-.. include:: images/image_names.rst
 .. contents:: Table of Contents
 
 Overview
 ---------
-The purpose of this programming guide is to provide developers with a comprehensive understanding of the FWK_Camera architecture and guide them on how to effectively interact with cameras using XMOS devices.
+The purpose of this programming guide is to provide developers with a comprehensive understanding of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
 
 The architecture consists of several key components that work together to facilitate camera communication and data processing. These components include:
 
@@ -21,7 +20,7 @@ The architecture consists of several key components that work together to facili
     :width: 400px
     :align: center
 
-    Caption for the image goes here.
+    High level block diagram of fwk camera. 
 
 
 
@@ -47,10 +46,10 @@ Getting Started
 ----------------
 Hardware requirements:
 
-- XMOS device
+- XCORE.AI EVALUATION KIT (XK-EVK-XU316)
 - Camera module
 - Power supply
-- USB cable
+- Micro USB cable
 - JTAG debugger
 
 Software requirements:
