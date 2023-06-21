@@ -13,7 +13,7 @@ void user_app()
 {
 
   // Initialize camera api
-  camera_api_init();
+  camera_init();
 
   int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
   uint8_t temp_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
@@ -32,7 +32,7 @@ void user_app()
   printf("Image captured...\n");
 
   // stop the threads and camera stream
-  camera_api_stop();
+  camera_stop();
   delay_milliseconds(100);
 
   // convert to uint8 with right dimentions

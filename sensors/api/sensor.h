@@ -28,23 +28,21 @@
 // Include custom libraries
 #if CONFIG_IMX219_SUPPORT
     #include "imx219.h"
-    #define camera_init(iic)                imx219_init(iic)
-    #define camera_start(iic)               imx219_stream_start(iic)
-    #define camera_stop(iic)                imx219_stream_stop(iic)
-    #define camera_configure(iic)           imx219_configure_mode(iic)
-    #define camera_set_exposure(iic,ex)     imx219_set_gain_dB(iic,ex)
-    #define SENSOR_BLACK_LEVEL              16
+    #define sensor_initialize(iic)          imx219_initialize(iic)
+    #define sensor_stream_start(iic)        imx219_stream_start(iic)
+    #define sensor_stream_stop(iic)         imx219_stream_stop(iic)
+    #define sensor_configure(iic)           imx219_configure(iic)
+    #define sensor_set_exposure(iic,ex)     imx219_set_exposure(iic,ex)
 #endif
 
 #if CONFIG_GC2145_SUPPORT
     #include "gc2145.h"
     /* //TODO
-    #define camera_init(iic)                gcinit(iic)
-    #define camera_start(iic)               gcstart(iic)
-    #define camera_stop(iic)                gcstop(iic)
-    #define camera_configure(iic)           gcconfigure(iic)
-    #define camera_set_exposure(iic,ex)     gcsetexp(iic,ex)
-    #define SENSOR_BLACK_LEVEL              0
+    #define sensor_initialize(iic)                gcinit(iic)
+    #define sensor_stream_start(iic)               gcstart(iic)
+    #define sensor_stream_stop(iic)                gcstop(iic)
+    #define sensor_configure(iic)           gcconfigure(iic)
+    #define sensor_set_exposure(iic,ex)     gcsetexp(iic,ex)
     */
 #endif
 
@@ -156,8 +154,8 @@
 
 // Number of bits to collapse channel cardinality (larger value results in fewer
 // histogram bins)
-#ifndef APP_HISTOGRAM_QUANTIZATION_BITS
-#define APP_HISTOGRAM_QUANTIZATION_BITS   (2)
+#ifndef HIST_QUANT_BITS
+#define HIST_QUANT_BITS   (2)
 #endif
 
 

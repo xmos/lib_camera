@@ -18,14 +18,14 @@
 streaming_channel_t c_user_api[3];
 
 
-void camera_api_init()
+void camera_init()
 {
   c_user_api[CHAN_RAW]   = s_chan_alloc();
   c_user_api[CHAN_DEC]   = s_chan_alloc();
   c_user_api[CHAN_STOP]  = s_chan_alloc();
 }
 
-unsigned camera_api_check_stop(){
+unsigned camera_check_stop(){
   SELECT_RES(
       CASE_THEN(c_user_api[CHAN_STOP].end_b, user_handler),
       DEFAULT_THEN(default_handler))
@@ -37,11 +37,11 @@ unsigned camera_api_check_stop(){
     }
 }
 
-void camera_api_stop(){
+void camera_stop(){
   s_chan_out_word(c_user_api[CHAN_STOP].end_a, (unsigned) 1);
 }
 
-void camera_api_new_row_raw(
+void camera_new_row(
     const int8_t pixel_data[W_RAW],
     const unsigned row_index)
 {
@@ -61,7 +61,7 @@ void camera_api_new_row_raw(
     }
 }
 
-void camera_api_new_row_decimated(
+void camera_new_row_decimated(
     const int8_t pixel_data[CH][W],
     const unsigned row_index)
 {
@@ -81,7 +81,7 @@ void camera_api_new_row_decimated(
     }
 }
 
-unsigned camera_capture_row_raw(
+unsigned camera_capture_row(
     int8_t pixel_data[W_RAW])
 {
   s_chan_out_word(c_user_api[CHAN_RAW].end_b, (unsigned) &pixel_data[0]);
@@ -106,12 +106,12 @@ unsigned camera_capture_image_raw(
 
   // Loop, capturing rows until we get one with row_index==0
   do {
-    row_index = camera_capture_row_raw(&image_buff[0][0]);
+    row_index = camera_capture_row(&image_buff[0][0]);
   } while (row_index != 0);
 
   // Now capture the rest of the rows
   for (unsigned i=1; i<H_RAW; i++) {
-    row_index = camera_capture_row_raw(&image_buff[i][0]);
+    row_index = camera_capture_row(&image_buff[i][0]);
     if (row_index != i) {
       return 1; // TODO handle errors better
     }
