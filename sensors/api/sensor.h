@@ -156,8 +156,8 @@
 
 // Number of bits to collapse channel cardinality (larger value results in fewer
 // histogram bins)
-#ifndef APP_HISTOGRAM_QUANTIZATION_BITS
-#define APP_HISTOGRAM_QUANTIZATION_BITS   (2)
+#ifndef HIST_QUANT_BITS
+#define HIST_QUANT_BITS   (2)
 #endif
 
 

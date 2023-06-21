@@ -147,10 +147,10 @@ unsigned handle_pixel_data(
 static 
 void on_new_output_row(
     const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
-    streaming_chanend_t c_out_row)
+    streaming_chanend_t c_stats)
 {
   // Pass the output row along for statistics processing
-  s_chan_out_word(c_out_row, (unsigned) &pix_out[0][0] );
+  s_chan_out_word(c_stats, (unsigned) &pix_out[0][0] );
 
   // Service and user requests for decimated output
   camera_new_row_decimated(pix_out, ph_state.out_line_number);
@@ -164,18 +164,18 @@ static
 void handle_frame_end(
     int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
     const mipi_packet_t* pkt,
-    streaming_chanend_t c_out_row)
+    streaming_chanend_t c_stats)
 {
   // Drain the vertical filter's accumulators
   image_vfilter_drain(&pix_out[CHAN_RED][0], &vfilter_accs[CHAN_RED][0]);
   image_vfilter_drain(&pix_out[CHAN_GREEN][0], &vfilter_accs[CHAN_GREEN][0]);
   if(image_vfilter_drain(&pix_out[CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0])){
     // Pass final row(s) to the statistics thread
-    on_new_output_row(pix_out, c_out_row);
+    on_new_output_row(pix_out, c_stats);
   }
 
   // Signal statistics thread to do frame-end work by sending NULL.
-  s_chan_out_word(c_out_row, (unsigned) NULL);
+  s_chan_out_word(c_stats, (unsigned) NULL);
 }
 
 
@@ -200,7 +200,7 @@ void handle_no_expected_lines()
 static
 void handle_packet(
     const mipi_packet_t* pkt,
-    streaming_chanend_t c_out_row)
+    streaming_chanend_t c_stats)
 {
 
   /*
@@ -243,7 +243,7 @@ void handle_packet(
       break;
 
     case MIPI_DT_FRAME_END:   
-      handle_frame_end(output_buff[out_dex], pkt, c_out_row);
+      handle_frame_end(output_buff[out_dex], pkt, c_stats);
       out_dex = 1 - out_dex;
       break;
 
@@ -251,7 +251,7 @@ void handle_packet(
       handle_no_expected_lines();
 
       if(handle_pixel_data(pkt, output_buff[out_dex])){
-        on_new_output_row(output_buff[out_dex], c_out_row);
+        on_new_output_row(output_buff[out_dex], c_stats);
         out_dex = 1 - out_dex;
       }
 
@@ -273,7 +273,7 @@ void handle_packet(
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row)
+    streaming_chanend_t c_stats)
 {
   /*
    * These buffers will be used to hold received MIPI packets while they're
@@ -300,7 +300,7 @@ void mipi_packet_handler(
         // send stop to MipiReciever
         s_chan_out_word(c_pkt, (unsigned) NULL);
         // send stop to statistics
-        s_chan_out_word(c_out_row, (unsigned) 1);
+        s_chan_out_word(c_stats, (unsigned) 1);
         // end thread
         printf("\n\nMipiPacketHandler: stop\n\n");
         return;
@@ -314,7 +314,7 @@ void mipi_packet_handler(
     //const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
     // unsigned time_start = measure_time();
-    handle_packet(pkt, c_out_row);
+    handle_packet(pkt, c_stats);
     // unsigned time_proc = measure_time() - time_start;
 
   }

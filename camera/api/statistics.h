@@ -17,23 +17,16 @@
 extern "C" {
 #endif
 
-// Size of the channel element code space
-#define CHANNEL_CARDINALITY           (1<<SENSOR_BIT_DEPTH)
 
-// Number of histogram bins
-#define HISTOGRAM_BIN_COUNT           ((CHANNEL_CARDINALITY) >> (APP_HISTOGRAM_QUANTIZATION_BITS))
+#define CH_CARD               (1<<SENSOR_BIT_DEPTH)     // Size of the channel element code space
+#define HISTOGRAM_BIN_COUNT   ((CH_CARD) >> (HIST_QUANT_BITS))  // Number of histogram bins
+#define APP_WB_PERCENTILE     (0.94)
+
 #if (HISTOGRAM_BIN_COUNT != 64)
   #error HISTOGRAM_BIN_COUNT value not currently supported.
 #endif
 
-// The percentile to look for when applying white balance adjustments, as a
-// fraction. (0.95 will find the value which 95% of pixels are less than or
-// equal to)
-#ifndef APP_WB_PERCENTILE
-#define APP_WB_PERCENTILE   (0.94)
-#endif
-
-// Objects definitions
+// ---------- Objects definitions ----------
 typedef struct {
   int8_t pixels[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
 } low_res_image_row_t;
@@ -53,34 +46,44 @@ typedef struct {
 
 typedef channel_stats_t global_stats_t[APP_IMAGE_CHANNEL_COUNT];
 
-// Statistics compute funtions
+
+// ---------- Api functions ----------
 
 /**
 * Compute skewness of channel. 
 * This is used by auto exposure
 * @param stats - * Pointer to channel statistics to update.
 */
-void compute_skewness(channel_stats_t *stats);
+void stats_update_histogram(channel_histogram_t *hist, const int8_t pix[]);
 
 /**
 * Compute simple statistics for a set of data. 
 * @param stats - * Pointer to the channel statistics to be computed
 */
-void compute_simple_stats(channel_stats_t *stats);
+void stats_simple(channel_stats_t *stats);
 
-void print_simple_stats(channel_stats_t *stats, unsigned channel);
+/**
+ * @brief Compute the skewness of a channel
+ * 
+ * @param stats 
+ */
+void stats_skewness(channel_stats_t *stats);
 
 /**
  * Find the value for which (fraction) portion of pixels fall below that value. 
  */
-void find_percentile(channel_stats_t *stats, const float fraction);
+void stats_percentile(channel_stats_t *stats, const float fraction);
+
+/**
+ * @brief print the statistics of a channel
+ * 
+ * @param stats 
+ * @param channel 
+ */
+void stats_print(channel_stats_t *stats, unsigned channel);
 
 
-// Thread function
-void statistics_thread(
-    streaming_chanend_t c_img_in,
-    CLIENT_INTERFACE(sensor_control_if, sc_if)
-  );
+
 
 #if defined(__XC__) || defined(__cplusplus)
 }

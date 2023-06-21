@@ -16,8 +16,8 @@ static int i2c_write(client interface i2c_master_if i2c, int reg, int value)
     result = i2c.write_reg8_addr16(IMX219_I2C_ADDR, reg, value);
     if (result != I2C_REGOP_SUCCESS)
     {
-        // printf("Failed on address %02x value %02x\n", reg, value);
-        // TODO FIXME
+        printf("Failed on address %02x value %02x\n", reg, value);
+        assert(0);
     }
     return result != I2C_REGOP_SUCCESS ? -1 : 0;
 }
