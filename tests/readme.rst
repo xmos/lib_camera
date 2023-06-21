@@ -30,14 +30,42 @@ Run the following commands from the top level:
 
 
 Running the tests
-=============
+=================
 
 Notes:
-* hardware tests require xscope_fileio installed
-* run the following commands from fwk_camera top level. 
+  1. Hardware tests require `xscope_fileio` to be installed.
+  2. Run the following commands from the `fwk_camera` top level.
 
 Run unit tests
-- xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
+--------------
+
+.. code-block:: bash
+
+   xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
 
 Run hardware tests
-- pytest
+------------------
+
+.. code-block:: bash
+
+   pytest
+Running the tests
+=================
+
+.. note::
+  1. Hardware tests require `xscope_fileio` to be installed.
+  2. Run the following commands from the `fwk_camera` top level.
+
+Run unit tests
+--------------
+
+.. code-block:: bash
+
+   xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
+
+Run hardware tests
+------------------
+
+.. code-block:: bash
+
+   pytest

@@ -15,7 +15,7 @@ void sensor_control(
     server interface sensor_control_if sc,
     client interface i2c_master_if i2c);
 
-void sensor_initialize(client interface i2c_master_if i2c);
+void sensor_startup(client interface i2c_master_if i2c);
 
 #endif
 

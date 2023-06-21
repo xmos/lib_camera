@@ -4,13 +4,13 @@
 #include <timer.h>
 
 #include "i2c.h"
-#include "sensor_control.h"
 #include "sensor.h"
 
+#include "sensor_control.h"
 
-void sensor_initialize(client interface i2c_master_if i2c){
+void sensor_startup(client interface i2c_master_if i2c){
   int r = 0;
-  r |= sensor_init(i2c);
+  r |= sensor_initialize(i2c);
   delay_milliseconds(100);
   r |= sensor_configure(i2c);
   delay_milliseconds(600);

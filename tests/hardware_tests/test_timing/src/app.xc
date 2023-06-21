@@ -519,7 +519,7 @@ void mipi_main(
 
   // Start camera and its configurations
   int r = 0;
-  r |= sensor_init(i2c);
+  r |= sensor_initialize(i2c);
   delay_milliseconds(100); //TODO include this inside the function
   r |= sensor_configure(i2c);
   delay_milliseconds(500);
