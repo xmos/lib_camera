@@ -57,10 +57,13 @@ static
 void handle_unknown_packet(
     const mipi_packet_t* pkt)
 {
-  //TODO: manage uknown packets
+  const mipi_header_t header = pkt->header;
+  const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
   // uknown packets could be the following:
-  // 1 - sensor specific packets (this could be useful for having more information about the frame)
-  // 2 - error packets (in this case mipi reciever will raise an exception, but in the future we want to handle them here)
+  // 1 - sensor specific packets (we let continue the app, uncomment print here for debug)
+  // printf("Unknown packet type: %d\n", data_type);
+  // 2 - invalid packets 
+  assert(data_type < 0x3F && "Packet non valid");
 }
 
 
