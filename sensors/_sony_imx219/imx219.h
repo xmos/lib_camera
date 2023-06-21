@@ -54,11 +54,11 @@ typedef struct
 
 
 // functions
-int imx219_init(CLIENT_INTERFACE(i2c_master_if, i2c));
+int imx219_initialize(CLIENT_INTERFACE(i2c_master_if, i2c));
 int imx219_stream_start(CLIENT_INTERFACE(i2c_master_if, i2c));
-int imx219_configure_mode(CLIENT_INTERFACE(i2c_master_if, i2c));
+int imx219_configure(CLIENT_INTERFACE(i2c_master_if, i2c));
 int imx219_stream_stop(CLIENT_INTERFACE(i2c_master_if, i2c));
-int imx219_set_gain_dB(CLIENT_INTERFACE(i2c_master_if, i2c), uint32_t dBGain);
+int imx219_set_exposure(CLIENT_INTERFACE(i2c_master_if, i2c), uint32_t dBGain);
 int imx219_set_binning(CLIENT_INTERFACE(i2c_master_if, i2c), uint32_t H_binning, uint32_t V_binning);
 int imx219_read(CLIENT_INTERFACE(i2c_master_if, i2c), uint16_t addr);
 void imx219_read_gains(CLIENT_INTERFACE(i2c_master_if, i2c), uint16_t values[5]);

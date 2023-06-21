@@ -55,7 +55,7 @@ void camera_main(
                     MIPI_CFG_CLK_DIV); 
 
   // Initialize camera and its configurations
-  sensor_startup(i2c);
+  sensor_start(i2c);
   printf("\nCamera_started and configured...\n");
   delay_milliseconds(1000);
 
