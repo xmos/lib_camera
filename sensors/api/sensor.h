@@ -33,7 +33,7 @@
     #define camera_stop(iic)                imx219_stream_stop(iic)
     #define camera_configure(iic)           imx219_configure_mode(iic)
     #define camera_set_exposure(iic,ex)     imx219_set_gain_dB(iic,ex)
-
+    #define SENSOR_BLACK_LEVEL              16
 #endif
 
 #if CONFIG_GC2145_SUPPORT
@@ -44,9 +44,9 @@
     #define camera_stop(iic)                gcstop(iic)
     #define camera_configure(iic)           gcconfigure(iic)
     #define camera_set_exposure(iic,ex)     gcsetexp(iic,ex)
+    #define SENSOR_BLACK_LEVEL              0
     */
 #endif
-
 
 // Modes configurations
 #ifndef CONFIG_MODE

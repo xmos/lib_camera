@@ -7,9 +7,6 @@
 
 #include "statistics.h"
 
-// black level is sensor dependant (used by horizontal filter)
-#define BLACK_LEVEL 16
-
 // ---------------------------------- AE/AGC ------------------------------
 
 /**
