@@ -108,7 +108,7 @@ void imx219_read_gains(client interface i2c_master_if i2c, uint16_t values[5]){
 }
 
 /// -------------------------------------------------------------------------------
-int imx219_init(client interface i2c_master_if i2c)
+int imx219_initialize(client interface i2c_master_if i2c)
 {
     int ret = 0;
     // Send all registers that are common to all modes
@@ -116,11 +116,11 @@ int imx219_init(client interface i2c_master_if i2c)
     // Configure two or four Lane mode
     ret = i2c_write_table_val(i2c, imx219_lanes_regs, sizeof(imx219_lanes_regs) / sizeof(imx219_lanes_regs[0]));
     // set gain
-    ret = imx219_set_gain_dB(i2c, GAIN_DB);
+    ret = imx219_set_exposure(i2c, GAIN_DB);
     return ret;
 }
 
-int imx219_configure_mode(client interface i2c_master_if i2c)
+int imx219_configure(client interface i2c_master_if i2c)
 {
     int ret = 0;
     // Apply default values of current mode
@@ -144,7 +144,7 @@ int imx219_stream_stop(client interface i2c_master_if i2c){
     return i2c_write_table(i2c, stop_regs, sizeof(stop_regs) / sizeof(stop_regs[0]));
 }
 
-int imx219_set_gain_dB(client interface i2c_master_if i2c,
+int imx219_set_exposure(client interface i2c_master_if i2c,
                        uint32_t dBGain)
 {
     uint32_t time, again, dgain;

@@ -28,20 +28,20 @@
 // Include custom libraries
 #if CONFIG_IMX219_SUPPORT
     #include "imx219.h"
-    #define sensor_init(iic)                imx219_init(iic)
-    #define sensor_start(iic)               imx219_stream_start(iic)
-    #define sensor_stop(iic)                imx219_stream_stop(iic)
-    #define sensor_configure(iic)           imx219_configure_mode(iic)
-    #define sensor_set_exposure(iic,ex)     imx219_set_gain_dB(iic,ex)
-
+    #define sensor_initialize(iic)          imx219_initialize(iic)
+    #define sensor_stream_start(iic)        imx219_stream_start(iic)
+    #define sensor_stream_stop(iic)         imx219_stream_stop(iic)
+    #define sensor_configure(iic)           imx219_configure(iic)
+    #define sensor_set_exposure(iic,ex)     imx219_set_exposure(iic,ex)
+    #define SENSOR_BLACK_LEVEL              16
 #endif
 
 #if CONFIG_GC2145_SUPPORT
     #include "gc2145.h"
     /* //TODO
-    #define sensor_init(iic)                gcinit(iic)
-    #define sensor_start(iic)               gcstart(iic)
-    #define sensor_stop(iic)                gcstop(iic)
+    #define sensor_initialize(iic)                gcinit(iic)
+    #define sensor_stream_start(iic)               gcstart(iic)
+    #define sensor_stream_stop(iic)                gcstop(iic)
     #define sensor_configure(iic)           gcconfigure(iic)
     #define sensor_set_exposure(iic,ex)     gcsetexp(iic,ex)
     */

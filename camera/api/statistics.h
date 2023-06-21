@@ -50,10 +50,11 @@ typedef channel_stats_t global_stats_t[APP_IMAGE_CHANNEL_COUNT];
 // ---------- Api functions ----------
 
 /**
-* Compute skewness of channel. 
-* This is used by auto exposure
-* @param stats - * Pointer to channel statistics to update.
-*/
+ * @brief Update the histogram given a row of pixels
+ * 
+ * @param hist current histogram
+ * @param pix row of pixels
+ */
 void stats_update_histogram(channel_histogram_t *hist, const int8_t pix[]);
 
 /**
