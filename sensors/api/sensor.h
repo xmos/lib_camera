@@ -47,7 +47,6 @@
     */
 #endif
 
-
 // Modes configurations
 #ifndef CONFIG_MODE
     #error CONFIG_MODE has to be defined
