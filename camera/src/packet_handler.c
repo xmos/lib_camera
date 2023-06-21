@@ -80,7 +80,7 @@ unsigned handle_pixel_data(
 {
 
   // First, service any raw requests.
-  camera_api_new_row_raw((int8_t*) &pkt->payload[0], ph_state.in_line_number);
+  camera_new_row((int8_t*) &pkt->payload[0], ph_state.in_line_number);
 
   // Bayer pattern is RGGB; even index rows have RG data, 
   // odd index rows have GB data.
@@ -153,7 +153,7 @@ void on_new_output_row(
   s_chan_out_word(c_out_row, (unsigned) &pix_out[0][0] );
 
   // Service and user requests for decimated output
-  camera_api_new_row_decimated(pix_out, ph_state.out_line_number);
+  camera_new_row_decimated(pix_out, ph_state.out_line_number);
 
   ph_state.out_line_number++;
 }
@@ -294,7 +294,7 @@ void mipi_packet_handler(
     mipi_packet_t * pkt = (mipi_packet_t*) s_chan_in_word(c_pkt);
     
     // Check is we are supose to stop or continue
-    unsigned stop = camera_api_check_stop();
+    unsigned stop = camera_check_stop();
     
     if (stop == 1){
         // send stop to MipiReciever
