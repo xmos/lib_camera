@@ -1,6 +1,7 @@
 Introduction
 =============
 
+.. include:: ../substitutions.rst
 .. contents:: Table of Contents
 
 Overview
@@ -60,11 +61,6 @@ Software requirements:
 
 Additional Resources
 ---------------------
-.. _MIPI: https://www.mipi.org/specifications/csi-2
-.. _XMOS: https://www.xmos.ai/
-.. _XMOSI2C: https://www.xmos.ai/download/lib_i2c-%5Buserguide%5D(5.0.0rc3).pdf
-.. _XMOSProgrammingGuide: https://www.xmos.ai/download/XMOS-Programming-Guide-(documentation)(E).pdf
-.. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 
 - MIPI CSI-2 specification:     `MIPI`_
 - XMOS I2C library user guide:  `XMOSI2C`_
