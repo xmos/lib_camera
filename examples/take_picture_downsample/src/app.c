@@ -5,7 +5,9 @@
 
 #include "io_utils.h"
 #include "app.h"
+#include "isp.h"  // needed for gamma
 
+#define APPLY_GAMMA 1
 
 void user_app()
 {
@@ -42,6 +44,15 @@ void user_app()
   memcpy(temp_buffer, image_buffer, APP_IMAGE_CHANNEL_COUNT * APP_IMAGE_HEIGHT_PIXELS * APP_IMAGE_WIDTH_PIXELS * sizeof(uint8_t));
   uint8_t * io_buff = (uint8_t *) &image_buffer[0][0][0];
   // io_buff this will have [APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS][APP_IMAGE_CHANNEL_COUNT] dimentions
+  
+  // apply gamma correction
+  #if APPLY_GAMMA
+    isp_gamma_1p8((uint8_t *) &temp_buffer[0][0][0],
+                          APP_IMAGE_HEIGHT_PIXELS,
+                          APP_IMAGE_WIDTH_PIXELS,
+                          APP_IMAGE_CHANNEL_COUNT);
+  #endif
+  
   swap_dimensions((uint8_t *) &temp_buffer[0][0][0], io_buff,
                     APP_IMAGE_HEIGHT_PIXELS,
                     APP_IMAGE_WIDTH_PIXELS,

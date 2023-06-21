@@ -4,6 +4,9 @@ import xscope_fileio
 import argparse
 import shutil
 import subprocess
+import glob
+from pathlib import Path
+
 
 def get_adapter_id():
     try:
@@ -11,6 +14,9 @@ def get_adapter_id():
     except subprocess.CalledProcessError as e:
         print('Error: %s' % e.output)
         assert False
+    except FileNotFoundError:
+        msg = ("please ensure you have XMOS tools activated in your environment")
+        assert False, msg
 
     xrun_out = xrun_out.split('\n')
     # Check that the first 4 lines of xrun_out match the expected lines
@@ -70,8 +76,22 @@ def run(xe, return_stdout=False):
             stdout = ff.readlines()
         return stdout
 
+def choose_file_with_extension(folder_path, extension):
+    # Get a list of files with the specified extension in the folder
+    files = list(Path(folder_path).rglob(f"*{extension}"))
+    files = list(map(str, files)) # i dont like to much this map here but it works
+    assert len(files) > 0 , (f"No {extension} files found in the folder.")
+    
+    [print(i,file) for i,file in enumerate(files)]
+    
+    choose = input("Choose the file to run: \n")
+    if int(choose) in range(len(files)):
+        run(files[int(choose)])
+
 if __name__ == "__main__":
     args = parse_arguments()
-    assert args.xe is not None, "Specify vaild .xe file"
-         
-    run(args.xe)
+    if (args.xe is None):
+        build_folder = Path(__file__).parent.parent.resolve() / "build"
+        choose_file_with_extension(build_folder, ".xe")
+    else:   
+        run(args.xe)
