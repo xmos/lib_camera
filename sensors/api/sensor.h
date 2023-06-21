@@ -33,6 +33,7 @@
     #define sensor_stream_stop(iic)         imx219_stream_stop(iic)
     #define sensor_configure(iic)           imx219_configure(iic)
     #define sensor_set_exposure(iic,ex)     imx219_set_exposure(iic,ex)
+    #define SENSOR_BLACK_LEVEL              16
 #endif
 
 #if CONFIG_GC2145_SUPPORT
