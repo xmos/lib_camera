@@ -272,15 +272,17 @@ TEST(pixel_hfilter, pixel_hfilter_update_scale__case1)
   memset(&state, 0, sizeof(state));
 
   const float gain = 0.0f;
+  const size_t offset = 0;
 
-  pixel_hfilter_update_scale(&state, gain, 0);
+  pixel_hfilter_update_scale(&state, gain, offset);
 
   const unsigned exp_shift = 9;
-  const int32_t exp_acc_init = -128 * (1<<exp_shift);
+  const int32_t shift_scale = 1 << exp_shift;
+  const int32_t exp_acc_init = - 128 * shift_scale - SENSOR_BLACK_LEVEL * shift_scale;
 
-  TEST_ASSERT_EQUAL_INT8(0, state.coef[0]);
-  TEST_ASSERT_EQUAL_INT8(0, state.coef[2]);
-  TEST_ASSERT_EQUAL_INT8(0, state.coef[4]);
+  TEST_ASSERT_EQUAL_INT8(0, state.coef[0 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0, state.coef[2 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0, state.coef[4 + offset]);
 
   TEST_ASSERT_EQUAL_UINT(exp_shift, state.shift);
   TEST_ASSERT_EQUAL_INT32(exp_acc_init, state.acc_init);
@@ -296,15 +298,17 @@ TEST(pixel_hfilter, pixel_hfilter_update_scale__case2)
   memset(&state, 0, sizeof(state));
 
   const float gain = 1.0f;
+  const size_t offset = 1;
 
-  pixel_hfilter_update_scale(&state, gain, 1);
+  pixel_hfilter_update_scale(&state, gain, offset);
 
   const unsigned exp_shift = 7;
-  const int32_t exp_acc_init = 0;
+  const int32_t shift_scale = 1 << exp_shift;
+  const int32_t exp_acc_init = - SENSOR_BLACK_LEVEL * shift_scale;
 
-  TEST_ASSERT_EQUAL_INT8(0x1B, state.coef[1]);
-  TEST_ASSERT_EQUAL_INT8(0x4B, state.coef[3]);
-  TEST_ASSERT_EQUAL_INT8(0x1B, state.coef[5]);
+  TEST_ASSERT_EQUAL_INT8(0x1B, state.coef[0 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0x4B, state.coef[2 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0x1B, state.coef[4 + offset]);
 
   TEST_ASSERT_EQUAL_UINT(exp_shift, state.shift);
   TEST_ASSERT_EQUAL_INT32(exp_acc_init, state.acc_init);
@@ -320,15 +324,17 @@ TEST(pixel_hfilter, pixel_hfilter_update_scale__case3)
   memset(&state, 0, sizeof(state));
 
   const float gain = 1.2f;
+  const size_t offset = 0;
 
-  pixel_hfilter_update_scale(&state, gain, 0);
+  pixel_hfilter_update_scale(&state, gain, offset);
 
   const unsigned exp_shift = 7;
-  const int32_t exp_acc_init = 128 * (gain - 1.0f) * (1<<exp_shift);
+  const int32_t shift_scale = 1 << exp_shift;
+  const int32_t exp_acc_init = 128 * (gain - 1.0f) * shift_scale - SENSOR_BLACK_LEVEL * shift_scale;
 
-  TEST_ASSERT_EQUAL_INT8(0x20, state.coef[0]);
-  TEST_ASSERT_EQUAL_INT8(0x59, state.coef[2]);
-  TEST_ASSERT_EQUAL_INT8(0x20, state.coef[4]);
+  TEST_ASSERT_EQUAL_INT8(0x20, state.coef[0 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0x59, state.coef[2 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0x20, state.coef[4 + offset]);
 
   TEST_ASSERT_EQUAL_UINT(exp_shift, state.shift);
   TEST_ASSERT_EQUAL_INT32(exp_acc_init, state.acc_init);
@@ -344,15 +350,17 @@ TEST(pixel_hfilter, pixel_hfilter_update_scale__case4)
   memset(&state, 0, sizeof(state));
 
   const float gain = 0.8f;
+  const size_t offset = 1;
 
-  pixel_hfilter_update_scale(&state, gain, 1);
+  pixel_hfilter_update_scale(&state, gain, offset);
 
   const unsigned exp_shift = 8;
-  const int32_t exp_acc_init = 128 * (gain - 1.0f) * (1<<exp_shift);
+  const int32_t shift_scale = 1 << exp_shift;
+  const int32_t exp_acc_init = 128 * (gain - 1.0f) * shift_scale - SENSOR_BLACK_LEVEL * shift_scale;
 
-  TEST_ASSERT_EQUAL_INT8(0x2B, state.coef[1]);
-  TEST_ASSERT_EQUAL_INT8(0x77, state.coef[3]);
-  TEST_ASSERT_EQUAL_INT8(0x2B, state.coef[5]);
+  TEST_ASSERT_EQUAL_INT8(0x2B, state.coef[0 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0x77, state.coef[2 + offset]);
+  TEST_ASSERT_EQUAL_INT8(0x2B, state.coef[4 + offset]);
 
   TEST_ASSERT_EQUAL_UINT(exp_shift, state.shift);
   TEST_ASSERT_EQUAL_INT32(exp_acc_init, state.acc_init);

@@ -33,7 +33,6 @@
     #define sensor_stream_stop(iic)         imx219_stream_stop(iic)
     #define sensor_configure(iic)           imx219_configure(iic)
     #define sensor_set_exposure(iic,ex)     imx219_set_exposure(iic,ex)
-
 #endif
 
 #if CONFIG_GC2145_SUPPORT
@@ -46,7 +45,6 @@
     #define sensor_set_exposure(iic,ex)     gcsetexp(iic,ex)
     */
 #endif
-
 
 // Modes configurations
 #ifndef CONFIG_MODE
