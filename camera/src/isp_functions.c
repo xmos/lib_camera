@@ -201,43 +201,30 @@ void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_par
 }
 
 
-void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params){
-    float alfa = 1.0;
-    const float beta = 1.05;
-    float gamma = 1.0;
-    
-    uint8_t Rmax = (*gstats)[0].max; // RED
-    uint8_t Gmax = (*gstats)[1].max; // GREEN
-    uint8_t Bmax = (*gstats)[2].max; // BLUE
+void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params){    
+    // we assume green constant
+    const float beta = 1.0;
 
-    // correct to have similar white max
-    uint32_t count_max_red = (*gstats)[0].histogram.bins[Rmax];
-    uint32_t count_max_green = (*gstats)[1].histogram.bins[Gmax];
-    uint32_t count_max_blue = (*gstats)[2].histogram.bins[Bmax];
-
-    // false values avoidance
-    if (count_max_red != 0 && count_max_green != 0 && count_max_blue != 0){
-        
-        if (count_max_green > count_max_red){
-            alfa = (count_max_green/(float)count_max_red);
-        }
-
-        if (count_max_green > count_max_blue){
-            gamma = (count_max_green/(float)count_max_blue);
-        }
-    }
-
-    // then compute the mean with grey world
+    // 1 - Grey world
     float Ravg = (*gstats)[0].mean; // RED
     float Gavg = (*gstats)[1].mean; // GREEN
     float Bavg = (*gstats)[2].mean; // BLUE
-    float alfa2 = Gavg/Ravg;
-    float gamma2 = Gavg/Bavg;
 
-    // armonic mean
-    float gww = 0.75; // grey world weight
-    alfa = (1-gww)*alfa + gww*alfa2;
-    gamma = (1-gww)*gamma + gww*gamma2;
+    float alfa = Gavg/Ravg;
+    float gamma = Gavg/Bavg;
+
+    // 2 - Percentile volumne
+    uint32_t r_per_count = (*gstats)[0].per_count;
+    uint32_t g_per_count = (*gstats)[1].per_count;
+    uint32_t b_per_count = (*gstats)[2].per_count;
+
+    float alfa2 = (float)g_per_count/(float)r_per_count;
+    float gamma2 = (float)g_per_count/(float)b_per_count;
+
+    // Weighted mean
+    float gww = 0.7; // grey world weight
+    alfa  = gww*alfa  + (1-gww)*alfa2;
+    gamma = gww*gamma + (1-gww)*gamma2;
 
     // clip the values
     alfa   = AWB_clip_value(alfa);
