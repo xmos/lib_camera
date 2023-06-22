@@ -1,13 +1,13 @@
-Fwk camera Programming Guide Documentation
+*******************
+Programming Guide 
+*******************
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    01_Introduction
    02_Architecture_and_Design
    03_Building_the_Software
-   04_Testing_the_Software
-   05_Modifying_the_Software
-   06_Adding_New_Cameras
-   07_Examples
-   08_Troubleshooting
+   04_Software_test_and_development
+   05_Examples
+   06_Troubleshooting

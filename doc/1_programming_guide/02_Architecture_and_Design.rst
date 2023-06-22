@@ -1,7 +1,7 @@
 Architecture and Design
 =======================
 
-.. contents:: Table of Contents
+.. include:: ../substitutions.rst
 
 Introduction
 -------------

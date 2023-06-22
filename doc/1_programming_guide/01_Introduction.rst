@@ -2,7 +2,6 @@ Introduction
 =============
 
 .. include:: ../substitutions.rst
-.. contents:: Table of Contents
 
 Overview
 ---------
@@ -10,15 +9,16 @@ The purpose of this programming guide is to provide developers with a comprehens
 
 The architecture consists of several key components that work together to facilitate camera communication and data processing. These components include:
 
-- Camera hardware and camera interface
-- Camera drivers
-- User application / user interface
-- Image signal processing
-- I/O
+1. Camera hardware and camera interface
+2. Camera drivers
+3. User application
+4. Image signal processing
+5. I/O (Using Xscope_fileIO)
+
+Here below a high level block diagram of the FWK_Camera architecture:
 
 .. figure:: images/1_high_level_view.png
     :alt: Alternate text for the image
-    :width: 400px
     :align: center
 
     High level block diagram of fwk camera. 
@@ -55,8 +55,8 @@ Hardware requirements:
 
 Software requirements:
 
-- XMOS tools: https://www.xmos.ai/software-tools/
-- FWK_Camera repository
+- XMOS tools: `SW_TOOLS`_
+- FWK_Camera repository: `GH_FWK_CAMERA`_
 - CMake, Ninja (Windows)
 
 Additional Resources
