@@ -33,7 +33,12 @@
     #define sensor_stream_stop(iic)         imx219_stream_stop(iic)
     #define sensor_configure(iic)           imx219_configure(iic)
     #define sensor_set_exposure(iic,ex)     imx219_set_exposure(iic,ex)
-    #define SENSOR_BLACK_LEVEL              16
+    // #define SENSOR_BLACK_LEVEL              16
+    #define SENSOR_BLACK_LEVEL              32 // we intentionally set it to 32 increase dynamic range with gamma
+    //TODO
+    // ideally we should have the sensor black_level here that does not change and then
+    // we can have a custom black level that we set in isp.h 
+    // example: #define CUSTOM_BLACK_LEVEL  SENSOR_BLACK_LEVEL + 20
 #endif
 
 #if CONFIG_GC2145_SUPPORT
@@ -44,6 +49,7 @@
     #define sensor_stream_stop(iic)                gcstop(iic)
     #define sensor_configure(iic)           gcconfigure(iic)
     #define sensor_set_exposure(iic,ex)     gcsetexp(iic,ex)
+    #define SENSOR_BLACK_LEVEL              0
     */
 #endif
 

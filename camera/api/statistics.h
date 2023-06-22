@@ -41,6 +41,9 @@ typedef struct {
   uint8_t percentile;
   float skewness;
   float mean;
+  uint32_t max_count;
+  uint32_t min_count;
+  uint32_t per_count;
   channel_histogram_t histogram;
 } channel_stats_t;
 
@@ -74,6 +77,13 @@ void stats_skewness(channel_stats_t *stats);
  * Find the value for which (fraction) portion of pixels fall below that value. 
  */
 void stats_percentile(channel_stats_t *stats, const float fraction);
+
+/**
+ * @brief Compute the volume of a channel after its percentile
+ * 
+ * @param stats channel statistics
+ */
+void stats_percentile_volume(channel_stats_t *stats);
 
 /**
  * @brief print the statistics of a channel

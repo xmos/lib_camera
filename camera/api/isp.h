@@ -7,9 +7,6 @@
 
 #include "statistics.h" // needed for global_stats_t
 
-// black level is sensor dependant (used by horizontal filter)
-#define BLACK_LEVEL 16
-
 // ISP settings
 #define AE_MARGIN 0.1          // default marging for the auto exposure error
 #define AE_INITIAL_EXPOSURE 35 // initial exposure value
@@ -18,6 +15,7 @@
 #define AWB_gain_BLUE   1
 #define AWB_MAX         1.7
 #define AWB_MIN         0.8
+#define APPLY_GAMMA     1
 
 // ---------------------------------- ISP PIPELINE ----------------------------------
 void isp_pipeline(
@@ -90,19 +88,29 @@ extern isp_params_t isp_params;
  */
 void AWB_compute_gains_static(global_stats_t *gstats, isp_params_t *isp_params);
 
-//TODO
-void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params);
-
-void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params);
-
-void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params);
-
 /**
- * @brief aux function to print the auto white balancing gains
+ * @brief auto white balance control function based on white patch algorithm
  * 
+ * @param gstats structure containing the global statistics
  * @param isp_params structure containing the current isp parameters
  */
-void AWB_print_gains(isp_params_t *isp_params);
+void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params);
+
+/**
+ * @brief auto white balance control function based on gray world algorithm
+ * 
+ * @param gstats structure containing the global statistics
+ * @param isp_params structure containing the current isp parameters
+ */
+void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params);
+
+/**
+ * @brief auto white balance control function based on white max algorithm
+ * 
+ * @param gstats   structure containing the global statistics
+ * @param isp_params structure containing the current isp parameters
+ */
+void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params);
 
 /**
  * @brief auto white balance control function based on percentile
@@ -112,9 +120,18 @@ void AWB_print_gains(isp_params_t *isp_params);
  */
 void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_params);
 
+/**
+ * @brief aux function to print the auto white balancing gains
+ * 
+ * @param isp_params structure containing the current isp parameters
+ */
+void AWB_print_gains(isp_params_t *isp_params);
+
 // ---------------------------------- GAMMA ------------------------------
 // Gamma correction table
-extern const uint8_t gamma_1p8_s1[255];
+extern const uint8_t gamma_1p8_s1[256];
+extern const uint8_t gamma_1p4_s1[256]; 
+extern const uint8_t gamma_new[256]; 
 
 /**
  * @brief gamma correction function
@@ -124,7 +141,16 @@ extern const uint8_t gamma_1p8_s1[255];
  */
 void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img);
 
-void isp_gamma_1p8(uint8_t *img_in, const size_t height, const size_t width, const size_t channels);
+/**
+ * @brief compute gamma curve given an image and the gamma adjustement
+ * 
+ * @param img_in pointer to the image
+ * @param gamma_curve pointer to the gamma curve
+ * @param height image height
+ * @param width image width
+ * @param channels channels in the image
+ */
+void isp_gamma(uint8_t *img_in, const uint8_t *gamma_curve, const size_t height, const size_t width, const size_t channels);
 
 // -------------------------- ROTATE/RESIZE -------------------------------------
 

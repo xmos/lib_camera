@@ -19,7 +19,7 @@ void user_app_raw()
     memset(image_buffer, -128, H_RAW * W_RAW);
 
     // wait for the camera to set I2C parameters
-    delay_milliseconds(5000);
+    delay_milliseconds(4000);
 
     // Request an image
     printf("Requesting image...\n");
