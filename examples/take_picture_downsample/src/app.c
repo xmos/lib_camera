@@ -7,8 +7,6 @@
 #include "app.h"
 #include "isp.h"  // needed for gamma
 
-#define APPLY_GAMMA 1
-
 void user_app()
 {
 
@@ -47,7 +45,8 @@ void user_app()
   
   // apply gamma correction
   #if APPLY_GAMMA
-    isp_gamma_1p8((uint8_t *) &temp_buffer[0][0][0],
+    isp_gamma((uint8_t *) &temp_buffer[0][0][0],
+                          &gamma_new[0], 
                           APP_IMAGE_HEIGHT_PIXELS,
                           APP_IMAGE_WIDTH_PIXELS,
                           APP_IMAGE_CHANNEL_COUNT);

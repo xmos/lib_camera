@@ -67,13 +67,17 @@ void stats_simple(channel_stats_t *stats)
     // mean
     temp_mean += bin_count * k;
     // max and min
-    if (bin_count != 0){ 
+    if (bin_count != 0){  // the last that is not zero
       temp_max = k;
-      if (temp_min == 0){
+      if (temp_min == 0){ // first time is zero, then min is set
         temp_min = k;
       }
     }
   }
+  // max and min count
+  stats->max_count = stats->histogram.bins[temp_max];
+  stats->min_count = stats->histogram.bins[temp_min];
+
   // biased downwards due to truncation
   stats->max = (temp_max << HIST_QUANT_BITS);
   stats->min = (temp_min << HIST_QUANT_BITS);
@@ -82,12 +86,16 @@ void stats_simple(channel_stats_t *stats)
 
 
 void stats_print(channel_stats_t *stats, unsigned channel){
-  printf("ch:%d,Min:%d,Max:%d,Mean:%f,Skew:%f\n", 
+  printf("ch:%d,Mi:%d,Ma:%d,Mean:%f,Sk:%f,pct:%d,mi_c:%lu,ma_c:%lu,pc:%lu\n", 
     channel,
     stats->min,
     stats->max,
     stats->mean,
-    stats->skewness);
+    stats->skewness,
+    stats->percentile,
+    stats->min_count,
+    stats->max_count,
+    stats->per_count);
 }
 
 
@@ -105,6 +113,16 @@ void stats_percentile(channel_stats_t *stats, const float fraction)
     total = new_total;
   }
   stats -> percentile = (uint8_t) result;
+}
+
+void stats_percentile_volume(channel_stats_t *stats)
+{
+  uint32_t bin_count = 0;
+  uint8_t percentile_point = stats -> percentile / 4;
+  for(int k = percentile_point; k < HISTOGRAM_BIN_COUNT; k++){
+    bin_count += stats->histogram.bins[k];
+  }
+  stats->per_count = bin_count;
 }
 
 // Notes
