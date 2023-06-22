@@ -88,21 +88,29 @@ extern isp_params_t isp_params;
  */
 void AWB_compute_gains_static(global_stats_t *gstats, isp_params_t *isp_params);
 
-//TODO
-void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params);
-
-void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params);
-
-void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params);
-
 /**
- * @brief aux function to print the auto white balancing gains
+ * @brief auto white balance control function based on white patch algorithm
  * 
+ * @param gstats structure containing the global statistics
  * @param isp_params structure containing the current isp parameters
  */
-void AWB_print_gains(isp_params_t *isp_params);
+void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params);
 
-float AWB_compute_score(global_stats_t *gstats);
+/**
+ * @brief auto white balance control function based on gray world algorithm
+ * 
+ * @param gstats structure containing the global statistics
+ * @param isp_params structure containing the current isp parameters
+ */
+void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params);
+
+/**
+ * @brief auto white balance control function based on white max algorithm
+ * 
+ * @param gstats   structure containing the global statistics
+ * @param isp_params structure containing the current isp parameters
+ */
+void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params);
 
 /**
  * @brief auto white balance control function based on percentile
@@ -111,6 +119,13 @@ float AWB_compute_score(global_stats_t *gstats);
  * @param percentile percentile to compute
  */
 void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_params);
+
+/**
+ * @brief aux function to print the auto white balancing gains
+ * 
+ * @param isp_params structure containing the current isp parameters
+ */
+void AWB_print_gains(isp_params_t *isp_params);
 
 // ---------------------------------- GAMMA ------------------------------
 // Gamma correction table

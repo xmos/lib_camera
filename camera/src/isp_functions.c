@@ -1,4 +1,5 @@
 #include "isp.h"
+#define INCLUDE_ABS 0
 
 // ---------------------------------- utils ------------------------------
 static
@@ -6,11 +7,12 @@ int8_t csign(float x) {
     return (x > 0) - (x < 0);
 }
 
+#if INCLUDE_ABS
 static 
 float cabs(float x) {
     return x * csign(x);
 }
-
+#endif
 // ---------------------------------- AE / AGC ------------------------------
 uint8_t AE_control_exposure(
     global_stats_t *global_stats,
@@ -274,105 +276,6 @@ void AWB_print_gains(isp_params_t *isp_params){
     isp_params->channel_gain[2]);
 }
 
-static
-float var_fast(float a, float b, float c){
-    a /= 255.0;
-    b /= 255.0;
-    c /= 255.0;
-
-    float mean = (a + b + c) / 3.0;
-    float dA = a - mean;
-    float dB = b - mean;
-    float dC = c - mean;
-    return 33 * (dA * dA + dB * dB + dC * dC); // 100/3
-}
-
-float AWB_compute_score(global_stats_t *gstats){
-    uint8_t valR, valG, valB;
-    // min
-    valR = (*gstats)[0].min; // RED
-    valG = (*gstats)[1].min; // GREEN
-    valB = (*gstats)[2].min; // BLUE
-    float sc1 = var_fast(valR, valG, valB);
-    // mean
-    valR = (*gstats)[0].mean; // RED
-    valG = (*gstats)[1].mean; // GREEN
-    valB = (*gstats)[2].mean; // BLUE
-    float sc2 = var_fast(valR, valG, valB);
-    // max
-    valR = (*gstats)[0].max; // RED
-    valG = (*gstats)[1].max; // GREEN
-    valB = (*gstats)[2].max; // BLUE
-    float sc3 = var_fast(valR, valG, valB);
-    // return score
-    float result = (sc1 + sc2 + sc3) / 3.0;
-    return result;
-}
-
-
-static
-void AWB_best_choice(global_stats_t *global_stats, isp_params_t *isp_params){
-    // awb variables
-    static float score      = 0.0;
-    static float min_score  = 100;
-
-    static int choice     = -1; // because it will ++ at the beginning
-    static int min_choice = 0;
-
-    static int rollover = 1;
-
-    // compute score and set choice
-    score = AWB_compute_score(&global_stats);
-    if (score < min_score) {
-        min_score = score;
-        min_choice = choice;
-    }
-    
-    // dont change choice in 3 frames
-    static int wait_frames = 0;
-    if (wait_frames < 2) {
-        wait_frames++;
-    }
-    else{
-        wait_frames = 0;
-    }
-
-    // run over choices
-    if (wait_frames == 0) {
-        if (rollover == 1) {
-            choice = choice + 1;
-        }
-        else{
-            choice = min_choice;
-        }
-
-        if (choice == 4) {
-            rollover = 0;
-        }
-    }
-
-    // print decisions
-    printf("--->>> sc:%f, ch:%d, msc:%f, mch:%d\n", score, choice, min_score, min_choice);
-
-    // then choose the algorithm
-    switch (choice)
-    {
-    case 0:
-        AWB_compute_gains_static(&global_stats, &isp_params);
-        break;
-    case 1:
-        AWB_compute_gains_gray_world(&global_stats, &isp_params);
-        break;
-    case 2:
-        AWB_compute_gains_white_max(&global_stats, &isp_params);
-        break;
-    case 3:
-        AWB_compute_gains_white_patch(&global_stats, &isp_params);
-        break;
-    default: //do not apply any correction
-        break;
-    } 
-}
 
 // ---------------------------------- GAMMA ------------------------------
 const uint8_t gamma_1p8_s1[256] =  {

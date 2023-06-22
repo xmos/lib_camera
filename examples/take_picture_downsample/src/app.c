@@ -20,7 +20,7 @@ void user_app()
   memset(image_buffer, -128, sizeof(image_buffer));
 
   // Wait for the image to set exposure
-  delay_milliseconds(5000);
+  delay_milliseconds(4000);
   printf("Requesting image...\n");
   // grab a frame
   if(camera_capture_image(image_buffer)){
