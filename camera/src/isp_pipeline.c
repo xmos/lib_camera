@@ -52,14 +52,11 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
         uint8_t ae_done = AE_control_exposure(&global_stats, sc_if);
 
         // Adjust AWB
-        static unsigned run_once = 0;
-        if (ae_done == 1 && run_once == 0) {
-            AWB_compute_gains_white_max(&global_stats, &isp_params);   // 0
-            // AWB_compute_gains_white_patch(&global_stats, &isp_params); // 1
-            //AWB_compute_gains_gray_world(&global_stats, &isp_params);  // 2
-            //AWB_compute_gains_percentile(&global_stats, &isp_params);  // 3
-            //AWB_compute_gains_static(&global_stats, &isp_params);      // 4
-            run_once = 0; // Set to 1 to run only once
+        static unsigned int run_once = 0;
+        if (ae_done == 1 && run_once == 0) 
+        {
+            AWB_compute_gains_white_max(&global_stats, &isp_params);
+            run_once = 1; // Set to 1 to run only once
         }
 
         // Apply gamma curve
@@ -67,5 +64,6 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
 
         // Print ISP info
         AWB_print_gains(&isp_params);
+        
     }
 }

@@ -102,6 +102,8 @@ void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_param
  */
 void AWB_print_gains(isp_params_t *isp_params);
 
+float AWB_compute_score(global_stats_t *gstats);
+
 /**
  * @brief auto white balance control function based on percentile
  * 
