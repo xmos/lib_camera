@@ -12,7 +12,7 @@ extern "C" {
 // Print macros
 #define PRINT_TIME(a,b) printf("%d\n", b - a);
 #define PRINT_NAME_TIME(name,time) \
-    printf("\t%s timing: %u ticks, %.2fms\n", name, time, (float)time * 0.00001);
+    printf("\t%s timing: %u ticks, %.3fms\n", name, time, (float)time * 0.00001);
 
 /**
  * Measure the cpu ticks

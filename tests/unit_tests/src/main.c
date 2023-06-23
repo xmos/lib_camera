@@ -19,7 +19,8 @@ int main(
   RUN_TEST_GROUP(pixel_hfilter);
   RUN_TEST_GROUP(pixel_vfilter);
   RUN_TEST_GROUP(color_conversion);
-  RUN_TEST_GROUP(gamma);
+  RUN_TEST_GROUP(gamma_timing);
+  RUN_TEST_GROUP(stats_test);
   
   return UNITY_END();
 }

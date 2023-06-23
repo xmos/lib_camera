@@ -8,26 +8,19 @@
 
 #include "unity_fixture.h"
 
+#include "_helper.h"
 #include "isp.h"            // gamma
 #include "camera_utils.h"   // time
 
 #define print_separator(x) printf("\n---------- %s -------------\n", x)
 
 // Unity
-TEST_GROUP(gamma);
-TEST_SETUP(gamma) { fflush(stdout); print_separator("gamma");}
-TEST_TEAR_DOWN(gamma) {}
-TEST_GROUP_RUNNER(gamma) {
-    RUN_TEST_CASE(gamma, gamma__basic);
-    RUN_TEST_CASE(gamma, gamma__double_size);
-}
-
-// Test functions
-void fill_array_rand_int8(uint8_t *image, size_t size){
-    for(size_t idx = 0; idx < size; idx++){
-        uint8_t random_number = (rand() % 256);
-        image[idx] = random_number;
-    }
+TEST_GROUP(gamma_timing);
+TEST_SETUP(gamma_timing) { fflush(stdout); print_separator("gamma_timing");}
+TEST_TEAR_DOWN(gamma_timing) {}
+TEST_GROUP_RUNNER(gamma_timing) {
+    RUN_TEST_CASE(gamma_timing, gamma__basic);
+    RUN_TEST_CASE(gamma_timing, gamma__double_size);
 }
 
 void test_gamma_size(
@@ -43,7 +36,7 @@ void test_gamma_size(
 
     // generate random numbers for the image buffer
     size_t buffsize = height * width * channels;
-    fill_array_rand_int8((uint8_t *) &image_buffer[0][0][0], buffsize);
+    fill_array_rand_uint8((uint8_t *) &image_buffer[0][0][0], buffsize);
     
     // then measure and apply gamma
     unsigned ts = measure_time();
@@ -56,7 +49,7 @@ void test_gamma_size(
 }
 
 
-TEST(gamma, gamma__basic) 
+TEST(gamma_timing, gamma__basic) 
 {
     static const char func_name[] = "gamma downsampled";
     const size_t height = APP_IMAGE_HEIGHT_PIXELS;
@@ -65,7 +58,7 @@ TEST(gamma, gamma__basic)
     test_gamma_size(func_name, height, width, channels);
 }
 
-TEST(gamma, gamma__double_size) 
+TEST(gamma_timing, gamma__double_size) 
 {
     static const char func_name[] = "gamma double size";
     const size_t height = APP_IMAGE_HEIGHT_PIXELS*2;
