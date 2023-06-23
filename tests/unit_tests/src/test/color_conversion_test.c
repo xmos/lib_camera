@@ -12,14 +12,16 @@
 
 #include "camera_main.h"
 
-TEST_GROUP_RUNNER(isp_tests) {
-  RUN_TEST_CASE(isp_tests, yuv_to_rgb);
-  RUN_TEST_CASE(isp_tests, rgb_to_yuv);
+#define print_separator(x) printf("\n---------- %s -------------\n", x)
+
+TEST_GROUP_RUNNER(color_conversion) {
+  RUN_TEST_CASE(color_conversion, yuv_to_rgb);
+  RUN_TEST_CASE(color_conversion, rgb_to_yuv);
 }
 
-TEST_GROUP(isp_tests);
-TEST_SETUP(isp_tests) { fflush(stdout); }
-TEST_TEAR_DOWN(isp_tests) {}
+TEST_GROUP(color_conversion);
+TEST_SETUP(color_conversion) { fflush(stdout); print_separator("color_conversion");}
+TEST_TEAR_DOWN(color_conversion) {}
 
 
 #define INV_DELTA 20  // error allowed in YUV RGB color conversion 
@@ -75,7 +77,7 @@ color_table_t ct_test_vector[num_tests] = {
 };
 //TODO randomize this data
 
-TEST(isp_tests, yuv_to_rgb)
+TEST(color_conversion, yuv_to_rgb)
 {
   for(size_t i = 0; i < num_tests; i++)
   {
@@ -96,7 +98,7 @@ TEST(isp_tests, yuv_to_rgb)
   }
 }
 
-TEST(isp_tests, rgb_to_yuv)
+TEST(color_conversion, rgb_to_yuv)
 {
   for(size_t i = 0; i < num_tests; i++)
   {

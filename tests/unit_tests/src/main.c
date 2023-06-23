@@ -1,7 +1,6 @@
 // Copyright 2020-2022 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-
 #include <stdio.h>
 #include <xscope.h>
 #include "unity_fixture.h"
@@ -19,7 +18,8 @@ int main(
 
   RUN_TEST_GROUP(pixel_hfilter);
   RUN_TEST_GROUP(pixel_vfilter);
-  RUN_TEST_GROUP(isp_tests);
+  RUN_TEST_GROUP(color_conversion);
+  RUN_TEST_GROUP(gamma);
   
   return UNITY_END();
 }
