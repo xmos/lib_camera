@@ -9,3 +9,4 @@ Framework of camera processing libraries for XCORE.AI.
 
    ./1_programming_guide/index
    ./2_quick_start_guide/index
+   ./3_release_notes/index
