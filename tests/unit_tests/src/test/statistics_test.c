@@ -49,8 +49,8 @@ TEST(stats_test, stats_test__basic){
         tdiff_internal = measure_time() - ts_internal;
     }
     unsigned tdiff = measure_time() - ts;
-    PRINT_NAME_TIME("time per histogram (row)", tdiff_internal);
-    PRINT_NAME_TIME("time per histogram (all)", tdiff);
+    fast_print_name_time("time per histogram (row)", tdiff_internal);
+    fast_print_name_time("time per histogram (all)", tdiff);
 
     // End of frame, compute statistics (order is important)
     unsigned int ts0, ts1, ts2, ts3, ts4, total_time;
@@ -71,11 +71,11 @@ TEST(stats_test, stats_test__basic){
     ts2 = ts3 - ts2;
     ts3 = ts4 - ts3;
 
-    PRINT_NAME_TIME("time per stats_simple", ts0);
-    PRINT_NAME_TIME("time per stats_skewness", ts1);
-    PRINT_NAME_TIME("time per stats_percentile", ts2);
-    PRINT_NAME_TIME("time per stats_percentile_volume", ts3);
-    PRINT_NAME_TIME("time total", total_time);
+    fast_print_name_time("time per stats_simple", ts0);
+    fast_print_name_time("time per stats_skewness", ts1);
+    fast_print_name_time("time per stats_percentile", ts2);
+    fast_print_name_time("time per stats_percentile_volume", ts3);
+    fast_print_name_time("time total", total_time);
 
     stats_print(&global_stats[channel], channel);
 

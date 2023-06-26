@@ -2,6 +2,7 @@
 
 #include "statistics.h"
 #include "isp.h"
+#include "print.h"
 
 // Number of samples taken each row
 #define HISTOGRAM_SAMPLE_PER_ROW       ((APP_IMAGE_WIDTH_PIXELS  + APP_HISTOGRAM_SAMPLE_STEP - 1)  / (APP_HISTOGRAM_SAMPLE_STEP))
@@ -86,16 +87,21 @@ void stats_simple(channel_stats_t *stats)
 
 
 void stats_print(channel_stats_t *stats, unsigned channel){
-  printf("ch:%d,Mi:%d,Ma:%d,Mean:%f,Sk:%f,pct:%d,mi_c:%lu,ma_c:%lu,pc:%lu\n", 
-    channel,
-    stats->min,
-    stats->max,
-    stats->mean,
-    stats->skewness,
-    stats->percentile,
-    stats->min_count,
-    stats->max_count,
-    stats->per_count);
+  const char* formattedString = "\nch:%d,Mi:%d,Ma:%d,Mean:%f,Sk:%f,pct:%d,mi_c:%lu,ma_c:%lu,pc:%lu\n";
+  char output[255];  // Assuming a maximum length for the formatted string
+  sprintf(output, formattedString,
+      channel,
+      stats->min,
+      stats->max,
+      stats->mean,
+      stats->skewness,
+      stats->percentile,
+      stats->min_count,
+      stats->max_count,
+      stats->per_count);
+
+  printstr(output);
+  // printf("%s", output);
 }
 
 
