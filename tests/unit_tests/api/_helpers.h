@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Decimator factor for tests
+#define K 4 // downsampled image / 4*4
+
 // Print formatting
 #define print_separator(x) printf("\n---------- %s -------------\n", x)
 

@@ -13,7 +13,6 @@
 #include "statistics.h"      
 #include "camera_utils.h"   // time
 
-
 // Unity
 TEST_GROUP(stats_test);
 TEST_SETUP(stats_test) { fflush(stdout); print_separator("stats_test");}
@@ -25,8 +24,8 @@ TEST_GROUP_RUNNER(stats_test) {
 
 TEST(stats_test, stats_test__basic){
     // create a random array
-    const size_t height = APP_IMAGE_HEIGHT_PIXELS;
-    const size_t width = APP_IMAGE_WIDTH_PIXELS;
+    const size_t height = APP_IMAGE_HEIGHT_PIXELS / K;
+    const size_t width = APP_IMAGE_WIDTH_PIXELS / K;
     const size_t channels = APP_IMAGE_CHANNEL_COUNT;
     const size_t buffsize = height * width * channels;
 
@@ -78,8 +77,6 @@ TEST(stats_test, stats_test__basic){
     PRINT_NAME_TIME("time per stats_percentile_volume", ts3);
     PRINT_NAME_TIME("time total", total_time);
 
-    delay_milliseconds(100);
-    printf("\n");
     stats_print(&global_stats[channel], channel);
 
     // timing per channel has to meet time between frames 1/30s = 33ms

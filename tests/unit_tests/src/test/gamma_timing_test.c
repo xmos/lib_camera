@@ -50,8 +50,8 @@ void test_gamma_size(
 TEST(gamma_timing, gamma__basic) 
 {
     static const char func_name[] = "gamma downsampled";
-    const size_t height = APP_IMAGE_HEIGHT_PIXELS;
-    const size_t width = APP_IMAGE_WIDTH_PIXELS;
+    const size_t height = APP_IMAGE_HEIGHT_PIXELS / K;
+    const size_t width = APP_IMAGE_WIDTH_PIXELS / K;
     const size_t channels = APP_IMAGE_CHANNEL_COUNT;
     test_gamma_size(func_name, height, width, channels);
 }
