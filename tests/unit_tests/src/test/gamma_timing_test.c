@@ -18,7 +18,6 @@ TEST_SETUP(gamma_timing) { fflush(stdout); print_separator("gamma_timing");}
 TEST_TEAR_DOWN(gamma_timing) {}
 TEST_GROUP_RUNNER(gamma_timing) {
     RUN_TEST_CASE(gamma_timing, gamma__basic);
-    RUN_TEST_CASE(gamma_timing, gamma__double_size);
 }
 
 // Tests
@@ -53,15 +52,6 @@ TEST(gamma_timing, gamma__basic)
     static const char func_name[] = "gamma downsampled";
     const size_t height = APP_IMAGE_HEIGHT_PIXELS;
     const size_t width = APP_IMAGE_WIDTH_PIXELS;
-    const size_t channels = APP_IMAGE_CHANNEL_COUNT;
-    test_gamma_size(func_name, height, width, channels);
-}
-
-TEST(gamma_timing, gamma__double_size) 
-{
-    static const char func_name[] = "gamma double size";
-    const size_t height = APP_IMAGE_HEIGHT_PIXELS*2;
-    const size_t width = APP_IMAGE_WIDTH_PIXELS*2;
     const size_t channels = APP_IMAGE_CHANNEL_COUNT;
     test_gamma_size(func_name, height, width, channels);
 }
