@@ -9,7 +9,7 @@
 
 #include "unity_fixture.h"
 
-#include "_helper.h"
+#include "_helpers.h"
 #include "statistics.h"      
 #include "camera_utils.h"   // time
 
@@ -25,7 +25,6 @@ TEST_GROUP_RUNNER(stats_test) {
 
 TEST(stats_test, stats_test__basic){
     // create a random array
-    static const char func_name[] = "stats time";
     const size_t height = APP_IMAGE_HEIGHT_PIXELS;
     const size_t width = APP_IMAGE_WIDTH_PIXELS;
     const size_t channels = APP_IMAGE_CHANNEL_COUNT;
@@ -55,7 +54,7 @@ TEST(stats_test, stats_test__basic){
     PRINT_NAME_TIME("time per histogram (all)", tdiff);
 
     // End of frame, compute statistics (order is important)
-    unsigned int ts0, ts1, ts2, ts3, ts4;
+    unsigned int ts0, ts1, ts2, ts3, ts4, total_time;
     uint8_t channel = 0;
     ts0 = measure_time();
     stats_simple(&global_stats[channel]);
@@ -67,6 +66,7 @@ TEST(stats_test, stats_test__basic){
     stats_percentile_volume(&global_stats[channel]);
     ts4 = measure_time();
 
+    total_time = ts4 - ts0;
     ts0 = ts1 - ts0;
     ts1 = ts2 - ts1;
     ts2 = ts3 - ts2;
@@ -76,8 +76,13 @@ TEST(stats_test, stats_test__basic){
     PRINT_NAME_TIME("time per stats_skewness", ts1);
     PRINT_NAME_TIME("time per stats_percentile", ts2);
     PRINT_NAME_TIME("time per stats_percentile_volume", ts3);
+    PRINT_NAME_TIME("time total", total_time);
 
     delay_milliseconds(100);
     printf("\n");
     stats_print(&global_stats[channel], channel);
+
+    // timing per channel has to meet time between frames 1/30s = 33ms
+    // time per stats*3 channels should be lower than 33ms 
+    TEST_ASSERT_LESS_THAN_FLOAT(33 , total_time*3*0.00001);
 }

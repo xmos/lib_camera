@@ -8,11 +8,9 @@
 
 #include "unity_fixture.h"
 
-#include "_helper.h"
+#include "_helpers.h"
 #include "isp.h"            // gamma
 #include "camera_utils.h"   // time
-
-#define print_separator(x) printf("\n---------- %s -------------\n", x)
 
 // Unity
 TEST_GROUP(gamma_timing);
@@ -23,6 +21,7 @@ TEST_GROUP_RUNNER(gamma_timing) {
     RUN_TEST_CASE(gamma_timing, gamma__double_size);
 }
 
+// Tests
 void test_gamma_size(
     const char* func_name, 
     size_t height, 

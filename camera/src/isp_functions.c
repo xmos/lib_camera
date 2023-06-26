@@ -342,8 +342,8 @@ void isp_gamma(
     const size_t channels
     )
 {
-   ssize_t buffsize = height * width * channels;
-   for(ssize_t idx = 0; idx < buffsize; idx++){
+   size_t buffsize = height * width * channels;
+   for(size_t idx = 0; idx < buffsize; idx++){
         uint8_t val = img_in[idx];
         img_in[idx] = gamma_curve[val];
     }
