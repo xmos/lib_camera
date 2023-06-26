@@ -5,3 +5,6 @@
 .. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 .. _GH_FWK_CAMERA: https://github.com/xmos/fwk_camera
 .. _SW_TOOLS: https://www.xmos.ai/software-tools/
+
+
+.. EVK_BOARD: XCORE-AI-EXPLORER board

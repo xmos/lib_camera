@@ -7,24 +7,6 @@ Overview
 ---------
 The purpose of this programming guide is to provide developers with a comprehensive understanding of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
 
-The architecture consists of several key components that work together to facilitate camera communication and data processing. These components include:
-
-1. Camera hardware and camera interface
-2. Camera drivers
-3. User application
-4. Image signal processing
-5. I/O (Using Xscope_fileIO)
-
-Here below a high level block diagram of the FWK_Camera architecture:
-
-.. figure:: images/1_high_level_view.png
-    :alt: Alternate text for the image
-    :align: center
-
-    High level block diagram of fwk camera. 
-
-
-
 Conventions and Terminology
 ---------------------------
 To ensure clarity and consistency throughout this guide, the following conventions and terminology are used:
@@ -38,13 +20,37 @@ Features
 ---------
 - MIPI CSI2 interface
 - Up to 1GBps per lane
-- Low resolution filtering
-- Cameras supported:
+- Low-resolution filtering
+- Supported cameras:
     - IMX219
     - GC2145 (explain hardware modification)
 
+//TODO
+The |EVK_BOARD| development board features an |X|-pin MIPI CSI2 port. 
+This port enables communication with cameras that are compatible with the |Xcore-AI| processor.
+The processor is capable of directly processing an image from the sensor and performing various operations, 
+such as converting a RAW image to an RGB image (applying ISP functions), 
+analyzing the image using AI models with |xmos tools|,
+converting a MIPI camera to USB interface, etc.
+
+This repository contains a set of tools for image acquisition, processing, and transmission. 
+The architecture, viewed from a high level, is composed of the following elements:
+
+.. figure:: images/1_high_level_view.png
+    :alt: Alternate text for the image
+    :align: center
+
+    High-level block diagram of the FWK_Camera.
+
+1. Camera hardware and interface: The |tarjeta| board incorporates an MIPI connector and specific |X| hardware for transforming MIPI to |Y| ports.
+2. Camera drivers: To process the image, we rely on the camera drivers, which provide a high-level API for image acquisition, filtering, and statistical analysis of the image.
+3. Camera application:
+4. Sensor configuration:
+5. Camera output
+
 Getting Started
 ----------------
+
 Hardware requirements:
 
 - XCORE.AI EVALUATION KIT (XK-EVK-XU316)
