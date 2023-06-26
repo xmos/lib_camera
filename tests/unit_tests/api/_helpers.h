@@ -8,7 +8,7 @@
 #define print_separator(x) printf("\n---------- %s -------------\n", x)
 
 // Common difinitions
-#define CT_INT    127 // int conversion
+#define CT_INT 127 // int conversion
 
 // Store the RGB color and corresponding values
 typedef struct
@@ -17,13 +17,27 @@ typedef struct
     uint8_t Y, U, V;
 } color_table_t;
 
-typedef enum{
+typedef enum
+{
     RGB_TO_YUV,
     YUV_TO_RGB
 } color_conversion_t;
 
+typedef struct
+{
+    uint8_t y;
+    uint8_t u;
+    uint8_t v;
+} YuvValues;
 
-// Fill array
+typedef struct
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} RgbValues;
+
+// -----------------------------------------------------
 void fill_array_rand_int8(int8_t *image, size_t size);
 void fill_array_rand_uint8(uint8_t *image, size_t size);
 

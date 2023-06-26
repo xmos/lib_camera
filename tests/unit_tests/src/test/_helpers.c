@@ -27,12 +27,7 @@ void fill_array_rand_int8(int8_t *image, const size_t size){
 
 
 // Color conversion functions
-typedef struct {
-    uint8_t y;
-    uint8_t u;
-    uint8_t v;
-} YuvValues;
-
+static
 YuvValues rgbToYuv(uint8_t r, uint8_t g, uint8_t b) {
     float fr = (float)r;
     float fg = (float)g;
@@ -46,12 +41,7 @@ YuvValues rgbToYuv(uint8_t r, uint8_t g, uint8_t b) {
     return yuv;
 }
 
-typedef struct {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-} RgbValues;
-
+static
 RgbValues yuvToRgb(uint8_t y, uint8_t u, uint8_t v) {
     RgbValues rgb;
 
@@ -59,9 +49,9 @@ RgbValues yuvToRgb(uint8_t y, uint8_t u, uint8_t v) {
     float fu = (float)(u - 128);
     float fv = (float)(v - 128);
 
-    float red = fy + 1.140625f * fv;
-    float green = fy - 0.396078 * fu - 0.584313 * fv;
-    float blue = fy + 2.0392156 * fu;
+    float red = fy + 1.1406f  * fv;
+    float green = fy - 0.3960f * fu - 0.5843f * fv;
+    float blue = fy + 2.0392f  * fu;
 
     rgb.r = (uint8_t)(red > 255.0f ? 255 : (red < 0.0f ? 0 : red));
     rgb.g = (uint8_t)(green > 255.0f ? 255 : (green < 0.0f ? 0 : green));
