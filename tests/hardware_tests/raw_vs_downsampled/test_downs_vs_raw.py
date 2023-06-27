@@ -54,8 +54,8 @@ def plot_images(imgs, results):
             axes[1,i].hist(imgs[i][:,:,j].ravel(), bins=256, alpha=0.5, color=col)
 
         # text
-        score = results[0][i]
-        img_psnr = results[1][i]
+        img_psnr = results[0][i]
+        score    = results[1][i]
         
         text = f"SSI: {score:.2f}, \nPSNR: {img_psnr:.2f}"
         add_caption(axes[0,i], text)

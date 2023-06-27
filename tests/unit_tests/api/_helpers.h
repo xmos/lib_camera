@@ -48,3 +48,6 @@ void fill_color_table_uint8(color_table_t table[], const size_t size, color_conv
 void printColorTable(color_table_t *table, uint8_t ref);
 void yuv_to_rgb_ct(color_table_t *ct_ref, color_table_t *ct_res);
 void rgb_to_yuv_ct(color_table_t *ct_ref, color_table_t *ct_res);
+
+RgbValues yuvToRgb(uint8_t y, uint8_t u, uint8_t v);
+YuvValues rgbToYuv(uint8_t r, uint8_t g, uint8_t b);
