@@ -92,14 +92,26 @@ unsigned camera_capture_image_raw(
 /**
  * CLIENT SIDE
  * 
- * Called by the client to capture a decimated image.
+ * Called by the client to capture a decimated image in [channel][height][width] format.
+ * 
+ * @param image_buff The buffer to store the image in
+ * 
+ * @return Returns 0 on success, non-zero on failure
+ */
+unsigned camera_capture_image_transpose(
+    int8_t image_buff[CH][H][W]);
+
+/**
+ * CLIENT SIDE
+ * 
+ * Called by the client to capture a decimated image in [height][width][channel] format.
  * 
  * @param image_buff The buffer to store the image in
  * 
  * @return Returns 0 on success, non-zero on failure
  */
 unsigned camera_capture_image(
-    int8_t image_buff[CH][H][W]);
+    int8_t image_buff[H][W][CH]);
 
 typedef struct {
   struct {
