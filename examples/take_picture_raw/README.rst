@@ -22,7 +22,7 @@ Run the following commands from the top level:
 
     .. code-block:: console
 
-        cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake -B build
+        cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
         ninja -C build example_take_picture_raw
 
 ***************
