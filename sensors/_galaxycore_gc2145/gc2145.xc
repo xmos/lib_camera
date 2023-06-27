@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+
 #include <xs1.h>
 #include "i2c.h"
 #include "gc2145.h"
@@ -83,7 +84,6 @@ uint8_t i2c_read(
 void gc2145_print_info(
     client interface i2c_master_if i2c)
 {
-  i2c_regop_res_t result;
   uint8_t value;
   unsigned rewq;
 

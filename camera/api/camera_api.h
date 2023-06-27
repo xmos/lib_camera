@@ -89,7 +89,6 @@ unsigned camera_capture_row_decimated(
 unsigned camera_capture_image_raw(
     int8_t image_buff[H_RAW][W_RAW]);
 
-
 /**
  * CLIENT SIDE
  * 
@@ -102,7 +101,6 @@ unsigned camera_capture_image_raw(
 unsigned camera_capture_image(
     int8_t image_buff[CH][H][W]);
 
-    
 typedef struct {
   struct {
     unsigned row;

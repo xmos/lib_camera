@@ -11,6 +11,8 @@ set(APP_COMPILER_FLAGS
     -Os
     -g
     -report
+    -Wall
+    -Werror
     -fxscope
     -target=${XCORE_TARGET}
     ${CONFIG_XSCOPE_PATH_TEST}/config.xscope
@@ -23,10 +25,10 @@ set(APP_LINK_OPTIONS
 )
 
 set(APP_COMMON_LINK_LIBRARIES                    
-        mipi::lib_mipi
-        i2c::lib_i2c
-        sensors::lib_imx 
-        camera::lib_camera
+    mipi::lib_mipi
+    i2c::lib_i2c
+    sensors::lib_imx 
+    camera::lib_camera
 )
 
 # ##############################################################################

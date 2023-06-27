@@ -157,7 +157,7 @@ void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_para
     isp_params->channel_gain[2] = tmp2;
 }
 
-void AWB_compute_gains_static(global_stats_t *gstats, isp_params_t *isp_params){
+void AWB_compute_gains_static(isp_params_t *isp_params){
     // Adjust AWB 
     float tmp0=1.4;
     float tmp1=1.1;
@@ -167,7 +167,6 @@ void AWB_compute_gains_static(global_stats_t *gstats, isp_params_t *isp_params){
     isp_params->channel_gain[1] = tmp1;
     isp_params->channel_gain[2] = tmp2;
 }
-
 
 void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params){
     float Rmax = (*gstats)[0].max; // RED
@@ -186,7 +185,6 @@ void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_par
     isp_params->channel_gain[1] = beta;
     isp_params->channel_gain[2] = gamma;
 }
-
 
 void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params){    
     // we assume green constant
@@ -223,8 +221,6 @@ void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_param
     isp_params->channel_gain[2] = gamma;
 }
 
-
-
 void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params){
     printf("AWB --->");
     float Ravg = (*gstats)[0].mean; // RED
@@ -249,7 +245,6 @@ void AWB_print_gains(isp_params_t *isp_params){
     isp_params->channel_gain[1],
     isp_params->channel_gain[2]);
 }
-
 
 // ---------------------------------- GAMMA ------------------------------
 
@@ -303,14 +298,12 @@ const uint8_t gamma_new[256] = {
 243, 244, 244, 245, 246, 246, 247, 248, 248, 249, 250, 250, 251,
 252, 252, 253, 254, 254, 255, 255, 255, 255};
 
-
 void isp_gamma(
     uint8_t * img_in,
     const uint8_t *gamma_curve,
     const size_t height, 
     const size_t width, 
-    const size_t channels
-    )
+    const size_t channels)
 {
     assert(gamma_curve[255] != 0); // ensure all values are filles up
     size_t buffsize = height * width * channels;
@@ -375,9 +368,7 @@ void isp_bilinear_resize(
     }
 }
 
-void rotate_image_90(
-  const char* filename,
-  uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS])
+void rotate_image_90(uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS])
 {
   for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++) {
     for(int k = 0; k < APP_IMAGE_HEIGHT_PIXELS/2; k++) {

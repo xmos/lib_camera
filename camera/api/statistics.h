@@ -1,5 +1,4 @@
-
-#pragma once 
+#pragma once
 
 #include <stdint.h>
 #include <string.h> // memset
@@ -16,7 +15,6 @@
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {
 #endif
-
 
 #define CH_CARD               (1<<SENSOR_BIT_DEPTH)     // Size of the channel element code space
 #define HISTOGRAM_BIN_COUNT   ((CH_CARD) >> (HIST_QUANT_BITS))  // Number of histogram bins
@@ -48,7 +46,6 @@ typedef struct {
 } channel_stats_t;
 
 typedef channel_stats_t global_stats_t[APP_IMAGE_CHANNEL_COUNT];
-
 
 // ---------- Api functions ----------
 
@@ -92,9 +89,6 @@ void stats_percentile_volume(channel_stats_t *stats);
  * @param channel 
  */
 void stats_print(channel_stats_t *stats, unsigned channel);
-
-
-
 
 #if defined(__XC__) || defined(__cplusplus)
 }

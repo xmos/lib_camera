@@ -1,5 +1,4 @@
-#ifndef ISP_H
-#define ISP_H
+#pragma once
 
 #include <string.h> // memset
 #include <stdio.h>  // null 
@@ -67,7 +66,6 @@ uint8_t AE_is_adjusted(float sk);
  */
 uint8_t AE_compute_new_exposure(float exposure, float skewness);
 
-
 // ---------------------------------- AWB ------------------------------
 
 /**
@@ -83,10 +81,9 @@ extern isp_params_t isp_params;
 /**
  * @brief auto white balance control function
  * 
- * @param gstats structure containing the global statistics
  * @param isp_params structure containing the current isp parameters
  */
-void AWB_compute_gains_static(global_stats_t *gstats, isp_params_t *isp_params);
+void AWB_compute_gains_static(isp_params_t *isp_params);
 
 /**
  * @brief auto white balance control function based on white patch algorithm
@@ -167,10 +164,9 @@ void isp_bilinear_resize(
 /**
 * Rotate the image by 90 degrees. This is useful for rotating images that are stored in a 3x3 array of uint8_t
 * 
-* @param filename - Name of the file to rotate
 * @param image - Array of uint8_t that is to be
 */
-void rotate_image_90(const char *filename, uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]);
+void rotate_image_90(uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS]);
 
 // -------------------------- COLOR CONVERSION -------------------------------------
 // Macro arguments to get color components from packed result in the assembly program
@@ -207,5 +203,3 @@ int rgb_to_yuv(
     int r, 
     int g, 
     int b);
-
-#endif // ISP_H

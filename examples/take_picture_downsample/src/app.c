@@ -1,4 +1,3 @@
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -9,7 +8,6 @@
 
 void user_app()
 {
-
   // Initialize camera api
   camera_init();
 

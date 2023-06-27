@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
@@ -6,7 +5,6 @@
 #include <string.h>
 
 #include "camera_utils.h"
-
 
 inline unsigned measure_time()
 {
@@ -19,8 +17,8 @@ inline unsigned measure_time()
 void vect_int8_to_uint8(
     uint8_t output[],
     int8_t input[],
-    const unsigned length)
+    const size_t length)
 {
-  for (int k = 0; k < length; k++)
+  for (size_t k = 0; k < length; k++)
     output[k] = input[k] + 128;
 }

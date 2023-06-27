@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h> 
 #include <stdint.h>
@@ -15,8 +14,6 @@
 #include "isp.h"
 #include "sensor_control.h"
 
-
-
 void camera_main(
     tileref mipi_tile,
     in port p_mipi_clk,
@@ -26,7 +23,6 @@ void camera_main(
     clock clk_mipi,
     client interface i2c_master_if i2c)
 {
-
   streaming chan c_pkt;
   streaming chan c_ctrl;
   streaming chan c_stat_thread;
