@@ -13,7 +13,7 @@ Build Tests
 Run the following commands from the top level:
 
 Linux, Mac
-~~~~~~~~~~
+----------
 
 .. code-block:: console
     
@@ -21,7 +21,7 @@ Linux, Mac
     make -C build tests
 
 Windows
-~~~~~~~
+-------
 
 .. code-block:: console
 
