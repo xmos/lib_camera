@@ -314,11 +314,8 @@ void isp_gamma(
 {
     assert(gamma_curve[255] != 0); // ensure all values are filles up
     size_t buffsize = height * width * channels;
-    for(size_t idx = 0; idx < buffsize; idx+=4){
-        img_in[idx]   = gamma_curve[img_in[idx]];
-        img_in[idx+1] = gamma_curve[img_in[idx+1]];
-        img_in[idx+2] = gamma_curve[img_in[idx+2]];
-        img_in[idx+3] = gamma_curve[img_in[idx+3]];
+    for(size_t idx = 0; idx < buffsize; idx++){
+            img_in[idx] = gamma_curve[img_in[idx]];
     }
 }
 
