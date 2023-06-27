@@ -3,14 +3,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "sensor.h"
+#include "print.h"
 
-#define PRINT_TIME(a,b) printf("%d\n", b - a);
+#include "sensor.h"
 
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {
 #endif
 
+// Print macros
+#define PRINT_TIME(a,b) printf("%d\n", b - a);
+#define PRINT_NAME_TIME(name,time) \
+    printf("\t%s timing: %u ticks, %.3fms\n", name, time, (float)time * 0.00001);
 
 /**
  * Measure the cpu ticks
@@ -34,6 +38,15 @@ void vect_int8_to_uint8(
     uint8_t output[],
     int8_t input[], 
     const unsigned length);
+
+
+inline void fast_print_name_time(const char * name, unsigned time){
+    const char* formattedString = "\t%s timing: %u ticks, %.3fms\n";
+    char output[255];  // Assuming a maximum length for the formatted string
+    sprintf(output, formattedString, name, time, (float)time * 0.00001);
+    printstr(output);
+    //printf("\t%s timing: %u ticks, %.3fms\n", name, time, (float)time * 0.00001);
+}
 
 #if defined(__XC__) || defined(__cplusplus)
 }

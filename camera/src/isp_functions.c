@@ -21,6 +21,7 @@ uint8_t AE_control_exposure(
     // Initial exposure
     static uint8_t new_exp = AE_INITIAL_EXPOSURE;
     static uint8_t printf_info = 1;
+    static uint8_t give_up = 0;
 
     // Compute skewness and adjust exposure if needed
     float sk = AE_compute_mean_skewness(global_stats);
@@ -35,6 +36,14 @@ uint8_t AE_control_exposure(
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
         sensor_control_set_exposure(sc_if, (uint8_t)new_exp);
         printf_info = 1;
+        // if it is too dark, give up but continue with awb 
+        if (new_exp > 70){
+            give_up++;
+            if (give_up > 5){
+                give_up = 0;
+                return 1;
+            }
+        }
     }
     return 0;
 }
@@ -60,9 +69,9 @@ inline uint8_t AE_is_adjusted(float sk) {
 
 uint8_t AE_compute_new_exposure(float exposure, float skewness)
 {
-    static float a = 0;     // minimum value for exposure
+    static float a  = 0;     // minimum value for exposure
     static float fa = -1;   // minimimum skewness
-    static float b = 80;    // maximum value for exposure
+    static float b  = 84;    // maximum value for exposure
     static float fb = 1;    // minimum skewness
     static int count = 0;
     float c  = exposure;
@@ -333,8 +342,8 @@ void isp_gamma(
     const size_t channels
     )
 {
-   ssize_t buffsize = height * width * channels;
-   for(ssize_t idx = 0; idx < buffsize; idx++){
+   size_t buffsize = height * width * channels;
+   for(size_t idx = 0; idx < buffsize; idx++){
         uint8_t val = img_in[idx];
         img_in[idx] = gamma_curve[val];
     }
