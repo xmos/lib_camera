@@ -5,7 +5,7 @@ Introduction
 
 Overview
 ---------
-The purpose of this programming guide is to provide developers with a comprehensive understanding of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
+The purpose of this programming guide is to provide developers with a comprehensive understanding of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the |XCORE-AI-EXPLORER| board.
 
 Conventions and Terminology
 ---------------------------
@@ -25,13 +25,12 @@ Features
     - IMX219
     - GC2145 (explain hardware modification)
 
-//TODO
-The |EVK_BOARD| development board features an |X|-pin MIPI CSI2 port. 
-This port enables communication with cameras that are compatible with the |Xcore-AI| processor.
-The processor is capable of directly processing an image from the sensor and performing various operations, 
+
+The |XCORE-AI-EXPLORER| board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
+This port is connected to the |Xcore-AI| processor, so we can directly processing an image from an external sensor and performing various operations, 
 such as converting a RAW image to an RGB image (applying ISP functions), 
-analyzing the image using AI models with |xmos tools|,
-converting a MIPI camera to USB interface, etc.
+analyzing the image using AI models with |xmos-ai-tools|,
+converting a MIPI camera to other interfaces as USB, SPI, etc.
 
 This repository contains a set of tools for image acquisition, processing, and transmission. 
 The architecture, viewed from a high level, is composed of the following elements:
@@ -42,14 +41,19 @@ The architecture, viewed from a high level, is composed of the following element
 
     High-level block diagram of the FWK_Camera.
 
-1. Camera hardware and interface: The |tarjeta| board incorporates an MIPI connector and specific |X| hardware for transforming MIPI to |Y| ports.
-2. Camera drivers: To process the image, we rely on the camera drivers, which provide a high-level API for image acquisition, filtering, and statistical analysis of the image.
-3. Camera application:
-4. Sensor configuration:
+1. Camera hardware and interface
+2. Camera drivers
+3. Camera application
+4. Sensor configuration
 5. Camera output
+
+Each of these elements is described in detail in the following sections.
 
 Getting Started
 ----------------
+
+To start using the FWK_Camera, you can proceed to the Quick Start Guide: `QS_FWKC`_.
+
 
 Hardware requirements:
 

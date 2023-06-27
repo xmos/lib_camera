@@ -1,4 +1,0 @@
-Intro quick
-=============
-
-loremp ipsum
