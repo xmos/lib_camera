@@ -5,7 +5,8 @@ Introduction
 
 Overview
 ---------
-The purpose of this programming guide is to provide developers with a comprehensive understanding of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the |XCORE-AI-EXPLORER| board.
+The purpose of this programming guide is to provide developers with a comprehensive understanding 
+of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
 
 Conventions and Terminology
 ---------------------------
@@ -26,10 +27,10 @@ Features
     - GC2145 (explain hardware modification)
 
 
-The |XCORE-AI-EXPLORER| board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
-This port is connected to the |Xcore-AI| processor, so we can directly processing an image from an external sensor and performing various operations, 
+The XCORE-AI-EXPLORER board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
+This port is connected to the Xcore-AI processor, so we can directly processing an image from an external sensor and performing various operations, 
 such as converting a RAW image to an RGB image (applying ISP functions), 
-analyzing the image using AI models with |xmos-ai-tools|,
+analyzing the image using AI models with xmos-ai-tools,
 converting a MIPI camera to other interfaces as USB, SPI, etc.
 
 This repository contains a set of tools for image acquisition, processing, and transmission. 
@@ -52,22 +53,9 @@ Each of these elements is described in detail in the following sections.
 Getting Started
 ----------------
 
-To start using the FWK_Camera, you can proceed to the Quick Start Guide: `QS_FWKC`_.
-
-
-Hardware requirements:
-
-- XCORE.AI EVALUATION KIT (XK-EVK-XU316)
-- Camera module
-- Power supply
-- Micro USB cable
-- JTAG debugger
-
-Software requirements:
-
-- XMOS tools: `SW_TOOLS`_
-- FWK_Camera repository: `GH_FWK_CAMERA`_
-- CMake, Ninja (Windows)
+To start using the FWK_Camera, you can proceed to the Quick Start Guide, go to: 
+    
+    :ref:`QS_FWKC`.
 
 Additional Resources
 ---------------------

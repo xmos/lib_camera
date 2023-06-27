@@ -1,5 +1,7 @@
-Getting Started
-----------------
+.. _QS_FWKC:
+
+Quick Start Guide
+-------------------
 
 Hardware requirements:
 ^^^^^^^^^^^^^^^^^^^^^^^
