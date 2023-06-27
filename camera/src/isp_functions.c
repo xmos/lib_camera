@@ -1,4 +1,8 @@
 #include "isp.h"
+
+#include <assert.h>
+#include <stdio.h>
+
 #define INCLUDE_ABS 0
 
 // ---------------------------------- utils ------------------------------
@@ -21,7 +25,7 @@ uint8_t AE_control_exposure(
     // Initial exposure
     static uint8_t new_exp = AE_INITIAL_EXPOSURE;
     static uint8_t printf_info = 1;
-    static uint8_t give_up = 0;
+    static uint8_t skip_ae_control = 0; // if too dark for a ceertain frames, skip AE control
 
     // Compute skewness and adjust exposure if needed
     float sk = AE_compute_mean_skewness(global_stats);
@@ -36,11 +40,10 @@ uint8_t AE_control_exposure(
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
         sensor_control_set_exposure(sc_if, (uint8_t)new_exp);
         printf_info = 1;
-        // if it is too dark, give up but continue with awb 
         if (new_exp > 70){
-            give_up++;
-            if (give_up > 5){
-                give_up = 0;
+            skip_ae_control++;
+            if (skip_ae_control > 5){
+                skip_ae_control = 0;
                 return 1;
             }
         }
@@ -134,32 +137,7 @@ void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_para
     tmp0 = green_p/(float)red_p;
     tmp1 = 1;
     tmp2 = green_p/(float)blue_p;
-
-    //tmp0 =  255.0 / (float)(*gstats)[0].percentile; // RED
-    // tmp1 =  255.0 / (float)(*gstats)[1].percentile; // GREEN
-    //tmp2 =  255.0 / (float)(*gstats)[2].percentile; // BLUE
-
-    /*
-    // add skewness contribution
-    const float skmin = -1;
-    const float skmax = 1;
-    const float gmin  = 1;
-    const float gmax  = 1.5;
-    const float grange = gmax - gmin;
-    const float skrange = skmax - skmin;
-    const float m = -(grange/skrange);
-
-    float gains[3];
-
-    for (int i=0; i< 3; i++){
-        float sk = (*gstats)[i].skewness;
-        gains[i] = m*(sk - skmin) + gmax;
-    }
-
-    tmp0 = 0.7*tmp0 + 0.3*gains[0];
-    tmp1 = 0.7*tmp1 + 0.3*gains[1];
-    tmp2 = 0.7*tmp2 + 0.3*gains[2];
-    */
+    
     uint32_t r_per_count = (*gstats)[0].per_count;
     uint32_t g_per_count = (*gstats)[1].per_count;
     uint32_t b_per_count = (*gstats)[2].per_count;
@@ -274,6 +252,7 @@ void AWB_print_gains(isp_params_t *isp_params){
 
 
 // ---------------------------------- GAMMA ------------------------------
+
 const uint8_t gamma_1p8_s1[256] =  {
 0,12,17,22,25,29,32,35,37,40,42,44,47,49,51,53,55,57,58,60,62,64,65,67,69,
 70,72,73,75,76,78,79,80,82,83,85,86,87,89,90,91,92,94,95,96,97,98,100,101,
@@ -289,7 +268,6 @@ const uint8_t gamma_1p8_s1[256] =  {
 235,236,236,237,237,238,238,239,240,240,241,241,242,243,243,244,244,245,245,
 246,247,247,247,246,245,244,243,242,241,240,239,238,237,236,235,236};
 
-
 const uint8_t gamma_1p4_s1[256] =  {
 0,0,0,1,3,5,8,10,12,13,15,17,19,20,22,24,25,27,28,30,31,33,34,36,37,39,
 40,41,43,44,45,47,48,49,50,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,70,71,
@@ -301,7 +279,6 @@ const uint8_t gamma_1p4_s1[256] =  {
 190,191,192,193,194,194,195,196,197,197,198,199,200,201,201,202,203,204,204,205,206,207,207,208,209,210,
 210,211,212,213,213,214,215,216,216,217,218,219,219,220,221,222,222,223,224,225,225,226,227,228,228,229,
 230,231,231,232,233,233,234,235,236,236,237,238,239,239,240,241,241,242,243,244,245,247};
-
 
 // gamma 1.8, with substract 10 and 1.05 multiplier
 const uint8_t gamma_new[256] = {
@@ -324,15 +301,8 @@ const uint8_t gamma_new[256] = {
 225, 226, 227, 227, 228, 229, 229, 230, 231, 232, 232, 233, 234,
 234, 235, 236, 236, 237, 238, 238, 239, 240, 240, 241, 242, 242,
 243, 244, 244, 245, 246, 246, 247, 248, 248, 249, 250, 250, 251,
-252, 252, 253, 254, 254, 255, 255, 255};
+252, 252, 253, 254, 254, 255, 255, 255, 255};
 
-void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img){
-    // gamma naming: 1p8_s1 = gamma 1.8 , with a stride of 1
-    // 1p8_s4 => img^(1/1.8) (in a normalizeed 0-1 image)
-    for(uint32_t i=0; i<buffsize; i++){
-        img[i] = gamma_1p8_s1[img[i]];
-    }
-}
 
 void isp_gamma(
     uint8_t * img_in,
@@ -342,10 +312,10 @@ void isp_gamma(
     const size_t channels
     )
 {
-   size_t buffsize = height * width * channels;
-   for(size_t idx = 0; idx < buffsize; idx++){
-        uint8_t val = img_in[idx];
-        img_in[idx] = gamma_curve[val];
+    assert(gamma_curve[255] != 0); // ensure all values are filles up
+    size_t buffsize = height * width * channels;
+    for(size_t idx = 0; idx < buffsize; idx++){
+            img_in[idx] = gamma_curve[img_in[idx]];
     }
 }
 

@@ -27,7 +27,6 @@ void fill_array_rand_int8(int8_t *image, const size_t size){
 
 
 // Color conversion functions
-static
 YuvValues rgbToYuv(uint8_t r, uint8_t g, uint8_t b) {
     float fr = (float)r;
     float fg = (float)g;
@@ -41,7 +40,6 @@ YuvValues rgbToYuv(uint8_t r, uint8_t g, uint8_t b) {
     return yuv;
 }
 
-static
 RgbValues yuvToRgb(uint8_t y, uint8_t u, uint8_t v) {
     RgbValues rgb;
 

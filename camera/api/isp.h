@@ -134,14 +134,6 @@ extern const uint8_t gamma_1p4_s1[256];
 extern const uint8_t gamma_new[256]; 
 
 /**
- * @brief gamma correction function
- * 
- * @param buffsize size of the image buffer
- * @param img pointer to the image buffer
- */
-void isp_gamma_stride1(const uint32_t buffsize, uint8_t *img);
-
-/**
  * @brief compute gamma curve given an image and the gamma adjustement
  * 
  * @param img_in pointer to the image
