@@ -33,6 +33,11 @@ target_sources(${LIB_NAME}
         ${SOURCES_ASM}
 )
 
+target_compile_options(${LIB_NAME}
+    PUBLIC
+        -Wall -Werror
+)
+
 target_link_libraries(${LIB_NAME} PUBLIC lib_i2c)
 
 add_library(sensors::lib_imx ALIAS ${LIB_NAME})

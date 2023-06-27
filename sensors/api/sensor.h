@@ -1,6 +1,5 @@
 // Sensor.h settings needed for custom sensor configuration
-#ifndef SENSOR_H
-#define SENSOR_H
+#pragma once
 
 #define XSTR(x) STR(x)
 #define STR(x) #x
@@ -88,7 +87,6 @@
     #endif
 #endif
 
-
 // Cropping configurations
 #if (CROP_ENABLED)
     #define CROP_WIDTH_PIXELS               320
@@ -106,7 +104,6 @@
 
 #endif
 
-
 // ----------------------- Settings dependant of each sensor library
 
 // Camera dependant (do not edit)
@@ -122,9 +119,6 @@
 #if MIPI_IMAGE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS > MAX_MEMORY_SIZE
     #warning "The image appears to be too large for the available internal RAM.!"
 #endif
-
-
-
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -149,7 +143,6 @@
 #define APP_IMAGE_SIZE_BYTES      (APP_IMAGE_SIZE_PIXELS \
                                    * APP_IMAGE_CHANNEL_COUNT )
 
-
 #define CHAN_RED    0
 #define CHAN_GREEN  1
 #define CHAN_BLUE   2
@@ -159,7 +152,6 @@
 #ifndef HIST_QUANT_BITS
 #define HIST_QUANT_BITS   (2)
 #endif
-
 
 // Not every pixel of the image will be sampled. This is the distance between
 // sampled values in a row.
@@ -174,5 +166,3 @@
 
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
 #define W_RAW   (MIPI_IMAGE_WIDTH_PIXELS)
-
-#endif // sensor_H

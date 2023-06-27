@@ -6,9 +6,7 @@
 
 #include "i2c.h"
 #include "mipi.h"
-
 #include "sensor.h"
-
 
 #ifndef MIPI_CLKBLK
 #define MIPI_CLKBLK XS1_CLKBLK_1
@@ -23,7 +21,6 @@
 #include "camera_api.h"
 #include "camera_utils.h"
 #include "isp.h"
-
 
 // MIPI Shim configuration register layout (MIPI_SHIM_CFG0) 
 #define MIPI_SHIM_BIAS_ENABLE       1       //  Offset output pixels [1]
@@ -63,8 +60,6 @@ void camera_main(
 
 
 #endif //__XC__
-
-
 
 /* Notes
 

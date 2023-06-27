@@ -21,8 +21,6 @@ extern "C" {
  */
 unsigned measure_time();
 
-
-
 /**
  * Convert an array of int8 to an array of uint8.
  * 

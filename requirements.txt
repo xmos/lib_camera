@@ -16,6 +16,8 @@ python-dateutil==2.8.2
 python-dotenv==1.0.0
 PyWavelets==1.4.1
 scikit-image==0.20.0
-scipy==1.10.1
+scipy
 six==1.16.0
 tifffile==2023.4.12
+
+-e ./utils/xscope_fileio

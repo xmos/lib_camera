@@ -11,7 +11,6 @@
 // This is the normalization factor
 static const float histogram_norm_factor =  (1.0 / (float) HISTOGRAM_TOTAL_SAMPLES);
 
-
 /**
 * Update histogram based on pixel values. 
 * 
@@ -29,7 +28,6 @@ void stats_update_histogram(
     hist->bins[val]++;
   }
 }
-
 
 void stats_skewness(channel_stats_t *stats)
 {
@@ -54,7 +52,6 @@ void stats_skewness(channel_stats_t *stats)
   // Normnalization [3]
   stats -> skewness = skew * histogram_norm_factor;
 }
-
 
 void stats_simple(channel_stats_t *stats)
 {
@@ -85,7 +82,6 @@ void stats_simple(channel_stats_t *stats)
   stats->mean = (temp_mean) *(1 << HIST_QUANT_BITS) * histogram_norm_factor;
 }
 
-
 void stats_print(channel_stats_t *stats, unsigned channel){
   const char* formattedString = "\nch:%d,Mi:%d,Ma:%d,Mean:%f,Sk:%f,pct:%d,mi_c:%lu,ma_c:%lu,pc:%lu\n";
   char output[255];  // Assuming a maximum length for the formatted string
@@ -103,7 +99,6 @@ void stats_print(channel_stats_t *stats, unsigned channel){
   printstr(output);
   // printf("%s", output);
 }
-
 
 void stats_percentile(channel_stats_t *stats, const float fraction)
 {

@@ -1,6 +1,4 @@
-
-#ifndef PACKET_HANDLER_H
-#define PACKET_HANDLER_H
+#pragma once
 
 #include <stdint.h>
 
@@ -22,15 +20,11 @@ typedef struct
   uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
 } mipi_packet_t;
 
-
-
-
 /**
  * isp_params_t instance owned by the packet handler.
  */
 extern
 isp_params_t isp_params;
-
 
 /**
  * Thread entry point for packet handling when decimation and demosaicing are
@@ -44,5 +38,3 @@ void mipi_packet_handler(
 #ifdef __XC__
 }
 #endif
-
-#endif // PACKET_HANDLER_H

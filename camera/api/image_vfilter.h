@@ -1,9 +1,8 @@
-#ifndef IMAGE_VFILTER_H
-#define IMAGE_VFILTER_H
+#pragma once
 
 #include <stdint.h>
-#include "sensor.h"
 
+#include "sensor.h"
 
 // The number of non-zero taps in the vertical filter.
 #define VFILTER_TAP_COUNT   (5)
@@ -28,12 +27,9 @@
 
 #define VFILTER_ACC_WIDTH_SHORTS  (2*APP_IMAGE_WIDTH_PIXELS)
 
-
-
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {
 #endif
-
 
 typedef struct {
   int next_tap;
@@ -173,5 +169,3 @@ unsigned image_vfilter_drain(
 #if defined(__XC__) || defined(__cplusplus)
 }
 #endif
-
-#endif //IMAGE_VFILTER_H

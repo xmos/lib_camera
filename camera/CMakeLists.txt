@@ -30,6 +30,8 @@ target_sources(${LIB_NAME}
 target_compile_options(${LIB_NAME}
   PUBLIC
     -Os
+    -Wall
+    -Werror
     -g
     -fxscope
     -mcmodel=large )

@@ -18,7 +18,6 @@ void sensor_start(client interface i2c_master_if i2c){
   assert((r == 0)); // assert that camera is started and configured
 }
 
-
 void sensor_control(
     server interface sensor_control_if sc,
     client interface i2c_master_if i2c)
@@ -36,7 +35,6 @@ void sensor_control(
     }
   }
 }
-
 
 void sensor_control_set_exposure(
     client interface sensor_control_if sc,
