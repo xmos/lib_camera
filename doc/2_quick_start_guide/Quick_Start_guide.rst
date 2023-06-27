@@ -19,8 +19,7 @@ Software requirements:
 - CMake, Ninja (Windows)
 - Python 3.7 or later 
 
-(Make sure all submodules are imported) 
-
+Make sure all submodules are imported: 
 .. code-block:: console
 
    git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
