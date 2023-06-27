@@ -6,6 +6,7 @@
 .. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 .. _GH_FWK_CAMERA: https://github.com/xmos/fwk_camera
 .. _SW_TOOLS: https://www.xmos.ai/software-tools/
+.. _XSCOPE_FILEIO: https://github.com/xmos/xscope_fileio
 
 
-.. |TBD| replace:: ``To be documented for next release``
+.. |TBD| replace:: To be documented for next release

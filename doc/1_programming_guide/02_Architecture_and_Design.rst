@@ -2,7 +2,7 @@ Architecture and Design
 =======================
 
 .. include:: ../substitutions.rst
-
+   
 Introduction
 -------------
 
@@ -12,8 +12,11 @@ In this section we describe the main components of fwk_camera and how they inter
 Hardware Architecture
 ----------------------
 From a Hardware point of view, fwk_camera is composed of the following modules:
-1. 
 
+#.  Camera connector : 15-PIN MIPI CSI connector for the camera modul#. (compatible with Raspberry Pi).
+#.  Mipi Shim : Xmos MIPI hardware to convert MIPI signals to Xcore p#.ts.
+#.  Xcore : Xmos Xcore processor to process the MIPI signal#.
+#.  Jtag Host connector : USB connector to connect to the h#.t.
 
 Software Architecture
 -------------------------
@@ -26,16 +29,15 @@ From a Software point of view, fwk_camera is composed of the following modules:
    Object Diagram
 
 Module description:
-   1. camera section: the camera section takes care of start, process and stop the camera. 
-   It has to be aware of the sensor configuration (in sesnor section) and meet the user demands (in user section).
 
-   2. user   section: the user section is the interface between the user and the camera, where we define what we want to do with the frames. 
-   3. sensor section: configuration and control of the sensor.
-   4. (host) section: provide the interface to write the frames or files to the host.
+#.    camera section: the camera section takes care of start, process and stop the camera. It has to be aware of the sensor configuration (in sesnor section) and meet the user demands (in user section).
+#.    user   section: the user section is the interface between the user and the camera, where we define what we want to do with the frames. 
+#.    sensor section: configuration and control of the sensor.
+#.    Host section: provide the interface to write the frames or files to the host.
 
 There are other sections not mentioned in the diagram, as the test section, which is used to test the camera. 
 
-Optimizations and Future Directions
+Optimizations and future directions
 ------------------------------------
 
-|TBD|
+   |TBD|

@@ -1,4 +1,6 @@
-Introduction
-=============
+Software customization
+=======================
 
-//TODO include how to ad da new camera
+.. include:: ../substitutions.rst
+
+|TBD|

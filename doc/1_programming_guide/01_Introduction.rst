@@ -19,19 +19,20 @@ To ensure clarity and consistency throughout this guide, the following conventio
 
 Features
 ---------
-- MIPI CSI2 interface
-- Up to 1GBps per lane
-- Low-resolution filtering
-- Supported cameras:
-    - IMX219
-    - GC2145 (explain hardware modification)
-
-
 The XCORE-AI-EXPLORER board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
 This port is connected to the Xcore-AI processor, so we can directly processing an image from an external sensor and performing various operations, 
 such as converting a RAW image to an RGB image (applying ISP functions), 
 analyzing the image using AI models with xmos-ai-tools,
 converting a MIPI camera to other interfaces as USB, SPI, etc.
+
+The FWK_Camera alongside with the Explorer board architecture provides the following features:
+
+- MIPI CSI2 interface
+- Up to 1GBps per lane
+- Low-resolution filtering
+- Supported cameras:
+    - IMX219
+    - GC2145 [*]_
 
 This repository contains a set of tools for image acquisition, processing, and transmission. 
 The architecture, viewed from a high level, is composed of the following elements:
@@ -64,3 +65,6 @@ Additional Resources
 - XMOS I2C library user guide:  `XMOSI2C`_
 - XMOS Programming Guide:       `XMOSProgrammingGuide`_
 - IMX219 datasheet:             `IMX219`_
+
+
+.. [*] With Hardware modifications. 
