@@ -15,12 +15,12 @@ Run the following commands from the top level:
 
 .. code-block:: console
     
-    cmake -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+    cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
     make -C build tests
 
 .. code-block:: console
 
-    cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+    cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake -B build
     ninja -C build tests
 
 
@@ -37,7 +37,7 @@ Run unit tests
 .. code-block:: bash
 
     xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
-    or
+    # or
     xrun --xscope build/tests/unit_tests/test_camera.xe
 
 Run hardware tests

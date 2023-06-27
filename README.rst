@@ -46,15 +46,13 @@ Linux, Mac
    make
 
 Windows
-~~~~~~~~
+~~~~~~~
 
 .. code-block:: bash
 
    cmake -G Ninja -B build -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake
    cd build/
    ninja
-
-
 
 Supported Cameras
 -----------------
