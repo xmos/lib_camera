@@ -7,9 +7,9 @@ Repository Structure
 --------------------
 
 - **examples**    : examples for taking pictures with the explorer board
-- **lib_camera**  : useful functions to manipulate images
+- **camera**      : useful functions to manipulate images
 - **modules**     : dependencies folder
-- **sensors**     : camera sensors and API for controlling any camera sensor
+- **sensors**     : configuration and control of the sensors
 - **python**      : python functions to decode RAW8, RAW10 pictures and other utilities to treat images
 
 Requirements
@@ -39,7 +39,7 @@ For building a specific example refer to examples/readme.rst.
 Linux, Mac
 ~~~~~~~~~~
 
-.. code-block:: bash
+.. code-block:: console
 
    cmake -B build -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake
    cd build/
@@ -48,10 +48,10 @@ Linux, Mac
 Windows
 ~~~~~~~
 
-.. code-block:: bash
+.. code-block:: console
 
-   cmake -G Ninja -B build -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake
-   cd build/
+   cmake -G Ninja -B build -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain\xs3a.cmake
+   cd build
    ninja
 
 Supported Cameras
@@ -68,6 +68,6 @@ Supported Cameras
 +--------+--------------------------------+----------------+
 
 How to configure your sensor or add a new one
---------------------------------------------
+---------------------------------------------
 
 TODO

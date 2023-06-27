@@ -7,22 +7,26 @@ It contains two types of tests:
     1. Unit tests
     2. Hardware tests
 
-
 Build Tests
 =============
 
 Run the following commands from the top level:
+
+Linux, Mac
+~~~~~~~~~~
 
 .. code-block:: console
     
     cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
     make -C build tests
 
+Windows
+~~~~~~~
+
 .. code-block:: console
 
-    cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake -B build
+    cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
     ninja -C build tests
-
 
 Running the tests
 =================
