@@ -5,12 +5,14 @@
 
 #include "sensor.h"
 
-#define PRINT_TIME(a,b) printf("%d\n", b - a);
-
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {
 #endif
 
+// Print macros
+#define PRINT_TIME(a,b) printf("%d\n", b - a);
+#define PRINT_NAME_TIME(name,time) \
+    printf("\t%s: %u ticks, %.3fms\n", name, time, (float)time * 0.00001);
 
 /**
  * Measure the cpu ticks

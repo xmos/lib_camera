@@ -12,7 +12,7 @@
 #include "camera_main.h"
 #include "mipi_defines.h"
 #include "packet_handler.h"
-#include "statistics.h"
+#include "isp.h"
 #include "sensor_control.h"
 
 
@@ -55,7 +55,7 @@ void camera_main(
                     MIPI_CFG_CLK_DIV); 
 
   // Initialize camera and its configurations
-  sensor_initialize(i2c);
+  sensor_start(i2c);
   printf("\nCamera_started and configured...\n");
   delay_milliseconds(1000);
 
@@ -64,7 +64,7 @@ void camera_main(
   {
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
-    statistics_thread(c_stat_thread, sc_if);
+    isp_pipeline(c_stat_thread, sc_if);
     sensor_control(sc_if, i2c);
   }
 }

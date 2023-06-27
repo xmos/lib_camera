@@ -1,10 +1,8 @@
 #include <stdint.h>
 
-#include <xcore/channel_streaming.h>
-#include "xccompat.h"
-
 #include "statistics.h"
 #include "isp.h"
+#include "print.h"
 
 // Number of samples taken each row
 #define HISTOGRAM_SAMPLE_PER_ROW       ((APP_IMAGE_WIDTH_PIXELS  + APP_HISTOGRAM_SAMPLE_STEP - 1)  / (APP_HISTOGRAM_SAMPLE_STEP))
@@ -20,20 +18,20 @@ static const float histogram_norm_factor =  (1.0 / (float) HISTOGRAM_TOTAL_SAMPL
 * @param hist - * pointer to the histogram to update. Must be large enough to accommodate the number of pixels in the image.
 * @param pix - array of pixel values to update the histogram with
 */
-void update_histogram(
+void stats_update_histogram(
     channel_histogram_t* hist,
     const int8_t pix[])
 {
   for(int k = 0; k < APP_IMAGE_WIDTH_PIXELS; k += APP_HISTOGRAM_SAMPLE_STEP){
     int val = pix[k];
     val += 128; // convert from int8_t to uint8_t
-    val >>= APP_HISTOGRAM_QUANTIZATION_BITS;
+    val >>= HIST_QUANT_BITS;
     hist->bins[val]++;
   }
 }
 
 
-void compute_skewness(channel_stats_t *stats)
+void stats_skewness(channel_stats_t *stats)
 {
   const float zk_values[] = {
     -1.000000, -0.907753, -0.821362, -0.740633, -0.665375, -0.595396, 
@@ -58,7 +56,7 @@ void compute_skewness(channel_stats_t *stats)
 }
 
 
-void compute_simple_stats(channel_stats_t *stats)
+void stats_simple(channel_stats_t *stats)
 {
   // Calculate the histogram
   uint8_t temp_min = 0;
@@ -70,40 +68,44 @@ void compute_simple_stats(channel_stats_t *stats)
     // mean
     temp_mean += bin_count * k;
     // max and min
-    if (bin_count != 0){ 
+    if (bin_count != 0){  // the last that is not zero
       temp_max = k;
-      if (temp_min == 0){
+      if (temp_min == 0){ // first time is zero, then min is set
         temp_min = k;
       }
     }
   }
+  // max and min count
+  stats->max_count = stats->histogram.bins[temp_max];
+  stats->min_count = stats->histogram.bins[temp_min];
+
   // biased downwards due to truncation
-  stats->max = (temp_max << APP_HISTOGRAM_QUANTIZATION_BITS);
-  stats->min = (temp_min << APP_HISTOGRAM_QUANTIZATION_BITS);
-  stats->mean = (temp_mean) *(1 << APP_HISTOGRAM_QUANTIZATION_BITS) * histogram_norm_factor;
+  stats->max = (temp_max << HIST_QUANT_BITS);
+  stats->min = (temp_min << HIST_QUANT_BITS);
+  stats->mean = (temp_mean) *(1 << HIST_QUANT_BITS) * histogram_norm_factor;
 }
 
 
-/*
-typedef struct {
-  uint8_t min;
-  uint8_t max;
-  uint8_t percentile;
-  float skewness;
-  float mean;
-  channel_histogram_t histogram;
-} channel_stats_t;
-*/
-void print_simple_stats(channel_stats_t *stats, unsigned channel){
-  printf("ch:%d,Min:%d,Max:%d,Mean:%f,Skew:%f\n", 
-    channel,
-    stats->min,
-    stats->max,
-    stats->mean,
-    stats->skewness);
+void stats_print(channel_stats_t *stats, unsigned channel){
+  const char* formattedString = "\nch:%d,Mi:%d,Ma:%d,Mean:%f,Sk:%f,pct:%d,mi_c:%lu,ma_c:%lu,pc:%lu\n";
+  char output[255];  // Assuming a maximum length for the formatted string
+  sprintf(output, formattedString,
+      channel,
+      stats->min,
+      stats->max,
+      stats->mean,
+      stats->skewness,
+      stats->percentile,
+      stats->min_count,
+      stats->max_count,
+      stats->per_count);
+
+  printstr(output);
+  // printf("%s", output);
 }
 
-void find_percentile(channel_stats_t *stats, const float fraction)
+
+void stats_percentile(channel_stats_t *stats, const float fraction)
 {
   const unsigned threshold = fraction * HISTOGRAM_TOTAL_SAMPLES;
   // Could be optimized but fkeep it like this for timing reasons [2]
@@ -113,80 +115,21 @@ void find_percentile(channel_stats_t *stats, const float fraction)
   for(int k = 0; k < HISTOGRAM_BIN_COUNT; k++){
     unsigned new_total = total + stats->histogram.bins[k];
     if(total < threshold && new_total >= threshold)
-      result = (k << APP_HISTOGRAM_QUANTIZATION_BITS);
+      result = (k << HIST_QUANT_BITS);
     total = new_total;
   }
   stats -> percentile = (uint8_t) result;
 }
 
-
-/**
-* Thread that computes statistics for each pixel in the image. 
-* The statistics are stored in a struct which is used to perform
-* isp corrections
-* @param c_img_in - Channel end of the
-*/
-void statistics_thread(
-    streaming_chanend_t c_img_in,
-    CLIENT_INTERFACE(sensor_control_if, sc_if))
+void stats_percentile_volume(channel_stats_t *stats)
 {
-  // Outer loop iterates over frames
-  while(1){
-    global_stats_t global_stats = {{0}};
-    // Inner loop iterates over rows within a frame
-    while(1){
-
-      low_res_image_row_t* row = (low_res_image_row_t*) s_chan_in_word(c_img_in);
-
-      if(row == NULL){ // Signal end of frame [1]
-        break;
-      }
-
-      if(row == (low_res_image_row_t *) 1)
-      {
-        // stop the camera sensor
-        sensor_control_stop(sc_if);
-        // exit 
-        return;
-      }
-      
-      // Update histogram
-      for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
-        update_histogram(&global_stats[channel].histogram, &row->pixels[channel][0]);
-      }
-    }
-    
-    // End of frame, compute statistics
-    for(uint8_t channel = 0; channel < APP_IMAGE_CHANNEL_COUNT; channel++){
-      compute_skewness(&global_stats[channel]);
-      compute_simple_stats(&global_stats[channel]);
-      find_percentile(&global_stats[channel], APP_WB_PERCENTILE);
-      print_simple_stats(&global_stats[channel], channel);
-    }
-
-    // Adjust AE
-    uint8_t ae_done = AE_control_exposure(&global_stats, sc_if);
-
-    // Adjust AWB 
-    static unsigned run_once = 0;
-    if (ae_done == 1 && run_once == 0){
-    AWB_compute_gains_white_max(&global_stats, &isp_params);   //0
-    //AWB_compute_gains_white_patch(&global_stats, &isp_params); //1
-    //AWB_compute_gains_gray_world(&global_stats, &isp_params);  //2
-    //AWB_compute_gains_percentile(&global_stats, &isp_params);  //3
-    //AWB_compute_gains_static(&global_stats, &isp_params);      //4
-    run_once = 1; // set to 1 to just run once
-    }
-    
-    // Apply gamma curve
-    //TODO here instead of user app
-
-    // Print ISP info
-    AWB_print_gains(&isp_params);
+  uint32_t bin_count = 0;
+  uint8_t percentile_point = stats -> percentile / 4;
+  for(int k = percentile_point; k < HISTOGRAM_BIN_COUNT; k++){
+    bin_count += stats->histogram.bins[k];
   }
+  stats->per_count = bin_count;
 }
-
-
 
 // Notes
 /*

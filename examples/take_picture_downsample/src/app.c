@@ -7,13 +7,11 @@
 #include "app.h"
 #include "isp.h"  // needed for gamma
 
-#define APPLY_GAMMA 1
-
 void user_app()
 {
 
   // Initialize camera api
-  camera_api_init();
+  camera_init();
 
   int8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
   uint8_t temp_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS];
@@ -22,7 +20,7 @@ void user_app()
   memset(image_buffer, -128, sizeof(image_buffer));
 
   // Wait for the image to set exposure
-  delay_milliseconds(5000);
+  delay_milliseconds(4000);
   printf("Requesting image...\n");
   // grab a frame
   if(camera_capture_image(image_buffer)){
@@ -32,7 +30,7 @@ void user_app()
   printf("Image captured...\n");
 
   // stop the threads and camera stream
-  camera_api_stop();
+  camera_stop();
   delay_milliseconds(100);
 
   // convert to uint8 with right dimentions
@@ -47,7 +45,8 @@ void user_app()
   
   // apply gamma correction
   #if APPLY_GAMMA
-    isp_gamma_1p8((uint8_t *) &temp_buffer[0][0][0],
+    isp_gamma((uint8_t *) &temp_buffer[0][0][0],
+                          &gamma_new[0], 
                           APP_IMAGE_HEIGHT_PIXELS,
                           APP_IMAGE_WIDTH_PIXELS,
                           APP_IMAGE_CHANNEL_COUNT);

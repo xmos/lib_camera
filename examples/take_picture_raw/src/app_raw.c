@@ -12,14 +12,14 @@
 void user_app_raw()
 {    
     // Initialize camera api
-    camera_api_init();
+    camera_init();
 
     // set the input image to 0
     int8_t image_buffer[H_RAW][W_RAW];
     memset(image_buffer, -128, H_RAW * W_RAW);
 
     // wait for the camera to set I2C parameters
-    delay_milliseconds(5000);
+    delay_milliseconds(4000);
 
     // Request an image
     printf("Requesting image...\n");
@@ -30,7 +30,7 @@ void user_app_raw()
     printf("Image captured...\n");
 
     // stop the threads and camera stream
-    camera_api_stop();
+    camera_stop();
     delay_milliseconds(100);
     
     // Convert image from int8 to uint8 in-place

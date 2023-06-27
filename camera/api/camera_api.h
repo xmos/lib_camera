@@ -15,14 +15,14 @@ extern "C" {
  * 
  * Initialize the camera API. Must be called before any other API functions.
  */
-void camera_api_init();
+void camera_init();
 
 /**
  * CLIENT SIDE
  * 
  * Stop the camera API. Must be called before exiting the program.
  */
-void camera_api_stop();
+void camera_stop();
 
 /**
  * SERVER SIDE
@@ -31,7 +31,7 @@ void camera_api_stop();
  * 
  * @return 1 if the client has requested to stop the camera, 0 otherwise
  */
-unsigned camera_api_check_stop();
+unsigned camera_check_stop();
 
 /**
  * SERVER SIDE
@@ -39,7 +39,7 @@ unsigned camera_api_check_stop();
  * Called by the packet handler when a new row of raw image data is
  * available. Typically this will be Bayered image data.
  */
-void camera_api_new_row_raw(
+void camera_new_row(
     const int8_t pixel_data[H_RAW],
     const unsigned row_index);
 
@@ -49,7 +49,7 @@ void camera_api_new_row_raw(
  * Called by the packet handler when a new row of decimated image data is
  * available.
  */
-void camera_api_new_row_decimated(
+void camera_new_row_decimated(
     const int8_t pixel_data[CH][W],
     const unsigned row_index);
 
@@ -62,7 +62,7 @@ void camera_api_new_row_decimated(
  * 
  * @return The row index of the captured row of pixels
  */
-unsigned camera_capture_row_raw(
+unsigned camera_capture_row(
     int8_t pixel_data[W_RAW]);
 
 /**
