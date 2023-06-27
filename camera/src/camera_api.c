@@ -9,14 +9,12 @@
 #include "camera_utils.h"
 #include "camera_api.h"
 
-
 #define CHAN_RAW 0
 #define CHAN_DEC 1
 #define CHAN_STOP 2
 
 // In order to interface the handler and api
 streaming_channel_t c_user_api[3];
-
 
 void camera_init()
 {
@@ -88,15 +86,12 @@ unsigned camera_capture_row(
   return sdf;  
 }
 
-
-
 unsigned camera_capture_row_decimated(
     int8_t pixel_data[CH][W])
 {
   s_chan_out_word(c_user_api[CHAN_DEC].end_b, (unsigned) &pixel_data[0][0]);
   return s_chan_in_word(c_user_api[CHAN_DEC].end_b);
 }
-
 
 unsigned camera_capture_image_raw(
     int8_t image_buff[H_RAW][W_RAW])
@@ -147,8 +142,6 @@ unsigned camera_capture_image(
 
   return 0;
 }
-
-
 
 unsigned camera_capture_image_cropped(
     int8_t* image_buff,

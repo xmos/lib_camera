@@ -64,6 +64,5 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
 
         // Print ISP info
         AWB_print_gains(&isp_params);
-        
     }
 }

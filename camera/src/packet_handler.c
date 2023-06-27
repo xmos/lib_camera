@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <assert.h>
 
@@ -13,14 +11,12 @@
 #include "camera_utils.h"
 #include "sensor.h"
 
-
 // Filter stride
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
 
 // State needed for the vertical filter
 static
 vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
-
 
 // Contains the local state info for the packet handler thread.
 static struct {
@@ -38,8 +34,7 @@ static struct {
 hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
 static 
-void handle_frame_start(
-    const mipi_packet_t* pkt)
+void handle_frame_start()
 {
   // New frame is starting, reset the vertical filter accumulator states.
   for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++){
@@ -51,7 +46,6 @@ void handle_frame_start(
     image_vfilter_frame_init(&vfilter_accs[c][0]);
   }
 }
-
 
 static
 void handle_unknown_packet(
@@ -65,8 +59,6 @@ void handle_unknown_packet(
   // 2 - invalid packets 
   assert(data_type < 0x3F && "Packet non valid");
 }
-
-
 
 /**
  * Handle a row of pixel data.
@@ -146,7 +138,6 @@ unsigned handle_pixel_data(
   return 0;
 }
 
-
 static 
 void on_new_output_row(
     const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
@@ -161,12 +152,9 @@ void on_new_output_row(
   ph_state.out_line_number++;
 }
 
-
-
 static
 void handle_frame_end(
     int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
-    const mipi_packet_t* pkt,
     streaming_chanend_t c_stats)
 {
   // Drain the vertical filter's accumulators
@@ -181,7 +169,6 @@ void handle_frame_end(
   s_chan_out_word(c_stats, (unsigned) NULL);
 }
 
-
 void handle_no_expected_lines()
 {
   if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
@@ -191,7 +178,6 @@ void handle_no_expected_lines()
 #endif
   }
 }
-
 
 /**
  * Process a single packet.
@@ -205,7 +191,6 @@ void handle_packet(
     const mipi_packet_t* pkt,
     streaming_chanend_t c_stats)
 {
-
   /*
    * These buffers store rows of the fully decimated image. They are passed
    * along to the statistics thread once the packet handler thread no longer
@@ -242,11 +227,11 @@ void handle_packet(
       ph_state.out_line_number = 0;
       ph_state.frame_number++;
 
-      handle_frame_start(pkt);   
+      handle_frame_start();   
       break;
 
     case MIPI_DT_FRAME_END:   
-      handle_frame_end(output_buff[out_dex], pkt, c_stats);
+      handle_frame_end(output_buff[out_dex], c_stats);
       out_dex = 1 - out_dex;
       break;
 
@@ -319,6 +304,5 @@ void mipi_packet_handler(
     // unsigned time_start = measure_time();
     handle_packet(pkt, c_stats);
     // unsigned time_proc = measure_time() - time_start;
-
   }
 }

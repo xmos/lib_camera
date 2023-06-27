@@ -1,4 +1,3 @@
-
 set(LIB_NAME lib_xassert)
 set(LIB_XASSERT_PATH ${CMAKE_CURRENT_LIST_DIR}/xassert/lib_xassert)
 
@@ -15,9 +14,6 @@ target_include_directories(${LIB_NAME}
 )
 
 target_compile_options(${LIB_NAME}
-  PRIVATE
-    -Os -g 
-    -Wno-format 
-    -Wno-unused-variable 
-    -Wno-missing-braces
+    PRIVATE
+        -Os -g -Wall -Werror
 )

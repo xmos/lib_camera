@@ -15,14 +15,14 @@ Run the following commands from the top level:
 
     .. code-block:: console
         
-        cmake -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+        cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
         make -C build example_take_picture_downsample
 
 .. tab:: Windows
 
     .. code-block:: console
 
-        cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=xmos_cmake_toolchain/xs3a.cmake -B build
+        cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
         ninja -C build example_take_picture_downsample
 
 ***************
@@ -36,18 +36,19 @@ From the top level
     .. code-block:: console
 
         pip install -e utils/xscope_fileio
-        python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
+        cd python
+        python run_xscope_bin.py ../build/examples/take_picture_downsample/example_take_picture_downsample.xe
 
 .. tab:: Windows
 
     .. code-block:: console
 
         # works with a cl compiler
-        pip install -e utils/xscope_fileio
-        cd utils/xscope_fileio/host
+        pip install -e utils\xscope_fileio
+        cd utils\xscope_fileio\host
         cmake -G "Ninja" . && ninja
-        cd ../../../
-        python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
+        cd ..\..\..\python
+        python run_xscope_bin.py ..\build\examples\take_picture_downsample\example_take_picture_downsample.xe
 
 ******
 Output

@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <stdint.h>
@@ -29,7 +28,6 @@ typedef struct {
   unsigned shift;
 } hfilter_state_t;
 
-
 /**
  * This function performs a horizontal filtering operation on a single row 
  * of pixels.
@@ -56,7 +54,6 @@ void pixel_hfilter(
     const int32_t input_stride,
     const unsigned output_count);
 
-
 /**
  * This function is used to update the filter parameters based on a gain to be
  * applied to the color channel represented by `state`.
@@ -75,8 +72,6 @@ void pixel_hfilter_update_scale(
     hfilter_state_t* state,
     const float gain,
     const unsigned offset);
-
-    
 
 #if defined(__XC__) || defined(__cplusplus)
 }

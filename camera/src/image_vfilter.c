@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
@@ -32,7 +31,6 @@ void image_vfilter_reset(
   pixel_vfilter_acc_init(acc->buff, vfilter_acc_offset, 
                          APP_IMAGE_WIDTH_PIXELS);
 }
-
 
 /**
  * Call this once at the start of each frame. The accumulator next_tap values
@@ -97,7 +95,6 @@ unsigned image_vfilter_process_row(
 
   return 0;
 }
-
 
 unsigned image_vfilter_drain(
     int8_t output[],

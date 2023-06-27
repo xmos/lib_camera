@@ -3,7 +3,6 @@
 
 #include "xccompat.h"
 
-
 #ifdef __XC__
 
 typedef interface sensor_control_if {

@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <assert.h>
 #include <stdio.h>
@@ -6,9 +5,7 @@
 #include "image_hfilter.h"
 #include "isp.h"
 
-
 //Note: for filter coefficients reference : python/filters.txt
-
 
 void pixel_hfilter_update_scale(
     hfilter_state_t* state,
