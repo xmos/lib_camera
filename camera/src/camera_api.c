@@ -171,6 +171,8 @@ unsigned camera_capture_image(
         image_buff[row][i][c] = pixel_data[c][i];
 
   }
+
+  return 0;
 }
 
 unsigned camera_capture_image_cropped(
