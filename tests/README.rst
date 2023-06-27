@@ -38,7 +38,7 @@ Running the tests
 Run unit tests
 --------------
 
-.. code-block:: bash
+.. code-block:: console
 
     xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
     # or
@@ -47,6 +47,6 @@ Run unit tests
 Run hardware tests
 ------------------
 
-.. code-block:: bash
+.. code-block:: console
 
    pytest

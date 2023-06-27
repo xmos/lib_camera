@@ -26,7 +26,7 @@ Installation
 Some dependent components are included as git submodules. These can be obtained by cloning this repository with the following command:
 (make sure you have the correct ssh access to clone)
 
-.. code-block:: bash
+.. code-block:: console
 
    git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
 
