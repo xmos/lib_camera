@@ -36,7 +36,7 @@ Make sure ``xscope_fileio`` is installed. See /utils/README.rst section for more
 
 .. code-block:: console
     
-    python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
+    python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
 
 
 ******

@@ -9,16 +9,15 @@ Hardware requirements:
 ^^^^^^^^^^^^^^^^^^^^^^^
 - XCORE.AI EVALUATION KIT (XK-EVK-XU316)
 - Camera module
-- Power supply
-- Micro USB cable
-- JTAG debugger
+- Camera ribbon connector
+- 2xMicro USB cable (Power supply and Jtag)
+- JTAG debugger and cable
 
 Software requirements:
 ^^^^^^^^^^^^^^^^^^^^^^^
 - XMOS tools: `SW_TOOLS`_
 - CMake, Ninja (Windows)
 - Python 3.7 or later 
-- Xscope_fileio
 
 Make sure all submodules are imported: 
 
@@ -29,12 +28,14 @@ Make sure all submodules are imported:
 Run the RAW camera demo
 ^^^^^^^^^^^^^^^^^^^^^^^
 This demo uses the RAW camera module to capture a RAW8 image and save it to a .raw file. 
-Then, this image can be decoded using the python script ``python decode_RAW8.py``.
+Then, this image can be decoded using the python script ``python decode_raw8.py``.
 
-1. Make sure that the camera is connecte to the board
-2. Connect Power Supply and JTAG debugger
-3. Build the example using the following commands:
+.. note::
+    Make sure xscope_fileio is installed. See /utils/README.rst section for more details
 
+#. Ensure that the camera is connected to the board
+#. Connect Power Supply and JTAG debugger
+#. Build the example using the following commands:
 
 .. tab:: Linux and Mac
 
@@ -48,7 +49,7 @@ Then, this image can be decoded using the python script ``python decode_RAW8.py`
     .. code-block:: console
 
         cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
-        ninja -C build example_take_picture_downsample
+        ninja -C build example_take_picture_raw
 
 
 4. Run the example using the following command:

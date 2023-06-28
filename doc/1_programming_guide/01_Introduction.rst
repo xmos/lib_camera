@@ -38,7 +38,7 @@ This repository contains a set of tools for image acquisition, processing, and t
 The architecture, viewed from a high level, is composed of the following elements:
 
 .. figure:: images/1_high_level_view.png
-    :alt: Alternate text for the image
+    :alt: High-level block diagram
     :align: center
 
     High-level block diagram of the FWK_Camera.

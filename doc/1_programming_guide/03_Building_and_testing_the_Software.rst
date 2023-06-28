@@ -4,7 +4,7 @@ Building the Software
 .. include:: ../substitutions.rst
 
 This section will provide details on how the software is constructed. The basic steps and build requirements
-can be found in the README.md file which is distributed with the source.
+can be found in the README.rst file which is distributed with the source.
 
 
 Requirements
