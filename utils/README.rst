@@ -21,16 +21,19 @@ To install `xscope_fileio`, please follow the steps below:
 
 5. Generate the build system files using CMake and build the binary:
 
-.. tab:: Linux and Mac
 
-    .. code-block:: console
+Linux, Mac
+~~~~~~~~~~
+
+.. code-block:: console
     
         cmake .
         make
 
-.. tab:: Windows
+Windows
+~~~~~~~
 
-    .. code-block:: console
+.. code-block:: console
 
         cmake -G "Ninja" .
         ninja
