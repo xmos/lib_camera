@@ -11,16 +11,18 @@ Build example
 *************
 Run the following commands from the top level:
 
-.. tab:: Linux and Mac
+Linux, Mac
+~~~~~~~~~~
 
-    .. code-block:: console
+.. code-block:: console
         
         cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
         make -C build example_take_picture_raw
 
-.. tab:: Windows
+Windows
+~~~~~~~
 
-    .. code-block:: console
+.. code-block:: console
 
         cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
         ninja -C build example_take_picture_raw
@@ -30,25 +32,12 @@ Running example
 ***************
 
 From the top level
+Make sure ``xscope_fileio`` is installed. See /utils/README.rst section for more details.
 
-.. tab:: Linux and Mac
+.. code-block:: console
+    
+    python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
 
-    .. code-block:: console
-
-        pip install -e utils/xscope_fileio
-        cd python
-        python run_xscope_bin.py ../build/examples/take_picture_raw/example_take_picture_raw.xe
-
-.. tab:: Windows
-
-    .. code-block:: console
-
-        # works with a cl compiler
-        pip install -e utils\xscope_fileio
-        cd utils\xscope_fileio\host
-        cmake -G "Ninja" . && ninja
-        cd ..\..\..\python
-        python run_xscope_bin.py ..\build\examples\take_picture_raw\example_take_picture_raw.xe
 
 ******
 Output

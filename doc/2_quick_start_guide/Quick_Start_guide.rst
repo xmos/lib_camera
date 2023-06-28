@@ -18,6 +18,7 @@ Software requirements:
 - XMOS tools: `SW_TOOLS`_
 - CMake, Ninja (Windows)
 - Python 3.7 or later 
+- Xscope_fileio
 
 Make sure all submodules are imported: 
 
@@ -28,16 +29,27 @@ Make sure all submodules are imported:
 Run the RAW camera demo
 ^^^^^^^^^^^^^^^^^^^^^^^
 This demo uses the RAW camera module to capture a RAW8 image and save it to a .raw file. 
-Then this image can be decoded using the `RAW image decoder`_.
+Then, this image can be decoded using the python script `python decode_RAW8.py`.
 
 1. Make sure that the camera is connecte to the board
 2. Connect Power Supply and JTAG debugger
-3. Build he example using the following commands:
+3. Build the example using the following commands:
 
-.. code-block:: console
 
-    cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
-    ninja -C build example_take_picture_raw
+.. tab:: Linux and Mac
+
+    .. code-block:: console
+    
+        cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
+        make -C build example_take_picture_raw
+
+.. tab:: Windows
+
+    .. code-block:: console
+
+        cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
+        ninja -C build example_take_picture_downsample
+
 
 4. Run the example using the following command:
 
