@@ -6,7 +6,7 @@ Version 0.1.0
 
 Description:
 *************
-This is a initital release of the fwk_camera repo. It contains a basic interface for adquiring images, process them and send them to the host. 
+This is a initital release of the fwk_camera repo. It contains a basic interface for acquiring images, process them and send them to the host. 
 It also contains a basic interface for controlling the camera ISP features.
 
 New Features:
