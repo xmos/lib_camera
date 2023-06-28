@@ -10,8 +10,8 @@ Hardware requirements:
 - XCORE.AI EVALUATION KIT (XK-EVK-XU316)
 - Camera module
 - Camera ribbon connector
-- 2xMicro USB cable (Power supply and Jtag)
-- JTAG debugger and cable
+- 2xMicro USB cable (Power supply and Xtag)
+- Xtag debugger and cable
 
 Software requirements:
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -34,7 +34,7 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
     Make sure xscope_fileio is installed. See /utils/README.rst section for more details
 
 #. Ensure that the camera is connected to the board
-#. Connect Power Supply and JTAG debugger
+#. Connect Power Supply and Xtag debugger
 #. Build the example using the following commands:
 
 .. tab:: Linux and Mac

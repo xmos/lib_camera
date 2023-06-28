@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-Version 0.0.1
+Version 0.1.
 ---------------------------
 
 Description:
@@ -12,20 +12,14 @@ It also contains a basic interface for controlling the camera ISP features.
 New Features:
 *************
 
-- Raw8 capture: Capture a raw-8 image from the camera and send it to the host.
-- Raw8 capture and downsample: capture a raw image from the camera, downsample it by 4 and send it to the host.
-- Raw10 mode: mode to capture raw10 images from the camera.
-- ISP features:
-    - AE control:  auto exposure based on histogram skewness
-    - AWB control: auto white balance based on a combination of grey world assumption and percentile
-    - Gamma correction: 1.8 gamma correction. 
-    - Image rotation: image rotation capabilities (sensor and ISP)
-    - Image cropping / scaling : image scalling, cropping. 
+In this first release we include two basic examples to capture an image from the Sony IMX219 sensor (Raspberry Pi Camera V2).
+For the first examples the image is directly captured as raw and saved as a .raw file. 
+The second example is a more complex pipeline that involves the ISP. The image is captured as raw, processed by the ISP and saved as a .bmp and .bin file. 
 
 Limitations:
 *************
 - RAW10 downsample: RAW10 downsample is not supported.
-- Galaxy core integration it is not supported yet.
+- Galaxy core sensor pipeline it is not yet supported.
 
 Known Issues:
 *************
@@ -34,5 +28,5 @@ Known Issues:
         Auto exposure can struggle in enviornement with high dynamic range. 
         It will choose to privilege the mayority of the image, leaving some areas underexposed or overexposed.
     - AWB: 
-        Due to white balancing algorithmm, we can observe that pure color pure red or pure blue can appear more white than expected. 
-        AWB can me turned off, or changed manually to adequate to a specific scene.  
+        Due to automatic white balancing algorithmm ISP will try to compensante images iluminant. If the environement is a pure color pure red or pure blue, it can appear more white than expected. 
+        In this case, AWB can me turned off, or changed manually to adequate to a specific scene adjusting the static AWB values.  

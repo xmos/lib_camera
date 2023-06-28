@@ -14,21 +14,16 @@ Linux, Mac
 
 .. code-block:: console
       
-      pip install -e utils\xscope_fileio
+      pip install -e utils/xscope_fileio
 
 Windows
 ~~~~~~~
 
 .. code-block:: console
-      pip install -e utils\xscope_fileio
-      cmake -G "Ninja" . && ninja
-
-4. Navigate to the host directory by executing the following command:
-
-.. code-block:: console
-
       cd utils\xscope_fileio\host
-
+      pip install -e utils/xscope_fileio
+      cmake -G "Ninja" . && ninja
+      
 5. Generate the build system files using CMake and build the binary:
 
 Your xscope_fileio host app is now ready to use.
