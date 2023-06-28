@@ -115,7 +115,7 @@ unsigned camera_capture_image_raw(
   return 0;
 }
 
-unsigned camera_capture_image(
+unsigned camera_capture_image_transpose(
     int8_t image_buff[CH][H][W])
 {
   unsigned row_index;
@@ -139,6 +139,37 @@ unsigned camera_capture_image(
     for(int c = 0; c < CH; c++)
       memcpy(&image_buff[c][row][0], &pixel_data[c][0], W);
       
+  }
+
+  return 0;
+}
+
+unsigned camera_capture_image(
+    int8_t image_buff[H][W][CH])
+{
+  unsigned row_index;
+
+  int8_t pixel_data[CH][W];
+
+  // Loop, capturing rows until we get one with row_index==0
+  do {
+    row_index = camera_capture_row_decimated(pixel_data);
+  } while (row_index != 0);
+
+  for(int i = 0; i < W; i++)
+    for(int c = 0; c < CH; c++)
+      image_buff[0][i][c] = pixel_data[c][i];
+  
+  // Now capture the rest of the rows
+  for (unsigned row = 1; row < H; row++) {
+    row_index = camera_capture_row_decimated(pixel_data);
+
+    if (row_index != row)      return 1; // TODO handle errors better
+
+    for(int i = 0; i < W; i++)
+      for(int c = 0; c < CH; c++)
+        image_buff[row][i][c] = pixel_data[c][i];
+
   }
 
   return 0;
