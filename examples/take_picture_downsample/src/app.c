@@ -12,6 +12,7 @@ void user_app()
   camera_init();
 
   int8_t image_buffer[APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS][APP_IMAGE_CHANNEL_COUNT];
+  uint8_t * image_ptr = (uint8_t *) &image_buffer[0][0][0];
 
   // set the input image to 0
   memset(image_buffer, -128, sizeof(image_buffer));
@@ -31,13 +32,13 @@ void user_app()
   delay_milliseconds(100);
 
   // convert to uint8
-  vect_int8_to_uint8((uint8_t*) image_buffer,
-                     image_buffer,
+  vect_int8_to_uint8(image_ptr,
+                     &image_buffer[0][0][0],
                      sizeof(image_buffer));
   
   // apply gamma correction
   #if APPLY_GAMMA
-    isp_gamma((uint8_t *) image_buffer,
+    isp_gamma(image_ptr,
               &gamma_new[0], 
               APP_IMAGE_HEIGHT_PIXELS,
               APP_IMAGE_WIDTH_PIXELS,
@@ -46,14 +47,14 @@ void user_app()
 
   // Write binary file
   write_image_file("capture.bin",
-                    (uint8_t *) image_buffer,
+                    image_ptr,
                     APP_IMAGE_HEIGHT_PIXELS,
                     APP_IMAGE_WIDTH_PIXELS,
                     APP_IMAGE_CHANNEL_COUNT);
 
   // Write bmp file
   write_bmp_file("capture.bmp",
-                  (uint8_t *) image_buffer,
+                  image_ptr,
                   APP_IMAGE_HEIGHT_PIXELS,
                   APP_IMAGE_WIDTH_PIXELS,
                   APP_IMAGE_CHANNEL_COUNT);
