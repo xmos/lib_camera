@@ -19,6 +19,10 @@ string(REPLACE "-MD" "-MMD" CMAKE_DEPFILE_FLAGS_C ${CMAKE_DEPFILE_FLAGS_C})
 
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL XCORE_XS3A)
 
+set(RAW8 0x2A)
+set(RAW10 0x2B)
+set(CONFIG_MIPI_FORMAT ${RAW8})
+
 ## Add frameworks
 add_subdirectory(modules)
 
