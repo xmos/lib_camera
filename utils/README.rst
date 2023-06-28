@@ -20,8 +20,8 @@ Windows
 ~~~~~~~
 
 .. code-block:: console
-      cd utils\xscope_fileio\host
       pip install -e utils/xscope_fileio
+      cd utils/xscope_fileio/host
       cmake -G "Ninja" . && ninja
       
 5. Generate the build system files using CMake and build the binary:
