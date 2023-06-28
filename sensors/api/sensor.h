@@ -16,7 +16,9 @@
 #define CONFIG_MODE             MODE_VGA_640x480
 
 // Mipi format and mode
+#ifndef CONFIG_MIPI_FORMAT
 #define CONFIG_MIPI_FORMAT      MIPI_DT_RAW8
+#endif
 #define MIPI_PKT_BUFFER_COUNT   4 
 
 // FPS settings
@@ -107,8 +109,7 @@
 // ----------------------- Settings dependant of each sensor library
 
 // Camera dependant (do not edit)
-#define MIPI_LINE_WIDTH_BYTES MIPI_IMAGE_WIDTH_BYTES
-#define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_LINE_WIDTH_BYTES) + 4)
+#define MIPI_MAX_PKT_SIZE_BYTES ((MIPI_IMAGE_WIDTH_BYTES) + 4)
 #define MIPI_TILE 1
 #define EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
 #define MIPI_EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
@@ -165,4 +166,4 @@
 #define W   (APP_IMAGE_WIDTH_PIXELS)
 
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
-#define W_RAW   (MIPI_IMAGE_WIDTH_PIXELS)
+#define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)

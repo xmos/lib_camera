@@ -17,6 +17,11 @@ file(GLOB_RECURSE SOURCES_ASM "*.S")
 
 add_library(${LIB_NAME} STATIC)
 
+target_compile_definitions(${LIB_NAME}
+    PUBLIC
+        CONFIG_MIPI_FORMAT=${CONFIG_MIPI_FORMAT}
+)
+
 target_include_directories(${LIB_NAME}
     PUBLIC
         api

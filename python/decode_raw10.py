@@ -24,7 +24,7 @@ from utils import (
     plot_imgs
 )
 
-input_name = os.getenv('BINARY_IMG_PATH')
+input_name = os.getenv('BINARY_IMG_PATH') or "capture.raw"
 
 width = 640
 height = 480

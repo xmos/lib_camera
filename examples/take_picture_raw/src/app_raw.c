@@ -40,7 +40,7 @@ void user_app_raw()
 
     // Save the image to a file
     write_image_file("capture.raw", (uint8_t * ) &image_buffer[0][0],   
-            MIPI_IMAGE_HEIGHT_PIXELS, MIPI_LINE_WIDTH_BYTES, 1);
+            MIPI_IMAGE_HEIGHT_PIXELS, MIPI_IMAGE_WIDTH_BYTES, 1);
 
     printf("Image saved. Exiting.\n");
     xscope_close_all_files();
