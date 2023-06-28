@@ -29,7 +29,7 @@ Make sure all submodules are imported:
 Run the RAW camera demo
 ^^^^^^^^^^^^^^^^^^^^^^^
 This demo uses the RAW camera module to capture a RAW8 image and save it to a .raw file. 
-Then, this image can be decoded using the python script `python decode_RAW8.py`.
+Then, this image can be decoded using the python script ``python decode_RAW8.py``.
 
 1. Make sure that the camera is connecte to the board
 2. Connect Power Supply and JTAG debugger
