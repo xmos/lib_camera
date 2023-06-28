@@ -24,7 +24,7 @@ from utils import (
     plot_imgs
 )
 
-input_name = os.getenv('BINARY_IMG_PATH')
+input_name = os.getenv('BINARY_IMG_PATH') or "capture.raw"
 
 width = 640
 height = 480
@@ -32,8 +32,8 @@ bit_width = 10
 flip = False
 as_shot_neutral = [0.5666090846, 1, 0.7082979679]
 as_shot_neutral = [0.6301882863, 1, 0.6555861831]
-#cfa_pattern = [0, 1, 1, 2] 
-cfa_pattern = [2, 1, 1, 0]
+cfa_pattern = [0, 1, 1, 2] 
+#cfa_pattern = [2, 1, 1, 0]
  
 # read the data
 with open(input_name, "rb") as f:
