@@ -41,8 +41,7 @@ void camera_stop(){
 
 void camera_new_row(
     const int8_t pixel_data[W_RAW],
-    const unsigned row_index)
-{
+    const unsigned row_index){
   int8_t* user_pixel_data;
 
   SELECT_RES(
@@ -63,18 +62,18 @@ void camera_new_row_decimated(
     const int8_t pixel_data[CH][W],
     const unsigned row_index)
 {
-  int8_t* user_pixel_data;
+    int8_t *user_pixel_data;
 
-  SELECT_RES(
-      CASE_THEN(c_user_api[CHAN_DEC].end_a, user_handler),
-      DEFAULT_THEN(default_handler))
+    SELECT_RES(
+        CASE_THEN(c_user_api[CHAN_DEC].end_a, user_handler),
+        DEFAULT_THEN(default_handler))
     {
-      user_handler:
-        user_pixel_data = (int8_t*) s_chan_in_word(c_user_api[CHAN_DEC].end_a);
-        memcpy(user_pixel_data, (void*) pixel_data, CH*W);
+    user_handler:
+        user_pixel_data = (int8_t *)s_chan_in_word(c_user_api[CHAN_DEC].end_a);
+        memcpy(user_pixel_data, (void *)pixel_data, CH * W);
         s_chan_out_word(c_user_api[CHAN_DEC].end_a, row_index);
         break;
-      default_handler:
+    default_handler:
         break;
     }
 }
@@ -84,7 +83,7 @@ unsigned camera_capture_row(
 {
   s_chan_out_word(c_user_api[CHAN_RAW].end_b, (unsigned) &pixel_data[0]);
   unsigned sdf = s_chan_in_word(c_user_api[CHAN_RAW].end_b);
-  return sdf;
+  return sdf;  
 }
 
 unsigned camera_capture_row_decimated(

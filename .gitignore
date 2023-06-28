@@ -42,6 +42,7 @@
 *.bin
 *.fs
 *.exe
+.editorconfig
 
 # Test cruft
 **/.pytest_cache/*

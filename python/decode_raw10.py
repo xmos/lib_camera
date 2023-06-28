@@ -32,8 +32,8 @@ bit_width = 10
 flip = False
 as_shot_neutral = [0.5666090846, 1, 0.7082979679]
 as_shot_neutral = [0.6301882863, 1, 0.6555861831]
-cfa_pattern = [0, 1, 1, 2] 
-#cfa_pattern = [2, 1, 1, 0]
+#cfa_pattern = [2, 1, 1, 0] # raspberry
+cfa_pattern = [0, 1, 1, 2] # explorer board
  
 # read the data
 with open(input_name, "rb") as f:
@@ -69,7 +69,7 @@ img_demoisaic = img
 img = new_color_correction(img)
 
 # gamma
-img = img ** (1.0 / 2.2)
+img = img ** (1.0 / 1.8)
 
 # clip the image
 img = np.clip(255*img, 0, 255).astype(np.uint8)

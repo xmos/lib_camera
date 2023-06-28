@@ -1,28 +1,12 @@
 Introduction
 =============
 
-.. contents:: Table of Contents
+.. include:: ../substitutions.rst
 
 Overview
 ---------
-The purpose of this programming guide is to provide developers with a comprehensive understanding of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
-
-The architecture consists of several key components that work together to facilitate camera communication and data processing. These components include:
-
-- Camera hardware and camera interface
-- Camera drivers
-- User application / user interface
-- Image signal processing
-- I/O
-
-.. figure:: images/1_high_level_view.png
-    :alt: Alternate text for the image
-    :width: 400px
-    :align: center
-
-    High level block diagram of fwk camera. 
-
-
+The purpose of this programming guide is to provide developers with a comprehensive understanding 
+of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
 
 Conventions and Terminology
 ---------------------------
@@ -35,38 +19,52 @@ To ensure clarity and consistency throughout this guide, the following conventio
 
 Features
 ---------
+The XCORE-AI-EXPLORER board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
+This port is connected to the Xcore-AI processor, so we can directly processing an image from an external sensor and performing various operations, 
+such as converting a RAW image to an RGB image (applying ISP functions), 
+analyzing the image using AI models with xmos-ai-tools,
+converting a MIPI camera to other interfaces as USB, SPI, etc.
+
+The FWK_Camera alongside with the Explorer board architecture provides the following features:
+
 - MIPI CSI2 interface
 - Up to 1GBps per lane
-- Low resolution filtering
-- Cameras supported:
+- Low-resolution filtering
+- Supported cameras:
     - IMX219
-    - GC2145 (explain hardware modification)
+    - GC2145 [*]_
+
+This repository contains a set of tools for image acquisition, processing, and transmission. 
+The architecture, viewed from a high level, is composed of the following elements:
+
+.. figure:: images/1_high_level_view.png
+    :alt: High-level block diagram
+    :align: center
+
+    High-level block diagram of the FWK_Camera.
+
+1. Camera hardware and interface
+2. Camera drivers
+3. Camera application
+4. Sensor configuration
+5. Camera output
+
+Each of these elements is described in detail in the following sections.
 
 Getting Started
 ----------------
-Hardware requirements:
 
-- XCORE.AI EVALUATION KIT (XK-EVK-XU316)
-- Camera module
-- Power supply
-- Micro USB cable
-- JTAG debugger
-
-Software requirements:
-
-- XMOS tools: https://www.xmos.ai/software-tools/
-- FWK_Camera repository
-- CMake, Ninja (Windows)
+To start using the FWK_Camera, you can proceed to the Quick Start Guide, go to: 
+    
+    :ref:`QS_FWKC`.
 
 Additional Resources
 ---------------------
-.. _MIPI: https://www.mipi.org/specifications/csi-2
-.. _XMOS: https://www.xmos.ai/
-.. _XMOSI2C: https://www.xmos.ai/download/lib_i2c-%5Buserguide%5D(5.0.0rc3).pdf
-.. _XMOSProgrammingGuide: https://www.xmos.ai/download/XMOS-Programming-Guide-(documentation)(E).pdf
-.. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 
 - MIPI CSI-2 specification:     `MIPI`_
 - XMOS I2C library user guide:  `XMOSI2C`_
 - XMOS Programming Guide:       `XMOSProgrammingGuide`_
 - IMX219 datasheet:             `IMX219`_
+
+
+.. [*] With Hardware modifications. 
