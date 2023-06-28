@@ -16,16 +16,22 @@ New Features:
 - Raw8 capture and downsample: capture a raw image from the camera, downsample it by 4 and send it to the host.
 - Raw10 mode: mode to capture raw10 images from the camera.
 - ISP features:
-    - AE control
-    - AWB control
-    - Gamma correction
-    - Image rotation
-    - Image cropping / scaling
+    - AE control:  auto exposure based on histogram skewness
+    - AWB control: auto white balance based on a combination of grey world assumption and percentile
+    - Gamma correction: 1.8 gamma correction. 
+    - Image rotation: image rotation capabilities (sensor and ISP)
+    - Image cropping / scaling : image scalling, cropping. 
 
+Limitations:
+*************
+- RAW10 downsample: RAW10 downsample is not supported.
+- Galaxy core integration it is not supported yet.
 
 Known Issues:
 *************
-
-- RAW10 downsample: 
 - Artifacts: 
-- Camera binning modes: 
+    - AE: Auto exposure can struggle in enviornement with high dynamic range. 
+        It will choose to privilege the mayority of the image, leaving some areas underexposed or overexposed.
+    - AWB: Due to white balancing algorithmm, we can observe that 
+        pure color pure red or pure blue can appear more white than expected. 
+        AWB can me turned off, or changed manually to adequate to a specific scene.  
