@@ -10,8 +10,8 @@ Hardware requirements:
 - XCORE.AI EVALUATION KIT (XK-EVK-XU316)
 - Camera module
 - Camera ribbon connector
-- 2xMicro USB cable (Power supply and Xtag)
-- Xtag debugger and cable
+- 2xMicro USB cable (Power supply and xTag)
+- xTag debugger and cable
 
 Software requirements:
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -30,12 +30,18 @@ Run the RAW camera demo
 This demo uses the RAW camera module to capture a RAW8 image and save it to a .raw file. 
 Then, this image can be decoded using the python script ``python decode_raw8.py``.
 
-.. note::
-    Make sure xscope_fileio is installed. See /utils/README.rst section for more details
+.. warning::
+    Make sure xscope_fileio is installed. See utils/README.rst section for more details
 
-#. Ensure that the camera is connected to the board
-#. Connect Power Supply and Xtag debugger
-#. Build the example using the following commands:
+1. Ensure that the camera is connected to the board
+2. Connect Power Supply and xTag debugger
+3. Install python requirements. From the root of the repository run:
+
+.. code-block:: console
+    
+    pip install -r requirements.txt
+
+4. Build the example using the following commands:
 
 .. tab:: Linux and Mac
 
@@ -52,17 +58,18 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
         ninja -C build example_take_picture_raw
 
 
-4. Run the example using the following command:
+5. Run the example using the following command:
 
 .. code-block:: console       
 
     python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
 
-5. You should see the camera comminucating with the host and the image being saved to a .raw file
-6. To decode the image use the following command:
+6. You should see the camera comminucating with the host and the image being saved to a .raw file.
+
+7. To decode the image use the following command:
 
 .. code-block:: console     
 
     python python/decode_raw8.py
 
-7. You should see the decoded image displayed on the screen
+8. You should see the decoded image displayed on the screen
