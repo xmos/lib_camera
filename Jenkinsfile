@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage ('Build and Unit test') {
       agent {
-        label 'linux&&x86_64'
+        label 'linux&&x86_64&&docker'
       }
       stages {
 
@@ -36,6 +36,18 @@ pipeline {
             }
           }
         } // Build
+        
+        stage ('Build Docs') {
+          steps {
+            sh """docker run --user "$(id -u):$(id -g)" \
+                     --rm \
+                     -v ${WORKSPACE}:/build \
+                     -e EXCLUDE_PATTERNS="/build/doc/exclude-patterns.inc" \
+                     -e PDF=1 \
+                     ghcr.io/xmos/doc_builder:v3.0.0"""
+            archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
+          }
+        } // Build Docs
 
         stage('Unit tests') {
           steps {
