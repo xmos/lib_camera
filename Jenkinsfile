@@ -43,7 +43,7 @@ pipeline {
                      --rm \
                      -v ${WORKSPACE}:/build \
                      -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
-                     -e PDF=1 \
+                     -e PDF= # DISABLED UNTIL SVG SUPPORT ADDED TO DOC_BUILDER\
                      ghcr.io/xmos/doc_builder:v3.0.0"""
             archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
           }
