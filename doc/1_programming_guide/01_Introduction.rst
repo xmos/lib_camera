@@ -32,11 +32,16 @@ The FWK_Camera alongside with the Explorer board architecture provides the follo
 - Low-resolution filtering
 - Supported cameras:
     - IMX219
-    - GC2145 [*]_
+    - GC2145 [0]_
 
 This repository contains a set of tools for image acquisition, processing, and transmission. 
 The architecture, viewed from a high level, is composed of the following elements:
 
+.. figure:: images/1_high_level_view.png
+    :alt: High-level block diagram
+    :align: center
+
+    High-level block diagram of the FWK_Camera.
 
 1. Camera hardware and interface
 2. Camera drivers
@@ -51,7 +56,7 @@ Getting Started
 
 To start using the FWK_Camera, you can proceed to the Quick Start Guide, go to: 
     
-    :ref:`QS_FWKC`.
+:ref:`QS_FWKC`.
 
 Additional Resources
 ---------------------
@@ -62,4 +67,4 @@ Additional Resources
 - IMX219 datasheet:             `IMX219`_
 
 
-.. [*] With Hardware modifications. 
+.. [0] With Hardware modifications. 
