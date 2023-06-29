@@ -17,10 +17,10 @@ pipeline {
     )
   } // parameters
 
-  stages {
+  parallel {
     stage ('Build and Unit test') {
       agent {
-        label 'linux&&x86_64&&docker'
+        label 'linux&&x86_64'
       }
       stages {
 
@@ -36,19 +36,6 @@ pipeline {
             }
           }
         } // Build
-        
-        stage ('Build Docs') {
-          steps {
-            sh """docker run --user "\$(id -u):\$(id -g)" \
-                     --rm \
-                     -v ${WORKSPACE}:/build \
-                     -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
-                     ghcr.io/xmos/doc_builder:v3.0.0"""
-            // DISABLED UNTIL SVG SUPPORT ADDED TO DOC_BUILDER
-            //       -e PDF=1
-            archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
-          }
-        } // Build Docs
 
         stage('Unit tests') {
           steps {
@@ -66,6 +53,31 @@ pipeline {
           cleanWs()
         }
       }
-    } // Build and Unit test
+    } // Build Documentation
+    stage ('Build Documentation') {
+      agent {
+        label 'docker'
+      }
+      stages {        
+        stage ('Build Docs') {
+          steps {
+            runningOn(env.NODE_NAME)
+            sh """docker run --user "\$(id -u):\$(id -g)" \
+                     --rm \
+                     -v ${WORKSPACE}:/build \
+                     -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
+                     ghcr.io/xmos/doc_builder:v3.0.0"""
+            // DISABLED UNTIL SVG SUPPORT ADDED TO DOC_BUILDER
+            //       -e PDF=1
+            archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
+          }
+        } // Build Docs
+      } // stages
+      post {
+        cleanup {
+          cleanWs()
+        }
+      }
+    } // Build Documentation
   } // stages
 } // pipeline
