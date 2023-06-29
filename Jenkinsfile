@@ -39,7 +39,7 @@ pipeline {
         
         stage ('Build Docs') {
           steps {
-            sh """docker run --user "$(id -u):$(id -g)" \
+            sh """docker run --user "\$(id -u):\$(id -g)" \
                      --rm \
                      -v ${WORKSPACE}:/build \
                      -e EXCLUDE_PATTERNS="/build/doc/exclude-patterns.inc" \
