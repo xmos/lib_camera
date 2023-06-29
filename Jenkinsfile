@@ -42,7 +42,7 @@ pipeline {
             sh """docker run --user "\$(id -u):\$(id -g)" \
                      --rm \
                      -v ${WORKSPACE}:/build \
-                     -e EXCLUDE_PATTERNS="/build/doc/exclude-patterns.inc" \
+                     -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
                      -e PDF=1 \
                      ghcr.io/xmos/doc_builder:v3.0.0"""
             archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
