@@ -1,4 +1,4 @@
-# <--- Set the executable name
+# Executable name
 set(TARGET example_take_picture_raw)  
 
 #**********************
