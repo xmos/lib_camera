@@ -1,6 +1,9 @@
+// std
+#include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <assert.h>
 
 #include "io_utils.h"
 #include "app.h"
@@ -19,12 +22,10 @@ void user_app()
 
   // Wait for the image to set exposure
   delay_milliseconds(4000);
-  printf("Requesting image...\n");
+
   // grab a frame
-  if(camera_capture_image(image_buffer)){
-    printf("Error capturing image\n");
-    exit(1);
-  }
+  printf("Requesting image...\n");
+  assert(camera_capture_image_raw(image_buffer) == 1);
   printf("Image captured...\n");
 
   // stop the threads and camera stream
