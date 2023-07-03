@@ -14,6 +14,16 @@
 #include "isp.h"
 #include "sensor_control.h"
 
+#define SIMULATION 1
+
+#if (SIMULATION == 1)
+  #include "MipiPacketRx_simulate.h"
+  #define MipiPacketRx_function(...) MipiPacketRx_simulate(__VA_ARGS__)
+#else
+  #define MipiPacketRx_function(...) MipiPacketRx(__VA_ARGS__)
+#endif
+
+
 void camera_main(
     tileref mipi_tile,
     in port p_mipi_clk,
@@ -58,7 +68,7 @@ void camera_main(
   // start the different jobs (packet controller, handler, and post_process)
   par
   {
-    MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+    MipiPacketRx_function(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
     isp_pipeline(c_stat_thread, sc_if);
     sensor_control(sc_if, i2c);

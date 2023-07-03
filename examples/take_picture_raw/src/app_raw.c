@@ -25,7 +25,7 @@ void user_app_raw()
 
     // Request an image
     printf("Requesting image...\n");
-    assert(camera_capture_image_raw(image_buffer) == 1);
+    assert(camera_capture_image_raw(image_buffer) == 0);
     printf("Image captured...\n");
 
     // stop the threads and camera stream
