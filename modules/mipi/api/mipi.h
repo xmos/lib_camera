@@ -70,7 +70,7 @@ void MipiPacketRx(
 
 
 /**
- * @brief Mipi packet reciever
+ * @brief Mipi packet reciever that takes an image from a file and injects to the board
  * 
  * @param p_mipi_rxd    High-Speed Receive Data
  * @param p_mipi_rxa    RxActiveHS (Output): High-Speed Reception Active. This active high signal indicates that the lane module is actively receiving a high-speed transmission from the lane interconnect.

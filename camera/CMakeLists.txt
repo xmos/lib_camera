@@ -38,8 +38,6 @@ target_compile_options(${LIB_NAME}
 
 target_link_libraries(${LIB_NAME} PUBLIC 
   fwk_camera::mipi 
-  fwk_camera::sensors
-  fwk_camera::utils
-  fwk_camera::xscope_fileio)
+  fwk_camera::sensors)
   
 add_library(fwk_camera::camera ALIAS ${LIB_NAME})
