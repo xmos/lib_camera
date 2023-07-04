@@ -37,9 +37,9 @@ target_compile_options(${LIB_NAME}
     -mcmodel=large )
 
 target_link_libraries(${LIB_NAME} PUBLIC 
-  mipi::lib_mipi 
-  sensors::lib_imx
+  fwk_camera::mipi 
+  fwk_camera::sensors
   fwk_camera::utils
   fwk_camera::xscope_fileio)
   
-add_library(camera::lib_camera ALIAS ${LIB_NAME})
+add_library(fwk_camera::camera ALIAS ${LIB_NAME})

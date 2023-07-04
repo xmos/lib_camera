@@ -9,20 +9,14 @@
  
 #include "i2c.h"
 #include "camera_main.h"
-#include "mipi_defines.h"
+#include "mipi.h"
 #include "packet_handler.h"
 #include "isp.h"
 #include "sensor_control.h"
-#include "MipiPacketRx_simulate.h"
 
-#define SIMULATION 1
-
-#if (SIMULATION == 1)  
-  #define MipiPacketRx_function(...) MipiPacketRx_simulate(__VA_ARGS__)
-#else
-  #define MipiPacketRx_function(...) MipiPacketRx(__VA_ARGS__)
+#ifndef MipiPacketRx_function
+  #error "MipiPacketRx_function() must be defined in the application"
 #endif
-
 
 void camera_main(
     tileref mipi_tile,

@@ -22,6 +22,14 @@ typedef port_t in_port_t;
 #endif
 
 
+#define SIMULATION 1
+
+#if (SIMULATION == 1)  
+  #define MipiPacketRx_function(...) MipiPacketRx_simulate(__VA_ARGS__)
+#else
+  #define MipiPacketRx_function(...) MipiPacketRx(__VA_ARGS__)
+#endif
+
 /**
  * @brief Initialize the MIPI packet handler.
  * 
@@ -59,4 +67,18 @@ void MipiPacketRx(
     in_port_t p_mipi_rxa,
     streaming_chanend_t c_pkt,
     streaming_chanend_t c_ctrl);
-    
+
+
+/**
+ * @brief Mipi packet reciever
+ * 
+ * @param p_mipi_rxd    High-Speed Receive Data
+ * @param p_mipi_rxa    RxActiveHS (Output): High-Speed Reception Active. This active high signal indicates that the lane module is actively receiving a high-speed transmission from the lane interconnect.
+ * @param c_pkt         Channel to send packets to
+ * @param c_ctrl        Channel to send control messages to
+ */
+void MipiPacketRx_simulate(
+    in_buffered_port_32_t p_mipi_rxd,
+    in_port_t p_mipi_rxa,
+    streaming_chanend_t c_pkt,
+    streaming_chanend_t c_ctrl);

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "MipiPacketRx_simulate.h"
+#include "mipi.h"
 
 #include "packet_handler.h"
 #include "io_utils.h"
