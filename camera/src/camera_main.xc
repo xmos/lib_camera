@@ -15,7 +15,8 @@
 #include "sensor_control.h"
 
 #ifndef MipiPacketRx_function
-  #error "MipiPacketRx_function() must be defined in the application"
+  #warning "MipiPacketRx_function() must be defined in the application!"
+  #define MipiPacketRx_function(...) MipiPacketRx(__VA_ARGS__)
 #endif
 
 void camera_main(
