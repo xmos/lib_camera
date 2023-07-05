@@ -74,7 +74,7 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
 {
     static float a  = 0;     // minimum value for exposure
     static float fa = -1;   // minimimum skewness
-    static float b  = 84;    // maximum value for exposure
+    static float b  = 80;    // maximum value for exposure
     static float fb = 1;    // minimum skewness
     static int count = 0;
     float c  = exposure;
@@ -207,7 +207,7 @@ void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_param
     float gamma2 = (float)g_per_count/(float)b_per_count;
 
     // Weighted mean
-    float gww = 0.7; // grey world weight
+    float gww = 0.6; // grey world weight
     alfa  = gww*alfa  + (1-gww)*alfa2;
     gamma = gww*gamma + (1-gww)*gamma2;
 

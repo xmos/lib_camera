@@ -7,10 +7,9 @@
 #include "io_utils.h"
 #include <string.h>
 
-#define STEP_JUMP 1
-
 //function to fill the array
 /*
+#define STEP_JUMP 1
 static
 void fill_array(mipi_packet_t* pkt) {
     int8_t pixel_value = 0;
@@ -32,7 +31,6 @@ void fill_array_from_file(xscope_file_t *fp, mipi_packet_t* pkt) {
         fp, 
         (uint8_t*) &pkt->payload[0], 
         MIPI_IMAGE_WIDTH_BYTES);
-    //printf("num_bytes: %d\n", num_bytes);
 }
 
 void MipiPacketRx_simulate(
@@ -41,7 +39,7 @@ void MipiPacketRx_simulate(
     streaming_chanend_t c_pkt,
     streaming_chanend_t c_ctrl)
 {
-    const char * filename = "test_generated_int8.raw";
+    const char * filename = "tmp.raw";
     xscope_file_t fp = xscope_open_file(filename, "rb");
  
     while (1) {

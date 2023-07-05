@@ -14,10 +14,20 @@
 #include "isp.h"
 #include "sensor_control.h"
 
-#ifndef MipiPacketRx_function
-  #warning "MipiPacketRx_function() must be defined in the application!"
-  #define MipiPacketRx_function(...) MipiPacketRx(__VA_ARGS__)
-#endif
+static
+void _MipiPacketRx(
+  unsigned simulate, 
+  buffered in port:32 p_mipi_rxd, 
+  in port p_mipi_rxa, 
+  streaming_chanend_t c_pkt,
+  streaming_chanend_t c_ctrl)
+{
+  if (simulate) {
+    MipiPacketRx_simulate(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+  } else {
+    MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+  }
+}
 
 void camera_main(
     tileref mipi_tile,
@@ -26,7 +36,8 @@ void camera_main(
     in port p_mipi_rxv,
     buffered in port:32 p_mipi_rxd,
     clock clk_mipi,
-    client interface i2c_master_if i2c)
+    client interface i2c_master_if i2c,
+    unsigned simulate)
 {
   streaming chan c_pkt;
   streaming chan c_ctrl;
@@ -63,7 +74,7 @@ void camera_main(
   // start the different jobs (packet controller, handler, and post_process)
   par
   {
-    MipiPacketRx_function(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+    _MipiPacketRx(simulate, p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
     isp_pipeline(c_stat_thread, sc_if);
     sensor_control(sc_if, i2c);

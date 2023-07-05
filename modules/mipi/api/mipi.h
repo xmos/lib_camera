@@ -21,15 +21,6 @@ typedef port_t in_buffered_port_32_t;
 typedef port_t in_port_t;
 #endif
 
-
-#define SIMULATION 1
-
-#if (SIMULATION == 1)  
-  #define MipiPacketRx_function(...) MipiPacketRx_simulate(__VA_ARGS__)
-#else
-  #define MipiPacketRx_function(...) MipiPacketRx(__VA_ARGS__)
-#endif
-
 /**
  * @brief Initialize the MIPI packet handler.
  * 

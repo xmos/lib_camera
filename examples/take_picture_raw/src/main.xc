@@ -26,6 +26,7 @@ on tile[MIPI_TILE] : in port p_mipi_rxv = XS1_PORT_1I;               // valid
 on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A;   // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
+#define SIMULATE_MIPI 0
 
 int main(void) 
 {
@@ -41,7 +42,8 @@ int main(void)
                                     p_mipi_rxv, 
                                     p_mipi_rxd, 
                                     clk_mipi, 
-                                    i2c[0]);
+                                    i2c[0],
+                                    SIMULATE_MIPI);
 
     on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
     on tile[MIPI_TILE]: user_app_raw();
