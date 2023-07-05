@@ -15,7 +15,7 @@
 #include "sensor_control.h"
 
 static
-void _MipiPacketRx(
+void _MipiPacketRx_selector(
   unsigned simulate, 
   buffered in port:32 p_mipi_rxd, 
   in port p_mipi_rxa, 
@@ -74,7 +74,7 @@ void camera_main(
   // start the different jobs (packet controller, handler, and post_process)
   par
   {
-    _MipiPacketRx(simulate, p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+    _MipiPacketRx_selector(simulate, p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
     isp_pipeline(c_stat_thread, sc_if);
     sensor_control(sc_if, i2c);
