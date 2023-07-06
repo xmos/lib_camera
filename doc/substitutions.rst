@@ -7,6 +7,6 @@
 .. _GH_FWK_CAMERA: https://github.com/xmos/fwk_camera
 .. _SW_TOOLS: https://www.xmos.ai/software-tools/
 .. _XSCOPE_FILEIO: https://github.com/xmos/xscope_fileio
-
+.. _UTILS_README: https://github.com/xmos/fwk_camera/blob/develop/utils/README.rst
 
 .. |TBD| replace:: To be documented for next release
