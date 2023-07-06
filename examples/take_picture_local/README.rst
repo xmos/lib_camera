@@ -8,6 +8,8 @@ to the explorer board an run the ISP pipeline.
 If you do not have a RAW8 image, you can produce it with 
 the utility encode_raw8 from the python folder.
 
+The image default name is  ``temp.raw ``
+
 By default the format is the following:
 - 640x480 RAW8
 
