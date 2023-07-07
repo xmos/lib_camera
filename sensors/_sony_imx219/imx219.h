@@ -26,10 +26,10 @@ typedef struct
 #endif
 
 // Configure formats
-#if EXPECTED_FORMAT == MIPI_DT_RAW10
+#if EXPECTED_FORMAT == _MIPI_DT_RAW10
     #define DATA_FORMAT_REGS raw10_framefmt_regs
 
-#elif EXPECTED_FORMAT == MIPI_DT_RAW8
+#elif EXPECTED_FORMAT == _MIPI_DT_RAW8
     #define DATA_FORMAT_REGS  raw8_framefmt_regs
     
 #endif

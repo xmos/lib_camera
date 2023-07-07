@@ -182,13 +182,13 @@ static imx219_settings_t imx219_lanes_regs[] = {
     };
 #endif
 
-#if (CONFIG_MIPI_FORMAT == MIPI_DT_RAW10)
+#if (CONFIG_MIPI_FORMAT == _MIPI_DT_RAW10)
     static imx219_settings_t raw10_framefmt_regs[] = {
         {0x018c, 0x0a},
         {0x018d, 0x0a},
         {0x0309, 0x0a},
     };
-#elif (CONFIG_MIPI_FORMAT == MIPI_DT_RAW8)
+#elif (CONFIG_MIPI_FORMAT == _MIPI_DT_RAW8)
     static imx219_settings_t raw8_framefmt_regs[] = {
         {0x018c, 0x08},
         {0x018d, 0x08},
