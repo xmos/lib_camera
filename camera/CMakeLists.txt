@@ -28,7 +28,7 @@ target_sources(${LIB_NAME}
 )
 
 target_compile_options(${LIB_NAME}
-  PUBLIC
+  PRIVATE
     -Os
     -Wall
     -Werror
