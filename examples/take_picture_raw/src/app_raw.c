@@ -11,7 +11,7 @@
 #include "app_raw.h"
 #include "io_utils.h"
 
-void user_app_raw()
+void user_app()
 {    
     // Initialize camera api
     camera_init();

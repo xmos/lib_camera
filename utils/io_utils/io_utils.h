@@ -10,6 +10,28 @@ extern "C" {
 
 #include "xscope_io_device.h"
 
+
+/**
+ * @brief Opens a file
+ * 
+ * @param filename 
+ */
+void io_open_file(const char* filename);
+
+/**
+ * @brief Fills an array with data from a file opened with io_open_file()
+ * 
+ * @param data 
+ * @param size 
+ */
+void io_fill_array_from_file(uint8_t* data, const size_t size);
+
+/**
+ * @brief Rewinds a file opened with io_open_file() (seek 0)
+ * 
+ */
+void io_rewind_file();
+
 /**
  * @brief Dumps data into a file
  * 

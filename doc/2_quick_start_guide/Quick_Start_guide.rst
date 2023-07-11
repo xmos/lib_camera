@@ -31,7 +31,7 @@ This demo uses the RAW camera module to capture a RAW8 image and save it to a .r
 Then, this image can be decoded using the python script ``python decode_raw8.py``.
 
 .. warning::
-    Make sure xscope_fileio is installed. Go to the repo utils/readme.rst section for more details
+    Make sure xscope_fileio is installed. Refer to Section utils/README.rst of the repository for more information.
 
 1. Ensure that the camera is connected to the board
 2. Connect Power Supply and xTag debugger

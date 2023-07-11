@@ -1,6 +1,26 @@
-#include "io_utils.h"
 #include <stdint.h>
+#include <stdio.h>
 
+#include "io_utils.h"
+
+xscope_file_t file_read;
+
+void io_open_file(const char *filename)
+{
+    file_read = xscope_open_file(filename, "rb");
+}
+
+void io_fill_array_from_file(uint8_t *data, const size_t size)
+{
+    xscope_fread(&file_read, data, size);
+}
+
+void io_rewind_file()
+{
+    xscope_fseek(&file_read, 0, SEEK_SET);
+}
+
+// ------------------------------------------------
 void swap_dimensions(uint8_t * image_in, uint8_t * image_out, const size_t height, const size_t width, const size_t channels)
 {
     printf("Swapping image dimensions...\n");

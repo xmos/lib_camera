@@ -4,4 +4,4 @@
 
 #include "camera_main.h"
 
-void user_app_raw();
+void user_app();

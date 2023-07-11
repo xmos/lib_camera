@@ -33,8 +33,8 @@
 #define MIPI_CLK_DIV      1     // CLK DIVIDER
 #define MIPI_CFG_CLK_DIV  3     // CFG DIVIDER
 
-#ifdef __XC__
 
+#ifdef __XC__
 /**
  * Thread entry point for interfacing with the camera sensor.
  * 
@@ -49,15 +49,14 @@
  * @param i2c         The I2C client interface
  * @param c_user_api  The user API channel
  */
-void camera_main(
+void camera_mipi_init(
     tileref mipi_tile,
     in port p_mipi_clk,
     in port p_mipi_rxa,
     in port p_mipi_rxv,
     buffered in port:32 p_mipi_rxd,
     clock clk_mipi,
-    client interface i2c_master_if i2c,
-    unsigned simulate);
+    client interface i2c_master_if i2c);
 
 
 #endif //__XC__

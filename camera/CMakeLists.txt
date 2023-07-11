@@ -34,7 +34,8 @@ target_compile_options(${LIB_NAME}
     -Werror
     -g
     -fxscope
-    -mcmodel=large )
+    -mcmodel=large
+)
 
 target_link_libraries(${LIB_NAME} PUBLIC 
   fwk_camera::mipi 

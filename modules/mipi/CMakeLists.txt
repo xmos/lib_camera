@@ -7,7 +7,6 @@ target_sources(${LIB_NAME}
   PRIVATE
     src/MipiPacketRx.S
     src/MipiPacketRx.xc
-    src/MipiPacketRx_sim.c
 )
 
 target_include_directories(${LIB_NAME}

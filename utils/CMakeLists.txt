@@ -4,7 +4,11 @@ include(xscope_fileio.cmake)
 set(LIB_NAME fwk_camera_utils)
 add_library(${LIB_NAME} INTERFACE)
 
-target_sources(${LIB_NAME} INTERFACE io_utils/io_utils.c)
+target_sources(${LIB_NAME} 
+    INTERFACE 
+    io_utils/io_utils.c
+    io_utils/packet_rx_simulate.c
+)
 
 target_include_directories(${LIB_NAME} INTERFACE io_utils)
 
