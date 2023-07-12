@@ -14,15 +14,16 @@ extern "C" {
 /**
  * @brief Opens a file
  * 
- * @param filename 
+ * @param filename Name of the file
+ * @note The application has to end with xscope_close_all_files()
  */
 void io_open_file(const char* filename);
 
 /**
  * @brief Fills an array with data from a file opened with io_open_file()
  * 
- * @param data 
- * @param size 
+ * @param data Pointer to the data to be filled
+ * @param size Size of the data
  */
 void io_fill_array_from_file(uint8_t* data, const size_t size);
 
