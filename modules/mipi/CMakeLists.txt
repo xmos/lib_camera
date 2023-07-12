@@ -14,13 +14,6 @@ target_include_directories(${LIB_NAME}
     api
 )
 
-target_link_libraries(
-  ${LIB_NAME} PUBLIC 
-  fwk_camera::camera
-  fwk_camera::utils
-  fwk_camera::xscope_fileio
-)
-
 target_compile_options(${LIB_NAME}
   PRIVATE
     -Os -g -Wall -Werror
