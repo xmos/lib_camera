@@ -12,4 +12,8 @@ target_sources(${LIB_NAME}
 
 target_include_directories(${LIB_NAME} INTERFACE io_utils)
 
+target_link_libraries(${LIB_NAME} INTERFACE 
+  fwk_camera::mipi 
+  fwk_camera::camera)
+
 add_library(fwk_camera::utils ALIAS ${LIB_NAME})
