@@ -9,7 +9,8 @@
 #include <xccompat.h>
 
 #include "i2c.h"
-#include "app_raw.h"
+#include "app.h"
+#include "packet_rx_simulate.h"
 
 // I2C interface ports
 #define Kbps 400
@@ -57,7 +58,7 @@ int main(void)
               clk_mipi,
               i2c[0]);
       par {
-        MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+        MipiPacketRx_simulate(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
         mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
         isp_pipeline(c_stat_thread, sc_if);
         sensor_control(sc_if, i2c[0]);

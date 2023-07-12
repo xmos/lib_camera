@@ -15,7 +15,7 @@ Hardware requirements:
 
 Software requirements:
 ^^^^^^^^^^^^^^^^^^^^^^^
-- XMOS tools: `SW_TOOLS`_
+- XMOS tools (15.2.1): `SW_TOOLS`_
 - CMake, Ninja (Windows)
 - Python 3.7 or later 
 
@@ -31,7 +31,7 @@ This demo uses the RAW camera module to capture a RAW8 image and save it to a .r
 Then, this image can be decoded using the python script ``python decode_raw8.py``.
 
 .. warning::
-    Make sure xscope_fileio is installed. See utils/README.rst section for more details
+    Make sure xscope_fileio is installed. Refer to Section utils/README.rst of the repository for more information.
 
 1. Ensure that the camera is connected to the board
 2. Connect Power Supply and xTag debugger
@@ -64,7 +64,7 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
 
     python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
 
-6. You should see the camera comminucating with the host and the image being saved to a .raw file.
+6. You should see the camera communicating with the host and the image being saved to a .raw file.
 
 7. To decode the image use the following command:
 

@@ -21,7 +21,6 @@ typedef port_t in_buffered_port_32_t;
 typedef port_t in_port_t;
 #endif
 
-
 /**
  * @brief Initialize the MIPI packet handler.
  * 
@@ -59,4 +58,5 @@ void MipiPacketRx(
     in_port_t p_mipi_rxa,
     streaming_chanend_t c_pkt,
     streaming_chanend_t c_ctrl);
-    
+
+

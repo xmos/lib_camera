@@ -1,5 +1,7 @@
 // std
+#include <stdint.h>
 #include <stdio.h>
+#include <assert.h>
 // xcore
 #include <xcore/select.h>
 #include <xcore/channel_streaming.h>
@@ -9,7 +11,7 @@
 #include "app_raw.h"
 #include "io_utils.h"
 
-void user_app_raw()
+void user_app()
 {    
     // Initialize camera api
     camera_init();
@@ -23,10 +25,7 @@ void user_app_raw()
 
     // Request an image
     printf("Requesting image...\n");
-    if(camera_capture_image_raw(image_buffer)){
-        printf("Error capturing image\n");
-        exit(1);
-    }
+    assert(camera_capture_image_raw(image_buffer) == 0);
     printf("Image captured...\n");
 
     // stop the threads and camera stream

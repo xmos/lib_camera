@@ -46,4 +46,4 @@ target_compile_options(${LIB_NAME}
 
 target_link_libraries(${LIB_NAME} PUBLIC lib_i2c)
 
-add_library(sensors::lib_imx ALIAS ${LIB_NAME})
+add_library(fwk_camera::sensors ALIAS ${LIB_NAME})

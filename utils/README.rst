@@ -24,6 +24,4 @@ Windows
       cd utils/xscope_fileio/host
       cmake -G "Ninja" . && ninja
       
-5. Generate the build system files using CMake and build the binary:
-
 Your xscope_fileio host app is now ready to use.

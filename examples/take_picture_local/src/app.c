@@ -21,7 +21,7 @@ void user_app()
   memset(image_buffer, -128, sizeof(image_buffer));
 
   // Wait for the image to set exposure
-  delay_milliseconds(4000);
+  delay_milliseconds(1000);
 
   // grab a frame
   printf("Requesting image...\n");
