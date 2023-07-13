@@ -51,19 +51,22 @@ int main(void)
     on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
     // Camera
     on tile[MIPI_TILE]: {
-      camera_mipi_init(tile[MIPI_TILE],
-              p_mipi_clk,
-              p_mipi_rxa,
-              p_mipi_rxv,
-              p_mipi_rxd,
-              clk_mipi,
-              i2c[0]);
-      par {
-        MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-        mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
-        isp_pipeline(c_stat_thread, sc_if);
-        sensor_control(sc_if, i2c[0]);
-      }
+
+        camera_mipi_init(tile[MIPI_TILE],
+                p_mipi_clk, 
+                p_mipi_rxa,
+                p_mipi_rxv,
+                p_mipi_rxd,
+                clk_mipi);
+
+        sensor_start(i2c[0]);
+        
+        par {
+          MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
+          mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
+          isp_pipeline(c_stat_thread, sc_if);
+          sensor_control(sc_if, i2c[0]);
+        }
     }
     on tile[MIPI_TILE]: user_app();
   }

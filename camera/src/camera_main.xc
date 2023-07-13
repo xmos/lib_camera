@@ -22,8 +22,7 @@ void camera_mipi_init(
     in port p_mipi_rxa,
     in port p_mipi_rxv,
     buffered in port:32 p_mipi_rxd,
-    clock clk_mipi,
-    client interface i2c_master_if i2c)
+    clock clk_mipi)
 {  
   // Assign lanes and polarities
   write_node_config_reg(mipi_tile,
@@ -46,9 +45,4 @@ void camera_mipi_init(
                     mipi_shim_cfg0,
                     MIPI_CLK_DIV,
                     MIPI_CFG_CLK_DIV); 
-
-  // Initialize camera and its configurations
-  sensor_start(i2c);
-  printf("\nCamera_started and configured...\n");
-  delay_milliseconds(3000);
 }

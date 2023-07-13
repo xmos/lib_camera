@@ -55,8 +55,8 @@ int main(void)
               p_mipi_rxa,
               p_mipi_rxv,
               p_mipi_rxd,
-              clk_mipi,
-              i2c[0]);
+              clk_mipi);
+      sensor_start(i2c[0]);
       par {
         MipiPacketRx_simulate(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
         mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
