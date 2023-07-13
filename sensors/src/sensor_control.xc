@@ -16,6 +16,8 @@ void sensor_start(client interface i2c_master_if i2c){
   delay_milliseconds(600);
   r |= sensor_stream_start(i2c);
   assert((r == 0)); // assert that camera is started and configured
+  printf("\nCamera_started and configured...\n");
+  delay_milliseconds(600);
 }
 
 void sensor_control(

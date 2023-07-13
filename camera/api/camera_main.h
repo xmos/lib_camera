@@ -46,7 +46,6 @@
  * @param p_mipi_rxv  The MIPI valid input port
  * @param p_mipi_rxd  The MIPI data input port
  * @param clk_mipi    The MIPI clock block
- * @param i2c         The I2C client interface
  */
 void camera_mipi_init(
     tileref mipi_tile,
@@ -54,8 +53,7 @@ void camera_mipi_init(
     in port p_mipi_rxa,
     in port p_mipi_rxv,
     buffered in port:32 p_mipi_rxd,
-    clock clk_mipi,
-    client interface i2c_master_if i2c);
+    clock clk_mipi);
 
 
 #endif //__XC__
