@@ -15,6 +15,7 @@
 #define AWB_MAX         1.7
 #define AWB_MIN         0.8
 #define APPLY_GAMMA     1
+#define ENABLE_PRINT_STATS 0
 
 // ---------------------------------- ISP PIPELINE ----------------------------------
 void isp_pipeline(
