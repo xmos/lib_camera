@@ -44,8 +44,9 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
             stats_skewness(&global_stats[channel]);
             stats_percentile(&global_stats[channel], APP_WB_PERCENTILE);
             stats_percentile_volume(&global_stats[channel]);
-            // print channel stats
-            stats_print(&global_stats[channel], channel);
+            #if ENABLE_PRINT_STATS
+                stats_print(&global_stats[channel], channel); // print channel stats
+            #endif
         }
 
         // Adjust AE
@@ -63,6 +64,8 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
         // TODO: Apply gamma curve here instead of in the user app
 
         // Print ISP info
-        AWB_print_gains(&isp_params);
+        #if ENABLE_PRINT_STATS
+            AWB_print_gains(&isp_params);
+        #endif
     }
 }
