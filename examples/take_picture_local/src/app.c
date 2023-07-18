@@ -7,7 +7,6 @@
 
 #include "io_utils.h"
 #include "app.h"
-#include "isp.h"  // needed for gamma
 
 void user_app()
 {
@@ -37,15 +36,6 @@ void user_app()
                      &image_buffer[0][0][0],
                      sizeof(image_buffer));
   
-  // apply gamma correction
-  #if APPLY_GAMMA
-    isp_gamma(image_ptr,
-              &gamma_new[0], 
-              APP_IMAGE_HEIGHT_PIXELS,
-              APP_IMAGE_WIDTH_PIXELS,
-              APP_IMAGE_CHANNEL_COUNT);
-  #endif
-
   // Write binary file
   write_image_file("capture.bin",
                     image_ptr,
