@@ -8,6 +8,7 @@
 #include "mipi.h"
 #include "camera_utils.h"
 #include "camera_api.h"
+#include "isp.h"
 
 #define CHAN_RAW 0
 #define CHAN_DEC 1
@@ -144,7 +145,7 @@ unsigned camera_capture_image_transpose(
 }
 
 unsigned camera_capture_image(
-    int8_t image_buff[H][W][CH])
+  int8_t image_buff[H][W][CH])
 {
   unsigned row_index;
 
@@ -155,20 +156,27 @@ unsigned camera_capture_image(
     row_index = camera_capture_row_decimated(pixel_data);
   } while (row_index != 0);
 
-  for(int i = 0; i < W; i++)
-    for(int c = 0; c < CH; c++)
+  for (int i = 0; i < W; i++)
+    for (int c = 0; c < CH; c++)
       image_buff[0][i][c] = pixel_data[c][i];
-  
+
   // Now capture the rest of the rows
   for (unsigned row = 1; row < H; row++) {
     row_index = camera_capture_row_decimated(pixel_data);
 
-    if (row_index != row)      return 1; // TODO handle errors better
+    if (row_index != row)
+      return 1; // TODO handle errors better
 
-    for(int i = 0; i < W; i++)
-      for(int c = 0; c < CH; c++)
-        image_buff[row][i][c] = pixel_data[c][i];
+    for (int i = 0; i < W; i++){
+      for (int c = 0; c < CH; c++){
+        #if (APPLY_GAMMA == 1)
+          image_buff[row][i][c] = gamma_int8[pixel_data[c][i] + 127];
+        #else
+          image_buff[row][i][c] = pixel_data[c][i];
+        #endif
 
+      }
+    }
   }
 
   return 0;

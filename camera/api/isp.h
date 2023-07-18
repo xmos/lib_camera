@@ -127,9 +127,8 @@ void AWB_print_gains(isp_params_t *isp_params);
 
 // ---------------------------------- GAMMA ------------------------------
 // Gamma correction table
-extern const uint8_t gamma_1p8_s1[256];
-extern const uint8_t gamma_1p4_s1[256]; 
-extern const uint8_t gamma_new[256]; 
+extern const uint8_t gamma_uint8[256];
+extern const int8_t  gamma_int8[256];
 
 /**
  * @brief compute gamma curve given an image and the gamma adjustement

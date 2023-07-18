@@ -61,7 +61,7 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
         }
 
         // Apply gamma curve
-        // TODO: Apply gamma curve here instead of in the user app
+        // gamma curve is applied to the image in the camera API
 
         // Print ISP info
         #if ENABLE_PRINT_STATS
