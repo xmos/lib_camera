@@ -170,7 +170,7 @@ unsigned camera_capture_image(
     for (int i = 0; i < W; i++){
       for (int c = 0; c < CH; c++){
         #if (APPLY_GAMMA == 1)
-          image_buff[row][i][c] = gamma_new_int8[pixel_data[c][i] + 127];
+          image_buff[row][i][c] = gamma_int8[pixel_data[c][i] + 127];
         #else
           image_buff[row][i][c] = pixel_data[c][i];
         #endif

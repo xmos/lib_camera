@@ -38,7 +38,7 @@ void test_gamma_size(
     
     // then measure and apply gamma
     unsigned ts = measure_time();
-    isp_gamma((uint8_t *) &image_buffer[0][0][0], gamma_new, height, width, channels);
+    isp_gamma((uint8_t *) &image_buffer[0][0][0], gamma_uint8, height, width, channels);
     unsigned tdiff = measure_time() - ts;
 
     // print info
