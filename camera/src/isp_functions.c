@@ -18,28 +18,47 @@ float cabs(float x) {
 }
 #endif
 // ---------------------------------- AE / AGC ------------------------------
+#if ENABLE_PRINT_STATS
+static
+void print_info_exposure(uint8_t val)
+{
+    static uint8_t printf_info = 1;
+    // reset
+    if (val == 0) {
+        printf_info = 1;
+    }
+    else {
+        // set
+        if (printf_info) {
+            printf("-----> adjustement done\n");
+            printf_info = 0;
+        }
+    }
+}
+#endif
+
 uint8_t AE_control_exposure(
     global_stats_t *global_stats,
     CLIENT_INTERFACE(sensor_control_if, sc_if))
 {
     // Initial exposure
     static uint8_t new_exp = AE_INITIAL_EXPOSURE;
-    static uint8_t printf_info = 1;
     static uint8_t skip_ae_control = 0; // if too dark for a ceertain frames, skip AE control
 
     // Compute skewness and adjust exposure if needed
     float sk = AE_compute_mean_skewness(global_stats);
     if (AE_is_adjusted(sk)){
-        if (printf_info){
-            printf("-----> adjustement done\n");
-            printf_info = 0;
-        }
+        #if ENABLE_PRINT_STATS
+            print_info_exposure(1);
+        #endif
         return 1;
     }
     else{ // Adjust exposure
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
         sensor_control_set_exposure(sc_if, (uint8_t)new_exp);
-        printf_info = 1;
+        #if ENABLE_PRINT_STATS
+            print_info_exposure(0);
+        #endif
         if (new_exp > 70){
             skip_ae_control++;
             if (skip_ae_control > 5){

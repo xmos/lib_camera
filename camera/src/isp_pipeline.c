@@ -56,8 +56,8 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
         static unsigned run_once = 0;
         if (ae_done == 1 && run_once == 0) 
         {
-            AWB_compute_gains_white_max(&global_stats, &isp_params);
-            run_once = 0; // Set to 1 to run only once
+            AWB_compute_gains_static(&isp_params);
+            run_once = 1; // Set to 1 to run only once
         }
 
         // Apply gamma curve
