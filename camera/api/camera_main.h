@@ -34,42 +34,23 @@
 #define MIPI_CLK_DIV      1     // CLK DIVIDER
 #define MIPI_CFG_CLK_DIV  3     // CFG DIVIDER
 
-#ifdef __XC__
-//typedef in port port_t;
-#endif
-
-//#ifdef __XC__
 /**
  * Thread entry point for interfacing with the camera sensor.
  * 
  * This function will configure mipi and initialize the camera sensor
  * 
- * @param mipi_tile   The tile on which the MIPI receiver is located
  * @param p_mipi_clk  The MIPI clock input port
  * @param p_mipi_rxa  The MIPI active input port
  * @param p_mipi_rxv  The MIPI valid input port
  * @param p_mipi_rxd  The MIPI data input port
  * @param clk_mipi    The MIPI clock block
  */
-/*void camera_mipi_init(
-    tileref mipi_tile,
-    in port p_mipi_clk,
-    in port p_mipi_rxa,
-    in port p_mipi_rxv,
-    buffered in port:32 p_mipi_rxd,
-    clock clk_mipi);
-
-
-#else*/
-
 void camera_mipi_init(
     port_t p_mipi_clk,
     port_t p_mipi_rxa,
     port_t p_mipi_rxv,
     in_buffered_port_32_t p_mipi_rxd,
     xclock_t clk_mipi);
-
-//#endif //__XC__
 
 /* Notes
 
