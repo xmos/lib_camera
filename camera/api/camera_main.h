@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "xs1.h"
+#include "xccompat.h"
 
 #include "i2c.h"
 #include "mipi.h"
@@ -33,8 +34,11 @@
 #define MIPI_CLK_DIV      1     // CLK DIVIDER
 #define MIPI_CFG_CLK_DIV  3     // CFG DIVIDER
 
-
 #ifdef __XC__
+//typedef in port port_t;
+#endif
+
+//#ifdef __XC__
 /**
  * Thread entry point for interfacing with the camera sensor.
  * 
@@ -47,7 +51,7 @@
  * @param p_mipi_rxd  The MIPI data input port
  * @param clk_mipi    The MIPI clock block
  */
-void camera_mipi_init(
+/*void camera_mipi_init(
     tileref mipi_tile,
     in port p_mipi_clk,
     in port p_mipi_rxa,
@@ -56,7 +60,16 @@ void camera_mipi_init(
     clock clk_mipi);
 
 
-#endif //__XC__
+#else*/
+
+void camera_mipi_init(
+    port_t p_mipi_clk,
+    port_t p_mipi_rxa,
+    port_t p_mipi_rxv,
+    in_buffered_port_32_t p_mipi_rxd,
+    xclock_t clk_mipi);
+
+//#endif //__XC__
 
 /* Notes
 

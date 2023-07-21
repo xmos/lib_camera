@@ -6,7 +6,7 @@ add_library(${LIB_NAME} STATIC)
 target_sources(${LIB_NAME}
   PRIVATE
     src/MipiPacketRx.S
-    src/MipiPacketRx.xc
+    src/MipiPacketRx.c
 )
 
 target_include_directories(${LIB_NAME}

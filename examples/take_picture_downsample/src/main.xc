@@ -41,7 +41,7 @@ void camera_main(
   streaming chan c_ctrl;
   sensor_control_if sc_if;
 
-  camera_mipi_init(tile[MIPI_TILE],
+  camera_mipi_init(
     p_mipi_clk,
     p_mipi_rxa,
     p_mipi_rxv,
