@@ -5,22 +5,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <platform.h>
 #include <string.h>
 #include <math.h>
-#include "i2c.h"
-#include "mipi.h"
-#include "app.h"
-#include "sensor.h"
 
-#include "mipi.h"
-#include "xccompat.h"
-
+#include <xccompat.h>
 #include <xs1.h>
 #include <platform.h>
 #include <xscope.h>
 
 #include "i2c.h"
+#include "app.h"
+#include "sensor.h"
+#include "mipi.h"
 
 // Sensor
 #define MSG_SUCCESS "Stream start OK\n"
