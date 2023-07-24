@@ -1,6 +1,10 @@
 fwk_camera change log
 =====================
 
+0.2.0
+-----
+* CHANGED: Mipi has been reimplemented to C
+
 0.1.0
 -----
 

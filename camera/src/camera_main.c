@@ -23,6 +23,7 @@ void camera_mipi_init(
     in_buffered_port_32_t p_mipi_rxd,
     xclock_t clk_mipi)
 {
+  // Tile ids have weird values, so we get them with this API
   unsigned tileid = get_local_tile_id();
   // Assign lanes and polarities
   //write_node_config_reg(mipi_tile, XS1_SSWITCH_MIPI_DPHY_CFG3_NUM, DEFAULT_MIPI_DPHY_CFG3);
