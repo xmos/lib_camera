@@ -17,9 +17,9 @@ typedef struct
 } imx219_settings_t;
 
 // configure registers
-#if ((CONFIG_MODE == 0) || (CONFIG_MODE == 1))
+#if ((CONFIG_MODE == 0) || (CONFIG_MODE == MODE_VGA_640x480))
     #define CONFIG_REG      mode_640_480_regs
-#elif (CONFIG_MODE == 2)
+#elif (CONFIG_MODE == MODE_UXGA_1640x1232)
     #define CONFIG_REG      mode_1640_1232_regs
 #else
     #error "Invalid configuration mode"

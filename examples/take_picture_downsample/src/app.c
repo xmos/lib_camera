@@ -13,7 +13,7 @@ void user_app()
   // Initialize camera api
   camera_init();
 
-  int8_t image_buffer[APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS][APP_IMAGE_CHANNEL_COUNT];
+  int8_t image_buffer[H][W][CH];
   uint8_t * image_ptr = (uint8_t *) &image_buffer[0][0][0];
 
   // set the input image to 0

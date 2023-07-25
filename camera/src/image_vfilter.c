@@ -29,7 +29,7 @@ void image_vfilter_reset(
 {
   acc->next_tap = VFILTER_RESET_INDEX;
   pixel_vfilter_acc_init(acc->buff, vfilter_acc_offset, 
-                         APP_IMAGE_WIDTH_PIXELS);
+                         PD_IMAGE_WIDTH_PIXELS);
 }
 
 /**
@@ -55,7 +55,7 @@ void image_vfilter_frame_init(
   for(int k = 0; k < VFILTER_ACC_COUNT; k++){
     accs[k].next_tap = -(VFILTER_DEC_FACTOR) * k + (VFILTER_TAP_COUNT/2);
     pixel_vfilter_acc_init(accs[k].buff, vfilter_acc_offset, 
-                           APP_IMAGE_WIDTH_PIXELS);
+                           PD_IMAGE_WIDTH_PIXELS);
   }
 }
 
@@ -73,7 +73,7 @@ unsigned image_vfilter_process_row(
       pixel_vfilter_macc(acc[k].buff,
                          pixel_data,
                          &vfilter_coef[acc[k].next_tap][0],
-                         APP_IMAGE_WIDTH_PIXELS);
+                         PD_IMAGE_WIDTH_PIXELS);
     }
     acc[k].next_tap++;
   }
@@ -85,7 +85,7 @@ unsigned image_vfilter_process_row(
     pixel_vfilter_complete(output,
                             acc[k].buff,
                             vfilter_shift,
-                            APP_IMAGE_WIDTH_PIXELS);
+                            PD_IMAGE_WIDTH_PIXELS);
 
     // reset the accumulator
     image_vfilter_reset(&acc[k]);
@@ -106,7 +106,7 @@ unsigned image_vfilter_drain(
     pixel_vfilter_complete(output,
                            acc[k].buff,
                            vfilter_shift,
-                           APP_IMAGE_WIDTH_PIXELS);
+                           PD_IMAGE_WIDTH_PIXELS);
     acc[k].next_tap = 0;
                            
     return 1;

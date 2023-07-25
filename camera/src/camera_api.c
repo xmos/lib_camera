@@ -150,6 +150,7 @@ unsigned camera_capture_image(
   unsigned row_index;
 
   int8_t pixel_data[CH][W];
+  //printf("h %u w %u\n", H, W);
 
   // Loop, capturing rows until we get one with row_index==0
   do {
@@ -163,7 +164,8 @@ unsigned camera_capture_image(
   // Now capture the rest of the rows
   for (unsigned row = 1; row < H; row++) {
     row_index = camera_capture_row_decimated(pixel_data);
-
+    printf("got row %u expected %u\n", row_index, row);
+    //puts("recieved row");
     if (row_index != row)
       return 1; // TODO handle errors better
 

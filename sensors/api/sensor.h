@@ -13,7 +13,7 @@
 
 // Crop selection
 #define CROP_ENABLED            DISABLED
-#define CONFIG_MODE             MODE_VGA_640x480
+#define CONFIG_MODE             MODE_UXGA_1640x1232
 
 // Mipi format and mode
 #ifndef CONFIG_MIPI_FORMAT
@@ -117,9 +117,9 @@
 //TODO check maximum storage size for the image
 #define MAX_MEMORY_SIZE 500000 << 2 //becasue half needed is code
 
-#if MIPI_IMAGE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS > MAX_MEMORY_SIZE
-    #warning "The image appears to be too large for the available internal RAM.!"
-#endif
+//#if MIPI_IMAGE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS > MAX_MEMORY_SIZE
+//    #warning "The image appears to be too large for the available internal RAM.!"
+//#endif
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -128,7 +128,7 @@
 #define SENSOR_RAW_IMAGE_WIDTH_PIXELS MIPI_IMAGE_WIDTH_PIXELS
 #define SENSOR_RAW_IMAGE_HEIGHT_PIXELS MIPI_IMAGE_HEIGHT_PIXELS
 
-#define APP_DECIMATION_FACTOR    (4)
+#define APP_DECIMATION_FACTOR    (8)
 
 #define APP_IMAGE_WIDTH_PIXELS   (SENSOR_RAW_IMAGE_WIDTH_PIXELS \
                                   / APP_DECIMATION_FACTOR)
@@ -138,11 +138,11 @@
 
 #define APP_IMAGE_CHANNEL_COUNT   (3)
 
-#define APP_IMAGE_SIZE_PIXELS     (APP_IMAGE_WIDTH_PIXELS \
-                                   * APP_IMAGE_HEIGHT_PIXELS)
+#define VPU_SIZE                  (16)
 
-#define APP_IMAGE_SIZE_BYTES      (APP_IMAGE_SIZE_PIXELS \
-                                   * APP_IMAGE_CHANNEL_COUNT )
+#define CLOSEST                   (APP_IMAGE_WIDTH_PIXELS / VPU_SIZE)
+
+#define PD_IMAGE_WIDTH_PIXELS     ((CLOSEST + 1) * (VPU_SIZE))
 
 #define CHAN_RED    0
 #define CHAN_GREEN  1
@@ -163,7 +163,7 @@
 // For simplicity here
 #define CH  (APP_IMAGE_CHANNEL_COUNT)
 #define H   (APP_IMAGE_HEIGHT_PIXELS)
-#define W   (APP_IMAGE_WIDTH_PIXELS)
+#define W   (PD_IMAGE_WIDTH_PIXELS)
 
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
 #define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)
