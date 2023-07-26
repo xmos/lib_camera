@@ -12,8 +12,8 @@
 #define VFILTER_DEC_FACTOR  (APP_DECIMATION_FACTOR / 2)
 
 // Required: Low-res image width must be multiple of 16 pixels
-#if (((PD_IMAGE_WIDTH_PIXELS)>>4)<<4) != (PD_IMAGE_WIDTH_PIXELS)
-# error MIPI_IMAGE_LORES_WIDTH_PIX (width of decimated image) must be multiple of 16 pixels.
+#if (((APP_IMAGE_WIDTH_PIXELS) >> 4) << 4) != (APP_IMAGE_WIDTH_PIXELS)
+# error APP_IMAGE_WIDTH_PIXELS (width of decimated image) must be multiple of 16 pixels.
 #endif
 
 // The number of accumulators required for vertical filtering.
@@ -25,7 +25,7 @@
 #define VFILTER_RESET_INDEX   ((VFILTER_TAP_COUNT) - \
                   ( (VFILTER_DEC_FACTOR) * (VFILTER_ACC_COUNT) ))
 
-#define VFILTER_ACC_WIDTH_SHORTS  (2*PD_IMAGE_WIDTH_PIXELS)
+#define VFILTER_ACC_WIDTH_SHORTS  (2 * APP_IMAGE_WIDTH_PIXELS)
 
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {

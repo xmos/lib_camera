@@ -72,7 +72,7 @@ void handle_unknown_packet(
 static
 unsigned handle_pixel_data(
     const mipi_packet_t* pkt,
-    int8_t output_buffer[APP_IMAGE_CHANNEL_COUNT][PD_IMAGE_WIDTH_PIXELS])
+    int8_t output_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS])
 {
 
   // First, service any raw requests.
@@ -83,7 +83,7 @@ unsigned handle_pixel_data(
   unsigned pattern = ph_state.in_line_number % 2;
 
   // Temporary buffer to store horizontally-filtered row data. [1]
-  int8_t hfilt_row[PD_IMAGE_WIDTH_PIXELS];
+  int8_t hfilt_row[APP_IMAGE_WIDTH_PIXELS];
  
   if(pattern == 0){ // Packet contains RGRGRGRGRGRGRGRGRG...
     ////// RED
@@ -93,7 +93,7 @@ unsigned handle_pixel_data(
                   hfilter_state[CHAN_RED].acc_init,
                   hfilter_state[CHAN_RED].shift,
                   HFILTER_INPUT_STRIDE,
-                  PD_IMAGE_WIDTH_PIXELS);
+                  APP_IMAGE_WIDTH_PIXELS);
 
     
     image_vfilter_process_row(&output_buffer[CHAN_RED][0],
@@ -107,7 +107,7 @@ unsigned handle_pixel_data(
                   hfilter_state[CHAN_GREEN].acc_init,
                   hfilter_state[CHAN_GREEN].shift,
                   HFILTER_INPUT_STRIDE,
-                  PD_IMAGE_WIDTH_PIXELS);
+                  APP_IMAGE_WIDTH_PIXELS);
 
     // we now it is not the las row [2]
     image_vfilter_process_row(&output_buffer[CHAN_GREEN][0],
@@ -123,7 +123,7 @@ unsigned handle_pixel_data(
                   hfilter_state[CHAN_BLUE].acc_init,
                   hfilter_state[CHAN_BLUE].shift,
                   HFILTER_INPUT_STRIDE,
-                  PD_IMAGE_WIDTH_PIXELS);
+                  APP_IMAGE_WIDTH_PIXELS);
 
     unsigned new_row = image_vfilter_process_row(
                             &output_buffer[CHAN_BLUE][0],
@@ -141,7 +141,7 @@ unsigned handle_pixel_data(
 
 static 
 void on_new_output_row(
-    const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][PD_IMAGE_WIDTH_PIXELS],
+    const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
     streaming_chanend_t c_stats)
 {
   // Pass the output row along for statistics processing
@@ -155,7 +155,7 @@ void on_new_output_row(
 
 static
 void handle_frame_end(
-    int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][PD_IMAGE_WIDTH_PIXELS],
+    int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
     streaming_chanend_t c_stats)
 {
   // Drain the vertical filter's accumulators
@@ -201,7 +201,7 @@ void handle_packet(
    * that the statistics thread is currently using.
    */
   __attribute__((aligned(8)))
-  static int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][PD_IMAGE_WIDTH_PIXELS];
+  static int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
   static unsigned out_dex = 0;
 
 
