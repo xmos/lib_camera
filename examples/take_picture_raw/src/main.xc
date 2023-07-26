@@ -11,6 +11,13 @@
 #include "app_raw.h"
 
 typedef chanend chanend_t;
+typedef enum {
+    SENSOR_INIT = 0,
+    SENSOR_CONFIG,
+    SENSOR_STREAM_START,
+    SENSOR_STREAM_STOP,
+    SENSOR_SET_EXPOSURE
+} camera_control_t;
 
 // I2C interface ports
 #define Kbps 400
@@ -36,7 +43,7 @@ on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A;   // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
 
-void camera_main(chanend_t schan[]) 
+void main_tile1(chanend_t schan[]) 
 {
   streaming chan c_stat_thread;
   streaming chan c_pkt;
@@ -52,27 +59,25 @@ void camera_main(chanend_t schan[])
   par{
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
-    isp_pipeline(c_stat_thread, schan);
+    isp_pipeline(c_stat_thread, schan[SENSOR_STREAM_STOP], schan[SENSOR_SET_EXPOSURE]);
+    user_app();
   }
 }
- 
 
 
 int main(void)
 {
-  // Declarations
-  chan xscope_chan;
+  // Camera control channels
   chan schan[5];
+  chan xscope_chan;
+
   // Parallel jobs
   par{
-    // I2C
     on tile[0]: sensor_i2c_start(schan);
-    // Xscope and i2c
+    on tile[MIPI_TILE]: main_tile1(schan);
+    // xscope
     xscope_host_data(xscope_chan);
     on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
-    // Camera
-    on tile[MIPI_TILE]: camera_main(schan);
-    on tile[MIPI_TILE]: user_app();
   }
   return 0;
 }

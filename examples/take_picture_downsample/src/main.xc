@@ -8,8 +8,16 @@
 #include <xscope.h>
 #include <xccompat.h>
 
-#include "i2c.h"
 #include "app.h"
+
+typedef chanend chanend_t;
+typedef enum {
+    SENSOR_INIT = 0,
+    SENSOR_CONFIG,
+    SENSOR_STREAM_START,
+    SENSOR_STREAM_STOP,
+    SENSOR_SET_EXPOSURE
+} camera_control_t;
 
 // I2C interface ports
 #define Kbps 400
@@ -20,7 +28,9 @@ extern "C" {
 #include "xscope_io_device.h"
 }
 
-#include "packet_rx_simulate.h"
+extern "C" {
+  void sensor_i2c_start(chanend_t schan[]);
+}
 
 /**
 * Declaration of the MIPI interface ports:
@@ -33,13 +43,11 @@ on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A;   // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
 
-void camera_main(
-  client interface i2c_master_if i2c) 
+void main_tile1(chanend_t schan[]) 
 {
   streaming chan c_stat_thread;
   streaming chan c_pkt;
   streaming chan c_ctrl;
-  sensor_control_if sc_if;
 
   camera_mipi_init(
     p_mipi_clk,
@@ -48,32 +56,28 @@ void camera_main(
     p_mipi_rxd,
     clk_mipi);
   
-  sensor_start(i2c);
-
   par{
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
-    isp_pipeline(c_stat_thread, sc_if);
-    sensor_control(sc_if, i2c);
+    isp_pipeline(c_stat_thread, schan[SENSOR_STREAM_STOP], schan[SENSOR_SET_EXPOSURE]);
+    user_app();
   }
 }
 
 
 int main(void)
 {
-  // Declarations
+  // Camera control channels
+  chan schan[5];
   chan xscope_chan;
-  i2c_master_if i2c[1];  
-  
+
   // Parallel jobs
   par{
-    // Xscope and i2c
+    on tile[0]: sensor_i2c_start(schan);
+    on tile[MIPI_TILE]: main_tile1(schan);
+    // xscope
     xscope_host_data(xscope_chan);
     on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
-    // Camera
-    on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, Kbps);
-    on tile[MIPI_TILE]: camera_main(i2c[0]);
-    on tile[MIPI_TILE]: user_app();
   }
   return 0;
 }

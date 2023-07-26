@@ -17,18 +17,11 @@
 #define APPLY_GAMMA     1
 #define ENABLE_PRINT_STATS 0
 
-typedef enum {
-    SENSOR_INIT = 0,
-    SENSOR_CONFIG,
-    SENSOR_STREAM_START,
-    SENSOR_STREAM_STOP,
-    SENSOR_SET_EXPOSURE
-} camera_control_t;
-
 // ---------------------------------- ISP PIPELINE ----------------------------------
 void isp_pipeline(
     streaming_chanend_t c_img_in,
-    chanend schan[]);
+    chanend chan_stop,
+    chanend chan_exposure);
 // ---------------------------------- AE/AGC ------------------------------
 
 /**

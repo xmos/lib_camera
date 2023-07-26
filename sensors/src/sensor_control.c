@@ -88,12 +88,6 @@ void sensor_control(
         chan_in_word(schan[SENSOR_STREAM_START]);
         imx219_stream_start(sony_i2c_cfg);
         SELECT_CONTINUE_RESET;
-    sensor_stream_stop_handler:
-        chan_in_word(schan[SENSOR_STREAM_STOP]);
-        printf("--------------- Stopping sensor\n");
-        uint32_t r = imx219_stream_stop(sony_i2c_cfg);
-        chan_out_word(schan[SENSOR_STREAM_STOP], r);
-        return;
     sensor_set_exposure_handler:
         tmp_exposure = chan_in_word(schan[SENSOR_SET_EXPOSURE]);
         printf("--------------- Setting exposure to %ld\n", tmp_exposure);
@@ -101,5 +95,11 @@ void sensor_control(
         SELECT_CONTINUE_RESET;
     default_handler:
         SELECT_CONTINUE_RESET;
+    sensor_stream_stop_handler:
+        chan_in_word(schan[SENSOR_STREAM_STOP]);
+        printf("--------------- Stopping sensor\n");
+        uint32_t r = imx219_stream_stop(sony_i2c_cfg);
+        chan_out_word(schan[SENSOR_STREAM_STOP], r);
+        return;
     }
 }
