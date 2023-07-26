@@ -15,7 +15,6 @@ void user_app()
 
   int8_t image_buffer[H][W][CH];
   uint8_t * image_ptr = (uint8_t *) &image_buffer[0][0][0];
-  printf("width %u, %u", W, (((APP_IMAGE_WIDTH_PIXELS)>>4)<<4) != (APP_IMAGE_WIDTH_PIXELS));
 
   // set the input image to 0
   memset(image_buffer, -128, sizeof(image_buffer));

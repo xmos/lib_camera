@@ -150,7 +150,6 @@ unsigned camera_capture_image(
   unsigned row_index;
 
   int8_t pixel_data[CH][W];
-  //printf("h %u w %u\n", H, W);
 
   // Loop, capturing rows until we get one with row_index==0
   do {

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <print.h>
 #include <xcore/channel_streaming.h>
 #include <xcore/select.h>
 
