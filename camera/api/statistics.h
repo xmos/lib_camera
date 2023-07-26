@@ -9,7 +9,6 @@
 #include "xccompat.h"
 
 #include "sensor.h"
-#include "sensor_control.h"
 #include "image_hfilter.h"
 
 #if defined(__XC__) || defined(__cplusplus)

@@ -1,28 +1,34 @@
+#pragma once 
 
-#pragma once
+#include <stdio.h>
+#include <stdint.h>
+// xcore
+#include <xcore/select.h>
+#include <xcore/channel.h> // includes streaming channel and channend
 
-#include "xccompat.h"
+#include "imx219.h"
 
-#ifdef __XC__
+#define SETSR(c) asm volatile("setsr %0" : : "n"(c));
 
-typedef interface sensor_control_if {
-    void set_exposure(unsigned exposure);
-    void stop();
-} sensor_control_if;
+#define N_COMMANDS 5
+typedef enum {
+    SENSOR_INIT = 0,
+    SENSOR_CONFIG,
+    SENSOR_STREAM_START,
+    SENSOR_STREAM_STOP,
+    SENSOR_SET_EXPOSURE
+} camera_control_t;
 
+// In order to interface the handler and api
+/*
 void sensor_control(
-    server interface sensor_control_if sc,
-    client interface i2c_master_if i2c);
+    i2c_config_t sony_i2c_cfg,
+    streaming_channel_t sensor_schan[N_COMMANDS]
+);
+*/
 
-void sensor_start(client interface i2c_master_if i2c);
+void sensor_i2c_start(chanend_t schan[]);
 
-#endif
+void simple_sensor_control(chanend_t schan[]);
 
-/* These wrappers are for calling client interface functions from C */
-void sensor_control_set_exposure(
-    CLIENT_INTERFACE(sensor_control_if, sc),
-    const unsigned exposure
-    );
-
-void sensor_control_stop(
-    CLIENT_INTERFACE(sensor_control_if, sc));
+void sensor_control(chanend_t schan[]);

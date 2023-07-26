@@ -1,3 +1,4 @@
+#include <xcore/channel.h> // includes streaming channel and channend
 #include <xcore/channel_streaming.h>
 #include "xccompat.h"
 
@@ -9,7 +10,7 @@
  * The statistics are stored in a struct which is used to perform ISP corrections.
  * @param c_img_in - Channel end of the image.
  */
-void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_if, sc_if))
+void isp_pipeline(streaming_chanend_t c_img_in, chanend_t schan[])
 {
     // Outer loop iterates over frames
     while (1) {
@@ -25,9 +26,10 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
 
             if (row == (low_res_image_row_t *) 1) {
                 // Stop the camera sensor
-                sensor_control_stop(sc_if);
-                // Exit
-                return;
+                chan_out_word(schan[SENSOR_STREAM_STOP], (uint32_t)0);
+                uint32_t r = chan_in_word(schan[SENSOR_STREAM_STOP]);
+                printf("ISP: Received stop signal response %ld\n", r);
+                if (r == 0) return;
             }
 
             // Update histogram
@@ -50,7 +52,7 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
         }
 
         // Adjust AE
-        uint8_t ae_done = AE_control_exposure(&global_stats, sc_if);
+        uint8_t ae_done = AE_control_exposure(&global_stats, schan[SENSOR_SET_EXPOSURE]);
 
         // Adjust AWB
         static unsigned run_once = 0;

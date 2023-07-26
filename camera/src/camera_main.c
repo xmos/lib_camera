@@ -10,9 +10,7 @@
 #include "camera_main.h"
 
 #include "mipi.h"
-#include "i2c.h"
 #include "isp.h"
-#include "sensor_control.h"
 #include "packet_handler.h"
 
 

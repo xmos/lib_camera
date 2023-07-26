@@ -1,6 +1,7 @@
-#include "sensor_defs.h"
 
 // --------- REG definitions ---------------------------------------------------------
+#include "cam_i2c.h"
+#include "common.h"
 
 // Sleep values and registers
 #define SLEEP 0xFFFF
@@ -26,7 +27,7 @@
 #define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 #ifndef PLL_VT_MPY
-#define PLL_VT_MPY  0x0047 //13 FPS
+#define PLL_VT_MPY  0x0030 //13 FPS
 
 #endif
 

@@ -1,4 +1,6 @@
-// ----- minimal comom definitions
+#pragma once
+
+// ----- minimal commom definitions
 #define DISABLED 0
 #define ENABLED 1
 

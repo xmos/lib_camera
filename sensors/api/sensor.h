@@ -24,30 +24,9 @@
 // FPS settings
 #define FPS_13 // allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
 
+#define SENSOR_BLACK_LEVEL      16
+
 // --------------------------------------------------------
-
-// Include custom libraries
-#if CONFIG_IMX219_SUPPORT
-    #include "imx219.h"
-    #define sensor_initialize(iic)          imx219_initialize(iic)
-    #define sensor_stream_start(iic)        imx219_stream_start(iic)
-    #define sensor_stream_stop(iic)         imx219_stream_stop(iic)
-    #define sensor_configure(iic)           imx219_configure(iic)
-    #define sensor_set_exposure(iic,ex)     imx219_set_exposure(iic,ex)
-    #define SENSOR_BLACK_LEVEL              16
-#endif
-
-#if CONFIG_GC2145_SUPPORT
-    #include "gc2145.h"
-    /* //TODO
-    #define sensor_initialize(iic)                gcinit(iic)
-    #define sensor_stream_start(iic)               gcstart(iic)
-    #define sensor_stream_stop(iic)                gcstop(iic)
-    #define sensor_configure(iic)           gcconfigure(iic)
-    #define sensor_set_exposure(iic,ex)     gcsetexp(iic,ex)
-    #define SENSOR_BLACK_LEVEL              0
-    */
-#endif
 
 // Modes configurations
 #ifndef CONFIG_MODE

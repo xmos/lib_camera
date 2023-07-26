@@ -17,12 +17,18 @@
 #define APPLY_GAMMA     1
 #define ENABLE_PRINT_STATS 0
 
+typedef enum {
+    SENSOR_INIT = 0,
+    SENSOR_CONFIG,
+    SENSOR_STREAM_START,
+    SENSOR_STREAM_STOP,
+    SENSOR_SET_EXPOSURE
+} camera_control_t;
+
 // ---------------------------------- ISP PIPELINE ----------------------------------
 void isp_pipeline(
     streaming_chanend_t c_img_in,
-    CLIENT_INTERFACE(sensor_control_if, sc_if)
-  );
-
+    chanend schan[]);
 // ---------------------------------- AE/AGC ------------------------------
 
 /**
@@ -32,7 +38,7 @@ void isp_pipeline(
  */
 uint8_t AE_control_exposure(
     global_stats_t *global_stats,
-    CLIENT_INTERFACE(sensor_control_if, sc_if));
+    chanend c_exp);
 
 /**
  * @brief aux function to print the skewness

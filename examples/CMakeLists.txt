@@ -7,7 +7,6 @@ set(EXAMPLE_APP_COMPILER_FLAGS
     -g
     -report
     -Wall
-    -Werror
     -fxscope
     -mcmodel=large
     -target=${XCORE_TARGET}
@@ -21,19 +20,20 @@ set(EXAMPLE_APP_LINK_OPTIONS
 )
 
 set(EXAMPLE_APP_LINK_LIBRARIES                 
-    i2c::lib_i2c
     fwk_camera::mipi
     fwk_camera::sensors
     fwk_camera::camera
     fwk_camera::utils
     fwk_camera::xscope_fileio
+    fwk_camera::lib_i2c_new
 )
 
 # add the examples
 add_subdirectory(take_picture_raw)
-add_subdirectory(take_picture_local)
+#add_subdirectory(take_picture_local)
+#add_subdirectory(i2c_simple_read)
 
 if(${CONFIG_MIPI_FORMAT} STREQUAL ${CONFIG_RAW8})
     # we only support RAW8 images in this example for now
-    add_subdirectory(take_picture_downsample)
+    # add_subdirectory(take_picture_downsample)
 endif()

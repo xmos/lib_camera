@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include "sensor.h"
+//#include "sensor.h"
 
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {
