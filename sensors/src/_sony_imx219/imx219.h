@@ -36,10 +36,9 @@ int imx219_write(i2c_config_t cfg, i2c_settings_t settings);
 int imx219_write_table(i2c_config_t cfg, i2c_settings_t table[], size_t table_size);
 // High level functions
 int imx219_initialize(i2c_config_t cfg);
+int imx219_stream_start(i2c_config_t cfg);
 int imx219_configure(i2c_config_t cfg, regs_config_t reg_cfg);
 int imx219_set_exposure(i2c_config_t cfg, uint32_t dBGain);
-// Stream functions
-int imx219_stream_start(i2c_config_t cfg);
 int imx219_stream_stop(i2c_config_t cfg);
 
 #ifdef __XC__

@@ -1,5 +1,6 @@
-#include "sensor_defs.h"
+#pragma once
 
+#include "sensor_settings.h"
 // --------- REG definitions ---------------------------------------------------------
 
 // Sleep values and registers

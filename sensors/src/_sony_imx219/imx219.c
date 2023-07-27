@@ -90,14 +90,6 @@ int imx219_write_table(
 
 // -----------------------------------------------------
 // -----------------------------------------------------
-
-int imx219_stream_start(i2c_config_t cfg){
-    int ret = 0;
-    /* set stream on register */
-    ret = imx219_write_table(cfg, start_regs, sizeof(start_regs) / sizeof(start_regs[0]));
-    return ret;
-}
-
 int imx219_initialize(i2c_config_t cfg)
 {
     int ret = 0;
@@ -107,6 +99,13 @@ int imx219_initialize(i2c_config_t cfg)
     ret = imx219_write_table(cfg, imx219_lanes_regs, sizeof(imx219_lanes_regs) / sizeof(imx219_lanes_regs[0]));
     // set gain
     ret = imx219_set_exposure(cfg, GAIN_DB);
+    return ret;
+}
+
+int imx219_stream_start(i2c_config_t cfg){
+    int ret = 0;
+    /* set stream on register */
+    ret = imx219_write_table(cfg, start_regs, sizeof(start_regs) / sizeof(start_regs[0]));
     return ret;
 }
 

@@ -1,5 +1,9 @@
+#pragma once
+
 #include <stdlib.h>
 #include <stdint.h>
+
+#include "i2c.h"
 
 typedef struct
 {

@@ -26,7 +26,7 @@ target_include_directories(${LIB_NAME}
     PUBLIC
         api
         src
-        _sony_imx219
+        src/_sony_imx219
 )
 
 target_sources(${LIB_NAME}
