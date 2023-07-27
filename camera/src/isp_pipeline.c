@@ -11,7 +11,7 @@
  * The statistics are stored in a struct which is used to perform ISP corrections.
  * @param c_img_in - Channel end of the image.
  */
-void isp_pipeline(streaming_chanend_t c_img_in, chanend_t chan_stop, chanend_t chan_exposure)
+void isp_pipeline(streaming_chanend_t c_img_in, chanend c_control) // 
 {
     // Outer loop iterates over frames
     while (1) {
@@ -26,11 +26,11 @@ void isp_pipeline(streaming_chanend_t c_img_in, chanend_t chan_stop, chanend_t c
             }
 
             if (row == (low_res_image_row_t *) 1) {
-                // Stop the camera sensor
-                chan_out_word(chan_stop, (uint32_t)0);
-                uint32_t r = chan_in_word(chan_stop);
-                printf("ISP: Received stop signal response %ld\n", r);
-                if (r == 0) return;
+                sensor_cmd_t response;
+                response.cmd = SENSOR_STREAM_STOP;
+                response.arg = 0;
+                sensor_ctrl_chan_out_cmd(response, c_control);
+                return;
             }
 
             // Update histogram
@@ -53,7 +53,7 @@ void isp_pipeline(streaming_chanend_t c_img_in, chanend_t chan_stop, chanend_t c
         }
 
         // Adjust AE
-        uint8_t ae_done = AE_control_exposure(&global_stats, chan_exposure);
+        uint8_t ae_done = AE_control_exposure(&global_stats, c_control);
 
         // Adjust AWB
         static unsigned run_once = 0;

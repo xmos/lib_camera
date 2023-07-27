@@ -5,8 +5,10 @@
 // xcore
 #include <xcore/select.h>
 #include <xcore/channel.h> // includes streaming channel and channend
+#include <xccompat.h> // important because extern streaming channel
 
 #include "sensor.h"
+
 
 #if CONFIG_IMX219_SUPPORT
     #include "imx219.h"
@@ -25,14 +27,13 @@
     #define sensor_stream_stop(cfg)         other_sensor_stream_stop(cfg)
 #endif
 
-#define N_COMMANDS 5
-typedef enum {
-    SENSOR_INIT = 0,
-    SENSOR_CONFIG,
-    SENSOR_STREAM_START,
-    SENSOR_STREAM_STOP,
-    SENSOR_SET_EXPOSURE
-} camera_control_t;
-
+// Main control functions
 void sensor_i2c_start();
-void sensor_control(chanend_t schan[]);
+void sensor_control(chanend_t c_control);
+
+// Aux functions
+void sensor_ctrl_chan_out_cmd(sensor_cmd_t response, chanend_t c_control);
+sensor_cmd_t sensor_ctrl_chan_in_cmd(chanend_t c_control);
+
+void sensor_ctrl_chan_out_cfg_register(regs_config_t reg_cfg, chanend_t c_control);
+regs_config_t sensor_ctrl_chan_in_cfg_register(chanend_t c_control);

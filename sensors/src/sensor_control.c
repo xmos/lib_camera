@@ -1,5 +1,6 @@
 #include "sensor_control.h"
 
+
 i2c_master_t i2c_ctx;
 i2c_config_t sony_i2c_cfg;
 regs_config_t default_sony_reg_config;
@@ -19,14 +20,14 @@ void sensor_i2c_start() {
     default_sony_reg_config.regs_frame_size_size = sizeof(mode_640_480_regs) / sizeof(i2c_settings_t);
     default_sony_reg_config.regs_pixel_format = raw8_framefmt_regs;
     default_sony_reg_config.regs_pixel_format_size = sizeof(raw8_framefmt_regs) / sizeof(i2c_settings_t);
-    
+
     // Init I2C
     imx219_i2c_init(sony_i2c_cfg);
     printf("\nI2C initialized...\n");
 
     // Init the I2C sensor first configuration
     int r = 0;
-    r |= sensor_initialize(sony_i2c_cfg);
+    r |= sensor_initialize(sony_i2c_cfg); 
     delay_milliseconds(100);
     r |= sensor_configure(sony_i2c_cfg, default_sony_reg_config);
     delay_milliseconds(600);
@@ -36,44 +37,83 @@ void sensor_i2c_start() {
     assert(r == 0);
 }
 
-void sensor_control(
-    chanend_t schan[])
-{
-    regs_config_t tmp_sensor_regs;
-    uint32_t tmp_exposure = 40;
+void sensor_control(chanend_t c_control) {
+    // store the response
+    sensor_cmd_t response;
+    regs_config_t cfg;
 
+    // sensor control logic
     SELECT_RES(
-        CASE_THEN(schan[SENSOR_INIT], sensor_init_handler),
-        CASE_THEN(schan[SENSOR_CONFIG], sensor_config_handler),
-        CASE_THEN(schan[SENSOR_STREAM_START], sensor_stream_start_handler),
-        CASE_THEN(schan[SENSOR_STREAM_STOP], sensor_stream_stop_handler),
-        CASE_THEN(schan[SENSOR_SET_EXPOSURE], sensor_set_exposure_handler),
+        CASE_THEN(c_control, sensor_ctrl_handler),
         DEFAULT_THEN(default_handler))
     {
-    sensor_init_handler:
-        chan_in_word(schan[SENSOR_INIT]);
-        sensor_initialize(sony_i2c_cfg);
-        SELECT_CONTINUE_RESET;
-    sensor_config_handler:
-        chan_in_buf_byte(schan[SENSOR_CONFIG], (uint8_t*)&tmp_sensor_regs, sizeof(regs_config_t));
-        sensor_configure(sony_i2c_cfg, tmp_sensor_regs);
-        SELECT_CONTINUE_RESET;
-    sensor_stream_start_handler:
-        chan_in_word(schan[SENSOR_STREAM_START]);
-        sensor_stream_start(sony_i2c_cfg);
-        SELECT_CONTINUE_RESET;
-    sensor_set_exposure_handler:
-        tmp_exposure = chan_in_word(schan[SENSOR_SET_EXPOSURE]);
-        printf("--------------- Setting exposure to %ld\n", tmp_exposure);
-        sensor_set_exposure(sony_i2c_cfg, tmp_exposure);
-        SELECT_CONTINUE_RESET;
+    sensor_ctrl_handler:
+
+        response = sensor_ctrl_chan_in_cmd(c_control);
+        printf("--------------- Received command %d\n", response.cmd);
+
+        switch (response.cmd)
+        {
+        case SENSOR_INIT:
+            sensor_initialize(sony_i2c_cfg);
+            break;
+        case SENSOR_CONFIG:
+            cfg = sensor_ctrl_chan_in_cfg_register(c_control);
+            sensor_configure(sony_i2c_cfg, cfg);
+            break;
+        case SENSOR_STREAM_START:
+            sensor_stream_start(sony_i2c_cfg);
+            break;
+        case SENSOR_STREAM_STOP:
+            sensor_stream_stop(sony_i2c_cfg);
+            return;
+        case SENSOR_SET_EXPOSURE:
+            sensor_set_exposure(sony_i2c_cfg, response.arg);
+            break;
+        default:
+            break;
+        }
+
     default_handler:
-        SELECT_CONTINUE_RESET;
-    sensor_stream_stop_handler:
-        chan_in_word(schan[SENSOR_STREAM_STOP]);
-        printf("--------------- Stopping sensor\n");
-        uint32_t r = sensor_stream_stop(sony_i2c_cfg);
-        chan_out_word(schan[SENSOR_STREAM_STOP], r);
-        return;
+        continue;
     }
+}
+
+// Aux functions
+void sensor_ctrl_chan_out_cmd(
+    sensor_cmd_t response,
+    chanend_t c_control)
+{
+    chan_out_word(c_control, (uint32_t)response.cmd);
+    chan_out_word(c_control, (uint32_t)response.arg);
+}
+
+sensor_cmd_t sensor_ctrl_chan_in_cmd(
+    chanend_t c_control)
+{
+    sensor_cmd_t response;
+    response.cmd = chan_in_word(c_control);
+    response.arg = chan_in_word(c_control);
+    return response;
+}
+
+void sensor_ctrl_chan_out_cfg_register(
+    regs_config_t reg_cfg,
+    chanend_t c_control)
+{
+    chan_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size);
+    chan_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size_size);
+    chan_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format);
+    chan_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format_size);
+}
+
+regs_config_t sensor_ctrl_chan_in_cfg_register(
+    chanend_t c_control)
+{
+    regs_config_t reg_cfg;
+    reg_cfg.regs_frame_size = (i2c_settings_t*)chan_in_word(c_control);
+    reg_cfg.regs_frame_size_size = (size_t)chan_in_word(c_control);
+    reg_cfg.regs_pixel_format = (i2c_settings_t*)chan_in_word(c_control);
+    reg_cfg.regs_pixel_format_size = (size_t)chan_in_word(c_control);
+    return reg_cfg;
 }

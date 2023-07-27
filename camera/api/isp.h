@@ -20,8 +20,7 @@
 // ---------------------------------- ISP PIPELINE ----------------------------------
 void isp_pipeline(
     streaming_chanend_t c_img_in,
-    chanend chan_stop,
-    chanend chan_exposure);
+    chanend c_control);
 // ---------------------------------- AE/AGC ------------------------------
 
 /**

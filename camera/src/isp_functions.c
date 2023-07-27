@@ -6,6 +6,7 @@
 #include "xccompat.h"
 
 #include "isp.h"
+#include "sensor_control.h"
 
 #define INCLUDE_ABS 0
 
@@ -44,7 +45,7 @@ void print_info_exposure(uint8_t val)
 
 uint8_t AE_control_exposure(
     global_stats_t *global_stats,
-    chanend chan)
+    chanend c_control)
 {
     // Initial exposure
     static uint8_t new_exp = AE_INITIAL_EXPOSURE;
@@ -60,7 +61,11 @@ uint8_t AE_control_exposure(
     }
     else{ // Adjust exposure
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
-        chan_out_word(chan, (uint32_t)new_exp);
+        sensor_cmd_t response;
+        response.cmd = SENSOR_SET_EXPOSURE;
+        response.arg = new_exp;
+        sensor_ctrl_chan_out_cmd(response, c_control);
+
         #if ENABLE_PRINT_STATS
             print_info_exposure(0);
         #endif
