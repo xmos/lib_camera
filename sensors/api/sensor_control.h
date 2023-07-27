@@ -9,6 +9,7 @@
 
 #include "sensor.h"
 
+#define ENABLE_PRINT_SENSOR_CONTROL 0
 
 #if CONFIG_IMX219_SUPPORT
     #include "imx219.h"

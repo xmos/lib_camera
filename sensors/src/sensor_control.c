@@ -50,7 +50,9 @@ void sensor_control(chanend_t c_control) {
     sensor_ctrl_handler:
 
         response = sensor_ctrl_chan_in_cmd(c_control);
-        printf("--------------- Received command %d\n", response.cmd);
+        #if ENABLE_PRINT_SENSOR_CONTROL
+            printf("--------------- Received command %d\n", response.cmd);
+        #endif
 
         switch (response.cmd)
         {
