@@ -15,7 +15,19 @@
 #define BINNING_NONE	 0x0000
 #define BINNING_2X2		 0x0101
 
-#define BINNING_MODE BINNING_2X2
+#if     (CONFIG_MODE == MODE_VGA_640x480)
+# define BINNING_MODE BINNING_2X2
+#elif   (CONFIG_MODE == MODE_UXGA_1640x1232)
+# define BINNING_MODE BINNING_2X2
+#elif   (CONFIG_MODE == MODE_WQSXGA_3280x2464)
+# define BINNING_MODE BINNING_NONE
+#elif   (CONFIG_MODE == MODE_FHD_1920x1080)
+# define BINNING_MODE BINNING_NONE
+#elif   (CONFIG_MODE == MODE_1280_960)
+# define BINNING_MODE BINNING_2X2
+#else
+# error "Invalid configuration mode"
+#endif
 
 // PLL settings
 #define PREPLLCK_VT_DIV_REG 0x0304 
@@ -138,6 +150,26 @@ static imx219_settings_t imx219_lanes_regs[] = {
     };
 #endif
 
+#if (CONFIG_MODE == MODE_1280_960)
+    static imx219_settings_t mode_1280_960_regs[] = {
+        {0x0164, 0x00},
+        {0x0165, 0x00},
+        {0x0166, 0x09},
+        {0x0167, 0xff},
+        {0x0168, 0x00},
+        {0x0169, 0x00},
+        {0x016a, 0x07},
+        {0x016b, 0x7f},
+        {0x016c, 0x05},
+        {0x016d, 0x00},
+        {0x016e, 0x03},
+        {0x016f, 0xc0},
+        {0x0624, 0x06},
+        {0x0625, 0x68},
+        {0x0626, 0x04},
+        {0x0627, 0xd0},
+    };
+#endif
 
 #if (CONFIG_MODE == MODE_FHD_1920x1080)
     static imx219_settings_t mode_1920_1080_regs[] = {

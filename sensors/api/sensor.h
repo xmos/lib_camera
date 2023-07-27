@@ -19,7 +19,7 @@
 #ifndef CONFIG_MIPI_FORMAT
 #define CONFIG_MIPI_FORMAT      _MIPI_DT_RAW8
 #endif
-#define MIPI_PKT_BUFFER_COUNT   4 
+#define MIPI_PKT_BUFFER_COUNT   4
 
 // FPS settings
 #define FPS_13 // allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
@@ -70,6 +70,9 @@
     #define MIPI_IMAGE_WIDTH_PIXELS         1920 // csi2 packed (stride 800) 
     #define MIPI_IMAGE_HEIGHT_PIXELS        1080
 
+#elif (CONFIG_MODE == MODE_1280_960)
+    #define MIPI_IMAGE_WIDTH_PIXELS         1280
+    #define MIPI_IMAGE_HEIGHT_PIXELS        960
 #else 
     #error Unknown configuration mode
 #endif
@@ -113,13 +116,6 @@
 #define MIPI_TILE 1
 #define EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
 #define MIPI_EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
-// SRAM Image storage (do not edit)
-//TODO check maximum storage size for the image
-#define MAX_MEMORY_SIZE 500000 << 2 //becasue half needed is code
-
-//#if MIPI_IMAGE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS > MAX_MEMORY_SIZE
-//    #warning "The image appears to be too large for the available internal RAM.!"
-//#endif
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -128,7 +124,17 @@
 #define SENSOR_RAW_IMAGE_WIDTH_PIXELS MIPI_IMAGE_WIDTH_PIXELS
 #define SENSOR_RAW_IMAGE_HEIGHT_PIXELS MIPI_IMAGE_HEIGHT_PIXELS
 
-#define APP_DECIMATION_FACTOR    (4)
+#if     (CONFIG_MODE == MODE_VGA_640x480)
+# define APP_DECIMATION_FACTOR    (4)
+#elif   (CONFIG_MODE == MODE_1280_960)
+# define APP_DECIMATION_FACTOR    (8)
+#else
+# error "Given CONFIG_MODE is not currently suported"
+#endif
+
+#if ((SENSOR_RAW_IMAGE_WIDTH_PIXELS % APP_DECIMATION_FACTOR) != 0)
+# error "SENSOR_RAW_IMAGE_WIDTH_PIXELS has to be dividable by APP_DECIMATION_FACTOR"
+#endif
 
 #define VPU_SIZE_16B             (16)
 

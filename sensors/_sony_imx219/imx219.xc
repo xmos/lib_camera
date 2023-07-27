@@ -95,7 +95,7 @@ static int i2c_write_table_val(client interface i2c_master_if i2c,
 int imx219_read(client interface i2c_master_if i2c, uint16_t addr){
     i2c_regop_res_t res;
     uint16_t val = i2c.read_reg16(IMX219_I2C_ADDR, addr, res);
-    assert(res == 0);
+    assert(res == 0 && "Could not read from i2c");
     return val;
 }
 

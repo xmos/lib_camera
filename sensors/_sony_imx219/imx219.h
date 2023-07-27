@@ -25,6 +25,8 @@ typedef struct
     #define CONFIG_REG      mode_3280x2464_regs
 #elif (CONFIG_MODE == MODE_FHD_1920x1080)
     #define CONFIG_REG      mode_1920_1080_regs
+#elif (CONFIG_MODE == MODE_1280_960)
+    #define CONFIG_REG      mode_1280_960_regs
 #else
     #error "Invalid configuration mode"
 #endif

@@ -174,7 +174,7 @@ void handle_no_expected_lines()
   if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
     // We've received more lines of image data than we expected.
 #ifdef ASSERT_ON_TOO_MANY_LINES
-      assert(0);
+      assert(0 && "Recieved too many lines from mipi");
 #endif
   }
 }
@@ -221,10 +221,7 @@ void handle_packet(
   */
   switch(data_type)
   {
-    case MIPI_DT_FRAME_START: 
-      printf("in  lines before new frame %u\n", ph_state.in_line_number);
-      printf("out lines before new frame %u\n", ph_state.out_line_number);
-      //puts("got frame start");
+    case MIPI_DT_FRAME_START:
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
       ph_state.out_line_number = 0;

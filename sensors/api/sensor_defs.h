@@ -6,6 +6,7 @@
 #define MODE_UXGA_1640x1232      0x02      
 #define MODE_WQSXGA_3280x2464    0x03
 #define MODE_FHD_1920x1080       0x04
+#define MODE_1280_960            0X05
 
 #define _MIPI_DT_RAW8            0x2A
 #define _MIPI_DT_RAW10           0x2B
