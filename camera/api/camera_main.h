@@ -6,7 +6,6 @@
 #include "xccompat.h"
 
 #include "mipi.h"
-//#include "sensor.h"
 
 #ifndef MIPI_CLKBLK
 #define MIPI_CLKBLK XS1_CLKBLK_1

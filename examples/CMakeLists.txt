@@ -7,6 +7,7 @@ set(EXAMPLE_APP_COMPILER_FLAGS
     -g
     -report
     -Wall
+    -Werror
     -fxscope
     -mcmodel=large
     -target=${XCORE_TARGET}

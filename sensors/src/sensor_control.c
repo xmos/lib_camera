@@ -6,7 +6,7 @@ i2c_config_t sony_i2c_cfg;
 regs_config_t default_sony_reg_config;
 
 // Sensor start
-void sensor_i2c_start() {
+void sensor_i2c_init() {
 
     // I2C settings
     sony_i2c_cfg.device_addr = 0x10;

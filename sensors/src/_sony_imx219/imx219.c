@@ -1,5 +1,8 @@
 #include "imx219.h"
 
+// -----------------------------------------------------
+// Low level functions
+// -----------------------------------------------------
 void imx219_i2c_init(i2c_config_t cfg) {
     i2c_master_init(
         cfg.i2c_ctx_ptr,
@@ -28,8 +31,6 @@ int imx219_write(i2c_config_t cfg, i2c_settings_t settings){
         cfg.device_addr,
         settings.reg_addr,
         settings.reg_val);
-
-    //assert(op_code == I2C_REGOP_SUCCESS);
     return op_code != I2C_REGOP_SUCCESS ? -1 : 0;
 }
 
@@ -89,6 +90,7 @@ int imx219_write_table(
 
 
 // -----------------------------------------------------
+// High level functions
 // -----------------------------------------------------
 int imx219_initialize(i2c_config_t cfg)
 {

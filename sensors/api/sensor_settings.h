@@ -1,5 +1,8 @@
 #pragma once
 
+// This file is used from each sensor
+// It can't be included in sensor.h becuse it depends on i2C that is not xc compatible. 
+
 #include <stdlib.h>
 #include <stdint.h>
 
