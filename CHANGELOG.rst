@@ -4,7 +4,8 @@ fwk_camera change log
 0.2.0
 -----
 * CHANGED: Mipi has been reimplemented to C
-* CHANGED: I2C has been reimplemented from XC to C
+* CHANGED: I2c library version (from xc version to c version from fwk_io)
+* CHANGED: Sensor control has been reimplemented
 * DELETED: xassert module (used by xc version of i2c)
 
 0.1.0

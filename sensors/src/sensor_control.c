@@ -86,16 +86,16 @@ void sensor_ctrl_chan_out_cmd(
     sensor_cmd_t response,
     chanend_t c_control)
 {
-    chan_out_word(c_control, (uint32_t)response.cmd);
-    chan_out_word(c_control, (uint32_t)response.arg);
+    chanend_out_word(c_control, (uint32_t)response.cmd);
+    chanend_out_word(c_control, (uint32_t)response.arg);
 }
 
 sensor_cmd_t sensor_ctrl_chan_in_cmd(
     chanend_t c_control)
 {
     sensor_cmd_t response;
-    response.cmd = chan_in_word(c_control);
-    response.arg = chan_in_word(c_control);
+    response.cmd = chanend_in_word(c_control);
+    response.arg = chanend_in_word(c_control);
     return response;
 }
 
@@ -103,19 +103,19 @@ void sensor_ctrl_chan_out_cfg_register(
     regs_config_t reg_cfg,
     chanend_t c_control)
 {
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size);
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size_size);
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format);
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format_size);
+    chanend_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size);
+    chanend_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size_size);
+    chanend_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format);
+    chanend_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format_size);
 }
 
 regs_config_t sensor_ctrl_chan_in_cfg_register(
     chanend_t c_control)
 {
     regs_config_t reg_cfg;
-    reg_cfg.regs_frame_size = (i2c_settings_t*)chan_in_word(c_control);
-    reg_cfg.regs_frame_size_size = (size_t)chan_in_word(c_control);
-    reg_cfg.regs_pixel_format = (i2c_settings_t*)chan_in_word(c_control);
-    reg_cfg.regs_pixel_format_size = (size_t)chan_in_word(c_control);
+    reg_cfg.regs_frame_size = (i2c_settings_t*)chanend_in_word(c_control);
+    reg_cfg.regs_frame_size_size = (size_t)chanend_in_word(c_control);
+    reg_cfg.regs_pixel_format = (i2c_settings_t*)chanend_in_word(c_control);
+    reg_cfg.regs_pixel_format_size = (size_t)chanend_in_word(c_control);
     return reg_cfg;
 }

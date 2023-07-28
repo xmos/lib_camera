@@ -20,13 +20,8 @@
 
 #define PRINT_I2C_REG 0 
 
-#ifdef __XC__
-extern "C" {
-#endif
-
 
 // ------------------- IMX219 -------------------
-
 // Init function
 void imx219_i2c_init(i2c_config_t cfg);
 // Read functions
@@ -40,7 +35,3 @@ int imx219_stream_start(i2c_config_t cfg);
 int imx219_configure(i2c_config_t cfg, regs_config_t reg_cfg);
 int imx219_set_exposure(i2c_config_t cfg, uint32_t dBGain);
 int imx219_stream_stop(i2c_config_t cfg);
-
-#ifdef __XC__
-}
-#endif
