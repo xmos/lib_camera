@@ -25,6 +25,7 @@ set(CONFIG_MIPI_FORMAT ${CONFIG_RAW8})
 
 ## Add frameworks
 add_subdirectory(modules)
+add_subdirectory(external_deps)
 
 ## Add sensors
 add_subdirectory(sensors)

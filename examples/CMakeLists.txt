@@ -26,7 +26,7 @@ set(EXAMPLE_APP_LINK_LIBRARIES
     fwk_camera::camera
     fwk_camera::utils
     fwk_camera::xscope_fileio
-    fwk_camera::lib_i2c_new
+    fwk_camera::i2c
 )
 
 # add the examples
