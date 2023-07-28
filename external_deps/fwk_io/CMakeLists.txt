@@ -1,16 +1,6 @@
 set(LIB_PATH 
-    ${EXT_DEPS_DIR}/fwk_io/modules/i2C
+    ${EXT_DEPS_DIR}/fwk_io/modules/i2c
 )
-
-###############################
-# Use file(GLOB_RECURSE ...) to get the list of files in the target folder
-file(GLOB_RECURSE TARGET_FILES ${LIB_PATH}/*)
-
-# Loop through the list of files and print their names using message(...)
-foreach(file ${TARGET_FILES})
-    message(STATUS "File: ${file}")
-endforeach()
-###############################
 
 set(LIB_NAME lib_i2c) 
 
