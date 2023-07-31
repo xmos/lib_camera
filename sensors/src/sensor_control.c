@@ -33,8 +33,8 @@ void sensor_i2c_init() {
     delay_milliseconds(600);
     r |= sensor_stream_start(sony_i2c_cfg);
     delay_milliseconds(600);
+    xassert((r == 0) && "Could not initialise camera");
     printf("\nCamera_started and configured...\n");
-    assert(r == 0);
 }
 
 void sensor_control(chanend_t c_control) {

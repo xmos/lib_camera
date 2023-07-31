@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <assert.h>
 #include <stdio.h>
 
 #include "image_hfilter.h"

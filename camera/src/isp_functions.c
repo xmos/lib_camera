@@ -1,6 +1,6 @@
-#include <assert.h>
 #include <stdio.h>
 
+#include <xcore/assert.h>
 #include <xcore/channel.h> // includes streaming channel and channend
 #include "xccompat.h"
 
@@ -331,7 +331,7 @@ void isp_gamma(
     const size_t width, 
     const size_t channels)
 {
-    assert(gamma_curve[255] != 0); // ensure all values are filles up
+    xassert((gamma_curve[255] != 0) && "Gamma curve is not filled correctly"); // ensure all values are filles up
     size_t buffsize = height * width * channels;
     for(size_t idx = 0; idx < buffsize; idx++){
             img_in[idx] = gamma_curve[img_in[idx]];

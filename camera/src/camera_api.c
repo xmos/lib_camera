@@ -164,8 +164,9 @@ unsigned camera_capture_image(
   for (unsigned row = 1; row < H; row++) {
     row_index = camera_capture_row_decimated(pixel_data);
 
-    if (row_index != row)
+    if (row_index != row){
       return 1; // TODO handle errors better
+    }
 
     for (int i = 0; i < W; i++){
       for (int c = 0; c < CH; c++){

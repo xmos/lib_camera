@@ -1,8 +1,8 @@
 // std
 #include <stdint.h>
 #include <stdio.h>
-#include <assert.h>
 // xcore
+#include <xcore/assert.h>
 #include <xcore/select.h>
 #include <xcore/channel_streaming.h>
 // user
@@ -25,7 +25,7 @@ void user_app()
 
     // Request an image
     printf("Requesting image...\n");
-    assert(camera_capture_image_raw(image_buffer) == 0);
+    xassert((camera_capture_image_raw(image_buffer) == 0) && "Could not capture an image");
     printf("Image captured...\n");
 
     // stop the threads and camera stream

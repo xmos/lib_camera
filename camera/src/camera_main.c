@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <stdint.h>
-#include <assert.h>
 
 #include <xs1.h>
 #include <platform.h> // for ports

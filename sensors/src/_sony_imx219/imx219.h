@@ -5,8 +5,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <assert.h>
 #include <stddef.h> // size_t
+
+#include <xcore/assert.h>
 
 #include "i2c.h"
 #include "sensor_settings.h"
