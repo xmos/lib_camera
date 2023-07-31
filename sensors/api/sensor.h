@@ -161,8 +161,7 @@
 #define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)
 
 
-
-// TODO
+// Sensor control definitions
 
 #define N_COMMANDS 5
 typedef enum {
@@ -172,7 +171,6 @@ typedef enum {
     SENSOR_STREAM_STOP,
     SENSOR_SET_EXPOSURE
 } camera_control_t;
-
 
 typedef struct  
 {

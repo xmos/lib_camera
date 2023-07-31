@@ -11,10 +11,6 @@
 #include "sensor.h"
 #include "image_hfilter.h"
 
-#if defined(__XC__) || defined(__cplusplus)
-extern "C" {
-#endif
-
 #define CH_CARD               (1<<SENSOR_BIT_DEPTH)     // Size of the channel element code space
 #define HISTOGRAM_BIN_COUNT   ((CH_CARD) >> (HIST_QUANT_BITS))  // Number of histogram bins
 #define APP_WB_PERCENTILE     (0.94)
@@ -88,7 +84,3 @@ void stats_percentile_volume(channel_stats_t *stats);
  * @param channel 
  */
 void stats_print(channel_stats_t *stats, unsigned channel);
-
-#if defined(__XC__) || defined(__cplusplus)
-}
-#endif

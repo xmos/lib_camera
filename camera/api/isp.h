@@ -18,9 +18,18 @@
 #define ENABLE_PRINT_STATS 0
 
 // ---------------------------------- ISP PIPELINE ----------------------------------
+#if defined(__XC__)
+extern "C" {
+#endif
+
 void isp_pipeline(
     streaming_chanend_t c_img_in,
     chanend c_control);
+
+#if defined(__XC__)
+}
+#endif
+
 // ---------------------------------- AE/AGC ------------------------------
 
 /**
