@@ -18,10 +18,17 @@
 #define ENABLE_PRINT_STATS 0
 
 // ---------------------------------- ISP PIPELINE ----------------------------------
+#if defined(__XC__)
+extern "C" {
+#endif
+
 void isp_pipeline(
     streaming_chanend_t c_img_in,
-    CLIENT_INTERFACE(sensor_control_if, sc_if)
-  );
+    chanend c_control);
+
+#if defined(__XC__)
+}
+#endif
 
 // ---------------------------------- AE/AGC ------------------------------
 
@@ -32,7 +39,7 @@ void isp_pipeline(
  */
 uint8_t AE_control_exposure(
     global_stats_t *global_stats,
-    CLIENT_INTERFACE(sensor_control_if, sc_if));
+    chanend c_exp);
 
 /**
  * @brief aux function to print the skewness

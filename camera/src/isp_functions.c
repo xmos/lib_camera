@@ -1,7 +1,11 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include <xcore/channel.h> // includes streaming channel and channend
+#include "xccompat.h"
+
 #include "isp.h"
+#include "sensor_control.h"
 
 #define INCLUDE_ABS 0
 
@@ -37,9 +41,10 @@ void print_info_exposure(uint8_t val)
 }
 #endif
 
+
 uint8_t AE_control_exposure(
     global_stats_t *global_stats,
-    CLIENT_INTERFACE(sensor_control_if, sc_if))
+    chanend c_control)
 {
     // Initial exposure
     static uint8_t new_exp = AE_INITIAL_EXPOSURE;
@@ -55,7 +60,11 @@ uint8_t AE_control_exposure(
     }
     else{ // Adjust exposure
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
-        sensor_control_set_exposure(sc_if, (uint8_t)new_exp);
+        sensor_cmd_t response;
+        response.cmd = SENSOR_SET_EXPOSURE;
+        response.arg = new_exp;
+        sensor_ctrl_chan_out_cmd(response, c_control);
+
         #if ENABLE_PRINT_STATS
             print_info_exposure(0);
         #endif
@@ -69,6 +78,7 @@ uint8_t AE_control_exposure(
     }
     return 0;
 }
+
 
 void AE_print_skewness(global_stats_t *gstats){
       printf("skewness:%f,%f,%f\n",

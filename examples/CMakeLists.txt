@@ -21,12 +21,12 @@ set(EXAMPLE_APP_LINK_OPTIONS
 )
 
 set(EXAMPLE_APP_LINK_LIBRARIES                 
-    i2c::lib_i2c
     fwk_camera::mipi
     fwk_camera::sensors
     fwk_camera::camera
     fwk_camera::utils
     fwk_camera::xscope_fileio
+    lib_i2c
 )
 
 # add the examples

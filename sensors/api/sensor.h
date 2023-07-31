@@ -4,9 +4,22 @@
 #define XSTR(x) STR(x)
 #define STR(x) #x
 
-// -------------- Sensor abstraction layer. --------------
-#include "sensor_defs.h"
+// ----- minimal commom definitions
+#define DISABLED 0
+#define ENABLED 1
 
+#define MODE_VGA_640x480         0x01       
+#define MODE_UXGA_1640x1232      0x02      
+#define MODE_WQSXGA_3280x2464    0x03
+#define MODE_FHD_1920x1080       0x04
+
+#define _MIPI_DT_RAW8            0x2A
+#define _MIPI_DT_RAW10           0x2B
+
+#define BIAS_DISABLED            0x00  // no demux
+#define BIAS_ENABLED             0x80  // bias
+
+// -------------- Sensor abstraction layer. --------------
 // Camera support
 #define CONFIG_IMX219_SUPPORT   ENABLED
 #define CONFIG_GC2145_SUPPORT   DISABLED
@@ -24,30 +37,9 @@
 // FPS settings
 #define FPS_13 // allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
 
+// Black level settings
+#define SENSOR_BLACK_LEVEL              16
 // --------------------------------------------------------
-
-// Include custom libraries
-#if CONFIG_IMX219_SUPPORT
-    #include "imx219.h"
-    #define sensor_initialize(iic)          imx219_initialize(iic)
-    #define sensor_stream_start(iic)        imx219_stream_start(iic)
-    #define sensor_stream_stop(iic)         imx219_stream_stop(iic)
-    #define sensor_configure(iic)           imx219_configure(iic)
-    #define sensor_set_exposure(iic,ex)     imx219_set_exposure(iic,ex)
-    #define SENSOR_BLACK_LEVEL              16
-#endif
-
-#if CONFIG_GC2145_SUPPORT
-    #include "gc2145.h"
-    /* //TODO
-    #define sensor_initialize(iic)                gcinit(iic)
-    #define sensor_stream_start(iic)               gcstart(iic)
-    #define sensor_stream_stop(iic)                gcstop(iic)
-    #define sensor_configure(iic)           gcconfigure(iic)
-    #define sensor_set_exposure(iic,ex)     gcsetexp(iic,ex)
-    #define SENSOR_BLACK_LEVEL              0
-    */
-#endif
 
 // Modes configurations
 #ifndef CONFIG_MODE
@@ -167,3 +159,21 @@
 
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
 #define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)
+
+
+// Sensor control definitions
+
+#define N_COMMANDS 5
+typedef enum {
+    SENSOR_INIT = 0,
+    SENSOR_CONFIG,
+    SENSOR_STREAM_START,
+    SENSOR_STREAM_STOP,
+    SENSOR_SET_EXPOSURE
+} camera_control_t;
+
+typedef struct  
+{
+    camera_control_t cmd;
+    uint32_t arg;
+} sensor_cmd_t;

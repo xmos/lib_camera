@@ -26,8 +26,7 @@ target_include_directories(${LIB_NAME}
     PUBLIC
         api
         src
-        _galaxycore_gc2145
-        _sony_imx219
+        src/_sony_imx219
 )
 
 target_sources(${LIB_NAME}
@@ -40,8 +39,8 @@ target_sources(${LIB_NAME}
 
 target_compile_options(${LIB_NAME}
     PRIVATE
-        -Wall 
-        -Werror
+        -Wall
+        -Werror 
 )
 
 target_link_libraries(${LIB_NAME} PUBLIC lib_i2c)

@@ -1,15 +1,18 @@
+#include <xcore/channel.h> // includes streaming channel and channend
 #include <xcore/channel_streaming.h>
 #include "xccompat.h"
 
 #include "isp.h"
 #include "statistics.h"
+#include "sensor_control.h"
 
 /**
  * Thread that computes the ISP pipeline for each pixel in the image.
  * The statistics are stored in a struct which is used to perform ISP corrections.
- * @param c_img_in - Channel end of the image.
+ * @param c_img_in - Streaming channel end of the image.
+ * @param c_control - channel end for camera control.
  */
-void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_if, sc_if))
+void isp_pipeline(streaming_chanend_t c_img_in, chanend_t c_control)
 {
     // Outer loop iterates over frames
     while (1) {
@@ -24,9 +27,10 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
             }
 
             if (row == (low_res_image_row_t *) 1) {
-                // Stop the camera sensor
-                sensor_control_stop(sc_if);
-                // Exit
+                sensor_cmd_t response;
+                response.cmd = SENSOR_STREAM_STOP;
+                response.arg = 0;
+                sensor_ctrl_chan_out_cmd(response, c_control);
                 return;
             }
 
@@ -50,7 +54,7 @@ void isp_pipeline(streaming_chanend_t c_img_in, CLIENT_INTERFACE(sensor_control_
         }
 
         // Adjust AE
-        uint8_t ae_done = AE_control_exposure(&global_stats, sc_if);
+        uint8_t ae_done = AE_control_exposure(&global_stats, c_control);
 
         // Adjust AWB
         static unsigned run_once = 0;

@@ -8,19 +8,7 @@
 #include <xscope.h>
 #include <xccompat.h>
 
-#include "i2c.h"
 #include "app.h"
-
-// I2C interface ports
-#define Kbps 400
-on tile[0]: port p_scl = XS1_PORT_1N;
-on tile[0]: port p_sda = XS1_PORT_1O;
-
-extern "C" {
-#include "xscope_io_device.h"
-}
-
-#include "packet_rx_simulate.h"
 
 /**
 * Declaration of the MIPI interface ports:
@@ -32,14 +20,29 @@ on tile[MIPI_TILE] : in port p_mipi_rxv = XS1_PORT_1I;               // valid
 on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A;   // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
+typedef chanend chanend_t;
 
-void camera_main(
-  client interface i2c_master_if i2c) 
+extern "C" {
+#include "xscope_io_device.h"
+}
+
+extern "C" {
+  void sensor_i2c_init();
+  void sensor_control(chanend_t c_control);
+}
+
+// Camera control channels
+void main_tile0(chanend_t c_control){
+    sensor_i2c_init();
+    sensor_control(c_control);
+}
+
+// Camera image processing channels
+void main_tile1(chanend_t c_control) 
 {
   streaming chan c_stat_thread;
   streaming chan c_pkt;
   streaming chan c_ctrl;
-  sensor_control_if sc_if;
 
   camera_mipi_init(
     p_mipi_clk,
@@ -48,32 +51,28 @@ void camera_main(
     p_mipi_rxd,
     clk_mipi);
   
-  sensor_start(i2c);
-
   par{
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
     mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
-    isp_pipeline(c_stat_thread, sc_if);
-    sensor_control(sc_if, i2c);
+    isp_pipeline(c_stat_thread, c_control);
+    user_app();
   }
 }
 
 
 int main(void)
 {
-  // Declarations
+  // Channel declarations
   chan xscope_chan;
-  i2c_master_if i2c[1];  
-  
+  chan c_control;
+
   // Parallel jobs
   par{
-    // Xscope and i2c
+    on tile[0]: main_tile0(c_control);
+    on tile[1]: main_tile1(c_control);
+    // xscope
     xscope_host_data(xscope_chan);
-    on tile[MIPI_TILE]: xscope_io_init(xscope_chan);
-    // Camera
-    on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, Kbps);
-    on tile[MIPI_TILE]: camera_main(i2c[0]);
-    on tile[MIPI_TILE]: user_app();
+    on tile[1]: xscope_io_init(xscope_chan);
   }
   return 0;
 }

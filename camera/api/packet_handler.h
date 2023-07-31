@@ -7,10 +7,6 @@
 #include "camera_main.h"
 #include "isp.h"
 
-#ifdef __XC__
-extern "C" {
-#endif
-
 /**
  * Represents a received MIPI packet.
  */
@@ -35,6 +31,3 @@ void mipi_packet_handler(
     streaming_chanend_t c_ctrl,
     streaming_chanend_t c_out_row);
     
-#ifdef __XC__
-}
-#endif
