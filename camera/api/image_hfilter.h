@@ -2,10 +2,6 @@
 
 #include <stdint.h>
 
-#if defined(__XC__) || defined(__cplusplus)
-extern "C" {
-#endif
-
 // The FIR filter used for horizontal filtering has 3 taps, and is
 //      (0.20872991, 0.58254019, 0.20872991)
 // Because of symmetry we can use a single coefficient for the even taps.
@@ -70,7 +66,3 @@ void pixel_hfilter_update_scale(
     hfilter_state_t* state,
     const float gain,
     const unsigned offset);
-
-#if defined(__XC__) || defined(__cplusplus)
-}
-#endif
