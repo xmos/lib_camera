@@ -221,7 +221,8 @@ void handle_packet(
   */
   switch(data_type)
   {
-    case MIPI_DT_FRAME_START: 
+    case MIPI_DT_FRAME_START:
+      //printf("in: %u out: %u\n", ph_state.in_line_number, ph_state.out_line_number);
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
       ph_state.out_line_number = 0;

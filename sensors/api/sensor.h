@@ -33,10 +33,7 @@
 #ifndef CONFIG_MIPI_FORMAT
 #define CONFIG_MIPI_FORMAT      _MIPI_DT_RAW8
 #endif
-#define MIPI_PKT_BUFFER_COUNT   4 
-
-// FPS settings
-#define FPS_13 // allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
+#define MIPI_PKT_BUFFER_COUNT   4
 
 // Black level settings
 #define SENSOR_BLACK_LEVEL              16
