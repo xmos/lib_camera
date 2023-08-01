@@ -3,7 +3,13 @@
 
 i2c_master_t i2c_ctx;
 i2c_config_t sony_i2c_cfg;
-regs_config_t default_sony_reg_config;
+#if     (CONFIG_MODE == MODE_VGA_640x480)
+regs_config_t default_sony_reg_config = DEFAULT_REG_CONF;
+#elif   (CONFIG_MODE == MODE_1280x960)
+regs_config_t default_sony_reg_config = ALT_REG_CONF;
+#else
+# error "Given CONFIG_MODE is not currently suported"
+#endif
 
 // Sensor start
 void sensor_i2c_init() {
@@ -14,12 +20,6 @@ void sensor_i2c_init() {
     sony_i2c_cfg.p_scl = XS1_PORT_1N;
     sony_i2c_cfg.p_sda = XS1_PORT_1O;
     sony_i2c_cfg.i2c_ctx_ptr = &i2c_ctx;
-
-    // Register settings
-    default_sony_reg_config.regs_frame_size = mode_640_480_regs;
-    default_sony_reg_config.regs_frame_size_size = sizeof(mode_640_480_regs) / sizeof(i2c_settings_t);
-    default_sony_reg_config.regs_pixel_format = raw8_framefmt_regs;
-    default_sony_reg_config.regs_pixel_format_size = sizeof(raw8_framefmt_regs) / sizeof(i2c_settings_t);
 
     // Init I2C
     imx219_i2c_init(sony_i2c_cfg);

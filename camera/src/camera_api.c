@@ -165,6 +165,7 @@ unsigned camera_capture_image(
     row_index = camera_capture_row_decimated(pixel_data);
 
     if (row_index != row){
+      printf("got raw %u expected %u\n", row_index, row);
       return 1; // TODO handle errors better
     }
 
