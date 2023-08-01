@@ -24,7 +24,7 @@ extern "C" {
 
 void isp_pipeline(
     streaming_chanend_t c_img_in,
-    chanend c_control);
+    streaming_chanend_t c_control);
 
 #if defined(__XC__)
 }

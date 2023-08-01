@@ -27,17 +27,17 @@ extern "C" {
 
 extern "C" {
   void sensor_i2c_init();
-  void sensor_control(chanend_t c_control);
+  void sensor_control(streaming chanend c_control);
 }
 
 // Camera control channels
-void main_tile0(chanend_t c_control){
+void main_tile0(streaming chanend c_control){
     sensor_i2c_init();
     sensor_control(c_control);
 }
 
 // Camera image processing channels
-void main_tile1(chanend_t c_control) 
+void main_tile1(streaming chanend c_control) 
 {
   streaming chan c_stat_thread;
   streaming chan c_pkt;
@@ -63,7 +63,7 @@ int main(void)
 {
   // Channel declarations
   chan xscope_chan;
-  chan c_control;
+  streaming chan c_control;
 
   // Parallel jobs
   par{

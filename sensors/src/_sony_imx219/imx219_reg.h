@@ -39,14 +39,13 @@
 #define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 #ifndef PLL_VT_MPY
-#define PLL_VT_MPY  0x0047 //13 FPS
+#define PLL_VT_MPY  0x0030 //13 FPS
 
 #endif
 
 // Gain params
 #define GAIN_MIN_DB       0
 #define GAIN_MAX_DB      84
-#define GAIN_DEFAULT_DB  50
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static i2c_settings_t imx219_common_regs[] = {
