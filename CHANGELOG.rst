@@ -6,7 +6,11 @@ fwk_camera change log
 * CHANGED: Mipi has been reimplemented to C
 * CHANGED: I2c library version (from xc version to c version from fwk_io)
 * CHANGED: Sensor control has been reimplemented
-* DELETED: xassert module (used by xc version of i2c)
+* CHANGED: "assert" function replaced with "xassert" from <xcore/assert.h>
+* CHANGED: streaming channels of camera_api.c have been replaced with channels
+* ADDED: new supported mode, MODE_1280x960
+* CHANGED: value of  PLL_VT_MPY from 0x0047 to 0x0027 due to timing in MODE_1280x960
+
 
 0.1.0
 -----

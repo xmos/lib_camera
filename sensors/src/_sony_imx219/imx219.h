@@ -5,8 +5,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <assert.h>
 #include <stddef.h> // size_t
+
+#include <xcore/assert.h>
 
 #include "i2c.h"
 #include "sensor_settings.h"
@@ -20,6 +21,19 @@
 
 #define PRINT_I2C_REG 0 
 
+#define DEFAULT_REG_CONF (regs_config_t){ \
+    .regs_frame_size = mode_640_480_regs, \
+    .regs_frame_size_size = sizeof(mode_640_480_regs) / sizeof(i2c_settings_t), \
+    .regs_pixel_format = raw8_framefmt_regs, \
+    .regs_pixel_format_size = sizeof(raw8_framefmt_regs) / sizeof(i2c_settings_t) \
+}
+
+#define ALT_REG_CONF (regs_config_t){ \
+    .regs_frame_size = mode_1280_960_regs, \
+    .regs_frame_size_size = sizeof(mode_1280_960_regs) / sizeof(i2c_settings_t), \
+    .regs_pixel_format = raw8_framefmt_regs, \
+    .regs_pixel_format_size = sizeof(raw8_framefmt_regs) / sizeof(i2c_settings_t) \
+}
 
 // ------------------- IMX219 -------------------
 // Init function

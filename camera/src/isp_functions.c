@@ -1,6 +1,6 @@
-#include <assert.h>
 #include <stdio.h>
 
+#include <xcore/assert.h>
 #include <xcore/channel.h> // includes streaming channel and channend
 #include "xccompat.h"
 
@@ -58,13 +58,14 @@ uint8_t AE_control_exposure(
         #endif
         return 1;
     }
-    else{ // Adjust exposure
+    else{ 
+        // Adjust exposure
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
-        sensor_cmd_t response;
-        response.cmd = SENSOR_SET_EXPOSURE;
-        response.arg = new_exp;
-        sensor_ctrl_chan_out_cmd(response, c_control);
-
+        // Send new exposure
+        uint32_t encoded_cmd = ENCODE(SENSOR_SET_EXPOSURE, new_exp);
+        chan_out_word(c_control, encoded_cmd);
+        chan_in_word(c_control);
+        
         #if ENABLE_PRINT_STATS
             print_info_exposure(0);
         #endif
@@ -331,7 +332,7 @@ void isp_gamma(
     const size_t width, 
     const size_t channels)
 {
-    assert(gamma_curve[255] != 0); // ensure all values are filles up
+    xassert((gamma_curve[255] != 0) && "Gamma curve is not filled correctly"); // ensure all values are filles up
     size_t buffsize = height * width * channels;
     for(size_t idx = 0; idx < buffsize; idx++){
             img_in[idx] = gamma_curve[img_in[idx]];

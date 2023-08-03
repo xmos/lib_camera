@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -9,8 +8,7 @@
 inline unsigned measure_time()
 {
   unsigned y = 0;
-  asm volatile("gettime %0"
-               : "=r"(y));
+  asm volatile("gettime %0": "=r"(y));
   return y;
 }
 

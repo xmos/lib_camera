@@ -12,6 +12,7 @@
 #define MODE_UXGA_1640x1232      0x02      
 #define MODE_WQSXGA_3280x2464    0x03
 #define MODE_FHD_1920x1080       0x04
+#define MODE_1280x960            0x05
 
 #define _MIPI_DT_RAW8            0x2A
 #define _MIPI_DT_RAW10           0x2B
@@ -32,10 +33,7 @@
 #ifndef CONFIG_MIPI_FORMAT
 #define CONFIG_MIPI_FORMAT      _MIPI_DT_RAW8
 #endif
-#define MIPI_PKT_BUFFER_COUNT   4 
-
-// FPS settings
-#define FPS_13 // allowed values: [FPS_13, FPS_24, FPS_30, FPS_53, FPS_76]
+#define MIPI_PKT_BUFFER_COUNT   4
 
 // Black level settings
 #define SENSOR_BLACK_LEVEL              16
@@ -61,6 +59,10 @@
 #elif (CONFIG_MODE == MODE_FHD_1920x1080)
     #define MIPI_IMAGE_WIDTH_PIXELS         1920 // csi2 packed (stride 800) 
     #define MIPI_IMAGE_HEIGHT_PIXELS        1080
+
+#elif (CONFIG_MODE == MODE_1280x960)
+    #define MIPI_IMAGE_WIDTH_PIXELS         1280
+    #define MIPI_IMAGE_HEIGHT_PIXELS        960
 
 #else 
     #error Unknown configuration mode
@@ -105,13 +107,6 @@
 #define MIPI_TILE 1
 #define EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
 #define MIPI_EXPECTED_FORMAT CONFIG_MIPI_FORMAT //backward compatibility
-// SRAM Image storage (do not edit)
-//TODO check maximum storage size for the image
-#define MAX_MEMORY_SIZE 500000 << 2 //becasue half needed is code
-
-#if MIPI_IMAGE_WIDTH_BYTES*MIPI_IMAGE_HEIGHT_PIXELS > MAX_MEMORY_SIZE
-    #warning "The image appears to be too large for the available internal RAM.!"
-#endif
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -120,21 +115,33 @@
 #define SENSOR_RAW_IMAGE_WIDTH_PIXELS MIPI_IMAGE_WIDTH_PIXELS
 #define SENSOR_RAW_IMAGE_HEIGHT_PIXELS MIPI_IMAGE_HEIGHT_PIXELS
 
-#define APP_DECIMATION_FACTOR    (4)
+#if     (CONFIG_MODE == MODE_VGA_640x480)
+# define APP_DECIMATION_FACTOR    (4)
+#elif   (CONFIG_MODE == MODE_1280x960)
+# define APP_DECIMATION_FACTOR    (8)
+#else
+# error "Given CONFIG_MODE is not currently suported"
+#endif
 
-#define APP_IMAGE_WIDTH_PIXELS   (SENSOR_RAW_IMAGE_WIDTH_PIXELS \
-                                  / APP_DECIMATION_FACTOR)
+#define VPU_SIZE_16B             (16)
+
+#define NOT_PADDED_WIDTH_PIXELS   (SENSOR_RAW_IMAGE_WIDTH_PIXELS \
+                                   / APP_DECIMATION_FACTOR)
+
+#define PADDED_WIDTH_PIXELS       (((NOT_PADDED_WIDTH_PIXELS / VPU_SIZE_16B) + 1) \
+                                   * VPU_SIZE_16B)
+
+
+#if ((NOT_PADDED_WIDTH_PIXELS % VPU_SIZE_16B) != 0)
+# define APP_IMAGE_WIDTH_PIXELS   PADDED_WIDTH_PIXELS
+#else
+# define APP_IMAGE_WIDTH_PIXELS   NOT_PADDED_WIDTH_PIXELS
+#endif
 
 #define APP_IMAGE_HEIGHT_PIXELS   (SENSOR_RAW_IMAGE_HEIGHT_PIXELS \
                                    / APP_DECIMATION_FACTOR)
 
 #define APP_IMAGE_CHANNEL_COUNT   (3)
-
-#define APP_IMAGE_SIZE_PIXELS     (APP_IMAGE_WIDTH_PIXELS \
-                                   * APP_IMAGE_HEIGHT_PIXELS)
-
-#define APP_IMAGE_SIZE_BYTES      (APP_IMAGE_SIZE_PIXELS \
-                                   * APP_IMAGE_CHANNEL_COUNT )
 
 #define CHAN_RED    0
 #define CHAN_GREEN  1
@@ -171,9 +178,3 @@ typedef enum {
     SENSOR_STREAM_STOP,
     SENSOR_SET_EXPOSURE
 } camera_control_t;
-
-typedef struct  
-{
-    camera_control_t cmd;
-    uint32_t arg;
-} sensor_cmd_t;

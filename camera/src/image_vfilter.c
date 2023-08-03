@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <assert.h>
 
 #include "image_vfilter.h"
 

@@ -17,7 +17,19 @@
 #define BINNING_NONE	 0x0000
 #define BINNING_2X2		 0x0101
 
-#define BINNING_MODE BINNING_2X2
+#if     (CONFIG_MODE == MODE_VGA_640x480)
+# define BINNING_MODE BINNING_2X2
+#elif   (CONFIG_MODE == MODE_UXGA_1640x1232)
+# define BINNING_MODE BINNING_2X2
+#elif   (CONFIG_MODE == MODE_WQSXGA_3280x2464)
+# define BINNING_MODE BINNING_NONE
+#elif   (CONFIG_MODE == MODE_FHD_1920x1080)
+# define BINNING_MODE BINNING_NONE
+#elif   (CONFIG_MODE == MODE_1280x960)
+# define BINNING_MODE BINNING_2X2
+#else
+# error "Invalid configuration mode"
+#endif
 
 // PLL settings
 #define PREPLLCK_VT_DIV_REG 0x0304 
@@ -27,14 +39,12 @@
 #define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 #ifndef PLL_VT_MPY
-#define PLL_VT_MPY  0x0047 //13 FPS
-
+#define PLL_VT_MPY  0x0027 // pll multiplier
 #endif
 
 // Gain params
 #define GAIN_MIN_DB       0
 #define GAIN_MAX_DB      84
-#define GAIN_DEFAULT_DB  50
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static i2c_settings_t imx219_common_regs[] = {
@@ -95,11 +105,9 @@ static i2c_settings_t imx219_common_regs[] = {
 	{0x012b, 0x00},
 };
 
-
 static i2c_settings_t imx219_lanes_regs[] = {
     {CSI_LANE_MODE_REG, CSI_LANE_MODE_2_LANES}
 };
-
 
 static i2c_settings_t mode_640_480_regs[] = {
     {0x0164, 0x03},
@@ -120,8 +128,6 @@ static i2c_settings_t mode_640_480_regs[] = {
     {0x0627, 0xd0},
 };
 
-
-
 static i2c_settings_t mode_1640_1232_regs[] = {
     {0x0164, 0x00},
     {0x0165, 0x00},
@@ -140,9 +146,6 @@ static i2c_settings_t mode_1640_1232_regs[] = {
     {0x0626, 0x04},
     {0x0627, 0xd0},
 };
-
-
-
 
 static i2c_settings_t mode_1920_1080_regs[] = {
     {0x0164, 0x02},
@@ -163,7 +166,6 @@ static i2c_settings_t mode_1920_1080_regs[] = {
     {0x0627, 0x38},
 };
 
-
 static i2c_settings_t mode_3280x2464_regs[] = {
     {0x0164, 0x00},
     {0x0165, 0x00},
@@ -183,6 +185,24 @@ static i2c_settings_t mode_3280x2464_regs[] = {
     {0x0627, 0xa0},
 };
 
+static i2c_settings_t mode_1280_960_regs[] = {
+    {0x0164, 0x00},
+    {0x0165, 0x00},
+    {0x0166, 0x09},
+    {0x0167, 0xff},
+    {0x0168, 0x00},
+    {0x0169, 0x00},
+    {0x016a, 0x07},
+    {0x016b, 0x7f},
+    {0x016c, 0x05},
+    {0x016d, 0x00},
+    {0x016e, 0x03},
+    {0x016f, 0xc0},
+    {0x0624, 0x06},
+    {0x0625, 0x68},
+    {0x0626, 0x04},
+    {0x0627, 0xd0},
+};
 
 static i2c_settings_t raw10_framefmt_regs[] = {
     {0x018c, 0x0a},
@@ -196,8 +216,6 @@ static i2c_settings_t raw8_framefmt_regs[] = {
     {0x0309, 0x08},
 };
 
-
-
 static i2c_settings_t binning_regs[] = {
 	{BINNING_MODE_REG, BINNING_MODE}
 };  
@@ -209,8 +227,6 @@ static i2c_settings_t start_regs[] = {
 static i2c_settings_t stop_regs[] = {
     {0x0100, 0x00}, /* mode select streaming off */
 };
-
-
 
 // GAIN related settings
 #define INTEGRATION_TIMES 41

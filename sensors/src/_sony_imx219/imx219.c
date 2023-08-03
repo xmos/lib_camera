@@ -21,7 +21,7 @@ uint16_t imx219_read(i2c_config_t cfg, uint16_t reg) {
         reg,
         &op_code);
 
-    assert(op_code == I2C_REGOP_SUCCESS);
+    xassert((op_code == I2C_REGOP_SUCCESS) && "Could not read from I2C");
     return result;
 }
 

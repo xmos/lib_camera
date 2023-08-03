@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <assert.h>
 
+#include <xcore/assert.h>
 #include <xcore/channel_streaming.h>
 #include <xcore/select.h>
 
@@ -57,7 +57,7 @@ void handle_unknown_packet(
   // 1 - sensor specific packets (we let continue the app, uncomment print here for debug)
   // printf("Unknown packet type: %d\n", data_type);
   // 2 - invalid packets 
-  assert(data_type < 0x3F && "Packet non valid");
+  xassert(data_type < 0x3F && "Packet non valid");
 }
 
 /**
@@ -174,7 +174,7 @@ void handle_no_expected_lines()
   if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
     // We've received more lines of image data than we expected.
 #ifdef ASSERT_ON_TOO_MANY_LINES
-      assert(0);
+      xassert(0 && "Recieved too many lines");
 #endif
   }
 }
@@ -221,7 +221,7 @@ void handle_packet(
   */
   switch(data_type)
   {
-    case MIPI_DT_FRAME_START: 
+    case MIPI_DT_FRAME_START:
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
       ph_state.out_line_number = 0;
@@ -290,7 +290,7 @@ void mipi_packet_handler(
         // send stop to statistics
         s_chan_out_word(c_stats, (unsigned) 1);
         // end thread
-        printf("\n\nMipiPacketHandler: stop\n\n");
+        puts("\nMipiPacketHandler: stop\n");
         return;
     }
     else{

@@ -10,6 +10,9 @@
 #include "sensor.h"
 
 #define ENABLE_PRINT_SENSOR_CONTROL 0
+#define ENCODE(cmd, arg) (((uint32_t)(cmd) << 16) | (uint32_t)(arg))
+#define DECODE_CMD(value) ((uint16_t)((value) >> 16))
+#define DECODE_ARG(value) ((uint16_t)((value) & 0xFFFF))
 
 #if CONFIG_IMX219_SUPPORT
     #include "imx219.h"
@@ -31,10 +34,3 @@
 // Main control functions
 void sensor_i2c_init();
 void sensor_control(chanend_t c_control);
-
-// Aux functions
-void sensor_ctrl_chan_out_cmd(sensor_cmd_t response, chanend_t c_control);
-sensor_cmd_t sensor_ctrl_chan_in_cmd(chanend_t c_control);
-
-void sensor_ctrl_chan_out_cfg_register(regs_config_t reg_cfg, chanend_t c_control);
-regs_config_t sensor_ctrl_chan_in_cfg_register(chanend_t c_control);
