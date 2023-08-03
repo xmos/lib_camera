@@ -55,19 +55,15 @@ void sensor_control(chanend_t c_control) {
     regs_config_t cfg;
 
     // sensor control logic
-    SELECT_RES(
-        CASE_THEN(c_control, sensor_ctrl_handler),
-        DEFAULT_THEN(default_handler))
-    {
-    sensor_ctrl_handler:
+    while(1){
         encoded_response = chan_in_word(c_control);
-        cmd = (camera_control_t) DECODE_CMD(encoded_response);
         chan_out_word(c_control, 0);
+        cmd = (camera_control_t) DECODE_CMD(encoded_response);
 
         #if ENABLE_PRINT_SENSOR_CONTROL
             printf("--------------- Received command %d\n", cmd);
         #endif
-
+        
         switch (cmd)
         {
         case SENSOR_INIT:
@@ -90,9 +86,5 @@ void sensor_control(chanend_t c_control) {
         default:
             break;
         }
-        SELECT_CONTINUE_RESET;
-
-    default_handler:
-        SELECT_CONTINUE_RESET;
     }
 }
