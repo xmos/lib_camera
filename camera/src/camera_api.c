@@ -3,7 +3,7 @@
 #include <string.h>
 // xcore
 #include <xcore/select.h>
-#include <xcore/channel_streaming.h>
+#include <xcore/channel.h>
 // user
 #include "mipi.h"
 #include "camera_utils.h"
@@ -30,7 +30,7 @@ unsigned camera_check_stop(){
       DEFAULT_THEN(default_handler))
     {
       user_handler:
-        return 1;
+        return s_chan_in_word(c_user_api[CHAN_STOP].end_b);
       default_handler:
         return 0;
     }

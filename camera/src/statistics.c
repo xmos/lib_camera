@@ -97,7 +97,6 @@ void stats_print(channel_stats_t *stats, unsigned channel){
       stats->per_count);
 
   printstr(output);
-  // printf("%s", output);
 }
 
 void stats_percentile(channel_stats_t *stats, const float fraction)

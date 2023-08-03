@@ -291,7 +291,7 @@ void mipi_packet_handler(
         // send stop to statistics
         s_chan_out_word(c_stats, (unsigned) 1);
         // end thread
-        printf("\n\nMipiPacketHandler: stop\n\n");
+        puts("\nMipiPacketHandler: stop\n");
         return;
     }
     else{

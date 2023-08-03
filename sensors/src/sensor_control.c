@@ -23,7 +23,7 @@ void sensor_i2c_init() {
 
     // Init I2C
     imx219_i2c_init(sony_i2c_cfg);
-    printf("\nI2C initialized...\n");
+    puts("\nI2C initialized...");
 
     // Init the I2C sensor first configuration
     int r = 0;
@@ -34,7 +34,7 @@ void sensor_i2c_init() {
     r |= sensor_stream_start(sony_i2c_cfg);
     delay_milliseconds(600);
     xassert((r == 0) && "Could not initialise camera");
-    printf("\nCamera_started and configured...\n");
+    puts("\nCamera_started and configured...");
 }
 
 void sensor_control(chanend_t c_control) {
