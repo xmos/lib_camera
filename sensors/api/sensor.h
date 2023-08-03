@@ -27,7 +27,7 @@
 
 // Crop selection
 #define CROP_ENABLED            DISABLED
-#define CONFIG_MODE             MODE_VGA_640x480
+#define CONFIG_MODE             MODE_1280x960
 
 // Mipi format and mode
 #ifndef CONFIG_MIPI_FORMAT
