@@ -1,15 +1,5 @@
 #include "sensor_control.h"
 
-#define PRINT_TIME(a,b) printf("%d\n", b - a);
-#define PRINT_NAME_TIME(name,time) \
-    printf("\t%s: %u ticks, %.3fms\n", name, time, (float)time * 0.00001);
-inline unsigned measure_time()
-{
-  unsigned y = 0;
-  asm volatile("gettime %0": "=r"(y));
-  return y;
-}
-
 i2c_master_t i2c_ctx;
 i2c_config_t sony_i2c_cfg;
 #if     (CONFIG_MODE == MODE_VGA_640x480)
