@@ -39,8 +39,7 @@
 #define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 #ifndef PLL_VT_MPY
-#define PLL_VT_MPY  0x0023 // 13 FPS
-
+#define PLL_VT_MPY  0x0027 // pll multiplier
 #endif
 
 // Gain params
