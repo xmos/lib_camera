@@ -6,6 +6,7 @@
 #include "statistics.h"
 #include "sensor_control.h"
 
+#include "camera_utils.h" // measure_time() //TODO delete after time testing
 /**
  * Thread that computes the ISP pipeline for each pixel in the image.
  * The statistics are stored in a struct which is used to perform ISP corrections.
@@ -52,7 +53,10 @@ void isp_pipeline(streaming_chanend_t c_img_in, chanend_t c_control)
         }
 
         // Adjust AE
+        unsigned ts = measure_time();
         uint8_t ae_done = AE_control_exposure(&global_stats, c_control);
+        unsigned te = measure_time();
+        PRINT_NAME_TIME("AE", (te-ts));
         //uint8_t ae_done = 1; 
 
         // Adjust AWB
