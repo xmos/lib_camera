@@ -7,8 +7,6 @@
 #include "isp.h"
 #include "sensor_control.h"
 
-#include "camera_utils.h" // measure_time() //TODO delete after time testing
-
 #define INCLUDE_ABS 0
 
 // ---------------------------------- utils ------------------------------
@@ -62,18 +60,11 @@ uint8_t AE_control_exposure(
     }
     else{ 
         // Adjust exposure
-        unsigned ts = measure_time();
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
-        unsigned te = measure_time();
-        PRINT_NAME_TIME("AE_compute_new_exposure", (te-ts));
         // Send new exposure
         uint32_t encoded_cmd = ENCODE(SENSOR_SET_EXPOSURE, new_exp);
         chan_out_word(c_control, encoded_cmd);
-        unsigned te2 = measure_time();
-        PRINT_NAME_TIME("chan_out_word", (te2-te));
-        // Print info
-        unsigned resp = chan_in_word(c_control);
-        printf("ISP: Received response %d\n", resp);
+        chan_in_word(c_control);
         
         #if ENABLE_PRINT_STATS
             print_info_exposure(0);

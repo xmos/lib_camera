@@ -81,17 +81,13 @@ void sensor_control(chanend_t c_control) {
             sensor_stream_start(sony_i2c_cfg);
             break;
         case SENSOR_STREAM_STOP:
-            printf(" --------- returningc enter");
-            //sensor_stream_stop(sony_i2c_cfg);
-            printf(" ------- returning");
-            
+            sensor_stream_stop(sony_i2c_cfg);            
             break;
         case SENSOR_SET_EXPOSURE:
             arg = DECODE_ARG(encoded_response);
             sensor_set_exposure(sony_i2c_cfg, arg);
             break;
         default:
-            printf("default\n");
             break;
         }
         SELECT_CONTINUE_RESET;
@@ -100,51 +96,3 @@ void sensor_control(chanend_t c_control) {
         SELECT_CONTINUE_RESET;
     }
 }
-
-
-/*
-void sensor_control(chanend_t c_control) {
-    // store the response
-    uint32_t encoded_response;
-    camera_control_t cmd;
-    uint8_t arg;
-    regs_config_t cfg;
-
-    while(1){
-        unsigned ts = measure_time();
-        encoded_response = chan_in_word(c_control);
-        unsigned te = measure_time();
-        PRINT_NAME_TIME("chan_in_word", (te-ts));
-
-        cmd = DECODE_CMD(encoded_response);
-
-        #if ENABLE_PRINT_SENSOR_CONTROL
-            printf("--------------- Received command %d\n", cmd);
-        #endif
-
-        switch (cmd)
-        {
-        case SENSOR_INIT:
-            sensor_initialize(sony_i2c_cfg);
-            break;
-        case SENSOR_CONFIG:
-            //TODO reimplement when dynamic configuration is supported
-            sensor_configure(sony_i2c_cfg, cfg);
-            break;
-        case SENSOR_STREAM_START:
-            sensor_stream_start(sony_i2c_cfg);
-            break;
-        case SENSOR_STREAM_STOP:
-            sensor_stream_stop(sony_i2c_cfg);
-            printf("returning");
-            break;
-        case SENSOR_SET_EXPOSURE:
-            arg = DECODE_ARG(encoded_response);
-            sensor_set_exposure(sony_i2c_cfg, arg);
-            break;
-        default:
-            break;
-        }
-    }
-}
-*/

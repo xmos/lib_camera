@@ -9,7 +9,7 @@
 
 #include "sensor.h"
 
-#define ENABLE_PRINT_SENSOR_CONTROL 1
+#define ENABLE_PRINT_SENSOR_CONTROL 0
 #define ENCODE(cmd, arg) (((uint32_t)(cmd) << 16) | (uint32_t)(arg))
 #define DECODE_CMD(value) ((uint16_t)((value) >> 16))
 #define DECODE_ARG(value) ((uint16_t)((value) & 0xFFFF))
