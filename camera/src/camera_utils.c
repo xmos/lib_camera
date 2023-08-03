@@ -8,8 +8,7 @@
 inline unsigned measure_time()
 {
   unsigned y = 0;
-  asm volatile("gettime %0"
-               : "=r"(y));
+  asm volatile("gettime %0": "=r"(y));
   return y;
 }
 

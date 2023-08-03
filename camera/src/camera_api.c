@@ -3,7 +3,7 @@
 #include <string.h>
 // xcore
 #include <xcore/select.h>
-#include <xcore/channel_streaming.h>
+#include <xcore/channel.h>
 // user
 #include "mipi.h"
 #include "camera_utils.h"
@@ -15,13 +15,13 @@
 #define CHAN_STOP 2
 
 // In order to interface the handler and api
-streaming_channel_t c_user_api[3];
+channel_t c_user_api[3];
 
 void camera_init()
 {
-  c_user_api[CHAN_RAW]   = s_chan_alloc();
-  c_user_api[CHAN_DEC]   = s_chan_alloc();
-  c_user_api[CHAN_STOP]  = s_chan_alloc();
+  c_user_api[CHAN_RAW]   = chan_alloc();
+  c_user_api[CHAN_DEC]   = chan_alloc();
+  c_user_api[CHAN_STOP]  = chan_alloc();
 }
 
 unsigned camera_check_stop(){
@@ -37,7 +37,10 @@ unsigned camera_check_stop(){
 }
 
 void camera_stop(){
-  s_chan_out_word(c_user_api[CHAN_STOP].end_a, (unsigned) 1);
+  chan_out_word(c_user_api[CHAN_STOP].end_a, (unsigned) 1);
+  //chan_free(c_user_api[CHAN_RAW]);
+  //chan_free(c_user_api[CHAN_DEC]);
+  //chan_free(c_user_api[CHAN_STOP]);
 }
 
 void camera_new_row(
@@ -50,9 +53,9 @@ void camera_new_row(
       DEFAULT_THEN(default_handler))
     {
       user_handler:
-        user_pixel_data = (int8_t*) s_chan_in_word(c_user_api[CHAN_RAW].end_a);
+        user_pixel_data = (int8_t*) chan_in_word(c_user_api[CHAN_RAW].end_a);
         memcpy(user_pixel_data, (void*) pixel_data, W_RAW);
-        s_chan_out_word(c_user_api[CHAN_RAW].end_a, row_index);
+        chan_out_word(c_user_api[CHAN_RAW].end_a, row_index);
         break;
       default_handler:
         break;
@@ -70,9 +73,9 @@ void camera_new_row_decimated(
         DEFAULT_THEN(default_handler))
     {
     user_handler:
-        user_pixel_data = (int8_t *)s_chan_in_word(c_user_api[CHAN_DEC].end_a);
+        user_pixel_data = (int8_t *)chan_in_word(c_user_api[CHAN_DEC].end_a);
         memcpy(user_pixel_data, (void *)pixel_data, CH * W);
-        s_chan_out_word(c_user_api[CHAN_DEC].end_a, row_index);
+        chan_out_word(c_user_api[CHAN_DEC].end_a, row_index);
         break;
     default_handler:
         break;
@@ -82,16 +85,16 @@ void camera_new_row_decimated(
 unsigned camera_capture_row(
     int8_t pixel_data[W_RAW])
 {
-  s_chan_out_word(c_user_api[CHAN_RAW].end_b, (unsigned) &pixel_data[0]);
-  unsigned sdf = s_chan_in_word(c_user_api[CHAN_RAW].end_b);
+  chan_out_word(c_user_api[CHAN_RAW].end_b, (unsigned) &pixel_data[0]);
+  unsigned sdf = chan_in_word(c_user_api[CHAN_RAW].end_b);
   return sdf;  
 }
 
 unsigned camera_capture_row_decimated(
     int8_t pixel_data[CH][W])
 {
-  s_chan_out_word(c_user_api[CHAN_DEC].end_b, (unsigned) &pixel_data[0][0]);
-  return s_chan_in_word(c_user_api[CHAN_DEC].end_b);
+  chan_out_word(c_user_api[CHAN_DEC].end_b, (unsigned) &pixel_data[0][0]);
+  return chan_in_word(c_user_api[CHAN_DEC].end_b);
 }
 
 unsigned camera_capture_image_raw(

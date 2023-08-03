@@ -6,8 +6,7 @@
 inline unsigned measure_time()
 {
   unsigned y = 0;
-  asm volatile("gettime %0"
-               : "=r"(y));
+  asm volatile("gettime %0": "=r"(y));
   return y;
 }
 
@@ -47,7 +46,7 @@ void sensor_i2c_init() {
     printf("\nCamera_started and configured...\n");
 }
 
-/*
+
 void sensor_control(chanend_t c_control) {
     // store the response
     uint32_t encoded_response;
@@ -57,11 +56,18 @@ void sensor_control(chanend_t c_control) {
 
     // sensor control logic
     SELECT_RES(
-        CASE_THEN(c_control, sensor_ctrl_handler))
+        CASE_THEN(c_control, sensor_ctrl_handler),
+        DEFAULT_THEN(default_handler))
     {
     sensor_ctrl_handler:
         encoded_response = chan_in_word(c_control);
-        cmd = DECODE_CMD(encoded_response);
+        cmd = (camera_control_t) DECODE_CMD(encoded_response);
+        chan_out_word(c_control, 0);
+
+        #if ENABLE_PRINT_SENSOR_CONTROL
+            printf("--------------- Received command %d\n", cmd);
+        #endif
+
         switch (cmd)
         {
         case SENSOR_INIT:
@@ -75,24 +81,28 @@ void sensor_control(chanend_t c_control) {
             sensor_stream_start(sony_i2c_cfg);
             break;
         case SENSOR_STREAM_STOP:
-            sensor_stream_stop(sony_i2c_cfg);
-            return;
+            printf(" --------- returningc enter");
+            //sensor_stream_stop(sony_i2c_cfg);
+            printf(" ------- returning");
+            
+            break;
         case SENSOR_SET_EXPOSURE:
             arg = DECODE_ARG(encoded_response);
             sensor_set_exposure(sony_i2c_cfg, arg);
             break;
         default:
+            printf("default\n");
             break;
         }
-        #if ENABLE_PRINT_SENSOR_CONTROL
-            printf("--------------- Received command %d\n", cmd);
-        #endif
+        SELECT_CONTINUE_RESET;
 
-        continue;
+    default_handler:
+        SELECT_CONTINUE_RESET;
     }
 }
-*/
 
+
+/*
 void sensor_control(chanend_t c_control) {
     // store the response
     uint32_t encoded_response;
@@ -126,7 +136,8 @@ void sensor_control(chanend_t c_control) {
             break;
         case SENSOR_STREAM_STOP:
             sensor_stream_stop(sony_i2c_cfg);
-            return;
+            printf("returning");
+            break;
         case SENSOR_SET_EXPOSURE:
             arg = DECODE_ARG(encoded_response);
             sensor_set_exposure(sony_i2c_cfg, arg);
@@ -136,3 +147,4 @@ void sensor_control(chanend_t c_control) {
         }
     }
 }
+*/
