@@ -27,10 +27,8 @@ void isp_pipeline(streaming_chanend_t c_img_in, chanend_t c_control)
             }
 
             if (row == (low_res_image_row_t *) 1) {
-                sensor_cmd_t response;
-                response.cmd = SENSOR_STREAM_STOP;
-                response.arg = 0;
-                sensor_ctrl_chan_out_cmd(response, c_control);
+                uint32_t encoded_cmd = ENCODE(SENSOR_STREAM_STOP, 0);
+                chan_out_word(c_control, encoded_cmd);
                 return;
             }
 
@@ -55,6 +53,7 @@ void isp_pipeline(streaming_chanend_t c_img_in, chanend_t c_control)
 
         // Adjust AE
         uint8_t ae_done = AE_control_exposure(&global_stats, c_control);
+        //uint8_t ae_done = 1; 
 
         // Adjust AWB
         static unsigned run_once = 0;

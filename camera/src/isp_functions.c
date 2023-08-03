@@ -60,11 +60,8 @@ uint8_t AE_control_exposure(
     }
     else{ // Adjust exposure
         new_exp = AE_compute_new_exposure((float)new_exp, sk);
-        sensor_cmd_t response;
-        response.cmd = SENSOR_SET_EXPOSURE;
-        response.arg = new_exp;
-        sensor_ctrl_chan_out_cmd(response, c_control);
-
+        uint32_t encoded_cmd = ENCODE(SENSOR_SET_EXPOSURE, new_exp);
+        chan_out_word(c_control, encoded_cmd);
         #if ENABLE_PRINT_STATS
             print_info_exposure(0);
         #endif

@@ -178,9 +178,3 @@ typedef enum {
     SENSOR_STREAM_STOP,
     SENSOR_SET_EXPOSURE
 } camera_control_t;
-
-typedef struct  
-{
-    camera_control_t cmd;
-    uint32_t arg;
-} sensor_cmd_t;

@@ -39,7 +39,9 @@ void sensor_i2c_init() {
 
 void sensor_control(chanend_t c_control) {
     // store the response
-    sensor_cmd_t response;
+    uint32_t encoded_response;
+    camera_control_t cmd;
+    uint8_t arg;
     regs_config_t cfg;
 
     // sensor control logic
@@ -48,19 +50,15 @@ void sensor_control(chanend_t c_control) {
         DEFAULT_THEN(default_handler))
     {
     sensor_ctrl_handler:
-
-        response = sensor_ctrl_chan_in_cmd(c_control);
-        #if ENABLE_PRINT_SENSOR_CONTROL
-            printf("--------------- Received command %d\n", response.cmd);
-        #endif
-
-        switch (response.cmd)
+        encoded_response = chan_in_word(c_control);
+        cmd = DECODE_CMD(encoded_response);
+        switch (cmd)
         {
         case SENSOR_INIT:
             sensor_initialize(sony_i2c_cfg);
             break;
         case SENSOR_CONFIG:
-            cfg = sensor_ctrl_chan_in_cfg_register(c_control);
+            //TODO reimplement when dynamic configuration is supported
             sensor_configure(sony_i2c_cfg, cfg);
             break;
         case SENSOR_STREAM_START:
@@ -70,52 +68,17 @@ void sensor_control(chanend_t c_control) {
             sensor_stream_stop(sony_i2c_cfg);
             return;
         case SENSOR_SET_EXPOSURE:
-            sensor_set_exposure(sony_i2c_cfg, response.arg);
+            arg = DECODE_ARG(encoded_response);
+            sensor_set_exposure(sony_i2c_cfg, arg);
             break;
         default:
             break;
         }
+        #if ENABLE_PRINT_SENSOR_CONTROL
+            printf("--------------- Received command %d\n", cmd);
+        #endif
 
     default_handler:
         continue;
     }
-}
-
-// Aux functions
-void sensor_ctrl_chan_out_cmd(
-    sensor_cmd_t response,
-    chanend_t c_control)
-{
-    chan_out_word(c_control, (uint32_t)response.cmd);
-    chan_out_word(c_control, (uint32_t)response.arg);
-}
-
-sensor_cmd_t sensor_ctrl_chan_in_cmd(
-    chanend_t c_control)
-{
-    sensor_cmd_t response;
-    response.cmd = chan_in_word(c_control);
-    response.arg = chan_in_word(c_control);
-    return response;
-}
-
-void sensor_ctrl_chan_out_cfg_register(
-    regs_config_t reg_cfg,
-    chanend_t c_control)
-{
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size);
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_frame_size_size);
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format);
-    chan_out_word(c_control, (uint32_t)reg_cfg.regs_pixel_format_size);
-}
-
-regs_config_t sensor_ctrl_chan_in_cfg_register(
-    chanend_t c_control)
-{
-    regs_config_t reg_cfg;
-    reg_cfg.regs_frame_size = (i2c_settings_t*)chan_in_word(c_control);
-    reg_cfg.regs_frame_size_size = (size_t)chan_in_word(c_control);
-    reg_cfg.regs_pixel_format = (i2c_settings_t*)chan_in_word(c_control);
-    reg_cfg.regs_pixel_format_size = (size_t)chan_in_word(c_control);
-    return reg_cfg;
 }
