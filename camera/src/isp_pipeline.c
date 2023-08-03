@@ -29,8 +29,7 @@ void isp_pipeline(streaming_chanend_t c_img_in, chanend_t c_control)
             if (row == (low_res_image_row_t *) 1) {
                 uint32_t encoded_cmd = ENCODE(SENSOR_STREAM_STOP, 0);
                 chan_out_word(c_control, encoded_cmd);
-                unsigned resp = chan_in_word(c_control);
-                printf("ISP: Received response %d\n", resp);
+                chan_in_word(c_control);
                 return;
             }
 
