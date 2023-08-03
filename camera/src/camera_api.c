@@ -30,7 +30,7 @@ unsigned camera_check_stop(){
       DEFAULT_THEN(default_handler))
     {
       user_handler:
-        return 1;
+        return s_chan_in_word(c_user_api[CHAN_STOP].end_b);
       default_handler:
         return 0;
     }
