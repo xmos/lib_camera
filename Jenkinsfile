@@ -16,6 +16,9 @@ pipeline {
       description: 'The XTC tools version'
     )
   } // parameters
+  options {
+    skipDefaultCheckout()
+  }
 
   stages {
     stage('Builds') {
@@ -28,6 +31,7 @@ pipeline {
             stage ('Build') {
               steps {
                 runningOn(env.NODE_NAME)
+                checkout scm
                 // fetch submodules
                 sh 'git submodule update --init --recursive --jobs 4'
                 // build examples and tests
@@ -88,6 +92,7 @@ pipeline {
             stage ('Build Docs') {
               steps {
                 runningOn(env.NODE_NAME)
+                checkout scm
                 sh """docker run --user "\$(id -u):\$(id -g)" \
                         --rm \
                         -v ${WORKSPACE}:/build \
