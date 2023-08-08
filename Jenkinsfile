@@ -31,13 +31,15 @@ pipeline {
             stage ('Build') {
               steps {
                 runningOn(env.NODE_NAME)
-                checkout scm
-                // fetch submodules
-                sh 'git submodule update --init --recursive --jobs 4'
-                // build examples and tests
-                withTools(params.TOOLS_VERSION) {
-                  sh 'cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake'
-                  sh 'make -C build -j4'
+                dir('fwk_camera') {
+                  checkout scm
+                  // fetch submodules
+                  sh 'git submodule update --init --recursive --jobs 4'
+                  // build examples and tests
+                  withTools(params.TOOLS_VERSION) {
+                    sh 'cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake'
+                    sh 'make -C build -j4'
+                  }
                 }
               }
             } // Build
@@ -58,7 +60,7 @@ pipeline {
             stage('Source check') {
               steps {
                 withVenv {
-                  dir('tests/lib_checks')
+                  dir('fwk_camera/tests/lib_checks')
                   {
                     sh "pytest -s"
                   }
@@ -68,7 +70,7 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                dir('build/tests/unit_tests') {
+                dir('fwk_camera/build/tests/unit_tests') {
                   withTools(params.TOOLS_VERSION) {
                     sh 'xsim --xscope "-offline trace.xmt" test_camera.xe'
                   }
@@ -92,14 +94,16 @@ pipeline {
             stage ('Build Docs') {
               steps {
                 runningOn(env.NODE_NAME)
-                checkout scm
-                sh """docker run --user "\$(id -u):\$(id -g)" \
+                dir('fwk_camera') {
+                  checkout scm
+                  sh """docker run --user "\$(id -u):\$(id -g)" \
                         --rm \
                         -v ${WORKSPACE}:/build \
                         -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
                         -e PDF=1 \
                         ghcr.io/xmos/doc_builder:v3.0.0""" 
-                archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
+                  archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
+                }
               }
             } // Build Docs
           } // stages
