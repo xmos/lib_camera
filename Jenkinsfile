@@ -65,8 +65,7 @@ pipeline {
                 // bit weird for now but should changed after the next xjsl release
                 dir('fwk_camera') {
                   withVenv {
-                    dir('tests/lib_checks')
-                    {
+                    dir('tests/lib_checks') {
                       sh "pytest -s"
                     }
                   }
