@@ -18,7 +18,7 @@ pipeline {
   } // parameters
   options {
     skipDefaultCheckout()
-  }
+  } // options
 
   stages {
     stage('Builds') {
@@ -62,6 +62,7 @@ pipeline {
 
             stage('Source check') {
               steps {
+                // bit weird for now but should changed after the next xjsl release
                 dir('fwk_camera') {
                   withVenv {
                     dir('tests/lib_checks')
@@ -71,7 +72,7 @@ pipeline {
                   }
                 }
               }
-            }
+            } // Source check
 
             stage('Unit tests') {
               steps {
