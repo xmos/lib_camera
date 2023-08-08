@@ -1,3 +1,6 @@
+// Copyright 2023 XMOS LIMITED.
+// This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 #include <xcore/channel.h> // includes streaming channel and channend
 #include <xcore/channel_streaming.h>
 #include "xccompat.h"

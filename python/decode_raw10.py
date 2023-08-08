@@ -1,3 +1,6 @@
+# Copyright 2023 XMOS LIMITED.
+# This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 # Raw stream: 640x480 stride 800 format SBGGR10_CSI2P
 """
 that means :

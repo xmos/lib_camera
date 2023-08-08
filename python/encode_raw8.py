@@ -1,3 +1,6 @@
+# Copyright 2023 XMOS LIMITED.
+# This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 # load a png or jpg image and encodes to RAW8 format
 import os
 import cv2

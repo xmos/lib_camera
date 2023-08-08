@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.24.0')
+@Library('xmos_jenkins_shared_library@v0.25.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -37,6 +37,30 @@ pipeline {
                 }
               }
             } // Build
+
+            stage('Create Python enviroment') {
+              steps {
+                // Clone infrastructure repos
+                sh "git clone git@github.com:xmos/infr_apps"
+                sh "git clone git@github.com:xmos/infr_scripts_py"
+                createVenv()
+                withVenv {
+                  sh "pip install -e infr_scripts_py"
+                  sh "pip install -e infr_apps"
+                }
+              }
+            } // Create Python enviroment
+
+            stage('Source check') {
+              steps {
+                withVenv {
+                  dir('tests/lib_checks')
+                  {
+                    sh "pytest -s"
+                  }
+                }
+              }
+            }
 
             stage('Unit tests') {
               steps {
