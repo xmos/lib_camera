@@ -1,3 +1,6 @@
+// Copyright 2023 XMOS LIMITED.
+// This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 #include "sensor_control.h"
 
 i2c_master_t i2c_ctx;

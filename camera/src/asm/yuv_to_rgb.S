@@ -1,3 +1,6 @@
+// Copyright 2023 XMOS LIMITED.
+// This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 /*
 Converts signed yuv (-127..127, -127..127, -127..127) into signed rgb. 
 Returns an int with 3 x int8_t
