@@ -49,10 +49,13 @@ pipeline {
                 // Clone infrastructure repos
                 sh "git clone git@github.com:xmos/infr_apps"
                 sh "git clone git@github.com:xmos/infr_scripts_py"
-                createVenv()
-                withVenv {
-                  sh "pip install -e infr_scripts_py"
-                  sh "pip install -e infr_apps"
+                // can't use createVenv on the top level yet
+                dir('fwk_camera') {
+                  createVenv()
+                  withVenv {
+                    sh "pip install -e ../infr_scripts_py"
+                    sh "pip install -e ../infr_apps"
+                  }
                 }
               }
             } // Create Python enviroment
