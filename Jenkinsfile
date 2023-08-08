@@ -62,10 +62,12 @@ pipeline {
 
             stage('Source check') {
               steps {
-                withVenv {
-                  dir('fwk_camera/tests/lib_checks')
-                  {
-                    sh "pytest -s"
+                dir('fwk_camera') {
+                  withVenv {
+                    dir('tests/lib_checks')
+                    {
+                      sh "pytest -s"
+                    }
                   }
                 }
               }
@@ -97,16 +99,14 @@ pipeline {
             stage ('Build Docs') {
               steps {
                 runningOn(env.NODE_NAME)
-                dir('fwk_camera') {
-                  checkout scm
-                  sh """docker run --user "\$(id -u):\$(id -g)" \
+                checkout scm
+                sh """docker run --user "\$(id -u):\$(id -g)" \
                         --rm \
                         -v ${WORKSPACE}:/build \
                         -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
                         -e PDF=1 \
                         ghcr.io/xmos/doc_builder:v3.0.0""" 
-                  archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
-                }
+                archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
               }
             } // Build Docs
           } // stages
