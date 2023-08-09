@@ -6,29 +6,29 @@ set(TARGET test_camera)
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
 
 set(APP_COMMON_LINK_LIBRARIES 
-        Unity
-        fwk_camera::camera 
+    Unity
+    fwk_camera::camera 
 )
 
 # ##############################################################################
 # Flags
 # ##############################################################################
 set(APP_LINK_OPTIONS 
-    "-report" 
-    "-target=${XCORE_TARGET}"
-    -fcmdline-buffer-bytes=1024
-    ${CMAKE_CURRENT_LIST_DIR}/config.xscope
+  "-report" 
+  "-target=${XCORE_TARGET}"
+  -fcmdline-buffer-bytes=1024
+  ${CMAKE_CURRENT_LIST_DIR}/config.xscope
 )
 
 set(APP_COMPILER_FLAGS
-    -Os
-    -g
-    -report
-    -Wall
-    -Werror
-    -fxscope
-    -mcmodel=large
-    ${CMAKE_CURRENT_LIST_DIR}/config.xscope
+  -Os
+  -g
+  -report
+  -Wall
+  -Werror
+  -fxscope
+  -mcmodel=large
+  ${CMAKE_CURRENT_LIST_DIR}/config.xscope
 )
 
 set(APP_INCLUDES api)

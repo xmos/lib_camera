@@ -19,28 +19,28 @@
 // Store the RGB color and corresponding values
 typedef struct
 {
-    uint8_t R, G, B;
-    uint8_t Y, U, V;
+  uint8_t R, G, B;
+  uint8_t Y, U, V;
 } color_table_t;
 
 typedef enum
 {
-    RGB_TO_YUV,
-    YUV_TO_RGB
+  RGB_TO_YUV,
+  YUV_TO_RGB
 } color_conversion_t;
 
 typedef struct
 {
-    uint8_t y;
-    uint8_t u;
-    uint8_t v;
+  uint8_t y;
+  uint8_t u;
+  uint8_t v;
 } YuvValues;
 
 typedef struct
 {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
 } RgbValues;
 
 // -----------------------------------------------------

@@ -5,7 +5,7 @@ set(XCORE_TARGET "XCORE-AI-EXPLORER")
 
 ## Disable in-source build.
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-    message(FATAL_ERROR "In-source build is not allowed! Please specify a build folder.\n\tex:cmake -B build")
+  message(FATAL_ERROR "In-source build is not allowed! Please specify a build folder.\n\tex:cmake -B build")
 endif()
 
 ## Project declaration
@@ -26,7 +26,7 @@ set(CONFIG_MIPI_FORMAT ${CONFIG_RAW8})
 ## Add frameworks
 add_subdirectory(modules)
 if(PROJECT_IS_TOP_LEVEL)
-    add_subdirectory(external_deps)
+  add_subdirectory(external_deps)
 endif()
 
 ## Add sensors

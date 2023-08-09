@@ -18,29 +18,29 @@ file(GLOB_RECURSE SOURCES_ASM "*.S")
 add_library(${LIB_NAME} STATIC)
 
 target_compile_definitions(${LIB_NAME}
-    PUBLIC
-        CONFIG_MIPI_FORMAT=${CONFIG_MIPI_FORMAT}
+  PUBLIC
+    CONFIG_MIPI_FORMAT=${CONFIG_MIPI_FORMAT}
 )
 
 target_include_directories(${LIB_NAME}
-    PUBLIC
-        api
-        src
-        src/_sony_imx219
+  PUBLIC
+    api
+    src
+    src/_sony_imx219
 )
 
 target_sources(${LIB_NAME}
-    PRIVATE
-        ${SOURCES_C}
-        ${SOURCES_XC}
-        ${SOURCES_CPP}
-        ${SOURCES_ASM}
+  PRIVATE
+    ${SOURCES_C}
+    ${SOURCES_XC}
+    ${SOURCES_CPP}
+    ${SOURCES_ASM}
 )
 
 target_compile_options(${LIB_NAME}
-    PRIVATE
-        -Wall
-        -Werror 
+  PRIVATE
+    -Wall
+    -Werror 
 )
 
 target_link_libraries(${LIB_NAME} PUBLIC lib_i2c)
