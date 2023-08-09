@@ -386,7 +386,7 @@ void printPacketLogSummary(
   printf(" Index  | Type | Count | Time (us)  | Time (us)  |   (us)     | Time (us)  | Count  | Misc\n");
   printf("--------|------|-------|------------|------------|------------|------------|--------|-----\n");
 
-#define FMT  " %5u  | 0x%02X | %5u | %10.2f | %10.2f | %10.2f | %10.2f |  %4u  | %s\n"
+#define FMT  "  %5u | 0x%02X | %5u | %10.2f | %10.2f | %10.2f | %10.2f | %6u | %s\n"
 
   double prev_end_time_us = 0;  
 
@@ -510,8 +510,6 @@ void mipi_main(chanend_t c_control)
 
   if(PRINT_TIMING_STATS){
     mipi_timing_info_t timing = extractTimingInfo(packet_log, TABLE_ROWS);
-    printf("\n\n");
-
     printTimingInfo(&timing);
     printf("\n\n");
   }
