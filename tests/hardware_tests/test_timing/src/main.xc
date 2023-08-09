@@ -4,8 +4,13 @@
 #include <xs1.h>
 #include <platform.h>
 #include <xscope.h>
-#include "i2c.h"
+
 #include "app.h"
+
+extern "C" {
+  void sensor_i2c_init();
+  void sensor_control(chanend_t c_control);
+}
 
 // I2C interface ports
 on tile[0]: port p_scl = XS1_PORT_1N;
@@ -21,11 +26,11 @@ void xscope_user_init() {
 
 int main(void) 
 {
-  i2c_master_if i2c[1];
+  chan c_control;
   par {
-    on tile[0]: i2c_master(i2c, 1, p_scl, p_sda, 400);
-    on tile[MIPI_TILE]: mipi_main(i2c[0]);
-
+    on tile[0]: sensor_i2c_init();
+    on tile[0]: sensor_control(c_control);
+    on tile[MIPI_TILE]: mipi_main(c_control);
   }
   return 0;
 }
