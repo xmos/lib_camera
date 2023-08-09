@@ -2,33 +2,33 @@
 set(TARGET test_timing)  
 
 set(SOURCES
-	src/app.xc
-	src/main.xc
-	src/MipiGatherTiming.S
+  src/app.xc
+  src/main.xc
+  src/MipiGatherTiming.S
 )
 
 set(APP_COMPILER_FLAGS
-	-Os
-	-g
-	-report
-	-Wall
-	-Werror
-	-fxscope
-	-target=${XCORE_TARGET}
-	${CONFIG_XSCOPE_PATH_TEST}/config.xscope
+  -Os
+  -g
+  -report
+  -Wall
+  -Werror
+  -fxscope
+  -target=${XCORE_TARGET}
+  ${CONFIG_XSCOPE_PATH_TEST}/config.xscope
 )
 
 set(APP_LINK_OPTIONS 
-	"-report" 
-	"-target=${XCORE_TARGET}"
-	"${CONFIG_XSCOPE_PATH_TEST}/config.xscope"
+  "-report" 
+  "-target=${XCORE_TARGET}"
+  "${CONFIG_XSCOPE_PATH_TEST}/config.xscope"
 )
 
 set(APP_COMMON_LINK_LIBRARIES                    
-	fwk_camera::mipi
-	i2c::lib_i2c
-	fwk_camera::sensors 
-	fwk_camera::camera
+  fwk_camera::mipi
+  i2c::lib_i2c
+  fwk_camera::sensors 
+  fwk_camera::camera
 )
 
 # ##############################################################################
