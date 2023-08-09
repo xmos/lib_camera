@@ -19,10 +19,10 @@ add_library(${LIB_NAME} STATIC)
 target_include_directories(${LIB_NAME} PUBLIC api)
 
 target_sources(${LIB_NAME}
-    PRIVATE
-        ${SOURCES_C}
-        ${SOURCES_CPP}
-        ${SOURCES_ASM}
+  PRIVATE
+    ${SOURCES_C}
+    ${SOURCES_CPP}
+    ${SOURCES_ASM}
 )
 
 target_compile_options(${LIB_NAME}

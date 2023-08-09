@@ -20,7 +20,6 @@ typedef in port port_t;
 #include <xcore/clock.h>
 typedef unsigned tileref_t;
 typedef port_t in_buffered_port_32_t;
-//typedef port_t in_port_t;
 #endif
 
 /**

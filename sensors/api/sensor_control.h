@@ -18,20 +18,21 @@
 #define DECODE_ARG(value) ((uint16_t)((value) & 0xFFFF))
 
 #if CONFIG_IMX219_SUPPORT
-    #include "imx219.h"
-    #define sensor_initialize(cfg)          imx219_initialize(cfg)
-    #define sensor_stream_start(cfg)        imx219_stream_start(cfg)
-    #define sensor_configure(cfg, rg)       imx219_configure(cfg, rg)
-    #define sensor_set_exposure(cfg,ex)     imx219_set_exposure(cfg,ex)
-    #define sensor_stream_stop(cfg)         imx219_stream_stop(cfg)
+# include "imx219.h"
+# define sensor_initialize(cfg)          imx219_initialize(cfg)
+# define sensor_stream_start(cfg)        imx219_stream_start(cfg)
+# define sensor_configure(cfg, rg)       imx219_configure(cfg, rg)
+# define sensor_set_exposure(cfg,ex)     imx219_set_exposure(cfg,ex)
+# define sensor_stream_stop(cfg)         imx219_stream_stop(cfg)
 
 #elif CONFIG_OTHER_SENSOR_SUPPORT           // Demo of how another sensor can be added
-    #include "other_sensor.h"
-    #define sensor_initialize(cfg)          other_sensor_initialize(cfg)
-    #define sensor_stream_start(cfg)        other_sensor_stream_start(cfg)
-    #define sensor_configure(cfg, rg)       other_sensor_configure(cfg, rg)
-    #define sensor_set_exposure(cfg,ex)     other_sensor_set_exposure(cfg,ex)
-    #define sensor_stream_stop(cfg)         other_sensor_stream_stop(cfg)
+# include "other_sensor.h"
+# define sensor_initialize(cfg)          other_sensor_initialize(cfg)
+# define sensor_stream_start(cfg)        other_sensor_stream_start(cfg)
+# define sensor_configure(cfg, rg)       other_sensor_configure(cfg, rg)
+# define sensor_set_exposure(cfg,ex)     other_sensor_set_exposure(cfg,ex)
+# define sensor_stream_stop(cfg)         other_sensor_stream_stop(cfg)
+
 #endif
 
 // Main control functions

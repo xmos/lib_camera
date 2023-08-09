@@ -15,13 +15,13 @@
 // ---------------------------------- utils ------------------------------
 static
 int8_t csign(float x) {
-    return (x > 0) - (x < 0);
+  return (x > 0) - (x < 0);
 }
 
 #if INCLUDE_ABS
 static 
 float cabs(float x) {
-    return x * csign(x);
+  return x * csign(x);
 }
 #endif
 // ---------------------------------- AE / AGC ------------------------------
@@ -29,258 +29,258 @@ float cabs(float x) {
 static
 void print_info_exposure(uint8_t val)
 {
-    static uint8_t printf_info = 1;
-    // reset
-    if (val == 0) {
-        printf_info = 1;
+  static uint8_t printf_info = 1;
+  // reset
+  if (val == 0) {
+    printf_info = 1;
+  }
+  else {
+    // set
+    if (printf_info) {
+      printf("-----> adjustement done\n");
+      printf_info = 0;
     }
-    else {
-        // set
-        if (printf_info) {
-            printf("-----> adjustement done\n");
-            printf_info = 0;
-        }
-    }
+  }
 }
 #endif
 
 
 uint8_t AE_control_exposure(
-    global_stats_t *global_stats,
-    chanend c_control)
+  global_stats_t *global_stats,
+  chanend c_control)
 {
-    // Initial exposure
-    static uint8_t new_exp = AE_INITIAL_EXPOSURE;
-    static uint8_t skip_ae_control = 0; // if too dark for a ceertain frames, skip AE control
+  // Initial exposure
+  static uint8_t new_exp = AE_INITIAL_EXPOSURE;
+  static uint8_t skip_ae_control = 0; // if too dark for a ceertain frames, skip AE control
 
-    // Compute skewness and adjust exposure if needed
-    float sk = AE_compute_mean_skewness(global_stats);
-    if (AE_is_adjusted(sk)){
-        #if ENABLE_PRINT_STATS
-            print_info_exposure(1);
-        #endif
+  // Compute skewness and adjust exposure if needed
+  float sk = AE_compute_mean_skewness(global_stats);
+  if (AE_is_adjusted(sk)){
+    #if ENABLE_PRINT_STATS
+      print_info_exposure(1);
+    #endif
+    return 1;
+  }
+  else{ 
+    // Adjust exposure
+    new_exp = AE_compute_new_exposure((float)new_exp, sk);
+    // Send new exposure
+    uint32_t encoded_cmd = ENCODE(SENSOR_SET_EXPOSURE, new_exp);
+    chan_out_word(c_control, encoded_cmd);
+    chan_in_word(c_control);
+    
+    #if ENABLE_PRINT_STATS
+      print_info_exposure(0);
+    #endif
+    if (new_exp > 70){
+      skip_ae_control++;
+      if (skip_ae_control > 5){
+        skip_ae_control = 0;
         return 1;
+      }
     }
-    else{ 
-        // Adjust exposure
-        new_exp = AE_compute_new_exposure((float)new_exp, sk);
-        // Send new exposure
-        uint32_t encoded_cmd = ENCODE(SENSOR_SET_EXPOSURE, new_exp);
-        chan_out_word(c_control, encoded_cmd);
-        chan_in_word(c_control);
-        
-        #if ENABLE_PRINT_STATS
-            print_info_exposure(0);
-        #endif
-        if (new_exp > 70){
-            skip_ae_control++;
-            if (skip_ae_control > 5){
-                skip_ae_control = 0;
-                return 1;
-            }
-        }
-    }
-    return 0;
+  }
+  return 0;
 }
 
 
 void AE_print_skewness(global_stats_t *gstats){
-      printf("skewness:%f,%f,%f\n",
-          (*gstats)[0].skewness,
-          (*gstats)[1].skewness,
-          (*gstats)[2].skewness);
+    printf("skewness:%f,%f,%f\n",
+      (*gstats)[0].skewness,
+      (*gstats)[1].skewness,
+      (*gstats)[2].skewness);
 }
 
 float AE_compute_mean_skewness(global_stats_t *gstats){
-    float mean = (
-        (*gstats)[0].skewness + \
-        (*gstats)[1].skewness + \
-        (*gstats)[2].skewness)/3;
-    return mean;
+  float mean = (
+    (*gstats)[0].skewness + \
+    (*gstats)[1].skewness + \
+    (*gstats)[2].skewness)/3;
+  return mean;
 }
 
 inline uint8_t AE_is_adjusted(float sk) {
-    return (sk < AE_MARGIN && sk > -AE_MARGIN) ? 1 : 0;
+  return (sk < AE_MARGIN && sk > -AE_MARGIN) ? 1 : 0;
 }
 
 uint8_t AE_compute_new_exposure(float exposure, float skewness)
 {
-    static float a  = 0;     // minimum value for exposure
-    static float fa = -1;   // minimimum skewness
-    static float b  = 80;    // maximum value for exposure
-    static float fb = 1;    // minimum skewness
-    static int count = 0;
-    float c  = exposure;
-    float fc = skewness;
+  static float a  = 0;     // minimum value for exposure
+  static float fa = -1;   // minimimum skewness
+  static float b  = 80;    // maximum value for exposure
+  static float fb = 1;    // minimum skewness
+  static int count = 0;
+  float c  = exposure;
+  float fc = skewness;
 
-    if(csign(fc) == csign(fa)){
-        a = c; fa = fc;
-    }
-    else{
-        b = c; fb = fc;
-    }
-    c  = b - fb*((b - a)/(fb - fa));
+  if(csign(fc) == csign(fa)){
+    a = c; fa = fc;
+  }
+  else{
+    b = c; fb = fc;
+  }
+  c  = b - fb*((b - a)/(fb - fa));
 
-    // each X samples, restart AE algorithm
-    if (count < 5){
-        count = count + 1;
-    }
-    else{
-        // restart auto exposure
-        count = 0;
-        a = 0;
-        fa = -1;
-        b = 80;
-        fb = 1;
-    }
-    return c;
+  // each X samples, restart AE algorithm
+  if (count < 5){
+    count = count + 1;
+  }
+  else{
+    // restart auto exposure
+    count = 0;
+    a = 0;
+    fa = -1;
+    b = 80;
+    fb = 1;
+  }
+  return c;
 }
 
 
 // ---------------------------------- AWB ------------------------------
 isp_params_t isp_params = {
   .channel_gain = {
-    AWB_gain_RED,
-    AWB_gain_GREEN,
-    AWB_gain_BLUE
+  AWB_gain_RED,
+  AWB_gain_GREEN,
+  AWB_gain_BLUE
   }
 };
 
 static
 float AWB_clip_value(float tmp){
-    if (tmp > AWB_MAX){
-        tmp = AWB_MAX;
-    }
-    else if (tmp < AWB_MIN){
-        tmp = AWB_MIN;
-    }
-    return tmp;
+  if (tmp > AWB_MAX){
+    tmp = AWB_MAX;
+  }
+  else if (tmp < AWB_MIN){
+    tmp = AWB_MIN;
+  }
+  return tmp;
 }
 
 void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_params){
-    // Adjust AWB 
-    float tmp0=1;
-    float tmp1=1;
-    float tmp2=1; 
-    
-    uint8_t red_p   = (*gstats)[0].percentile;
-    uint8_t green_p = (*gstats)[1].percentile;
-    uint8_t blue_p  = (*gstats)[2].percentile;
+  // Adjust AWB 
+  float tmp0=1;
+  float tmp1=1;
+  float tmp2=1; 
+  
+  uint8_t red_p   = (*gstats)[0].percentile;
+  uint8_t green_p = (*gstats)[1].percentile;
+  uint8_t blue_p  = (*gstats)[2].percentile;
 
-    tmp0 = green_p/(float)red_p;
-    tmp1 = 1;
-    tmp2 = green_p/(float)blue_p;
-    
-    uint32_t r_per_count = (*gstats)[0].per_count;
-    uint32_t g_per_count = (*gstats)[1].per_count;
-    uint32_t b_per_count = (*gstats)[2].per_count;
+  tmp0 = green_p/(float)red_p;
+  tmp1 = 1;
+  tmp2 = green_p/(float)blue_p;
+  
+  uint32_t r_per_count = (*gstats)[0].per_count;
+  uint32_t g_per_count = (*gstats)[1].per_count;
+  uint32_t b_per_count = (*gstats)[2].per_count;
 
-    float tmpA = (float)g_per_count/(float)r_per_count;
-    float tmpC = (float)g_per_count/(float)b_per_count;
-    
-    tmp0 = (tmp0 + tmpA)/2.0;
-    tmp2 = (tmp2 + tmpC)/2.0;
+  float tmpA = (float)g_per_count/(float)r_per_count;
+  float tmpC = (float)g_per_count/(float)b_per_count;
+  
+  tmp0 = (tmp0 + tmpA)/2.0;
+  tmp2 = (tmp2 + tmpC)/2.0;
 
-    tmp0  = AWB_clip_value(tmp0);
-    tmp1  = AWB_clip_value(tmp1);
-    tmp2  = AWB_clip_value(tmp2);
+  tmp0  = AWB_clip_value(tmp0);
+  tmp1  = AWB_clip_value(tmp1);
+  tmp2  = AWB_clip_value(tmp2);
 
-    isp_params->channel_gain[0] = tmp0;
-    isp_params->channel_gain[1] = tmp1;
-    isp_params->channel_gain[2] = tmp2;
+  isp_params->channel_gain[0] = tmp0;
+  isp_params->channel_gain[1] = tmp1;
+  isp_params->channel_gain[2] = tmp2;
 }
 
 void AWB_compute_gains_static(isp_params_t *isp_params){
-    // Adjust AWB 
-    float tmp0=1.4;
-    float tmp1=1.1;
-    float tmp2=1.4; 
+  // Adjust AWB 
+  float tmp0=1.4;
+  float tmp1=1.1;
+  float tmp2=1.4; 
 
-    isp_params->channel_gain[0] = tmp0;
-    isp_params->channel_gain[1] = tmp1;
-    isp_params->channel_gain[2] = tmp2;
+  isp_params->channel_gain[0] = tmp0;
+  isp_params->channel_gain[1] = tmp1;
+  isp_params->channel_gain[2] = tmp2;
 }
 
 void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params){
-    float Rmax = (*gstats)[0].max; // RED
-    float Gmax = (*gstats)[1].max; // GREEN
-    float Bmax = (*gstats)[2].max; // BLUE
+  float Rmax = (*gstats)[0].max; // RED
+  float Gmax = (*gstats)[1].max; // GREEN
+  float Bmax = (*gstats)[2].max; // BLUE
 
-    float alfa = Gmax/Rmax;
-    const float beta   = 0.9;
-    float gamma = Gmax/Bmax;
+  float alfa = Gmax/Rmax;
+  const float beta   = 0.9;
+  float gamma = Gmax/Bmax;
 
-    alfa   = AWB_clip_value(alfa);
-    gamma  = AWB_clip_value(gamma);
+  alfa   = AWB_clip_value(alfa);
+  gamma  = AWB_clip_value(gamma);
 
-    // apply params
-    isp_params->channel_gain[0] = alfa;
-    isp_params->channel_gain[1] = beta;
-    isp_params->channel_gain[2] = gamma;
+  // apply params
+  isp_params->channel_gain[0] = alfa;
+  isp_params->channel_gain[1] = beta;
+  isp_params->channel_gain[2] = gamma;
 }
 
 void AWB_compute_gains_white_max(global_stats_t *gstats, isp_params_t *isp_params){    
-    // we assume green constant
-    const float beta = 1.0;
-    float alfa = 1.3;
-    float gamma = 1.3;
+  // we assume green constant
+  const float beta = 1.0;
+  float alfa = 1.3;
+  float gamma = 1.3;
 
-    // 1 - Grey world
-    float Ravg = (*gstats)[0].mean; // RED
-    float Gavg = (*gstats)[1].mean; // GREEN
-    float Bavg = (*gstats)[2].mean; // BLUE
-    
-    if(Gavg > Ravg)
-        alfa = Gavg/Ravg;
-    if(Gavg > Bavg)
-        gamma = Gavg/Bavg;
+  // 1 - Grey world
+  float Ravg = (*gstats)[0].mean; // RED
+  float Gavg = (*gstats)[1].mean; // GREEN
+  float Bavg = (*gstats)[2].mean; // BLUE
+  
+  if(Gavg > Ravg)
+    alfa = Gavg/Ravg;
+  if(Gavg > Bavg)
+    gamma = Gavg/Bavg;
 
-    // 2 - Percentile volumne
-    uint32_t r_per_count = (*gstats)[0].per_count;
-    uint32_t g_per_count = (*gstats)[1].per_count;
-    uint32_t b_per_count = (*gstats)[2].per_count;
+  // 2 - Percentile volumne
+  uint32_t r_per_count = (*gstats)[0].per_count;
+  uint32_t g_per_count = (*gstats)[1].per_count;
+  uint32_t b_per_count = (*gstats)[2].per_count;
 
-    float alfa2 = (float)g_per_count/(float)r_per_count;
-    float gamma2 = (float)g_per_count/(float)b_per_count;
+  float alfa2 = (float)g_per_count/(float)r_per_count;
+  float gamma2 = (float)g_per_count/(float)b_per_count;
 
-    // Weighted mean
-    float gww = 0.5; // grey world weight
-    alfa  = gww*alfa  + (1-gww)*alfa2;
-    gamma = gww*gamma + (1-gww)*gamma2;
+  // Weighted mean
+  float gww = 0.5; // grey world weight
+  alfa  = gww*alfa  + (1-gww)*alfa2;
+  gamma = gww*gamma + (1-gww)*gamma2;
 
-    // clip the values
-    alfa   = AWB_clip_value(alfa);
-    gamma  = AWB_clip_value(gamma);
+  // clip the values
+  alfa   = AWB_clip_value(alfa);
+  gamma  = AWB_clip_value(gamma);
 
-    // apply params
-    isp_params->channel_gain[0] = alfa;
-    isp_params->channel_gain[1] = beta;
-    isp_params->channel_gain[2] = gamma;
+  // apply params
+  isp_params->channel_gain[0] = alfa;
+  isp_params->channel_gain[1] = beta;
+  isp_params->channel_gain[2] = gamma;
 }
 
 void AWB_compute_gains_gray_world(global_stats_t *gstats, isp_params_t *isp_params){
-    printf("AWB --->");
-    float Ravg = (*gstats)[0].mean; // RED
-    float Gavg = (*gstats)[1].mean; // GREEN
-    float Bavg = (*gstats)[2].mean; // BLUE
+  printf("AWB --->");
+  float Ravg = (*gstats)[0].mean; // RED
+  float Gavg = (*gstats)[1].mean; // GREEN
+  float Bavg = (*gstats)[2].mean; // BLUE
 
-    float alfa = Gavg/Ravg;
-    const float beta  = 1;
-    float gamma = Gavg/Bavg;
+  float alfa = Gavg/Ravg;
+  const float beta  = 1;
+  float gamma = Gavg/Bavg;
 
-    alfa   = AWB_clip_value(alfa);
-    gamma  = AWB_clip_value(gamma);
+  alfa   = AWB_clip_value(alfa);
+  gamma  = AWB_clip_value(gamma);
 
-    isp_params->channel_gain[0] = alfa;
-    isp_params->channel_gain[1] = beta;
-    isp_params->channel_gain[2] = gamma;
+  isp_params->channel_gain[0] = alfa;
+  isp_params->channel_gain[1] = beta;
+  isp_params->channel_gain[2] = gamma;
 }
 
 void AWB_print_gains(isp_params_t *isp_params){
-    printf("awb:%f,%f,%f\n",
-    isp_params->channel_gain[0],
-    isp_params->channel_gain[1],
-    isp_params->channel_gain[2]);
+  printf("awb:%f,%f,%f\n",
+  isp_params->channel_gain[0],
+  isp_params->channel_gain[1],
+  isp_params->channel_gain[2]);
 }
 
 // ---------------------------------- GAMMA ------------------------------
@@ -329,17 +329,17 @@ const int8_t gamma_int8[256] = {
 };
 
 void isp_gamma(
-    uint8_t * img_in,
-    const uint8_t *gamma_curve,
-    const size_t height, 
-    const size_t width, 
-    const size_t channels)
+  uint8_t * img_in,
+  const uint8_t *gamma_curve,
+  const size_t height, 
+  const size_t width, 
+  const size_t channels)
 {
-    xassert((gamma_curve[255] != 0) && "Gamma curve is not filled correctly"); // ensure all values are filles up
-    size_t buffsize = height * width * channels;
-    for(size_t idx = 0; idx < buffsize; idx++){
-            img_in[idx] = gamma_curve[img_in[idx]];
-    }
+  xassert((gamma_curve[255] != 0) && "Gamma curve is not filled correctly"); // ensure all values are filles up
+  size_t buffsize = height * width * channels;
+  for(size_t idx = 0; idx < buffsize; idx++){
+      img_in[idx] = gamma_curve[img_in[idx]];
+  }
 }
 
 // -------------------------- ROTATE/RESIZE -------------------------------------
@@ -348,66 +348,66 @@ void isp_gamma(
 
 static void xmodf(float a, int *b, float *c, int *bp)
 {
-    // split integer and decimal part
-    *b = (int)(a);
-    *c = a - *b;
-    // last operand for convinience 
-    *bp = *b + 1;
+  // split integer and decimal part
+  *b = (int)(a);
+  *c = a - *b;
+  // last operand for convinience 
+  *bp = *b + 1;
 }
 
 void isp_bilinear_resize(
-    const uint16_t in_width,
-    const uint16_t in_height,
-    uint8_t *img,
-    const uint16_t out_width,
-    const uint16_t out_height,
-    uint8_t *out_img)
+  const uint16_t in_width,
+  const uint16_t in_height,
+  uint8_t *img,
+  const uint16_t out_width,
+  const uint16_t out_height,
+  uint8_t *out_img)
 {
-    // https://chao-ji.github.io/jekyll/update/2018/07/19/BilinearResize.html
-    const float x_ratio = ((in_width - 1) / (float)(out_width - 1));
-    const float y_ratio = ((in_height - 1) / (float)(out_height - 1));
+  // https://chao-ji.github.io/jekyll/update/2018/07/19/BilinearResize.html
+  const float x_ratio = ((in_width - 1) / (float)(out_width - 1));
+  const float y_ratio = ((in_height - 1) / (float)(out_height - 1));
 
-    int x_l, y_l, x_h, y_h;
-    float xw, yw;
-    uint8_t a,b,c,d;
+  int x_l, y_l, x_h, y_h;
+  float xw, yw;
+  uint8_t a,b,c,d;
 
-    for (uint16_t i = 0; i < out_height; i++)
+  for (uint16_t i = 0; i < out_height; i++)
+  {
+    for (uint16_t j = 0; j < out_width; j++)
     {
-        for (uint16_t j = 0; j < out_width; j++)
-        {
 
-            float incrx = (x_ratio * j);
-            float incry = (y_ratio * i);
+      float incrx = (x_ratio * j);
+      float incry = (y_ratio * i);
 
-            xmodf(incrx, &x_l, &xw, &x_h);
-            xmodf(incry, &y_l, &yw, &y_h);
+      xmodf(incrx, &x_l, &xw, &x_h);
+      xmodf(incry, &y_l, &yw, &y_h);
 
-            a = img(y_l, x_l, in_width);
-            b = img(y_l, x_h, in_width);
-            c = img(y_h, x_l, in_width);
-            d = img(y_h, x_h, in_width);
+      a = img(y_l, x_l, in_width);
+      b = img(y_l, x_h, in_width);
+      c = img(y_h, x_l, in_width);
+      d = img(y_h, x_h, in_width);
 
-            uint8_t pixel = (uint8_t)(a * (1 - xw) * (1 - yw) +
-                                      b * xw * (1 - yw) +
-                                      c * yw * (1 - xw) +
-                                      d * xw * yw);
+      uint8_t pixel = (uint8_t)(a * (1 - xw) * (1 - yw) +
+                    b * xw * (1 - yw) +
+                    c * yw * (1 - xw) +
+                    d * xw * yw);
 
-            out_img(i, j, out_width) = pixel;
-            printf("%d,", pixel);
-        }
+      out_img(i, j, out_width) = pixel;
+      printf("%d,", pixel);
     }
+  }
 }
 
 void rotate_image_90(uint8_t image_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_HEIGHT_PIXELS][APP_IMAGE_WIDTH_PIXELS])
 {
   for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++) {
-    for(int k = 0; k < APP_IMAGE_HEIGHT_PIXELS/2; k++) {
-      for(int j = 0; j < APP_IMAGE_WIDTH_PIXELS; j++) {
-        uint8_t a = image_buffer[c][k][j];
-        uint8_t b = image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1];
-        image_buffer[c][k][j] = b;
-        image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1] = a;
-      }
-    } 
+  for(int k = 0; k < APP_IMAGE_HEIGHT_PIXELS/2; k++) {
+    for(int j = 0; j < APP_IMAGE_WIDTH_PIXELS; j++) {
+    uint8_t a = image_buffer[c][k][j];
+    uint8_t b = image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1];
+    image_buffer[c][k][j] = b;
+    image_buffer[c][APP_IMAGE_HEIGHT_PIXELS-k-1][APP_IMAGE_WIDTH_PIXELS-j-1] = a;
+    }
+  } 
   }
 }

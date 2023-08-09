@@ -6,9 +6,9 @@ set(TARGET example_take_picture_raw)
 #**********************
 add_executable(${TARGET})
 target_sources(${TARGET} 
-    PRIVATE
-        src/app_raw.c
-        src/main.xc
+  PRIVATE
+    src/app_raw.c
+    src/main.xc
 )
 
 target_include_directories(${TARGET} PUBLIC src)
