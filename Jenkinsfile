@@ -53,7 +53,7 @@ pipeline {
                 sh "git clone git@github.com:xmos/infr_scripts_py"
                 // can't use createVenv on the top level yet
                 dir('fwk_camera') {
-                  createVenv('requirements.txt)
+                  createVenv('requirements.txt')
                   withVenv {
                     sh "pip install -e ../infr_scripts_py"
                     sh "pip install -e ../infr_apps"
