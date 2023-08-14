@@ -169,14 +169,10 @@
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
 #define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)
 
-
-// Sensor control definitions
-
-#define N_COMMANDS 5
 typedef enum {
   SENSOR_INIT = 0,
   SENSOR_CONFIG,
   SENSOR_STREAM_START,
   SENSOR_STREAM_STOP,
   SENSOR_SET_EXPOSURE
-} camera_control_t;
+} sensor_control_t;

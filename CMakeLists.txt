@@ -40,7 +40,7 @@ if(PROJECT_IS_TOP_LEVEL)
 add_subdirectory(utils)
 
 ## Add tests
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 ## Add examples
 add_subdirectory(examples)

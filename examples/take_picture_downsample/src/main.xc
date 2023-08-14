@@ -28,15 +28,13 @@ extern "C" {
 #include "xscope_io_device.h"
 }
 
-extern "C" {
-  void sensor_i2c_init();
-  void sensor_control(chanend_t c_control);
-}
+//extern "C" {
+//  void sensor_control(chanend_t c_control);
+//}
 
 // Camera control channels
 void main_tile0(chanend_t c_control){
-    sensor_i2c_init();
-    sensor_control(c_control);
+  sensor_control(c_control);
 }
 
 // Camera image processing channels
