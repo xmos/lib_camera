@@ -4,6 +4,7 @@
 #pragma once
 
 #include <xcore/assert.h>
+#include <xcore/channel.h>
 
 #include "sensor_settings.h"
 
@@ -42,6 +43,8 @@ class SensorBase {
     virtual int set_exposure(uint32_t dBGain) = 0;
 
     virtual int configure() = 0;
+
+    virtual void control(chanend_t c_control) = 0;
 }; // SensorBase
 
 } // sensor

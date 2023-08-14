@@ -54,9 +54,12 @@ class IMX219 : public SensorBase {
     int set_exposure(uint32_t dBGain);
 
     int configure();
+
+    void control(chanend_t c_control);
+
 }; // IMX219
 
-} // imx219
+} // sensor
 
 template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
 sensor::IMX219<TRES, TFMT>::IMX219(i2c_config_t _conf) : sensor::SensorBase(_conf) {};
@@ -139,6 +142,59 @@ void sensor::IMX219<TRES, TFMT>::calculate_exposure_gains(uint32_t dBGain, i2c_l
   exposure_regs[2] = {0x0159, (uint8_t)(dgain)};
   exposure_regs[3] = {0x015A, (uint8_t)(time >> 8)};
   exposure_regs[4] = {0x015B, (uint8_t)(time)};
+}
+
+template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+void sensor::IMX219<TRES, TFMT>::control(chanend_t c_control) {
+  // Init the I2C sensor first configuration
+  int r = 0;
+  r |= this->initialize();
+  delay_milliseconds(100);
+  r |= this->configure();
+  delay_milliseconds(600);
+  r |= this->stream_start();
+  delay_milliseconds(600);
+  xassert((r == 0) && "Could not initialise camera");
+  puts("\nCamera_started and configured...");
+
+  // store the response
+  uint32_t encoded_response;
+  sensor_control_t cmd;
+  uint8_t arg;
+
+  // sensor control logic
+  while(1){
+    encoded_response = chan_in_word(c_control);
+    chan_out_word(c_control, 0);
+    cmd = (sensor_control_t) DECODE_CMD(encoded_response);
+
+    #if ENABLE_PRINT_SENSOR_CONTROL
+      printf("--------------- Received command %d\n", cmd);
+    #endif
+    
+    switch (cmd)
+    {
+    case SENSOR_INIT:
+      this->initialize();
+      break;
+    case SENSOR_CONFIG:
+      //TODO reimplement when dynamic configuration is supported
+      this->configure();
+      break;
+    case SENSOR_STREAM_START:
+      this->stream_start();
+      break;
+    case SENSOR_STREAM_STOP:
+      this->stream_stop();            
+      break;
+    case SENSOR_SET_EXPOSURE:
+      arg = DECODE_ARG(encoded_response);
+      this->set_exposure(arg);
+      break;
+    default:
+      break;
+    }
+  }
 }
 
 template<>

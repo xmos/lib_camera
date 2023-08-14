@@ -2,6 +2,7 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include "SensorBase.hpp"
+#include "stdio.h"
 
 using namespace sensor;
 
@@ -16,6 +17,7 @@ void SensorBase::i2c_init() {
     this->i2c_cfg.p_sda, 0, 0,
     this->i2c_cfg.speed);
   delay_milliseconds(100);
+  puts("\nI2C initialized...");
 }
 
 uint16_t SensorBase::i2c_read(uint16_t reg) {
