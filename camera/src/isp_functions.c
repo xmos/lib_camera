@@ -191,14 +191,9 @@ void AWB_compute_gains_percentile(global_stats_t *gstats, isp_params_t *isp_para
 }
 
 void AWB_compute_gains_static(isp_params_t *isp_params){
-  // Adjust AWB 
-  float tmp0=1.4;
-  float tmp1=1.1;
-  float tmp2=1.4; 
-
-  isp_params->channel_gain[0] = tmp0;
-  isp_params->channel_gain[1] = tmp1;
-  isp_params->channel_gain[2] = tmp2;
+  isp_params->channel_gain[0] = AWB_gain_RED;
+  isp_params->channel_gain[1] = AWB_gain_GREEN;
+  isp_params->channel_gain[2] = AWB_gain_BLUE;
 }
 
 void AWB_compute_gains_white_patch(global_stats_t *gstats, isp_params_t *isp_params){
