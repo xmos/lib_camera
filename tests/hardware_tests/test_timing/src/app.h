@@ -8,6 +8,7 @@
 #include "xccompat.h"
 
 #include "camera_main.h"
+#include "sensor_control.h"
 
 #ifdef __XC__
 typedef chanend chanend_t;

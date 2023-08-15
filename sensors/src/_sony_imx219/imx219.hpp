@@ -12,24 +12,15 @@
 #ifdef __cplusplus
 
 #include "SensorBase.hpp"
+#include "sensor.h"
 
 namespace sensor {
-
-typedef enum {
-  RES_640_480,
-  RES_1280_960,
-} resolution_t;
 
 template<resolution_t TRES>
 i2c_table_t get_res_table();
 
 template<resolution_t TRES>
 i2c_table_t get_binning_mode();
-
-typedef enum {
-  FMT_RAW8,
-  FMT_RAW10
-} pixel_format_t;
 
 template<pixel_format_t TFMT>
 i2c_table_t get_pxl_fmt_table();
@@ -61,10 +52,10 @@ class IMX219 : public SensorBase {
 
 } // sensor
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 sensor::IMX219<TRES, TFMT>::IMX219(i2c_config_t _conf) : sensor::SensorBase(_conf) {};
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 int sensor::IMX219<TRES, TFMT>::initialize() {
   int ret = 0;
   // Send all registers that are common to all modes
@@ -76,24 +67,24 @@ int sensor::IMX219<TRES, TFMT>::initialize() {
   return ret;
 }
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 int sensor::IMX219<TRES, TFMT>::stream_start() {
   return this->i2c_write_table(GET_TABLE(start_regs));
 }
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 int sensor::IMX219<TRES, TFMT>::stream_stop() {
   return this->i2c_write_table(GET_TABLE(stop_regs));
 }
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 int sensor::IMX219<TRES, TFMT>::set_exposure(uint32_t dBGain) {
   i2c_line_t exposure_regs[5] = {{0}};
   this->calculate_exposure_gains(dBGain, exposure_regs);
   return this->i2c_write_table(GET_TABLE(exposure_regs));
 }
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 int sensor::IMX219<TRES, TFMT>::configure() {
   i2c_table_t frame_size_regs = get_res_table<TRES>();
   i2c_table_t binning_regs = get_binning_mode<TRES>();
@@ -109,7 +100,7 @@ int sensor::IMX219<TRES, TFMT>::configure() {
   return ret;
 }
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 void sensor::IMX219<TRES, TFMT>::calculate_exposure_gains(uint32_t dBGain, i2c_line_t * exposure_regs) {
   uint16_t time, dgain;
   uint8_t again;
@@ -144,7 +135,7 @@ void sensor::IMX219<TRES, TFMT>::calculate_exposure_gains(uint32_t dBGain, i2c_l
   exposure_regs[4] = {0x015B, (uint8_t)(time)};
 }
 
-template <sensor::resolution_t TRES, sensor::pixel_format_t TFMT>
+template <resolution_t TRES, pixel_format_t TFMT>
 void sensor::IMX219<TRES, TFMT>::control(chanend_t c_control) {
   // Init the I2C sensor first configuration
   int r = 0;
@@ -198,27 +189,27 @@ void sensor::IMX219<TRES, TFMT>::control(chanend_t c_control) {
 }
 
 template<>
-i2c_table_t sensor::get_res_table<sensor::RES_640_480>()
+i2c_table_t sensor::get_res_table<RES_640_480>()
 { return GET_TABLE(mode_640_480_regs); }
 
 template<>
-i2c_table_t sensor::get_res_table<sensor::RES_1280_960>()
+i2c_table_t sensor::get_res_table<RES_1280_960>()
 { return GET_TABLE(mode_1280_960_regs); }
 
 template<>
-i2c_table_t sensor::get_binning_mode<sensor::RES_640_480>()
+i2c_table_t sensor::get_binning_mode<RES_640_480>()
 { return GET_TABLE(binning_2x2_regs); }
 
 template<>
-i2c_table_t sensor::get_binning_mode<sensor::RES_1280_960>()
+i2c_table_t sensor::get_binning_mode<RES_1280_960>()
 { return GET_TABLE(binning_2x2_regs); }
 
 template<>
-i2c_table_t sensor::get_pxl_fmt_table<sensor::FMT_RAW8>()
+i2c_table_t sensor::get_pxl_fmt_table<FMT_RAW8>()
 { return GET_TABLE(raw8_framefmt_regs); }
 
 template<>
-i2c_table_t sensor::get_pxl_fmt_table<sensor::FMT_RAW10>()
+i2c_table_t sensor::get_pxl_fmt_table<FMT_RAW10>()
 { return GET_TABLE(raw10_framefmt_regs); }
 
 #endif // __cplusplus
