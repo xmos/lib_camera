@@ -1,27 +1,19 @@
 // Copyright 2020-2023 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-#include <xs1.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-#include <math.h>
 
-#include <xccompat.h>
-#include <xs1.h>
-#include <platform.h>
-#include <xscope.h>
+#include <xcore/port.h>
+#include <xcore/clock.h>
+#include <xcore/assert.h>
+#include <xcore/channel.h>
 
 #include "i2c.h"
 #include "app.h"
 #include "sensor.h"
+#include "sensor_control.h"
 #include "mipi.h"
-
-// Sensor
-#define MSG_SUCCESS "Stream start OK\n"
-#define MSG_FAIL "Stream start Failed\n"
 
 ////////////////////////////////////////////////////////////////
 // if true, print warnings when unexpected packet sequences are observed
@@ -73,59 +65,11 @@
 #define CSV_HEADER          "HEADER,START,END\n"
 #define CSV_HEADER_LEN      17
 
-////////////////////////////////////////////////////////////////
-
-// Start port declarations
-/* Declaration of the MIPI interface ports:
- * Clock, receiver active, receiver data valid, and receiver data
- */
-on tile[MIPI_TILE]:         in port    p_mipi_clk = XS1_PORT_1O;
-on tile[MIPI_TILE]:         in port    p_mipi_rxa = XS1_PORT_1E;
-on tile[MIPI_TILE]:         in port    p_mipi_rxv = XS1_PORT_1I;
-on tile[MIPI_TILE]:buffered in port:32 p_mipi_rxd = XS1_PORT_8A;
-
-on tile[MIPI_TILE]:clock               clk_mipi   = MIPI_CLKBLK;
-
-
-// Inclusive between
-static inline
-unsigned between(unsigned low, unsigned x, unsigned high){
-  return (x >= low) && (x <= high);
-}
-
-
-
 typedef struct {
   uint32_t header;
   uint32_t start_time;
   uint32_t end_time;
 } packet_timing_t;
-
-// Function to grab timing info
-void MipiGatherTiming(
-    buffered in port:32 p_mipi_rxd,
-    in port p_mipi_rxa,
-    packet_timing_t table[],
-    const unsigned N);
-
-
-
-// Basically just subtract the first start time from every timestamp so that
-// the first packet says it starts at 0.
-static 
-uint32_t rebaseTimestamps(
-    packet_timing_t packet[],
-    unsigned N)
-{
-  const uint32_t time_offset = packet[0].start_time;
-  for(int k = 0; k < N; k++){
-    packet[k].start_time -= time_offset;
-    packet[k].end_time -= time_offset;
-  }
-
-  return time_offset;
-}
-
 
 typedef struct {
   uint32_t min;
@@ -133,26 +77,6 @@ typedef struct {
   uint64_t total;
   uint32_t count;
 } timing_stats_t;
-
-
-
-static
-void updateTimingStats(
-    timing_stats_t* stats,
-    uint32_t timespan)
-{
-  if(stats->count == 0){
-    stats->min = stats->max = timespan;
-  } else {
-    stats->min = (timespan < stats->min)? timespan : stats->min;
-    stats->max = (timespan > stats->max)? timespan : stats->max;
-  }
-
-  stats->count++;
-  stats->total += timespan;
-}
-
-
 
 typedef struct {
   struct {
@@ -179,6 +103,50 @@ typedef struct {
   } timing;
 } mipi_timing_info_t;
 
+// Function to grab timing info
+void MipiGatherTiming(
+    in_buffered_port_32_t p_mipi_rxd,
+    port_t p_mipi_rxa,
+    packet_timing_t table[],
+    const unsigned N);
+
+// Inclusive between
+static inline
+unsigned between(unsigned low, unsigned x, unsigned high){
+  return (x >= low) && (x <= high);
+}
+
+// Basically just subtract the first start time from every timestamp so that
+// the first packet says it starts at 0.
+static 
+uint32_t rebaseTimestamps(
+    packet_timing_t packet[],
+    unsigned N)
+{
+  const uint32_t time_offset = packet[0].start_time;
+  for(int k = 0; k < N; k++){
+    packet[k].start_time -= time_offset;
+    packet[k].end_time -= time_offset;
+  }
+
+  return time_offset;
+}
+
+static
+void updateTimingStats(
+    timing_stats_t* stats,
+    uint32_t timespan)
+{
+  if(stats->count == 0){
+    stats->min = stats->max = timespan;
+  } else {
+    stats->min = (timespan < stats->min)? timespan : stats->min;
+    stats->max = (timespan > stats->max)? timespan : stats->max;
+  }
+
+  stats->count++;
+  stats->total += timespan;
+}
 
 static
 mipi_timing_info_t extractTimingInfo(
@@ -211,7 +179,7 @@ mipi_timing_info_t extractTimingInfo(
 
       if(!is_long){
         // Short packet
-        assert(duration == 0);
+        xassert(duration == 0);
 
         if(data_type == MIPI_DT_FRAME_START){
 
@@ -264,7 +232,7 @@ mipi_timing_info_t extractTimingInfo(
 
       } else {
         // Long packet
-        assert(duration);
+        xassert(duration);
 
         WARNING(!inside_frame) {
           ONLY_IF (SEQUENCE_WARNINGS);
@@ -304,7 +272,6 @@ mipi_timing_info_t extractTimingInfo(
   return result;
 }
 
-
 static
 void printTimingInfo(
     mipi_timing_info_t* info)
@@ -318,18 +285,18 @@ void printTimingInfo(
                      + info->packet_count.other_long;
 
   printf("#### Packet Counts ####\n");
-  printf("  Total:       % 5u\n", total_pkt);
+  printf("  Total:       %5u\n", total_pkt);
   printf("\n");
   printf("  ## Short ##\n");
-  printf("  Frame Start: % 5u\n", info->packet_count.start_of_frame);
-  printf("  Frame End:   % 5u\n", info->packet_count.end_of_frame  );
-  printf("  Other Short: % 5u\n", info->packet_count.other_short   );
+  printf("  Frame Start: %5lu\n", info->packet_count.start_of_frame);
+  printf("  Frame End:   %5lu\n", info->packet_count.end_of_frame  );
+  printf("  Other Short: %5lu\n", info->packet_count.other_short   );
   printf("\n");
   printf("  ## Long ##\n");
-  printf("  YUV Data:    % 5u\n", info->packet_count.yuv_data      );
-  printf("  Generic Long:% 5u\n", info->packet_count.generic_long  );
-  printf("  RAW Data:    % 5u\n", info->packet_count.raw_data      );
-  printf("  Other Long:  % 5u\n", info->packet_count.other_long    );
+  printf("  YUV Data:    %5lu\n", info->packet_count.yuv_data      );
+  printf("  Generic Long:%5lu\n", info->packet_count.generic_long  );
+  printf("  RAW Data:    %5lu\n", info->packet_count.raw_data      );
+  printf("  Other Long:  %5lu\n", info->packet_count.other_long    );
 
   printf("\n\n");
   printf("#### Timing Info ####\n\n");
@@ -366,15 +333,13 @@ void printTimingInfo(
 
 }
 
-
 static 
 void writePacketLog(
     const char* filename,
     packet_timing_t packet[],
     unsigned N)
 {
-
-  FILE * movable log_file = fopen(filename, "w");
+  FILE * log_file = fopen(filename, "w");
 
   if(!log_file){
     printf("\n\nWARNING: Couldn't open '%s' to write packet log.\n\n", filename);
@@ -386,14 +351,11 @@ void writePacketLog(
 
   for(int k = 0; k < N; k++){
     fprintf(log_file, CSV_FORMATTING, 
-      packet[k].header, packet[k].start_time, packet[k].end_time);
+      (unsigned int)packet[k].header, (unsigned int)packet[k].start_time, (unsigned int)packet[k].end_time);
   }
   
-  fclose(move(log_file));
+  fclose(log_file);
 }
-
-
-
 
 static inline
 unsigned can_aggregate(mipi_header_t a, mipi_header_t b)
@@ -401,8 +363,6 @@ unsigned can_aggregate(mipi_header_t a, mipi_header_t b)
   return (MIPI_GET_DATA_TYPE(a) == MIPI_GET_DATA_TYPE(b))
       && (MIPI_GET_WORD_COUNT(a) == MIPI_GET_WORD_COUNT(b));
 }
-
-
 
 // Instead of printing full log, summarize it..
 //   - roll up a sequence of consecutive "line" packets into a single line of text
@@ -418,7 +378,7 @@ void printPacketLogSummary(
   printf(" Index  | Type | Count | Time (us)  | Time (us)  |   (us)     | Time (us)  | Count  | Misc\n");
   printf("--------|------|-------|------------|------------|------------|------------|--------|-----\n");
 
-#define FMT  " %5u  | 0x%02X | % 5u | % 10.2f | % 10.2f | % 10.2f | % 10.2f |   % 4u | %s\n"
+#define FMT  "  %5u | 0x%02X | %5u | %10.2f | %10.2f | %10.2f | %10.2f | %6u | %s\n"
 
   double prev_end_time_us = 0;  
 
@@ -431,7 +391,7 @@ void printPacketLogSummary(
 
       packet_timing_t* pkt = &packet[k];
 
-      unsigned is_long = MIPI_IS_LONG_PACKET(pkt->header)? 1:0;
+      //unsigned is_long = MIPI_IS_LONG_PACKET(pkt->header)? 1:0;
       unsigned data_type = MIPI_GET_DATA_TYPE(pkt->header);
       unsigned word_count = MIPI_GET_WORD_COUNT(pkt->header);
 
@@ -457,7 +417,7 @@ void printPacketLogSummary(
       // (data type, payload size) than the current one.
 
       int i = k + 1;
-      while((i<N) && can_aggregate(packet[k].header, packet[i].header))
+      while((i < N) && can_aggregate(packet[k].header, packet[i].header))
         i++;
       
       unsigned pkt_count = i - k;
@@ -488,23 +448,31 @@ void printPacketLogSummary(
   }
 }
 
-
 static
 packet_timing_t packet_log[TABLE_ROWS];
 
-#define MIPI_CLK_DIV 1
-#define MIPI_CFG_CLK_DIV 2
-
-void mipi_main(
-    client interface i2c_master_if i2c)
+void mipi_main(chanend_t c_control)
 {
+  port_t p_mipi_clk = XS1_PORT_1O;
+  port_t p_mipi_rxa = XS1_PORT_1E;
+  port_t p_mipi_rxv = XS1_PORT_1I;
+  in_buffered_port_32_t p_mipi_rxd = XS1_PORT_8A;
+  xclock_t clk_mipi = MIPI_CLKBLK;
 
-  write_node_config_reg(tile[MIPI_TILE], 
-      XS1_SSWITCH_MIPI_DPHY_CFG3_NUM , 0x7E42);
+  port_enable(p_mipi_clk);
+  port_enable(p_mipi_rxa);
+  port_enable(p_mipi_rxv);
+  port_start_buffered(p_mipi_rxd, 32);
+  clock_enable(clk_mipi);
+
+  // Tile ids have weird values, so we get them with this API
+  unsigned tileid = get_local_tile_id();
+
+  write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_DPHY_CFG3_NUM, 0x7E42);
 
   unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(0,0,0,0,0);
 
-  MipiPacketRx_init(tile[MIPI_TILE],
+  MipiPacketRx_init(tileid,
                     p_mipi_rxd, 
                     p_mipi_rxv, 
                     p_mipi_rxa, 
@@ -513,22 +481,6 @@ void mipi_main(
                     mipi_shim_cfg0,
                     MIPI_CLK_DIV, 
                     MIPI_CFG_CLK_DIV);
-
-  // Start camera and its configurations
-  int r = 0;
-  r |= sensor_initialize(i2c);
-  delay_milliseconds(100); //TODO include this inside the function
-  r |= sensor_configure(i2c);
-  delay_milliseconds(500);
-  r |= sensor_stream_start(i2c);
-  delay_milliseconds(2000);
-
-  if (r != 0){
-    printf(MSG_FAIL);
-  }
-  else{
-    printf(MSG_SUCCESS);
-  }
 
   printf("Waiting for %u MIPI packets...\n", TABLE_ROWS);
   MipiGatherTiming(p_mipi_rxd, p_mipi_rxa, packet_log, TABLE_ROWS);
@@ -547,8 +499,6 @@ void mipi_main(
 
   if(PRINT_TIMING_STATS){
     mipi_timing_info_t timing = extractTimingInfo(packet_log, TABLE_ROWS);
-    printf("\n\n");
-
     printTimingInfo(&timing);
     printf("\n\n");
   }
@@ -557,9 +507,17 @@ void mipi_main(
     printf("Writing packet log to %s..\n", PACKET_LOG_FILE);
     writePacketLog(PACKET_LOG_FILE, packet_log, TABLE_ROWS);
     printf("  ...done.\n\n");
-
   }
 
+  uint32_t encoded_cmd = ENCODE(SENSOR_STREAM_STOP, 0);
+  chan_out_word(c_control, encoded_cmd);
+  chan_in_word(c_control);
+
+  port_disable(p_mipi_clk);
+  port_disable(p_mipi_rxa);
+  port_disable(p_mipi_rxv);
+  port_disable(p_mipi_rxd);
+  clock_disable(clk_mipi);
+
   exit(0);
-  i2c.shutdown();
 }

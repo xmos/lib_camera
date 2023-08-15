@@ -3,9 +3,15 @@
 
 #pragma once
 
-#include <stdint.h>
+#include "xs1.h"
+#include "platform.h"
+#include "xccompat.h"
 
-#include "mipi.h"
+#include "camera_main.h"
+
+#ifdef __XC__
+typedef chanend chanend_t;
+#endif
 
 #define MIPI_TILE  1
 
@@ -13,9 +19,4 @@
 # define MIPI_CLKBLK                  XS1_CLKBLK_1
 #endif
 
-
-#ifdef __XC__
-
-void mipi_main(client interface i2c_master_if i2c);
-
-#endif
+void mipi_main(chanend_t c_control);

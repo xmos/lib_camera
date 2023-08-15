@@ -43,6 +43,7 @@
 *.fs
 *.exe
 .editorconfig
+*.csv
 
 # Test cruft
 **/.pytest_cache/*
