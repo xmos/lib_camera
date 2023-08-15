@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.26.0')
+@Library('xmos_jenkins_shared_library@v0.27.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -19,7 +19,7 @@ pipeline {
   options {
     skipDefaultCheckout()
     timestamps()
-    buildDiscarder(xmosDiscardBuildSettings())
+    buildDiscarder(xmosDiscardBuildSettings(onlyArtifacts=false))
   } // options
 
   stages {
