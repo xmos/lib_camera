@@ -12,7 +12,7 @@ fwk_camera change log
   * ADDED: new supported mode, MODE_1280x960
   * CHANGED: value of  PLL_VT_MPY from 0x0047 to 0x0027 due to timing in
     MODE_1280x960
-  * CHANGED: default AWB static values to match sony sensor values
+  * CHANGED: default AWB static values in order to match sony sensor. 
 
 0.1.0
 -----
