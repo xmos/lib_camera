@@ -34,17 +34,6 @@ class SensorBase {
 
     SensorBase(i2c_config_t _conf);
 
-    virtual int initialize() = 0;
-
-    virtual int stream_start() = 0;
-
-    virtual int stream_stop() = 0;
-
-    virtual int set_exposure(uint32_t dBGain) = 0;
-
-    virtual int configure() = 0;
-
-    virtual void control(chanend_t c_control) = 0;
 }; // SensorBase
 
 } // sensor

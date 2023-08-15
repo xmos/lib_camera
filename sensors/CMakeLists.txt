@@ -31,7 +31,7 @@ target_sources(${LIB_NAME}
 target_compile_options(${LIB_NAME}
   PRIVATE
     -Wall
-    -Werror 
+    -Werror
 )
 
 target_link_libraries(${LIB_NAME} PUBLIC lib_i2c)
