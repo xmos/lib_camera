@@ -2,6 +2,7 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include "app.h"
+#include "sensor_control.h"
 
 // Camera control channels
 void main_tile0(chanend_t c_control){

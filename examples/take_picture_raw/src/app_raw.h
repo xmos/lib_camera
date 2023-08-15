@@ -8,6 +8,5 @@
 #include "xccompat.h"
 
 #include "camera_main.h"
-#include "sensor_control.h"
 
 void user_app();

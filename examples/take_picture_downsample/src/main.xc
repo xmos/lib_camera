@@ -11,6 +11,7 @@
 #include <xccompat.h>
 
 #include "app.h"
+#include "sensor_control.h"
 
 /**
 * Declaration of the MIPI interface ports:

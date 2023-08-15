@@ -34,8 +34,10 @@ class IMX219 : public SensorBase {
 
   public:
 
+    // initialize i2c master as well
     IMX219(i2c_config_t _conf);
 
+    // basic camera init
     int initialize();
 
     int stream_start();
@@ -44,8 +46,10 @@ class IMX219 : public SensorBase {
 
     int set_exposure(uint32_t dBGain);
 
+    // set resolution, binnig mode and a raw format
     int configure();
 
+    // thread entry, will do all initialization inside and run a control loop
     void control(chanend_t c_control);
 
 }; // IMX219

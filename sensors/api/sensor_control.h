@@ -11,6 +11,8 @@
 
 #include "sensor.h"
 
+#define I2C_DEV_ADDR 0x10
+#define I2C_DEV_SPEED 400
 #define PRINT_I2C_REG 0
 #define ENABLE_PRINT_SENSOR_CONTROL 0
 #define ENCODE(cmd, arg) (((uint32_t)(cmd) << 16) | (uint32_t)(arg))

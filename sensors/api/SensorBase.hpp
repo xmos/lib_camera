@@ -32,6 +32,7 @@ class SensorBase {
 
   public:
 
+    // Will initialize i2c master as well
     SensorBase(i2c_config_t _conf);
 
 }; // SensorBase

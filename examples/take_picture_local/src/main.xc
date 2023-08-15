@@ -11,6 +11,7 @@
 #include <xccompat.h>
 
 #include "app.h"
+#include "sensor_control.h"
 #include "packet_rx_simulate.h"
 
 /**
