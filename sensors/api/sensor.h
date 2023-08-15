@@ -17,8 +17,18 @@
 #define MODE_FHD_1920x1080       0x04
 #define MODE_1280x960            0x05
 
+typedef enum {
+  RES_640_480 = MODE_VGA_640x480,
+  RES_1280_960 = MODE_1280x960
+} resolution_t;
+
 #define _MIPI_DT_RAW8            0x2A
 #define _MIPI_DT_RAW10           0x2B
+
+typedef enum {
+  FMT_RAW8 = _MIPI_DT_RAW8,
+  FMT_RAW10 = _MIPI_DT_RAW10
+} pixel_format_t;
 
 #define BIAS_DISABLED            0x00  // no demux
 #define BIAS_ENABLED             0x80  // bias
@@ -169,14 +179,10 @@
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
 #define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)
 
-
-// Sensor control definitions
-
-#define N_COMMANDS 5
 typedef enum {
   SENSOR_INIT = 0,
   SENSOR_CONFIG,
   SENSOR_STREAM_START,
   SENSOR_STREAM_STOP,
   SENSOR_SET_EXPOSURE
-} camera_control_t;
+} sensor_control_t;

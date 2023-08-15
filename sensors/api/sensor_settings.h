@@ -6,16 +6,32 @@
 // This file is used from each sensor
 // It can't be included in sensor.h becuse it depends on i2C that is not xc compatible. 
 
-#include <stdlib.h>
 #include <stdint.h>
 
+#if defined(__XC__) || defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "i2c.h"
+
+#if defined(__XC__) || defined(__cplusplus)
+}
+#endif
 
 typedef struct
 {
   uint16_t reg_addr;
   uint16_t reg_val;
-} i2c_settings_t;
+} i2c_line_t;
+
+typedef struct
+{
+  i2c_line_t * table;
+  size_t num_lines;
+} i2c_table_t;
+
+#define GET_NUM_LINES(regs_arr) (sizeof(regs_arr) / sizeof(i2c_line_t))
+#define GET_TABLE(regs_arr) (i2c_table_t){regs_arr, GET_NUM_LINES(regs_arr)}
 
 /* Test 1b port SCL 1b port SDA */
 typedef struct 
@@ -26,12 +42,3 @@ typedef struct
   port_t p_sda;
   i2c_master_t* i2c_ctx_ptr;
 } i2c_config_t;
-
-
-typedef struct
-{
-  i2c_settings_t* regs_frame_size;
-  size_t regs_frame_size_size;
-  i2c_settings_t* regs_pixel_format;
-  size_t regs_pixel_format_size;
-} regs_config_t;

@@ -2,16 +2,11 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include "app.h"
-
-extern "C" {
-  void sensor_i2c_init();
-  void sensor_control(chanend_t c_control);
-}
+#include "sensor_control.h"
 
 // Camera control channels
 void main_tile0(chanend_t c_control){
-    sensor_i2c_init();
-    sensor_control(c_control);
+  sensor_control(c_control);
 }
 
 int main(void) 
