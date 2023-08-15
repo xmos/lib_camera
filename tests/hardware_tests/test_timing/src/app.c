@@ -1,20 +1,12 @@
 // Copyright 2020-2023 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-#include <xs1.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-#include <math.h>
 
-#include <xccompat.h>
-#include <xs1.h>
-#include <platform.h>
-#include <xscope.h>
 #include <xcore/port.h>
 #include <xcore/clock.h>
+#include <xcore/assert.h>
 #include <xcore/channel.h>
 
 #include "i2c.h"
@@ -187,7 +179,7 @@ mipi_timing_info_t extractTimingInfo(
 
       if(!is_long){
         // Short packet
-        assert(duration == 0);
+        xassert(duration == 0);
 
         if(data_type == MIPI_DT_FRAME_START){
 
@@ -240,7 +232,7 @@ mipi_timing_info_t extractTimingInfo(
 
       } else {
         // Long packet
-        assert(duration);
+        xassert(duration);
 
         WARNING(!inside_frame) {
           ONLY_IF (SEQUENCE_WARNINGS);
