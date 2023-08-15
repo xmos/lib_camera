@@ -2,7 +2,7 @@
 set(TARGET test_timing)  
 
 set(SOURCES
-  src/app.xc
+  src/app.c
   src/main.xc
   src/MipiGatherTiming.S
 )
@@ -26,8 +26,8 @@ set(APP_LINK_OPTIONS
 
 set(APP_COMMON_LINK_LIBRARIES                    
   fwk_camera::mipi
-  i2c::lib_i2c
-  fwk_camera::sensors 
+  lib_i2c
+  fwk_camera::sensors
   fwk_camera::camera
 )
 
