@@ -12,9 +12,9 @@
 // ISP settings
 #define AE_MARGIN 0.1          // default marging for the auto exposure error
 #define AE_INITIAL_EXPOSURE 35 // initial exposure value
-#define AWB_gain_RED    1.3
-#define AWB_gain_GREEN  1
-#define AWB_gain_BLUE   1.3
+#define AWB_gain_RED    1.538
+#define AWB_gain_GREEN  1.0
+#define AWB_gain_BLUE   1.587
 #define AWB_MAX         1.7
 #define AWB_MIN         0.8
 #define APPLY_GAMMA     1
