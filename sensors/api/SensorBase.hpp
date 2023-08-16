@@ -35,6 +35,21 @@ class SensorBase {
     // Will initialize i2c master as well
     SensorBase(i2c_config_t _conf);
 
+    // basic camera init
+    virtual int initialize();
+
+    virtual int stream_start();
+
+    virtual int stream_stop();
+
+    virtual int set_exposure(uint32_t dBGain);
+
+    // set resolution, binnig mode and a raw format
+    virtual int configure();
+
+    // thread entry, will do all initialization inside and run a control loop
+    virtual void control(chanend_t c_control);
+
 }; // SensorBase
 
 } // sensor
