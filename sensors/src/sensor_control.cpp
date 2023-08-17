@@ -15,7 +15,7 @@ void sensor_control(chanend_t c_control) {
   i2c_conf.p_sda = XS1_PORT_1O;
   i2c_conf.i2c_ctx_ptr = &i2c_ctx;
 
-  sensor::IMX219<(resolution_t)CONFIG_MODE, (pixel_format_t)CONFIG_MIPI_FORMAT> snsr(i2c_conf);
+  sensor::IMX219 snsr(i2c_conf, (resolution_t)CONFIG_MODE, (pixel_format_t)CONFIG_MIPI_FORMAT, true, true);
 
   snsr.control(c_control);
 }

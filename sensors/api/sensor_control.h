@@ -15,9 +15,9 @@
 #define I2C_DEV_SPEED 400
 #define PRINT_I2C_REG 0
 #define ENABLE_PRINT_SENSOR_CONTROL 0
-#define ENCODE(cmd, arg) (((uint32_t)(cmd) << 16) | (uint32_t)(arg))
+#define ENCODE(cmd, arg) (((uint32_t)(cmd) << 16) | (uint32_t)(arg & 0xFFFF))
 #define DECODE_CMD(value) ((uint16_t)((value) >> 16))
-#define DECODE_ARG(value) ((uint16_t)((value) & 0xFFFF))
+#define DECODE_ARG(value) ((uint16_t)(value))
 
 #if defined(__XC__) || defined(__cplusplus)
 extern "C" {
