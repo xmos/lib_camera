@@ -1,5 +1,7 @@
+.. _xscope_fileio instructions:
+
 Installing xscope_fileio
-=======================
+========================
 
 To install `xscope_fileio`, please follow the steps below:
 
@@ -22,6 +24,6 @@ Windows
 .. code-block:: console
       pip install -e utils/xscope_fileio
       cd utils/xscope_fileio/host
-      cmake -G "Ninja" . && ninja
+      cmake -G Ninja . && ninja
       
 Your xscope_fileio host app is now ready to use.
