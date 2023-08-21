@@ -1,10 +1,9 @@
 // Copyright 2023 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-#include <xcore/assert.h>
+#include <stdio.h>
 
 #include "SensorBase.hpp"
-#include "stdio.h"
 
 using namespace sensor;
 
@@ -59,9 +58,7 @@ int SensorBase::i2c_write_table(i2c_table_t table) {
   int ret = 0;
 
   for (size_t i = 0; i < table.num_lines; i++) {
-    //uint16_t address = table[i].reg_addr;
     uint16_t address = table.table[i].reg_addr;
-    //uint16_t value = table[i].reg_val;
     uint16_t value = table.table[i].reg_val;
     
     // pause if we reset the device
@@ -91,7 +88,7 @@ int SensorBase::i2c_write_table(i2c_table_t table) {
       ret |= this->i2c_write_line(address, (uint8_t)value);
     }
   }
-  return ret;
+  return ret != I2C_REGOP_SUCCESS ? -1 : 0;
 }
 
 int SensorBase::initialize() {

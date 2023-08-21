@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "sensor_settings.h"
 // --------- REG definitions ---------------------------------------------------------
 
 // Sleep values and registers
@@ -23,20 +22,6 @@
 // Sensor limits
 #define SENSOR_X_LIM      3280
 #define SENSOR_Y_LIM      2464
-
-#if     (CONFIG_MODE == MODE_VGA_640x480)
-# define BINNING_MODE BINNING_2X2
-#elif   (CONFIG_MODE == MODE_UXGA_1640x1232)
-# define BINNING_MODE BINNING_2X2
-#elif   (CONFIG_MODE == MODE_WQSXGA_3280x2464)
-# define BINNING_MODE BINNING_NONE
-#elif   (CONFIG_MODE == MODE_FHD_1920x1080)
-# define BINNING_MODE BINNING_NONE
-#elif   (CONFIG_MODE == MODE_1280x960)
-# define BINNING_MODE BINNING_2X2
-#else
-# error "Invalid configuration mode"
-#endif
 
 // PLL settings
 #define PREPLLCK_VT_DIV_REG 0x0304 

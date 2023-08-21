@@ -3,17 +3,45 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <xcore/assert.h>
 #include <xcore/channel.h>
 
-#include "sensor_settings.h"
-
 #ifdef __cplusplus
+
+extern "C" {
+# include "i2c.h"
+}
 
 namespace sensor {
 
+typedef struct
+{
+  uint16_t reg_addr;
+  uint16_t reg_val;
+} i2c_line_t;
+
+typedef struct
+{
+  i2c_line_t * table;
+  size_t num_lines;
+} i2c_table_t;
+
+typedef struct 
+{
+  uint8_t  device_addr;
+  uint16_t speed;
+  port_t p_scl;
+  port_t p_sda;
+  i2c_master_t * i2c_ctx_ptr;
+} i2c_config_t;
+
+#define GET_NUM_LINES(regs_arr) (sizeof(regs_arr) / sizeof(i2c_line_t))
+#define GET_TABLE(regs_arr) (i2c_table_t){regs_arr, GET_NUM_LINES(regs_arr)}
+
 /**
- *  @brief Base class for implementing Sensor contol from
+ *  @brief Base class for implementing Sensor control from
  */
 class SensorBase {
 
@@ -35,6 +63,7 @@ class SensorBase {
      * @brief Read from a 16-bit register
      *
      * @param reg         Register to read from
+     * @returns           Register value
      */
     uint16_t i2c_read(uint16_t reg);
 
@@ -42,6 +71,7 @@ class SensorBase {
      * @brief Write to a single register
      *
      * @param line        I2C line config to write
+     * @returns           0 if succeeded, -1 if failed
      */
     int i2c_write_line(i2c_line_t line);
 
@@ -50,6 +80,7 @@ class SensorBase {
      *
      * @param reg         Register value to write to
      * @param val         Value to write
+     * @returns           0 if succeeded, -1 if failed
      */
     int i2c_write_line(uint16_t reg, uint8_t val);
 
@@ -57,6 +88,7 @@ class SensorBase {
      * @brief Write a table of register values
      *
      * @param table       I2C table config to write
+     * @returns           0 if succeeded, -1 if failed
      */
     int i2c_write_table(i2c_table_t table);
 

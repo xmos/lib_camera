@@ -51,29 +51,25 @@ class IMX219 : public SensorBase {
     void adjust_offsets();
 
     /**
-     * @brief Get format register table
+     * @brief Get pixel format register table
      *
      * @param format_regs Pointer to I2C line structure to fill
-     * @note format_regs has to be an array of 3
      */
-    void get_pxl_fmt_table(i2c_line_t * format_regs);
+    i2c_table_t get_pxl_fmt_table();
 
     /**
      * @brief Get resolution register table
      *
      * @param resolution_regs Pointer to I2C line structure to fill
-     * @note resolution_regs has to be an array of 12
      */
-    void get_res_table(i2c_line_t * resolution_regs);
+    i2c_table_t get_res_table();
 
     /**
-     * @brief Calculate exposure register table
+     * @brief Get exposure gains register table
      *
      * @param dBGain      Exposure gain in dB, can enable different types of camera gain
-     * @param exposure_regs Pointer to I2C line structure to fill
-     * @note exposure_regs has to be an array of 5
      */
-    void calculate_exposure_gains(uint32_t dBGain, i2c_line_t * exposure_regs);
+    i2c_table_t get_exp_gains_table(uint32_t dBGain);
 
   public:
 
@@ -84,10 +80,10 @@ class IMX219 : public SensorBase {
      * @param _res        Resolution config
      * @param _pix_fmt    RAW format
      * @param _binning    2x2 binning mode
-     * @param centralize  If set, offsets will be calculated to centralise the frame, otherwise will start from (0, 0)
+     * @param _centralize If set, offsets will be calculated to centralise the frame, otherwise will start from (0, 0)
      * @note This will initialize I2C interface
      */
-    IMX219(i2c_config_t _conf, resolution_t _res, pixel_format_t _pix_fmt, bool _binning, bool centralize);
+    IMX219(i2c_config_t _conf, resolution_t _res, pixel_format_t _pix_fmt, bool _binning, bool _centralize);
 
     /**
      * @brief Construct new `IMX219`
@@ -104,16 +100,22 @@ class IMX219 : public SensorBase {
 
     /**
      * @brief Initialise sensor
+     *
+     * @returns           0 if succeeded, -1 if failed
      */
     int initialize();
 
     /**
      * @brief Start data stream
+     *
+     * @returns           0 if succeeded, -1 if failed
      */
     int stream_start();
 
     /**
      * @brief Stop data stream
+     *
+     * @returns           0 if succeeded, -1 if failed
      */
     int stream_stop();
 
@@ -121,11 +123,14 @@ class IMX219 : public SensorBase {
      * @brief Set sensor exposure
      *
      * @param dBGain      Exposure gain in dB, can enable different types of camera gain
+     * @returns           0 if succeeded, -1 if failed
      */
     int set_exposure(uint32_t dBGain);
 
     /**
      * @brief Set sensor resolution, binning mode, and RAW format
+     *
+     * @returns           0 if succeeded, -1 if failed
      */
     int configure();
 
