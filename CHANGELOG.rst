@@ -4,6 +4,8 @@ fwk_camera change log
 0.2.0
 -----
 
+  * ADDED: Dynamic configuration for the resolution, pixel format, binning mode
+    and frame offsets
   * CHANGED: Mipi has been reimplemented to C
   * CHANGED: I2c library version (from xc version to c version from fwk_io)
   * CHANGED: Sensor control has been reimplemented

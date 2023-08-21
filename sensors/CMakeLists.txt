@@ -26,6 +26,7 @@ target_sources(${LIB_NAME}
   PRIVATE
     src/SensorBase.cpp
     src/sensor_control.cpp
+    src/_sony_imx219/imx219.cpp
 )
 
 target_compile_options(${LIB_NAME}

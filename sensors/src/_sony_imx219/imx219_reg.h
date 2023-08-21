@@ -3,12 +3,11 @@
 
 #pragma once
 
-#include "sensor_settings.h"
 // --------- REG definitions ---------------------------------------------------------
 
 // Sleep values and registers
-#define SLEEP 0xFFFF
-#define TRSTUS 200
+#define SLEEP             0xFFFF
+#define TRSTUS            200
 
 // CSI LANE
 #define CSI_LANE_MODE_REG 0x0114
@@ -16,23 +15,13 @@
 #define CSI_LANE_MODE_4_LANES 3
 
 // BINNING
-#define BINNING_MODE_REG 0x0174
-#define BINNING_NONE	 0x0000
-#define BINNING_2X2		 0x0101
+#define BINNING_MODE_REG  0x0174
+#define BINNING_NONE	    0x0000
+#define BINNING_2X2		    0x0101
 
-#if     (CONFIG_MODE == MODE_VGA_640x480)
-# define BINNING_MODE BINNING_2X2
-#elif   (CONFIG_MODE == MODE_UXGA_1640x1232)
-# define BINNING_MODE BINNING_2X2
-#elif   (CONFIG_MODE == MODE_WQSXGA_3280x2464)
-# define BINNING_MODE BINNING_NONE
-#elif   (CONFIG_MODE == MODE_FHD_1920x1080)
-# define BINNING_MODE BINNING_NONE
-#elif   (CONFIG_MODE == MODE_1280x960)
-# define BINNING_MODE BINNING_2X2
-#else
-# error "Invalid configuration mode"
-#endif
+// Sensor limits
+#define SENSOR_X_LIM      3280
+#define SENSOR_Y_LIM      2464
 
 // PLL settings
 #define PREPLLCK_VT_DIV_REG 0x0304 
@@ -42,18 +31,21 @@
 #define PLL_OP_MPY          0x0010 // no effect in timing performance
 
 #ifndef PLL_VT_MPY
-#define PLL_VT_MPY  0x0027 // pll multiplier
+#define PLL_VT_MPY          0x0027 // pll multiplier
 #endif
 
 // Gain params
-#define GAIN_MIN_DB       0
-#define GAIN_MAX_DB      84
+#define GAIN_MIN_DB         0
+#define GAIN_MAX_DB         84
+
+#ifndef GAIN_DB
+#define GAIN_DB             40
+#endif
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static i2c_line_t imx219_common_regs[] = {
   {0x0103, 0x01},   /* software_reset       1, reset the chip */
   {SLEEP, TRSTUS},  /* software_reset       1, reset the chip */
-
 
   {0x0100, 0x00},	/* Mode Select */
 
@@ -67,19 +59,18 @@ static i2c_line_t imx219_common_regs[] = {
 
   /* PLL Clock Table */
   { 0x812A, 0x1800 }, /* EXCK_FREQ        24.00, for 24 Mhz */
-  { 0x0304,   0x02 }, /* PREPLLCK_VT_DIV      2, for pre divide by 2 */
-  { 0x0305,   0x02 }, /* PREPLLCK_OP_DIV      2, for pre divide by 2 */
-  { 0x8306,  PLL_VT_MPY}, /* PLL_VT_MPY        0x27, for multiply by 39, pixclk=187.2 MHz */
-  { 0x830C,  PLL_OP_MPY}, /* PLL_OP_MPY        0x40, for multiply by 64, MIPI clk=768 MHz */
-  { 0x0301,   0x0A }, /* VTPXCK_DIV           5, ? */
-  { 0x0303,   0x01 }, /* VTSYCK_DIV           1, ? */
-  { 0x0309,   0x0A }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
-  { 0x030B,   0x01 }, /* OPSYCK_DIV           1, has to be 1? */
+  { 0x0304, 0x02 }, /* PREPLLCK_VT_DIV      2, for pre divide by 2 */
+  { 0x0305, 0x02 }, /* PREPLLCK_OP_DIV      2, for pre divide by 2 */
+  { 0x8306, PLL_VT_MPY}, /* PLL_VT_MPY        0x27, for multiply by 39, pixclk=187.2 MHz */
+  { 0x830C, PLL_OP_MPY}, /* PLL_OP_MPY        0x40, for multiply by 64, MIPI clk=768 MHz */
+  { 0x0301, 0x0A }, /* VTPXCK_DIV           5, ? */
+  { 0x0303, 0x01 }, /* VTSYCK_DIV           1, ? */
+  { 0x0309, 0x0A }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
+  { 0x030B, 0x01 }, /* OPSYCK_DIV           1, has to be 1? */
   
   // pck clock
-  {0x1148,    0x00},    
-  {0x1149,    0xF0},
-  
+  {0x1148, 0x00},    
+  {0x1149, 0xF0},
 
   /* Undocumented registers */
   {0x455e, 0x00},
@@ -110,121 +101,6 @@ static i2c_line_t imx219_common_regs[] = {
 
 static i2c_line_t imx219_lanes_regs[] = {
   {CSI_LANE_MODE_REG, CSI_LANE_MODE_2_LANES}
-};
-
-static i2c_line_t mode_640_480_regs[] = {
-  {0x0164, 0x03},
-  {0x0165, 0xe8},
-  {0x0166, 0x08},
-  {0x0167, 0xe7},
-  {0x0168, 0x02},
-  {0x0169, 0xf0},
-  {0x016a, 0x06},
-  {0x016b, 0xaf},
-  {0x016c, 0x02},
-  {0x016d, 0x80},
-  {0x016e, 0x01},
-  {0x016f, 0xe0},
-  {0x0624, 0x06},
-  {0x0625, 0x68},
-  {0x0626, 0x04},
-  {0x0627, 0xd0},
-};
-
-static i2c_line_t mode_1640_1232_regs[] = {
-  {0x0164, 0x00},
-  {0x0165, 0x00},
-  {0x0166, 0x0c},
-  {0x0167, 0xcf},
-  {0x0168, 0x00},
-  {0x0169, 0x00},
-  {0x016a, 0x09},
-  {0x016b, 0x9f},
-  {0x016c, 0x06},
-  {0x016d, 0x68},
-  {0x016e, 0x04},
-  {0x016f, 0xd0},
-  {0x0624, 0x06},
-  {0x0625, 0x68},
-  {0x0626, 0x04},
-  {0x0627, 0xd0},
-};
-
-static i2c_line_t mode_1920_1080_regs[] = {
-  {0x0164, 0x02},
-  {0x0165, 0xa8},
-  {0x0166, 0x0a},
-  {0x0167, 0x27},
-  {0x0168, 0x02},
-  {0x0169, 0xb4},
-  {0x016a, 0x06},
-  {0x016b, 0xeb},
-  {0x016c, 0x07},
-  {0x016d, 0x80},
-  {0x016e, 0x04},
-  {0x016f, 0x38},
-  {0x0624, 0x07},
-  {0x0625, 0x80},
-  {0x0626, 0x04},
-  {0x0627, 0x38},
-};
-
-static i2c_line_t mode_3280x2464_regs[] = {
-  {0x0164, 0x00},
-  {0x0165, 0x00},
-  {0x0166, 0x0c},
-  {0x0167, 0xcf},
-  {0x0168, 0x00},
-  {0x0169, 0x00},
-  {0x016a, 0x09},
-  {0x016b, 0x9f},
-  {0x016c, 0x0c},
-  {0x016d, 0xd0},
-  {0x016e, 0x09},
-  {0x016f, 0xa0},
-  {0x0624, 0x0c},
-  {0x0625, 0xd0},
-  {0x0626, 0x09},
-  {0x0627, 0xa0},
-};
-
-static i2c_line_t mode_1280_960_regs[] = {
-  {0x0164, 0x00},
-  {0x0165, 0x00},
-  {0x0166, 0x09},
-  {0x0167, 0xff},
-  {0x0168, 0x00},
-  {0x0169, 0x00},
-  {0x016a, 0x07},
-  {0x016b, 0x7f},
-  {0x016c, 0x05},
-  {0x016d, 0x00},
-  {0x016e, 0x03},
-  {0x016f, 0xc0},
-  {0x0624, 0x06},
-  {0x0625, 0x68},
-  {0x0626, 0x04},
-  {0x0627, 0xd0},
-};
-
-static i2c_line_t raw10_framefmt_regs[] = {
-  {0x018c, 0x0a},
-  {0x018d, 0x0a},
-  {0x0309, 0x0a},
-};
-
-static i2c_line_t raw8_framefmt_regs[] = {
-  {0x018c, 0x08},
-  {0x018d, 0x08},
-  {0x0309, 0x08},
-};
-
-static i2c_line_t binning_none_regs[] = {
-  {BINNING_MODE_REG, BINNING_MODE}
-};
-
-static i2c_line_t binning_2x2_regs[] = {
-  {BINNING_MODE_REG, BINNING_2X2}
 };
 
 static i2c_line_t start_regs[] = {
