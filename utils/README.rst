@@ -1,4 +1,4 @@
-.. _xscope_fileio instructions:
+.. _xscope_fileio_instructions:
 
 Installing xscope_fileio
 ========================
