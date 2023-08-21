@@ -1,7 +1,7 @@
 .. _xscope_fileio_instructions:
 
 Installing xscope_fileio
-========================
+************************
 
 To install `xscope_fileio`, please follow the steps below:
 
