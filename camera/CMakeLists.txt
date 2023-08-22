@@ -10,6 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(LIB_NAME lib_camera)
 
 # Source files
+file(GLOB_RECURSE SOURCES_XC "*.xc")
 file(GLOB_RECURSE SOURCES_C "*.c")
 file(GLOB_RECURSE SOURCES_CPP "*.cpp")
 file(GLOB_RECURSE SOURCES_ASM "*.S")
@@ -20,6 +21,7 @@ target_include_directories(${LIB_NAME} PUBLIC api)
 
 target_sources(${LIB_NAME}
   PRIVATE
+    ${SOURCES_XC}  
     ${SOURCES_C}
     ${SOURCES_CPP}
     ${SOURCES_ASM}
