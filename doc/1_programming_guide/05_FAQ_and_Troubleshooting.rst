@@ -3,4 +3,7 @@ FAQ and troubleshooting
 
 .. include:: ../substitutions.rst
 
-|TBD|
+.. toctree::
+  :maxdepth 1
+
+  ../../utils/xscope_fileio_guide

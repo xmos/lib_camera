@@ -3,6 +3,6 @@ Quick start guide
 *******************
 
 .. toctree::
-   :maxdepth: 1
+  :maxdepth: 1
 
-   Quick_Start_guide
+  Quick_Start_guide

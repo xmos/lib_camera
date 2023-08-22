@@ -31,16 +31,16 @@ The FWK_Camera alongside with the Explorer board architecture provides the follo
 - Up to 1GBps per lane
 - Low-resolution filtering
 - Supported cameras:
-    - IMX219
+  - IMX219
 
 This repository contains a set of tools for image acquisition, processing, and transmission. 
 The architecture, viewed from a high level, is composed of the following elements:
 
 .. figure:: images/1_high_level_view.png
-    :alt: High-level block diagram
-    :align: center
+  :alt: High-level block diagram
+  :align: center
 
-    High-level block diagram of the FWK_Camera.
+  High-level block diagram of the FWK_Camera.
 
 1. Camera hardware and interface
 2. Camera drivers
@@ -54,7 +54,7 @@ Getting Started
 ----------------
 
 To start using the FWK_Camera, you can proceed to the Quick Start Guide, go to: 
-    
+
 :ref:`QS_FWKC`.
 
 Additional Resources

@@ -3,6 +3,6 @@ User guide
 *******************
 
 .. toctree::
-   :maxdepth: 1
+  :maxdepth: 1
 
-   User_guide
+  User_guide

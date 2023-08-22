@@ -28,7 +28,7 @@ Some dependent components are included as git submodules. These can be obtained 
 
 .. code-block:: console
 
-   git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
+  git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
 
 Build instructions
 ------------------
@@ -41,18 +41,18 @@ Linux, Mac
 
 .. code-block:: console
 
-   cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-   cd build/
-   make
+  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
+  cd build/
+  make
 
 Windows
 ~~~~~~~
 
 .. code-block:: console
 
-   cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-   cd build
-   ninja
+  cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
+  cd build
+  ninja
 
 Supported Cameras
 -----------------

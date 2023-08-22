@@ -15,17 +15,17 @@ Linux, Mac
 ~~~~~~~~~~
 
 .. code-block:: console
-        
-        cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-        make -C build example_take_picture_downsample
+  
+  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
+  make -C build example_take_picture_downsample
 
 Windows
 ~~~~~~~
 
 .. code-block:: console
 
-        cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-        ninja -C build example_take_picture_downsample
+  cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
+  ninja -C build example_take_picture_downsample
 
 ***************
 Running example
@@ -36,7 +36,7 @@ Make sure ``xscope_fileio`` is installed. See /utils/README.rst section for more
 
 .. code-block:: console
 
-    python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
+  python python/run_xscope_bin.py build/examples/take_picture_downsample/example_take_picture_downsample.xe
 
 ******
 Output

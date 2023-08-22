@@ -2,7 +2,7 @@ Architecture and Design
 =======================
 
 .. include:: ../substitutions.rst
-   
+  
 Introduction
 -------------
 
@@ -23,10 +23,10 @@ Software Architecture
 From a Software point of view, fwk_camera is composed of the following modules:
 
 .. figure:: images/2_object_diagram.png
-   :alt: fwk_camera object diagram
-   :figclass: custom-class
+  :alt: fwk_camera object diagram
+  :figclass: custom-class
 
-   Object Diagram
+  Object Diagram
 
 Module description:
 
@@ -40,4 +40,4 @@ There are other sections not mentioned in the diagram, as the test section, whic
 Optimizations and future directions
 ------------------------------------
 
-   |TBD|
+  |TBD|
