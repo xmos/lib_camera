@@ -1,9 +1,9 @@
 .. _xscope_fileio_instructions:
 
-Installing xscope_fileio
-------------------------
+Installing xscope_fileio host tools
+-----------------------------------
 
-To install `xscope_fileio`, please follow the steps below:
+To install ``xscope_fileio``, please follow the steps below:
 
 .. tab:: Linux and Mac
 
@@ -11,7 +11,7 @@ To install `xscope_fileio`, please follow the steps below:
 
 .. tab:: Windows
 
-  1. Make sure you have activated VS tools environment and have `cl` compiler ready to use
+  1. Make sure you have activated VS tools environment and have ``cl`` compiler ready to use
 
 2. Open a terminal or command prompt.
 
@@ -31,4 +31,4 @@ To install `xscope_fileio`, please follow the steps below:
     cd utils/xscope_fileio/host
     cmake -G Ninja . && ninja
   
-Your xscope_fileio host app is now ready to use.
+Your ``xscope_fileio`` host app is now ready to use.

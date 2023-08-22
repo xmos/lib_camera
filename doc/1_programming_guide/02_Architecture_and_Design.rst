@@ -6,7 +6,9 @@ Architecture and Design
 Introduction
 -------------
 
-In this section we describe the main components of fwk_camera and how they interact with each other. We also describe the design decisions that were made and the reasoning behind them. The main components of fwk_camera are the following:
+In this section we describe the main components of ``fwk_camera`` and how they interact with each other.
+We also describe the design decisions that were made and the reasoning behind them.
+The main components of ``fwk_camera`` are the following:
 
 
 Hardware Architecture
@@ -36,8 +38,3 @@ Module description:
 #.    Host section: provide the interface to write the frames or files to the host.
 
 There are other sections not mentioned in the diagram, as the test section, which is used to test the camera. 
-
-Optimizations and future directions
-------------------------------------
-
-  |TBD|

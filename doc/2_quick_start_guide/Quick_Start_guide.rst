@@ -23,7 +23,7 @@ Make sure all submodules are imported:
 
 .. code-block:: console
 
-   git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
+  git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
 
 Run the RAW camera demo
 ^^^^^^^^^^^^^^^^^^^^^^^

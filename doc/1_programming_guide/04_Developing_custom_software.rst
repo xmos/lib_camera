@@ -3,4 +3,7 @@ Software customization
 
 .. include:: ../substitutions.rst
 
-  |TBD|
+Adding your own sensor
+----------------------
+
+Nothing here for now
