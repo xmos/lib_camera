@@ -5,13 +5,7 @@ Installing xscope_fileio host tools
 
 To install ``xscope_fileio`` host tool, please follow the steps below:
 
-.. tab:: Linux and Mac
-
-  1. Make sure you have a C compiler (e.g., gcc, clang) installed.
-
-.. tab:: Windows
-
-  1. Make sure you have activated VS tools environment and have ``cl`` compiler ready to use
+1. Make sure you have a C compiler  installed. If you are developing on Windows, we recomend using VS tools with a ``cl`` compiler.
 
 2. Open a terminal or command prompt.
 
@@ -21,12 +15,14 @@ To install ``xscope_fileio`` host tool, please follow the steps below:
 
   .. code-block:: console
 
+    >> Linux and Mac
     pip install -e utils/xscope_fileio
 
 .. tab:: Windows
 
   .. code-block:: console
 
+    >> Windows
     pip install -e utils/xscope_fileio
     cd utils/xscope_fileio/host
     cmake -G Ninja . && ninja

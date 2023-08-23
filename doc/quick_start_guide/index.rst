@@ -47,6 +47,7 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
 
   .. code-block:: console
   
+    >> Linux and Mac
     cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
     make -C build example_take_picture_raw
 
@@ -54,6 +55,7 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
 
   .. code-block:: console
 
+    >> Windows
     cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
     ninja -C build example_take_picture_raw
 

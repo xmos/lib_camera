@@ -1,5 +1,5 @@
 Software customization
-=======================
+======================
 
 .. include:: ../substitutions.rst
 

@@ -34,6 +34,7 @@ be able to build examples. By following the instructions below, you'll be able t
 
   .. code-block:: console
 
+    >> Linux and Mac
     cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
     make -C build
 
@@ -41,6 +42,7 @@ be able to build examples. By following the instructions below, you'll be able t
 
   .. code-block:: console
 
+    >> Windows
     cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
     ninja -C build
 

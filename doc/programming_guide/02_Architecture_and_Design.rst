@@ -13,7 +13,7 @@ The main components of ``fwk_camera`` are the following:
 
 Hardware Architecture
 ---------------------
-From a Hardware point of view, fwk_camera is composed of the following modules:
+From a Hardware point of view, ``fwk_camera`` is composed of the following modules:
 
 #.  Camera connector : 15-PIN MIPI CSI connector for the camera module. (compatible with Raspberry Pi).
 #.  Mipi Shim : Xmos MIPI hardware to convert MIPI signals to Xcore ports.
@@ -22,10 +22,10 @@ From a Hardware point of view, fwk_camera is composed of the following modules:
 
 Software Architecture
 ---------------------
-From a Software point of view, fwk_camera is composed of the following modules:
+From a Software point of view, ``fwk_camera`` is composed of the following modules:
 
 .. figure:: images/2_object_diagram.png
-  :alt: fwk_camera object diagram
+  :alt: ``fwk_camera`` object diagram
   :figclass: custom-class
 
   Object Diagram
