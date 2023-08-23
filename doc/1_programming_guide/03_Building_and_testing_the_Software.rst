@@ -1,5 +1,5 @@
-Building the Software
-=======================
+Building and running the Software
+=================================
 
 .. include:: ../substitutions.rst
 
@@ -24,8 +24,8 @@ Software requirements:
 - CMake, Ninja (Windows)
 - Python 3.7 or later
 
-Bulding the firmware and the examples
--------------------------------------
+Building the firmware and the examples
+--------------------------------------
 
 ``fwk_camera`` is intended to be used as part of an application, therefore depending if you have it on its own or not, you will
 be able to build examples. By following the instructions below, you'll be able to build all possible targets.

@@ -6,16 +6,16 @@ Introduction
 Overview
 ---------
 The purpose of this programming guide is to provide developers with a comprehensive understanding 
-of the FWK_Camera architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
+of the ``fwk_camera`` architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
 
 Conventions and Terminology
 ---------------------------
 To ensure clarity and consistency throughout this guide, the following conventions and terminology are used:
 
-- MIPI: Mobile Industry Processor Interface. It is a standard interface specification for mobile devices, including cameras. The FWK_Camera architecture utilizes MIPI specifications for camera communication.
+- MIPI: Mobile Industry Processor Interface. It is a standard interface specification for mobile devices, including cameras. The ``fwk_camera`` architecture utilizes MIPI specifications for camera communication.
 - Xcore: XMOS proprietary event-driven processor architecture. It provides high-performance parallel processing capabilities and is used in XMOS devices to handle camera interface and data processing.
-- Channels: In the context of XMOS devices, channels are communication pathways that allow data exchange between different components. Channels play a crucial role in camera control and data transfer within the FWK_Camera architecture.
-- I2C: Inter-Integrated Circuit. It is a widely used serial communication protocol for controlling and configuring devices. Within the FWK_Camera architecture, I2C is utilized for camera control operations, such as adjusting settings and retrieving sensor information.
+- Channels: In the context of XMOS devices, channels are communication pathways that allow data exchange between different components. Channels play a crucial role in camera control and data transfer within the ``fwk_camera`` architecture.
+- I2C: Inter-Integrated Circuit. It is a widely used serial communication protocol for controlling and configuring devices. Within the ``fwk_camera`` architecture, I2C is utilized for camera control operations, such as adjusting settings and retrieving sensor information.
 
 Features
 ---------
@@ -40,7 +40,7 @@ The architecture, viewed from a high level, is composed of the following element
   :alt: High-level block diagram
   :align: center
 
-  High-level block diagram of the FWK_Camera.
+  High-level block diagram of the ``fwk_camera``.
 
 1. Camera hardware and interface
 2. Camera drivers
@@ -53,7 +53,7 @@ Each of these elements is described in detail in the following sections.
 Getting Started
 ----------------
 
-To start using the FWK_Camera, you can proceed to the Quick Start Guide, go to: 
+To start using the ``fwk_camera``, you can proceed to the Quick Start Guide, go to: 
 
 :ref:`QS_FWKC`.
 

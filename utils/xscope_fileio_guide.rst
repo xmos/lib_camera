@@ -3,7 +3,7 @@
 Installing xscope_fileio host tools
 -----------------------------------
 
-To install ``xscope_fileio``, please follow the steps below:
+To install ``xscope_fileio`` host tool, please follow the steps below:
 
 .. tab:: Linux and Mac
 

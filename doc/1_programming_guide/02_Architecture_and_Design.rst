@@ -4,7 +4,7 @@ Architecture and Design
 .. include:: ../substitutions.rst
   
 Introduction
--------------
+------------
 
 In this section we describe the main components of ``fwk_camera`` and how they interact with each other.
 We also describe the design decisions that were made and the reasoning behind them.
@@ -12,7 +12,7 @@ The main components of ``fwk_camera`` are the following:
 
 
 Hardware Architecture
-----------------------
+---------------------
 From a Hardware point of view, fwk_camera is composed of the following modules:
 
 #.  Camera connector : 15-PIN MIPI CSI connector for the camera module. (compatible with Raspberry Pi).
@@ -21,7 +21,7 @@ From a Hardware point of view, fwk_camera is composed of the following modules:
 #.  xTag Host connector : USB connector to connect to the host.
 
 Software Architecture
--------------------------
+---------------------
 From a Software point of view, fwk_camera is composed of the following modules:
 
 .. figure:: images/2_object_diagram.png
