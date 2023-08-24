@@ -5,16 +5,19 @@ Quick Start Guide
 
 .. include:: ../substitutions.rst
 
-Hardware requirements:
-^^^^^^^^^^^^^^^^^^^^^^^
+This page will provide a quick tour through the ``fwk_camera`` repository. You will go through the process
+of building the example application and taking a photo in RAW8 format.
+
+Hardware requirements
+^^^^^^^^^^^^^^^^^^^^^
 - XCORE.AI EVALUATION KIT (XK-EVK-XU316)
 - Camera module
 - Camera ribbon connector
 - 2x Micro USB cable (Power supply and xTag)
 - xTag debugger and cable
 
-Software requirements:
-^^^^^^^^^^^^^^^^^^^^^^^
+Software requirements
+^^^^^^^^^^^^^^^^^^^^^
 - XMOS tools (15.2.1): `SW_TOOLS`_
 - CMake, Ninja (Windows)
 - Python 3.7 or later 

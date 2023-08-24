@@ -3,9 +3,6 @@ Architecture and Design
 
 .. include:: ../substitutions.rst
   
-Introduction
-------------
-
 In this section we describe the main components of ``fwk_camera`` and how they interact with each other.
 We also describe the design decisions that were made and the reasoning behind them.
 The main components of ``fwk_camera`` are the following:
@@ -32,7 +29,7 @@ From a Software point of view, ``fwk_camera`` is composed of the following modul
 
 Module description:
 
-#.    Camera section: the camera section takes care of start, process and stop the camera. It has to be aware of the sensor configuration (in sesnor section) and meet the user demands (in user section).
+#.    Camera section: the camera section takes care of start, process and stop the camera. It has to be aware of the sensor configuration (in sensor section) and meet the user demands (in user section).
 #.    User section: the user section is the interface between the user and the camera, where we define what we want to do with the frames. 
 #.    Sensor section: configuration and control of the sensor.
 #.    Host section: provide the interface to write the frames or files to the host.

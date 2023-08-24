@@ -3,8 +3,6 @@ Introduction
 
 .. include:: ../substitutions.rst
 
-Overview
----------
 The purpose of this programming guide is to provide developers with a comprehensive understanding 
 of the ``fwk_camera`` architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
 
@@ -30,8 +28,7 @@ The FWK_Camera alongside with the Explorer board architecture provides the follo
 - MIPI CSI2 interface
 - Up to 1GBps per lane
 - Low-resolution filtering
-- Supported cameras:
-  - IMX219
+- Supported cameras: `IMX219`_
 
 This repository contains a set of tools for image acquisition, processing, and transmission. 
 The architecture, viewed from a high level, is composed of the following elements:

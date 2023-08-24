@@ -18,7 +18,7 @@ Your sensor has to:
 Software
 ^^^^^^^^
 
-If you navigate to ``sesnors/api/SensorBase.hpp``, you will find the ``SensorBase`` class which is intended to be derived from.
+If you navigate to ``sensors/api/SensorBase.hpp``, you will find the ``SensorBase`` class which is intended to be derived from.
 It doesn't have anything to do with a particular sensor, it only provides API to do basic I2C communication with the sensor.
 Inside ``SensorBase`` class you can also find some pulic virtual methods which will **have to** be implemented in the derived class.
 
