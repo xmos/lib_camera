@@ -33,9 +33,6 @@ Run the RAW camera demo
 This demo uses the RAW camera module to capture a RAW8 image and save it to a .raw file. 
 Then, this image can be decoded using the python script ``python decode_raw8.py``.
 
-.. warning::
-  Make sure xscope_fileio is installed. Refer to :ref:`xscope_fileio_instructions` page for more information.
-
 1. Ensure that the camera is connected to the board
 2. Connect Power Supply and xTag debugger
 3. Install python requirements. From the root of the repository run:
@@ -61,7 +58,8 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
     >> Windows
     cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
     ninja -C build example_take_picture_raw
-
+    cd utils/xscope_fileio/host # Windows requires some extra steps
+    cmake -G Ninja . && ninja
 
 5. Run the example using the following command:
 

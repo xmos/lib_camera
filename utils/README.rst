@@ -1,5 +1,3 @@
-.. _xscope_fileio_instructions:
-
 Installing xscope_fileio host tools
 -----------------------------------
 
