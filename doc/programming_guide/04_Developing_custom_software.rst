@@ -30,7 +30,7 @@ your sensor API like here:
 .. code-block:: C++
 
   sensor_control(chanend_t c_control) {
-    // first i2c_conf definition
+    // i2c_conf definition first
     sensor::YOUR_SENSOR snsr(i2c_conf, other_arguments);
     snsr.control(c_control);
   }
