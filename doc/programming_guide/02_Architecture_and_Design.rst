@@ -21,6 +21,8 @@ Software Architecture
 ---------------------
 From a Software point of view, ``fwk_camera`` is composed of the following modules:
 
+.. _obj_diagram:
+
 .. figure:: images/2_object_diagram.png
   :alt: ``fwk_camera`` object diagram
   :figclass: custom-class
