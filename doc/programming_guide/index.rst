@@ -1,6 +1,6 @@
-*******************
-Programming Guide 
-*******************
+****************************
+FWK-CAMERA Programming Guide 
+****************************
 
 .. include:: ../substitutions.rst
   
