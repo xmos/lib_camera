@@ -1,4 +1,4 @@
-Software customization
+Software customisation
 ======================
 
 .. include:: ../substitutions.rst
@@ -19,13 +19,13 @@ Software
 ^^^^^^^^
 
 If you navigate to ``sensors/api/SensorBase.hpp``, you will find the ``SensorBase`` class which is intended to be derived from.
-It doesn't have anything to do with a particular sensor, it only provides API to do basic I2C communication with the sensor.
-Inside ``SensorBase`` class you can also find some pulic virtual methods which will **have to** be implemented in the derived class.
+It doesn't have anything to do with a particular sensor, it only provides an API to do basic I2C communication with the sensor.
+Inside ``SensorBase`` class you can also find some public virtual methods which will **have to** be implemented in the derived class.
 
 In order to implement your own sensor you will need to create a directory in ``sensors/src/_your_sensor``, implement a derived class with 
 ``initialize()``, ``stream_start()``, ``stream_stop()``, ``set_exposure()``, ``configure()`` and ``control()`` methods. When you have your
 sensor class implemented you can add its header file into ``sensors/src/sensor_control.cpp`` and have ``sensor_control()`` calling
-your sensor API like here:
+your sensor API like this:
 
 .. code-block:: C++
 

@@ -18,7 +18,7 @@ Hardware requirements
 
 Software requirements
 ^^^^^^^^^^^^^^^^^^^^^
-- XMOS tools (15.2.1): `SW_TOOLS`_
+- XTC tools (15.2.1): `SW_TOOLS`_
 - CMake, Ninja (Windows)
 - Python 3.7 or later 
 
@@ -26,7 +26,7 @@ Make sure all submodules are imported:
 
 .. code-block:: console
 
-  git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
+  git clone --recurse-submodules https://github.com/xmos/fwk_camera.git
 
 Run the RAW camera demo
 ^^^^^^^^^^^^^^^^^^^^^^^

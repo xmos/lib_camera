@@ -28,7 +28,7 @@ Some dependent components are included as git submodules. These can be obtained 
 
 .. code-block:: console
 
-  git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
+  git clone --recurse-submodules https://github.com/xmos/fwk_camera.git
 
 Build instructions
 ------------------

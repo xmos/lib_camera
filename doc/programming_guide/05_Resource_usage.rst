@@ -16,7 +16,7 @@ You can find the ``take_picture_downsample`` application thread diagram below. F
 
   Resource usage
 
-Here you will notice that ``xscope_fileio`` related resources are dashed. The reason for that is that you are not likely to use ``xscope_fileio``
+Here you will notice that the ``xscope_fileio`` related resources are dashed. The reason for that is that you are not likely to use ``xscope_fileio``
 in your application. We use it in this example because it's a good testing/debugging tool. So, realistically, for the minimum camera application
 you will need 4 cores on tile 1.
 
