@@ -14,4 +14,4 @@ To run this test, from top level directory of the repo, run the following comman
 
 .. code-block:: console
 
-   xrun --xscope build/tests/hardware_tests/test_timing/test_timing.xe
+  xrun --xscope build/tests/hardware_tests/test_timing/test_timing.xe

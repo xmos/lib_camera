@@ -28,7 +28,7 @@ Some dependent components are included as git submodules. These can be obtained 
 
 .. code-block:: console
 
-   git clone --recurse-submodules git@github.com:xmos/fwk_camera.git
+  git clone --recurse-submodules https://github.com/xmos/fwk_camera.git
 
 Build instructions
 ------------------
@@ -41,31 +41,29 @@ Linux, Mac
 
 .. code-block:: console
 
-   cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-   cd build/
-   make
+  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
+  cd build/
+  make
 
 Windows
 ~~~~~~~
 
 .. code-block:: console
 
-   cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-   cd build
-   ninja
+  cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
+  cd build
+  ninja
 
 Supported Cameras
 -----------------
 
-+--------+--------------------------------+----------------+
-| Model  | Max Resolution                 | Output Formats |
-+========+================================+================+
-| IMX219 | 640Hx480V == VGA (2x2 binning) | RAW8           |
-+--------+--------------------------------+----------------+
-| IMX219 | 160x120x3 RGB                  | RGB            |
-+--------+--------------------------------+----------------+
-| GC2145 | 1600H x 1200V == 2MPX          | YUV422         |
-+--------+--------------------------------+----------------+
++--------+-------------------------------------------------+----------------+
+| Model  | Max Resolution                                  | Output Formats |
++========+=================================================+================+
+| IMX219 | 640Hx480V == VGA (2x2 binning, no binning)      | RAW8, RAW10    |
++--------+-------------------------------------------------+----------------+
+| IMX219 | 160x120x3 RGB                                   | RGB            |
++--------+-------------------------------------------------+----------------+
 
 How to configure your sensor or add a new one
 ---------------------------------------------
