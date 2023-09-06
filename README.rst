@@ -53,19 +53,3 @@ Windows
   cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
   cd build
   ninja
-
-Supported Cameras
------------------
-
-+--------+-------------------------------------------------+----------------+
-| Model  | Max Resolution                                  | Output Formats |
-+========+=================================================+================+
-| IMX219 | 640Hx480V == VGA (2x2 binning, no binning)      | RAW8, RAW10    |
-+--------+-------------------------------------------------+----------------+
-| IMX219 | 160x120x3 RGB                                   | RGB            |
-+--------+-------------------------------------------------+----------------+
-
-How to configure your sensor or add a new one
----------------------------------------------
-
-TODO
