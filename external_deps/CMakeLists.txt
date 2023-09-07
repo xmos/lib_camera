@@ -1,5 +1,7 @@
-# Fetch library
 include(FetchContent)
+
+# Fetch library
+message(STATUS "Fetching: fwk_camera_deps/fwk_io")
 FetchContent_Declare(
   fwk_io
   GIT_REPOSITORY https://github.com/xmos/fwk_io
