@@ -5,7 +5,7 @@ message(STATUS "Fetching: fwk_camera_deps/fwk_io")
 FetchContent_Declare(
   fwk_io
   GIT_REPOSITORY https://github.com/xmos/fwk_io
-  GIT_TAG        develop
+  GIT_TAG        cf70def312a43c011e1f6b37cededdc379ca3bf4 # v3.1.0
   GIT_SHALLOW    TRUE
   SOURCE_DIR     ${CMAKE_BINARY_DIR}/fwk_camera_deps/fwk_io
 )
