@@ -1,3 +1,6 @@
+# Copyright 2023 XMOS LIMITED.
+# This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 """
 Info of RAW streams
 
@@ -11,7 +14,7 @@ SBGGR10_CSI2P :
     BGGR is the order of the Bayer pattern
     few padding bytes on the end of every row to match bits
 """
-
+import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,9 +22,15 @@ from PIL import Image  # just to avoid color BGR issues when writting
 from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
-from utils import *
+from utils import (
+    normalize,
+    simple_white_balance,
+    demosaic,
+    new_color_correction,
+    plot_imgs
+)
 
-input_name = os.getenv('BINARY_IMG_PATH')
+input_name = os.getenv('BINARY_IMG_PATH') or "capture.raw"
 
 width, height = 640, 480
 
@@ -47,7 +56,10 @@ with open(input_name, "rb") as f:
 
 
 # unpack
+#buffer = np.frombuffer(data, dtype=np.int8) + 128 # convert to uint8 
+#buffer = buffer.astype(np.uint8)
 buffer = np.frombuffer(data, dtype=np.uint8)
+
 img = buffer.reshape(height, width, 1)
 print("unpacked_data")
 
@@ -67,28 +79,19 @@ img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
 # demosaic
 img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
 img_demoisaic = img
-# wb
-#img = gray_world(img)
 # color transforms
 img = new_color_correction(img)
-
-
-
 # gamma
 img = img ** (1.0 / 1.8)
 # clip the image
 img = np.clip(255*img, 0, 255).astype(np.uint8)
-
 # hist equalization (optional)
-# img = run_histogram_equalization(img)
+#   img = run_histogram_equalization(img)
 # resize bilinear (optional)
 kfactor = 1
 img = cv2.resize(img, (width // kfactor, height // kfactor), interpolation=cv2.INTER_AREA)
 # ------ The ISP pipeline -------------------------
 
-
-
-######################################################
 ################# PLOT ##############################
 
 # save image
@@ -96,6 +99,7 @@ if flip:
     imgs  = cv2.flip(img, 0)
 else:
     imgs = img
+    
 name = f"{input_name}_postprocess_.png"
 Image.fromarray(imgs).save(name) 
 print(name)

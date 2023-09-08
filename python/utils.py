@@ -1,3 +1,6 @@
+# Copyright 2023 XMOS LIMITED.
+# This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 import os
 import cv2
 import matplotlib.pyplot as plt
@@ -462,17 +465,19 @@ def run_histogram_equalization(img_bgr):
     return colorimage_clahe
 
 
-def show_histogram_by_channel(image):
+def show_histogram_by_channel(image, ylim=None):
     # Set the histogram bins to 256, the range to 0-255
-    hist_size = 256
-    hist_range = (0, 256)
+    hist_size = 265
+    hist_range = (0, 255)
 
     # Plot the histograms using plt.hist
     plt.figure(figsize=(10, 5))
     for i, col in enumerate(['r', 'g', 'b']):
         plt.subplot(1, 3, i+1)
         plt.title(f'{col.upper()} Histogram')
-        plt.xlim([0, 255])
+        plt.xlim([0, hist_size])
+        if ylim is not None:
+            plt.ylim([0, ylim])
         plt.hist(image[:,:,i].ravel(), bins=hist_size, range=hist_range, color=col)
     plt.show()
 
@@ -480,7 +485,7 @@ def show_histogram_by_channel(image):
 def show_histogram_by_channel_ax(image, ax):
     # Set the histogram bins to 256, the range to 0-255
     hist_size = 256
-    hist_range = (0, 256)
+    hist_range = (0, hist_size)
 
     # Plot the histograms using plt.hist
     for i, col in enumerate(['r', 'g', 'b']):
@@ -489,6 +494,7 @@ def show_histogram_by_channel_ax(image, ax):
 
 
 def plot_imgs(img, img_raw_RGB, flip, ax=None):
+    hist_size = 256
     if ax is None:
         fig, ax = plt.subplots(2, 2, figsize=(16, 8))
     if flip:
@@ -503,9 +509,9 @@ def plot_imgs(img, img_raw_RGB, flip, ax=None):
     # plt.show()
 
     # plot histogram
-    ax3.hist(img.mean(axis=2).flatten(), 255)
-    ax3.hist(img_raw_RGB.mean(axis=2).flatten(), 255)
-    ax3.axis(xmin=0,xmax=255)
+    ax3.hist(img.mean(axis=2).flatten(), hist_size)
+    ax3.hist(img_raw_RGB.mean(axis=2).flatten(), hist_size)
+    ax3.axis(xmin=0,xmax=hist_size)
     ax3.legend(["processed", "unprocessed"])
 
     # show histogram for 3 channels
@@ -817,6 +823,32 @@ def pipeline(img, demosaic_opt=True): #it takes a RAW IMAGE
     # img = run_histogram_equalization(img)
     return img
 
+def pipeline_raw8(img, demosaic_opt=True): #it takes a RAW IMAGE
+    as_shot_neutral = [0.6301882863, 1, 0.6555861831]
+    width, height = 640, 480
+    cfa_pattern = [0, 1, 1, 2] # explorer board
+
+    # ------ The ISP pipeline -------------------------
+    # black level substraction
+    img = normalize(img, 15, 254, np.uint8)  
+    # white balancing
+    img = simple_white_balance(img, as_shot_neutral, cfa_pattern)
+    # demosaic
+    img  = demosaic(img, cfa_pattern, output_channel_order='RGB', alg_type='VNG')
+    img_demoisaic = img
+    # color transforms
+    img = new_color_correction(img)
+    # gamma
+    img = img ** (1.0 / 1.8)
+    # clip the image
+    img = np.clip(255*img, 0, 255).astype(np.uint8)
+    # hist equalization (optional)
+    #   img = run_histogram_equalization(img)
+    # resize bilinear (optional)
+    kfactor = 1
+    img = cv2.resize(img, (width // kfactor, height // kfactor), interpolation=cv2.INTER_AREA)
+    # ------ The ISP pipeline -------------------------
+    return img
 
 
 def pipeline_nodemosaic(img):
@@ -886,6 +918,54 @@ def gray_world(img):
     img[:,:,2] = beta*img[:,:,2]
     # img[:,:,1] = 
     return img
+
+
+def iterative_wb(img):
+    img = img/255.0
+    
+    R =  img[:,:,0]
+    G =  img[:,:,1]
+    B =  img[:,:,2]
+    
+    # to YUV
+    a,b,c = 0.299,0.587,0.114
+    d,e,f = -0.147,-0.289,0.436
+    g,h,i = 0.615,-0.515,-0.100
+    
+    y = a*R + b*G + c*B
+    u = d*R + e*G + f*B
+    v = g*R + h*G + i*B
+    
+    loc = np.where(y > 0.4) # find high luminance values
+    
+    # compute luminance region
+    yl = y[loc]
+    ul = u[loc]
+    vl = v[loc]
+    
+    # local to RGB
+    R = yl + 1.140*vl
+    G = yl - 0.395*ul - 0.581*vl
+    B = yl + 2.032*ul
+    
+    img[:,:,0] /= R.mean()
+    img[:,:,1] /= G.mean()
+    img[:,:,2] /= B.mean()
+    
+    img = img.clip(0,1)*255.0
+    return img
+
+
+def compute_score(img_ref, img):
+    # if image is color, convert to gray
+    if img_ref.ndim == 3:
+        img_ref = cv2.cvtColor(img_ref, cv2.COLOR_RGB2GRAY)
+    if img.ndim == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    
+    score = ssim(img_ref, img)
+    return score
+    
 
 if __name__ == '__main__':
     pass

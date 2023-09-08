@@ -1,48 +1,48 @@
-# edit here --------------------------------
-set(PROJECT_NAME first_project)
-
-# do not edit ----------------------------------------------------------------
 cmake_minimum_required(VERSION 3.21)
+
+## Set the target 
+set(XCORE_TARGET "XCORE-AI-EXPLORER")
 
 ## Disable in-source build.
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-    message(FATAL_ERROR "In-source build is not allowed! Please specify a build folder.\n\tex:cmake -B build")
+  message(FATAL_ERROR "In-source build is not allowed! Please specify a build folder.\n\tex:cmake -B build")
 endif()
 
 ## Project declaration
-project(PROJECT_NAME)
+project(fwk_camera)
 
 ## Enable languages for project
 enable_language(CXX C ASM)
 
-## Project options
-option(XCORE_VOICE_TESTS "Enable XCORE-VOICE tests"  OFF)
+## Fixes unnecessary recompilation of .xc files in Windows builds.
+string(REPLACE "-MD" "-MMD" CMAKE_DEPFILE_FLAGS_C ${CMAKE_DEPFILE_FLAGS_C})
 
-## Import some helpful macros
-include(xmos_cmake_toolchain/xmos_macros.cmake)
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL XCORE_XS3A)
 
-## Setup a root path
-set(first_project_PATH ${PROJECT_SOURCE_DIR} CACHE STRING "Root folder of sln_voice in this cmake project tree")
-
+set(CONFIG_RAW8 0x2A)
+set(CONFIG_RAW10 0x2B)
+set(CONFIG_MIPI_FORMAT ${CONFIG_RAW8})
 
 ## Add frameworks
-if(IS_DIRECTORY modules)
-    add_subdirectory(modules)
-    message("Adding modules/")
-endif()
+add_subdirectory(modules)
+add_subdirectory(external_deps)
 
 ## Add sensors
 add_subdirectory(sensors)
-message("Adding sensors/")
 
 ## Add cameras
 add_subdirectory(camera)
-message("Adding camera/")
 
-
-
-## Add top level project targets
 if(PROJECT_IS_TOP_LEVEL)
-    include(examples/examples.cmake)
-endif()
+## utils for examples and testing
+add_subdirectory(utils)
 
+## Add tests
+add_subdirectory(tests)
+
+## Add examples
+add_subdirectory(examples)
+
+endif() # top level
+
+endif() # xs3a

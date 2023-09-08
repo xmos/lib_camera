@@ -8,6 +8,7 @@
 **/*.eggs/*
 **/.ipynb_checkpoints/*
 .venv
+.python-version
 
 # Build & debug cruft
 **/.build*/*
@@ -17,7 +18,6 @@
 *.dylib
 *.xe
 *.vcd
-*.s
 *.xi
 *.i
 *.xmt
@@ -41,6 +41,9 @@
 *.swmem
 *.bin
 *.fs
+*.exe
+.editorconfig
+*.csv
 
 # Test cruft
 **/.pytest_cache/*
@@ -77,9 +80,24 @@ tools/ai/ai_tools
 
 # temp folder
 temp
-
 !CMakeLists.txt
+
+# images
+*.png
 
 # dotenv
 .env
-.png
+
+# ninja 
+.ninja_deps
+.ninja_log
+/build.ninja
+*.exe
+
+# Images
+*.bmp
+*.raw
+*.png
+
+#documentation
+!**/images/*.png
