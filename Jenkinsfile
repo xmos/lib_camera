@@ -105,9 +105,17 @@ pipeline {
                         -v ${WORKSPACE}:/build \
                         -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
                         -e PDF=1 \
-                        ghcr.io/xmos/doc_builder:v3.0.0""" 
+                        ghcr.io/xmos/doc_builder:v3.0.0"""
+                
                 archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
-              }
+
+                script {
+                  def settings = readJSON file: 'settings.json'
+                  def doc_version = settings["version"]
+                  def zipFileName = "docs_fwk_camera_v${doc_version}.zip"
+                  zip zipFile: zipFileName, archive: true, dir: "doc/_build"
+                } // script
+              } // steps
             } // Build Docs
           } // stages
           post {
