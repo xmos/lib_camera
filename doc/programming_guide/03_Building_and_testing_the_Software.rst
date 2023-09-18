@@ -4,7 +4,7 @@ Building and running the Software
 .. include:: ../substitutions.rst
 
 This section will provide details on how the software can be build and run. It will go through the full process from
-the requirements to the user seing images taked from xcore on the their screen.
+the requirements to the user seing images taken from xcore on the their screen.
 
 Requirements
 ------------
@@ -26,8 +26,11 @@ Software requirements
 Building the firmware and the examples
 --------------------------------------
 
-``fwk_camera`` is intended to be used as part of an application, therefore depending if it's on its own or not, it will
-be able to build examples. By following the instructions below, the user will be able to build all possible targets.
+``fwk_camera`` is intended to be used as part of an application. If ``fwk_camera`` has been submoduled, the user will
+only be able to build the ``.a`` components of the framework. On the other end, if ``fwk_camera`` is used on it's own,
+the user will be able to build example applications and proceed with this guide.
+
+Follow the instructions below to build all possible targets.
 
 .. tab:: Linux and Mac
 

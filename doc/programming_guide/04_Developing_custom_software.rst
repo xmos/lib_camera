@@ -18,11 +18,11 @@ The sensor has to:
 Software
 ^^^^^^^^
 
-By navigating to ``sensors/api/SensorBase.hpp``, user will find the ``SensorBase`` class which is intended to be derived from.
+By navigating to ``sensors/api/SensorBase.hpp``, the user will find the ``SensorBase`` class which is intended to be derived from.
 It doesn't have anything to do with a particular sensor, it only provides an API to do basic I2C communication with the sensor.
 Inside ``SensorBase`` class users can also find some public virtual methods which will **have to** be implemented in the derived class.
 
-In order to implement a new sensor the user will need to create a directory in ``sensors/src/_your_sensor``, implement a derived class with 
+In order to implement a new sensor the user will need to create a directory in ``sensors/src/_new_sensor``, implement a derived class with 
 ``initialize()``, ``stream_start()``, ``stream_stop()``, ``set_exposure()``, ``configure()`` and ``control()`` methods. When the
 sensor class has been implemented, its header file can be added into ``sensors/src/sensor_control.cpp``. ``sensor_control()`` should be
 calling the new sensor API like this:
@@ -36,4 +36,4 @@ calling the new sensor API like this:
   }
 
 After that's been done, the user will need to put it into the build system by adding their sources and includes to the following cmake
-file ``sensors/CMakeLists.txt``. Then rerunning the prefered build tool (``make`` or ``ninja``) will rerun the cmake and rebuild the project.
+file ``sensors/CMakeLists.txt``. Then rerunning the preferred build tool (``make`` or ``ninja``) will rerun the cmake and rebuild the project.
