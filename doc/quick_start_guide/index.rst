@@ -5,7 +5,7 @@ Quick Start Guide
 
 .. include:: ../substitutions.rst
 
-This page will provide a quick tour through the ``fwk_camera`` repository. You will go through the process
+This page will provide a quick tour through the ``fwk_camera`` repository. It will go through the process
 of building the example application and taking a photo in RAW8 format.
 
 Hardware requirements
@@ -67,7 +67,7 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
 
   python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
 
-6. You should see the camera communicating with the host and the image being saved to a .raw file.
+6. The camera should be communicating with the host and the image being saved to a .raw file.
 
 7. To decode the image use the following command:
 
@@ -75,4 +75,4 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
 
   python python/decode_raw8.py
 
-8. You should see the decoded image displayed on the screen
+8. The decoded image should be displayed on the screen

@@ -1,13 +1,13 @@
 Resource usage
 ==============
 
-Resource usage will be dependant on your application. Here we'll take ``take_picture_downsample`` as an example. It should demonstrate the
+Resource usage will be dependant on the user's application. Here ``take_picture_downsample`` will be taken as an example. It should demonstrate the
 minimum resource usage for taking a picture and streaming it to the host machine.
 
 Core usage
 ----------
 
-You can find the ``take_picture_downsample`` application thread diagram below. For more detals about thread commutication, please refer to
+``take_picture_downsample`` application thread diagram can be found below. For more detals about thread commutication, please refer to
 :ref:`Software Architecture<obj_diagram>` section.
 
 .. figure:: images/3_v0.2.0_thread_diagram.png
@@ -19,6 +19,10 @@ You can find the ``take_picture_downsample`` application thread diagram below. F
 Here you will notice that the ``xscope_fileio`` related resources are dashed. The reason for that is that you are not likely to use ``xscope_fileio``
 in your application. We use it in this example because it's a good testing/debugging tool. So, realistically, for the minimum camera application
 you will need 4 cores on tile 1.
+
+Here the ``xscope_fileio`` related resources are dashed. The reason for that is that the users are not likely to use ``xscope_fileio``
+in their application. It's been used in this example because it's a good testing/debugging tool. So, realistically, for the minimum camera
+application users should be looking at using 4 cores on tile 1.
 
 Memory Usage
 ------------

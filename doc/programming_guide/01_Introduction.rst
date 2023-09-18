@@ -18,8 +18,8 @@ To ensure clarity and consistency throughout this guide, the following conventio
 Features
 ---------
 The XCORE-AI-EXPLORER board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
-This port is connected to the xcore.ai processor, so we can directly processing an image from an external sensor and performing various operations, 
-such as converting a RAW image to an RGB image (applying ISP functions), 
+This port is connected to the xcore.ai processor, so an image can be processed directly from an external sensor and have various operations performed over it,
+such as converting a RAW image to an RGB image (applying ISP functions),
 analyzing the image using AI models with xmos-ai-tools,
 converting a MIPI camera to other interfaces as USB, SPI, etc.
 

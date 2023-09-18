@@ -1,6 +1,11 @@
 fwk_camera change log
 =====================
 
+0.2.1
+-----
+
+  * CHANGED: Small documentation update
+
 0.2.0
 -----
 

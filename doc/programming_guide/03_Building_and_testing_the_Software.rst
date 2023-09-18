@@ -3,8 +3,8 @@ Building and running the Software
 
 .. include:: ../substitutions.rst
 
-This section will provide details on how the software can be build and run. You will go through the full process from
-the requirements to seing images taked from xcore on your screen.
+This section will provide details on how the software can be build and run. It will go through the full process from
+the requirements to the user seing images taken from xcore on the their screen.
 
 Requirements
 ------------
@@ -26,8 +26,11 @@ Software requirements
 Building the firmware and the examples
 --------------------------------------
 
-``fwk_camera`` is intended to be used as part of an application, therefore depending if you have it on its own or not, you will
-be able to build examples. By following the instructions below, you'll be able to build all possible targets.
+``fwk_camera`` is intended to be used as part of an application. If ``fwk_camera`` has been submoduled, the user will
+only be able to build the ``.a`` components of the framework. On the other end, if ``fwk_camera`` is used on it's own,
+the user will be able to build example applications and proceed with this guide.
+
+Follow the instructions below to build all possible targets.
 
 .. tab:: Linux and Mac
 
@@ -49,11 +52,11 @@ Building the host app (xscope_fileio)
 -------------------------------------
 
 All ``fwk_camera`` examples do ``fileio`` over a tool called ``xscope_fileio``. There is a python wrapper script ``python/run_xcore_bin.py``
-which will run the example binary of your choice using ``xscope_fileio``. This script requires some ``xscope_fileio``
-host binaries. To get host tools you will need to follow the steps below:
+which will run the example binary of the user's choice using ``xscope_fileio``. This script requires some ``xscope_fileio``
+host binaries. To get host tools the user will need to follow the steps below:
 
-1. Make sure you have a C compiler  installed. If you are developing on Windows, we recomend using VS tools with a ``cl`` compiler.
-2. Install the xscope_fileio package:
+1. Have a C compiler installed. If developing on Windows, it's recomended to use VS tools with a ``cl`` compiler.
+2. Install the ``xscope_fileio`` package:
 
 .. tab:: Linux and Mac
 
@@ -71,12 +74,10 @@ host binaries. To get host tools you will need to follow the steps below:
     cd utils/xscope_fileio/host
     cmake -G Ninja . && ninja
 
-After you've gone through those instructions once, all you'll need to do is activate your python virtual environment.
-
 Running the examples
 --------------------
 
-1. Make sure you have activated your python environment with installed ``xscope_fileio``.
+1. Make sure the python environment is activated with installed ``xscope_fileio`` in it.
 2. Run the example with the following command:
 
 .. code-block:: console
@@ -85,8 +86,8 @@ Running the examples
   # or
   python python/run_xscope_bin.py # and chose a binary in the dropdown menu
 
-3. Depending on the example you ran, you can get ``.bmp``, ``.raw`` or ``.bin`` files. With ``.bmp`` the image can be looked at straight 
-away, whereas other formats need some more processing. You can use one of the following python scripts to decode and see your image:
+3. Depending on the example ran, user can get ``.bmp``, ``.raw`` or ``.bin`` files. With ``.bmp`` the image can be looked at straight 
+away, whereas other formats need some more processing. Users can use one of the following python scripts to decode and see the image:
 
 .. code-block:: console
   
