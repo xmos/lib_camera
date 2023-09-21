@@ -3,15 +3,14 @@ Building and running the Software
 
 .. include:: ../substitutions.rst
 
-This section will provide details on how the software can be build and run. It will go through the full process from
-the requirements to the user seing images taken from xcore on the their screen.
+This section will provide details on how the software can be built and run. It will go through the full process from the requirements to the user seing images taken from xcore on the their screen.
 
 Requirements
 ------------
 
 Hardware requirements
 ^^^^^^^^^^^^^^^^^^^^^
-- XCORE.AI EVALUATION KIT (XK-EVK-XU316)
+- xcore.ai evaluation kit (XK-EVK-XU316)
 - Camera module
 - Camera ribbon connector
 - 2x Micro USB cable (Power supply and xTag)
@@ -21,7 +20,7 @@ Software requirements
 ^^^^^^^^^^^^^^^^^^^^^
 - XTC tools (15.2.1): `SW_TOOLS`_
 - CMake, Ninja (Windows)
-- Python 3.7 or later
+- Python 3.9 or later
 
 Building the firmware and the examples
 --------------------------------------
@@ -51,7 +50,7 @@ Follow the instructions below to build all possible targets.
 Building the host app (xscope_fileio)
 -------------------------------------
 
-All ``fwk_camera`` examples do ``fileio`` over a tool called ``xscope_fileio``. There is a python wrapper script ``python/run_xcore_bin.py``
+All ``fwk_camera`` examples do file I/O over a tool called ``xscope_fileio``. There is a python wrapper script ``python/run_xcore_bin.py``
 which will run the example binary of the user's choice using ``xscope_fileio``. This script requires some ``xscope_fileio``
 host binaries. To get host tools the user will need to follow the steps below:
 
@@ -86,7 +85,7 @@ Running the examples
   # or
   python python/run_xscope_bin.py # and chose a binary in the dropdown menu
 
-3. Depending on the example ran, user can get ``.bmp``, ``.raw`` or ``.bin`` files. With ``.bmp`` the image can be looked at straight 
+3. Depending on the example the user can get ``.bmp``, ``.raw`` or ``.bin`` files. With ``.bmp`` the image can be looked at straight 
 away, whereas other formats need some more processing. Users can use one of the following python scripts to decode and see the image:
 
 .. code-block:: console

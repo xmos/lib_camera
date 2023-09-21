@@ -9,7 +9,8 @@ Adding a new sensor
 Hardware
 ^^^^^^^^
 
-First the user will need to see if their sensor is compatible with XCORE.AI EVALUATION KIT (XK-EVK-XU316).
+First the user will need to see if their sensor is compatible with xcore.ai evaluation kit (XK-EVK-XU316).
+
 The sensor has to:
 
 - Support MIPI CSI2 protocol
