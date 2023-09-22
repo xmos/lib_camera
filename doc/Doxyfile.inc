@@ -1,6 +1,6 @@
 # This file provides overrides to the Doxyfile configuration
 PROJECT_NAME = FWK_CAMERA
-PROJECT_BRIEF = "Camera interface for Xcore AI"
+PROJECT_BRIEF = "Camera interface for xcore AI"
 PREDEFINED = __DOXYGEN__=1 
 PREDEFINED += DWORD_ALIGNED=
 PREDEFINED += __attribute__((weak))=

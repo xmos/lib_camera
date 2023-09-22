@@ -11,7 +11,7 @@ Conventions and Terminology
 To ensure clarity and consistency throughout this guide, the following conventions and terminology are used:
 
 - MIPI: Mobile Industry Processor Interface. It is a standard interface specification for mobile devices, including cameras. The ``fwk_camera`` architecture utilises MIPI specifications for camera communication.
-- Xcore: XMOS proprietary event-driven processor architecture. It provides high-performance parallel processing capabilities and is used in XMOS devices to handle camera interface and data processing.
+- xcore: XMOS proprietary event-driven processor architecture. It provides high-performance parallel processing capabilities and is used in XMOS devices to handle camera interface and data processing.
 - Channels: In the context of XMOS devices, channels are communication pathways that allow data exchange between different components. Channels play a crucial role in camera control and data transfer within the ``fwk_camera`` architecture.
 - I2C: Inter-Integrated Circuit. It is a widely used serial communication protocol for controlling and configuring devices. Within the ``fwk_camera`` architecture, I2C is utilised for camera control operations, such as adjusting settings and retrieving sensor information.
 
@@ -50,14 +50,13 @@ Each of these elements is described in detail in the following sections.
 Getting Started
 ----------------
 
-To start using the ``fwk_camera``, you can proceed to the Quick Start Guide, go to: 
-
-:ref:`QS_FWKC`.
+A Quick Start Guide is provided with this document. 
+It contains a step-by-step guide on how to get started with the ``fwk_camera`` and run a basic ``image_capture`` example.
 
 Additional Resources
 ---------------------
 
 - MIPI CSI-2 specification:     `MIPI`_
-- XMOS I2C library user guide:  `XMOSI2C`_
-- XMOS Programming Guide:       `XMOSProgrammingGuide`_
-- IMX219 datasheet:             `IMX219`_
+- XMOS I2C library user guide:  `XMOS I2C`_
+- XMOS Programming Guide:       `XMOS Programming Guide`_
+- Sony IMX219 datasheet:        `IMX219`_

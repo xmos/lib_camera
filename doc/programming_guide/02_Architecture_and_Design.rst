@@ -13,8 +13,8 @@ Hardware Architecture
 From a hardware point of view, ``fwk_camera`` is composed of the following modules:
 
 #.  Camera connector : 15-PIN MIPI CSI connector for the camera module. (compatible with Raspberry Pi).
-#.  MIPI Shim : Xmos MIPI hardware to convert MIPI signals to Xcore ports.
-#.  Xcore : Xmos Xcore processor to process the MIPI signals.
+#.  MIPI Shim : XMOS MIPI hardware to convert MIPI signals to xcore ports.
+#.  xcore : XMOS xcore processor to process the MIPI signals.
 #.  xTag Host connector : USB connector to connect to the host.
 
 Software Architecture

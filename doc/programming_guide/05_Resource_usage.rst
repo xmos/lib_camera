@@ -16,18 +16,13 @@ Core usage
 
   Resource usage
 
-Here you will notice that the ``xscope_fileio`` related resources are dashed. The reason for that is that you are not likely to use ``xscope_fileio``
-in your application. We use it in this example because it's a good testing/debugging tool. So, realistically, for the minimum camera application
-you will need 4 cores on tile 1.
+In the provided context, the resources related to ``xscope_fileio`` are represented with dashes. This decision is based on the assumption that ``xscope_fileio`` is unlikely to be utilized within your application. The inclusion of ``xscope_fileio`` in this example is primarily for testing and debugging purposes. Consequently, for the minimum camera application, a requirement of 4 cores on tile 1 is necessary.
 
-Here the ``xscope_fileio`` related resources are dashed. The reason for that is that the users are not likely to use ``xscope_fileio``
-in their application. It's been used in this example because it's a good testing/debugging tool. So, realistically, for the minimum camera
-application users should be looking at using 4 cores on tile 1.
 
 Memory Usage
 ------------
 
-More accurate memory report can be found below.
+A more accurate memory report can be found below.
 
 .. code-block:: console
 

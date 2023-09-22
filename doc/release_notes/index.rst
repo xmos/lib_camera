@@ -7,7 +7,7 @@ Version 0.2.0
 Description
 ***********
 
-In this release we've added a support for a larger resolution and reimplemented sensor control to be more flexible.
+This release adds a support for a larger resolution and re-implements sensor control to be more flexible.
 
 New Features
 ************
@@ -19,7 +19,7 @@ Limitations
 ***********
 
 - RAW10 downsample: RAW10 downsample is not supported.
-- 1280x960 in RAW: 1280x960 in RAW8 ar RAW10 can't be fitted in RAM.
+- 1280x960 in RAW: 1280x960 in RAW8 or RAW10 can't be fitted in RAM.
 - Still heavily relying on the pre-processor values.
 
 Known Issues
@@ -32,7 +32,7 @@ Known Issues
     It will choose to privilege the majority of the image, leaving some areas underexposed or overexposed.
 
   - AWB:
-    Due to the automatic white balancing algorithm, the ISP will try to compensate the image's illuminance. If the environment is a pure colour pure red or pure blue, it can appear more white than expected.
+    Due to the automatic white balancing algorithm, the ISP will try to compensate the image's illuminance. If the environment is a pure colour such as a pure red or pure blue, it can appear more white than expected.
     In this case, AWB can be turned off, or changed manually to be adequate to a specific scene by adjusting the static AWB values.
 
 Version 0.1.0
@@ -66,5 +66,5 @@ Known Issues
     It will choose to privilege the majority of the image, leaving some areas underexposed or overexposed.
 
   - AWB:
-    Due to the automatic white balancing algorithm, the ISP will try to compensate the image's illuminance. If the environment is a pure colour pure red or pure blue, it can appear more white than expected.
+    Due to the automatic white balancing algorithm, the ISP will try to compensate the image's illuminance. If the environment is a pure colour such as a pure red or pure blue, it can appear more white than expected.
     In this case, AWB can be turned off, or changed manually to be adequate to a specific scene by adjusting the static AWB values.
