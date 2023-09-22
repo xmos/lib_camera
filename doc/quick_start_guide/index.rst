@@ -68,7 +68,7 @@ Then, this image can be decoded using the python script ``python decode_raw8.py`
   python python/run_xscope_bin.py \
     build/examples/take_picture_raw/example_take_picture_raw.xe
 
-6. The camera should be communicating with the host and the image being saved to a .raw file.
+6. The camera should communicate with the host and save the image to a .raw file
 
 7. To decode the image use the following command:
 

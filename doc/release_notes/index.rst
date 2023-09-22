@@ -32,7 +32,7 @@ Known Issues
     It will choose to privilege the majority of the image, leaving some areas underexposed or overexposed.
 
   - AWB:
-    Due to the automatic white balancing algorithm, the ISP will try to compensate the image's illuminance. If the environment is a pure colour pure red or pure blue, it can appear more white than expected.
+    Due to the automatic white balancing algorithm, the ISP will try to compensate the image's illuminance. If the environment is a pure colour such as a pure red or pure blue, it can appear more white than expected.
     In this case, AWB can be turned off, or changed manually to be adequate to a specific scene by adjusting the static AWB values.
 
 Version 0.1.0
