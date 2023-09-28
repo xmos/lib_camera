@@ -14,6 +14,7 @@ Pillow==9.5.0
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-dotenv==1.0.0
+PyYAML==6.0
 PyWavelets==1.4.1
 scikit-image==0.20.0
 scipy
