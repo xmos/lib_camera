@@ -109,7 +109,7 @@ pipeline {
                 archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
 
                 script {
-                  def doc_version = sh(script: "cat settings.yml | awk '/version:/ {print \$2}'", returnStdout: true)
+                  def doc_version = sh(script: "cat settings.yml | awk '/version:/ {print \$2}'", returnStdout: true).trim()
                   def zipFileName = "docs_fwk_camera_v${doc_version}.zip"
                   zip zipFile: zipFileName, archive: true, dir: "doc/_build"
                 } // script
