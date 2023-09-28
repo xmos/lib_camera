@@ -95,18 +95,17 @@ pipeline {
           agent {
             label 'docker'
           }
+          enviroment { XMOSDOC_VERSION = "pr-67" }
           stages {        
             stage ('Build Docs') {
               steps {
                 runningOn(env.NODE_NAME)
                 checkout scm
-                sh """docker run --user "\$(id -u):\$(id -g)" \
+                sh "docker pull ghcr.io/xmos/doc_builder:$XMOSDOC_VERSION"
+                sh """docker run -u "\$(id -u):\$(id -g)" \
                         --rm \
                         -v ${WORKSPACE}:/build \
-                        -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
-                        -e PDF=1 \
-                        ghcr.io/xmos/doc_builder:v3.0.0"""
-                
+                        ghcr.io/xmos/doc_builder:$XMOSDOC_VERSION -v"""
                 archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
 
                 script {
