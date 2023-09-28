@@ -95,7 +95,7 @@ pipeline {
           agent {
             label 'docker'
           }
-          enviroment { XMOSDOC_VERSION = "pr-67" }
+          environment { XMOSDOC_VERSION = "pr-67" }
           stages {        
             stage ('Build Docs') {
               steps {
