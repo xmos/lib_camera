@@ -3,3 +3,7 @@ tests
 modules
 sensors
 build
+
+**README*
+**LICENSE*
+**CHANGELOG*

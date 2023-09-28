@@ -1,8 +1,6 @@
 Introduction
 =============
 
-.. include:: ../substitutions.rst
-
 The purpose of this programming guide is to provide developers with a comprehensive understanding 
 of the ``fwk_camera`` architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
 

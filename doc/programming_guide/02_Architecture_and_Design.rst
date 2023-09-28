@@ -1,8 +1,6 @@
 Architecture and Design
 =======================
 
-.. include:: ../substitutions.rst
-
 In this section the main components of ``fwk_camera`` and their interactions will be described.
 Some design decisions and the reasoning behind them will also be explained.
 The main components of ``fwk_camera`` are the following:

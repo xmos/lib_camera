@@ -1,8 +1,6 @@
 Building and running the Software
 =================================
 
-.. include:: ../substitutions.rst
-
 This section will provide details on how the software can be built and run. It will go through the full process from the requirements to the user seeing images taken from xcore on the their screen.
 
 Requirements
