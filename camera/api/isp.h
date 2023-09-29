@@ -25,6 +25,12 @@
 extern "C" {
 #endif
 
+/**
+ * Thread that computes the ISP pipeline for each pixel in the image.
+ * The statistics are stored in a struct which is used to perform ISP corrections.
+ * @param c_img_in - Streaming channel end of the image.
+ * @param c_control - channel end for camera control.
+ */
 void isp_pipeline(
     streaming_chanend_t c_img_in,
     chanend c_control);

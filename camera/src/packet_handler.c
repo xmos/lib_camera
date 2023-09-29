@@ -14,12 +14,15 @@
 #include "camera_utils.h"
 #include "sensor.h"
 
+#define BIT_FLIP(x) (x ^= 1) // assume x < 1
+
 // Filter stride
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
 
-// State needed for the vertical filter
+// Filter global state
 static
 vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
+hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
 // Contains the local state info for the packet handler thread.
 static struct {
@@ -34,7 +37,6 @@ static struct {
   .out_line_number = 0,
 };
 
-hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
 static 
 void handle_frame_start()
@@ -235,7 +237,7 @@ void handle_packet(
 
     case MIPI_DT_FRAME_END:   
       handle_frame_end(output_buff[out_dex], c_stats);
-      out_dex = 1 - out_dex;
+      BIT_FLIP(out_dex); 
       break;
 
     case MIPI_EXPECTED_FORMAT:     
@@ -243,8 +245,16 @@ void handle_packet(
 
       if(handle_pixel_data(pkt, output_buff[out_dex])){
         on_new_output_row(output_buff[out_dex], c_stats);
-        out_dex = 1 - out_dex;
+        BIT_FLIP(out_dex); 
       }
+      
+      /*
+      TODO this 2 can be combined
+      but depends on supressing stats 
+      try first without deleting the
+      unsigned result = handle_pixel_data(pkt, output_buff[out_dex]);
+      if (result) BIT_FLIP(out_dex); ...
+      */
 
       ph_state.in_line_number++;
       break;
@@ -287,7 +297,7 @@ void mipi_packet_handler(
         // send stop to MipiReciever
         s_chan_out_word(c_pkt, (unsigned) NULL);
         // send stop to statistics
-        s_chan_out_word(c_stats, (unsigned) 1);
+        s_chan_out_word(c_stats, (unsigned) 1); //TODO should not send anything to the stats
         // end thread
         puts("\nMipiPacketHandler: stop\n");
         return;
@@ -296,10 +306,11 @@ void mipi_packet_handler(
         // send info to MipiReciever
         s_chan_out_word(c_pkt, (unsigned) &packet_buffer[pkt_idx]);
     }
-    // Process the packet
-    //const mipi_header_t header = pkt->header;
-    //const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
+    // Get information regarding the packet
+    // const mipi_header_t header = pkt->header;
+    // const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
+    // Process the packet 
     // unsigned time_start = measure_time();
     handle_packet(pkt, c_stats);
     // unsigned time_proc = measure_time() - time_start;
