@@ -256,11 +256,7 @@ void handle_packet(
   }
 }
 
-/**
- * Top level of the packet handling thread. Receives MIPI packets from the
- * packet receiver and passes them to `handle_packet()` for parsing and
- * processing.
- */
+
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
