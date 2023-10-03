@@ -14,7 +14,7 @@
 #include "camera_utils.h"
 #include "sensor.h"
 
-#define BIT_FLIP(x) (x ^= 1) // assume x < 1
+#define BIT_FLIP(x) (x ^= 1) // assuming x <= 1
 
 // Filter stride
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
