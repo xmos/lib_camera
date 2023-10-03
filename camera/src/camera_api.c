@@ -121,7 +121,7 @@ unsigned camera_capture_image_raw(
   for (unsigned i=1; i<H_RAW; i++) {
     row_index = camera_capture_row(&image_buff[i][0]);
     if (row_index != i) {
-      return 1; // TODO handle errors better
+      return 1;
     }
   }
 
