@@ -42,8 +42,8 @@ Linux, Mac
 .. code-block:: console
 
   cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  cd build/
-  make
+  make -C build
+
 
 Windows
 ~~~~~~~
@@ -51,5 +51,4 @@ Windows
 .. code-block:: console
 
   cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  cd build
-  ninja
+  ninja -C build

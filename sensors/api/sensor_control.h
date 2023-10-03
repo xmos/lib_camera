@@ -11,6 +11,14 @@
 
 #include "sensor.h"
 
+typedef enum {
+  SENSOR_INIT = 0,
+  SENSOR_CONFIG,
+  SENSOR_STREAM_START,
+  SENSOR_STREAM_STOP,
+  SENSOR_SET_EXPOSURE
+} sensor_control_t;
+
 #define I2C_DEV_ADDR 0x10
 #define I2C_DEV_SPEED 400
 #define PRINT_I2C_REG 0

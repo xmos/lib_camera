@@ -26,8 +26,12 @@ extern
 isp_params_t isp_params;
 
 /**
- * Thread entry point for packet handling when decimation and demosaicing are
- * desired.
+ * @brief Handles a MIPI packet. Receives MIPI packets from the
+ * packet receiver and passes them to `handle_packet()` for parsing and
+ * processing.
+ * @param c_pkt   Streaming channel to receive MIPI packets from. 
+ * @param c_ctrl  Streaming channel to send control messages to.
+ * @param c_out_row Streaming channel to send output rows to for the statistics. 
  */
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
