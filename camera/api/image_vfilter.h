@@ -134,6 +134,8 @@ void pixel_vfilter_macc(
     const unsigned pix_count);
 
 /**
+ * Initialize a vector of vertical filter accumulators.
+ * 
  * Call this once at the start of each frame. The accumulator next_tap values
  * are set somewhat differently than image_vfilter_reset(), because the behavior
  * at the start of the image is a little different.
@@ -150,8 +152,6 @@ void pixel_vfilter_macc(
  *       BUT THE IMAGE WIDTH MUST THEN BE THE WIDTH IN _BYTES_. AND IT MUST
  *       STILL BE A MULTIPLE OF 16.
  * 
- * @brief Initialize a vector of vertical filter accumulators.
- *
  * @param accs The vector of accumulators to initialize.
  */
 void image_vfilter_frame_init(
