@@ -104,6 +104,7 @@ pipeline {
                         --rm \
                         -v ${WORKSPACE}:/build \
                         -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
+                        -e DOXYGEN_INCLUDE=/build/doc/Doxyfile.inc \
                         -e PDF=1 \
                         ghcr.io/xmos/doc_builder:v3.0.0"""
                 
