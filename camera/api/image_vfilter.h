@@ -134,7 +134,7 @@ void pixel_vfilter_macc(
     const unsigned pix_count);
 
 /**
- * Initialize a vector of vertical filter accumulators.
+ * @brief Initialize a vector of vertical filter accumulators.
  * 
  * Call this once at the start of each frame. The accumulator next_tap values
  * are set somewhat differently than image_vfilter_reset(), because the behavior
@@ -146,11 +146,11 @@ void pixel_vfilter_macc(
  * 
  * `image_width_lores` must be a multiple of 16 (atm)
  * 
- * NOTE: THE VFILTER FUNCTIONS ARE CHANNEL AGNOSTIC, SO IF THE IMAGE IS
- *       SEPARATED INTO DIFFERENT COLOR PLANES, THIS WILL NEED TO BE CALLED ONCE
- *       FOR EACH COLOR PLANE. IF THEY'RE INTERLEAVED, IT CAN BE CALLED ONCE,
- *       BUT THE IMAGE WIDTH MUST THEN BE THE WIDTH IN _BYTES_. AND IT MUST
- *       STILL BE A MULTIPLE OF 16.
+ * @note vfilter functions are channel agnostic, so if the image is
+ * separated into different color planes, this will need to be called once
+ * for each color plane. If they're interleaved, it can be called once,
+ * but the image width must then be the width in _bytes_. And it must
+ * still be a multiple of 16.
  * 
  * @param accs The vector of accumulators to initialize.
  */

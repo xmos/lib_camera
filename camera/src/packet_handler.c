@@ -2,6 +2,7 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include <xcore/assert.h>
 #include <xcore/channel_streaming.h>
@@ -13,8 +14,6 @@
 #include "camera_api.h"
 #include "camera_utils.h"
 #include "sensor.h"
-
-#define BIT_FLIP(x) (x ^= 1) // assuming x <= 1
 
 // Filter stride
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
@@ -206,7 +205,7 @@ void handle_packet(
    */
   __attribute__((aligned(8)))
   static int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
-  static unsigned out_dex = 0;
+  static bool out_dex = 0;
 
 
   // definitions
@@ -237,7 +236,7 @@ void handle_packet(
 
     case MIPI_DT_FRAME_END:   
       handle_frame_end(output_buff[out_dex], c_stats);
-      BIT_FLIP(out_dex); 
+      out_dex ^= 1;
       break;
 
     case MIPI_EXPECTED_FORMAT:     
@@ -245,7 +244,7 @@ void handle_packet(
 
       if(handle_pixel_data(pkt, output_buff[out_dex])){
         on_new_output_row(output_buff[out_dex], c_stats);
-        BIT_FLIP(out_dex); 
+        out_dex ^= 1;
       }
       
       /*
@@ -253,7 +252,7 @@ void handle_packet(
       but depends on supressing stats 
       try first without deleting the
       unsigned result = handle_pixel_data(pkt, output_buff[out_dex]);
-      if (result) BIT_FLIP(out_dex); ...
+      if (result) out_dex ^= 1;...
       */
 
       ph_state.in_line_number++;

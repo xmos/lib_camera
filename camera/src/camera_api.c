@@ -161,7 +161,6 @@ unsigned camera_capture_image(
   int8_t image_buff[H][W][CH])
 {
   unsigned row_index;
-
   int8_t pixel_data[CH][W];
 
   // Loop, capturing rows until we get one with row_index==0
@@ -170,12 +169,11 @@ unsigned camera_capture_image(
   } while (row_index != 0);
   
   // Now capture the rest of the rows
-  for (unsigned row = 1; row < H; row++) {
-    row_index = camera_capture_row_decimated(pixel_data);
+  for (unsigned row = 0; row < H; row++) {
 
     // Ensure captured line is correct
-    xassert(row_index == row && "row_index != row");
-    
+    if(row_index != row){return 1;}
+
     // Loop over all pixels in the row
     for (int col = 0; col < W; col++){
       for (int chan = 0; chan < CH; chan++){
@@ -186,6 +184,9 @@ unsigned camera_capture_image(
         #endif
       }
     }
+
+    // capturing the next row
+    row_index = camera_capture_row_decimated(pixel_data);
   }
 
   return 0;
