@@ -168,12 +168,7 @@ unsigned camera_capture_image(
   do {
     row_index = camera_capture_row_decimated(pixel_data);
   } while (row_index != 0);
-
-  // TODO is this really needed?
-  for (int i = 0; i < W; i++)
-    for (int c = 0; c < CH; c++)
-      image_buff[0][i][c] = pixel_data[c][i];
-
+  
   // Now capture the rest of the rows
   for (unsigned row = 1; row < H; row++) {
     row_index = camera_capture_row_decimated(pixel_data);
