@@ -7,6 +7,7 @@
 #include "isp.h"
 #include "print.h"
 
+
 // Number of samples taken each row
 #define HISTOGRAM_SAMPLE_PER_ROW       ((APP_IMAGE_WIDTH_PIXELS  + APP_HISTOGRAM_SAMPLE_STEP - 1)  / (APP_HISTOGRAM_SAMPLE_STEP))
 // Number of samples taken in an image
@@ -28,6 +29,25 @@ void stats_update_histogram(
     int val = pix[k];
     val += 128; // convert from int8_t to uint8_t
     val >>= HIST_QUANT_BITS;
+    hist->bins[val]++;
+  }
+}
+
+
+/**
+* Update histogram based on pixel values. 
+* 
+* @param hist - * pointer to the histogram to update. Must be large enough to accommodate the number of pixels in the image.
+* @param pix - array of pixel values to update the histogram with
+*/
+void stats_update_histogram_new(
+    channel_histogram_t* hist,
+    const int8_t* pix,
+    const size_t pix_size)
+{
+  for(uint32_t k = 0; k < pix_size; k ++){
+    int8_t val = pix[k] + 128;
+    val >>= HIST_QUANT_BITS; // we quantize the bins
     hist->bins[val]++;
   }
 }

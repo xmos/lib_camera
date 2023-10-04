@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 // xcore
+
 #include <xcore/select.h>
 #include <xcore/channel.h>
 #include <xcore/assert.h>
@@ -17,6 +18,12 @@
 #define CHAN_RAW 0
 #define CHAN_DEC 1
 #define CHAN_STOP 2
+
+// Optional //TODO: check when dev is finish 
+#include <xs1.h> // for parallel jobs
+#include <xcore/hwtimer.h>
+#define TO_MS 1E-5f   
+#include <xcore/parallel.h>
 
 // In order to interface the handler and api
 channel_t c_user_api[3];
@@ -66,6 +73,43 @@ void camera_new_row(
     }
 }
 
+DECLARE_JOB(say_hello, (channel_histogram_t*,const int8_t*, size_t));
+void say_hello(channel_histogram_t* hist,const int8_t* pix, size_t pix_size)
+{
+  for(uint32_t k = 0; k < pix_size; k ++){
+      int8_t val = pix[k] + 128;
+      val >>= HIST_QUANT_BITS; // we quantize the bins
+      hist->bins[val]++;
+  }
+}
+
+static
+void stats_isp(
+  const int8_t pixel_data[CH][W],
+  const unsigned row_index)
+{
+  //uint32_t start = get_reference_time();
+  unsigned start = measure_time();
+  // APPLY STATS
+  static global_stats_t global_stats = {{0}};
+  if (row_index == 0){
+    memset(&global_stats, 0, sizeof(global_stats));
+  }
+
+  channel_histogram_t histogram_red;
+  channel_histogram_t histogram_green;
+  //channel_histogram_t histogram_blue;
+
+  PAR_JOBS(
+    PJOB(say_hello, (&histogram_red, &pixel_data[0][0], W)),
+    PJOB(say_hello, (&histogram_green, &pixel_data[1][0], W)));
+  
+
+  // Time measure
+  unsigned end = measure_time();
+  printf(">%d\n", end - start);
+}
+
 void camera_new_row_decimated(
     const int8_t pixel_data[CH][W],
     const unsigned row_index)
@@ -87,6 +131,13 @@ void camera_new_row_decimated(
         // it takes row index and the row
         // if row  == 0 it resets
         // static global_stats_t variable
+        stats_isp(pixel_data, row_index);
+        
+        
+
+        // APPLY STATS
+
+        // APPLY ISP
         break;
     }
     
@@ -118,10 +169,10 @@ unsigned camera_capture_image_raw(
   } while (row_index != 0);
 
   // Now capture the rest of the rows
-  for (unsigned i=1; i<H_RAW; i++) {
+  for (unsigned i = 1; i < H_RAW; i++) {
     row_index = camera_capture_row(&image_buff[i][0]);
     if (row_index != i) {
-      return 1;
+        return 1;
     }
   }
 
@@ -147,7 +198,7 @@ unsigned camera_capture_image_transpose(
   for (unsigned row = 1; row < H; row++) {
     row_index = camera_capture_row_decimated(pixel_data);
 
-    if (row_index != row)      return 1; // TODO handle errors better
+    if (row_index != row){return 1;}
 
     for(int c = 0; c < CH; c++)
       memcpy(&image_buff[c][row][0], &pixel_data[c][0], W);
@@ -157,33 +208,43 @@ unsigned camera_capture_image_transpose(
   return 0;
 }
 
+
+static
+void pixelcpy(
+  int8_t *image_buff, 
+  int8_t pixel_out)
+{
+  #if (APPLY_GAMMA == 1)
+    *image_buff = gamma_int8[pixel_out + 127];
+  #else
+    *image_buff = pixel_out;
+  #endif
+}
+
 unsigned camera_capture_image(
   int8_t image_buff[H][W][CH])
 {
-  unsigned row_index;
+  unsigned row_index = 1;
   int8_t pixel_data[CH][W];
 
   // Loop, capturing rows until we get one with row_index==0
-  do {
+  while (row_index != 0){
     row_index = camera_capture_row_decimated(pixel_data);
-  } while (row_index != 0);
+  }
   
-  // Now capture the rest of the rows
-  for (unsigned row = 0; row < H; row++) {
-
-    // Ensure captured line is correct
-    if(row_index != row){return 1;}
+  // Now row_index = 0, capture the rest of the rows
+  for (unsigned row = 0; row < H; row++){
+    if(row_index != row){return 1;} // Ensure captured line is correct
 
     // Loop over all pixels in the row
-    for (int col = 0; col < W; col++){
-      for (int chan = 0; chan < CH; chan++){
-        #if (APPLY_GAMMA == 1)
-          image_buff[row][col][chan] = gamma_int8[pixel_data[chan][col] + 127];
-        #else
-          image_buff[row][col][chan] = pixel_data[chan][col];
-        #endif
+    uint32_t start = get_reference_time();
+    for (uint8_t chan = 0; chan < CH; chan++){
+      for (uint32_t col = 0; col < W; col++){
+        pixelcpy(&image_buff[row][col][chan], pixel_data[chan][col]);
       }
     }
+    uint32_t end = get_reference_time();
+    printf("Elapsed time = %0.3f (ms)\n", (end - start)*TO_MS);
 
     // capturing the next row
     row_index = camera_capture_row_decimated(pixel_data);

@@ -37,7 +37,6 @@ void main_tile0(chanend_t c_control){
 // Camera image processing channels
 void main_tile1(chanend_t c_control) 
 {
-  streaming chan c_stat_thread;
   streaming chan c_pkt;
   streaming chan c_ctrl;
 
@@ -50,8 +49,8 @@ void main_tile1(chanend_t c_control)
   
   par{
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-    mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
-    isp_pipeline(c_stat_thread, c_control);
+    mipi_packet_handler(c_pkt, c_ctrl);
+    isp_pipeline(NULL, c_control);
     user_app();
   }
 }

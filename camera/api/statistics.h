@@ -54,6 +54,7 @@ typedef channel_stats_t global_stats_t[APP_IMAGE_CHANNEL_COUNT];
  * @param pix row of pixels
  */
 void stats_update_histogram(channel_histogram_t *hist, const int8_t pix[]);
+void stats_update_histogram_new(channel_histogram_t* hist, const int8_t* pix, size_t pix_size);
 
 /**
 * Compute simple statistics for a set of data. 
@@ -66,7 +67,7 @@ void stats_simple(channel_stats_t *stats);
  * 
  * @param stats 
  */
-void stats_skewness(channel_stats_t *stats);
+void stats_skewness(channel_stats_t* stats);
 
 /**
  * Find the value for which (fraction) portion of pixels fall below that value. 

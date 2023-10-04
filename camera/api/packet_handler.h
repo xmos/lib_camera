@@ -31,10 +31,8 @@ isp_params_t isp_params;
  * processing.
  * @param c_pkt   Streaming channel to receive MIPI packets from. 
  * @param c_ctrl  Streaming channel to send control messages to.
- * @param c_out_row Streaming channel to send output rows to for the statistics. 
  */
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
-    streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_out_row);
+    streaming_chanend_t c_ctrl);
     
