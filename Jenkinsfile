@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.25.0')
+@Library('xmos_jenkins_shared_library@v0.27.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -18,6 +18,8 @@ pipeline {
   } // parameters
   options {
     skipDefaultCheckout()
+    timestamps()
+    buildDiscarder(xmosDiscardBuildSettings(onlyArtifacts=false))
   } // options
 
   stages {
@@ -51,7 +53,7 @@ pipeline {
                 sh "git clone git@github.com:xmos/infr_scripts_py"
                 // can't use createVenv on the top level yet
                 dir('fwk_camera') {
-                  createVenv()
+                  createVenv('requirements.txt')
                   withVenv {
                     sh "pip install -e ../infr_scripts_py"
                     sh "pip install -e ../infr_apps"
