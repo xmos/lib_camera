@@ -5,51 +5,34 @@
 #include <stdbool.h>
 
 #include <xcore/assert.h>
-#include <xcore/channel_streaming.h>
+#include <xcore/channel.h>
 #include <xcore/select.h>
 
 #include "packet_handler.h"
-#include "image_vfilter.h"
-#include "image_hfilter.h"
+
+#include "isp_pipeline.h"
 #include "camera_api.h"
 #include "camera_utils.h"
 #include "sensor.h"
 
-// Filter stride
-#define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
-
-// Filter global state
-static
-vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
-hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
-
 // Contains the local state info for the packet handler thread.
-static struct {
-  unsigned wait_for_frame_start;
-  unsigned frame_number;
-  unsigned in_line_number;
-  unsigned out_line_number;
-} ph_state = {
-  .wait_for_frame_start = 1, 
-  .frame_number = 0,
-  .in_line_number = 0,
-  .out_line_number = 0,
+static frame_state ph_state = {
+    1,  // wait_for_frame_start
+    0,  // frame_number
+    0,  // in_line_number
+    0   // out_line_number
 };
 
-
 static 
-void handle_frame_start()
+void handle_frame_start(chanend c_isp)
 {
-  // New frame is starting, reset the vertical filter accumulator states.
-  for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++){
-    // printf("isp params = %f\n", isp_params.channel_gain[c]);
-    pixel_hfilter_update_scale(&hfilter_state[c], 
-                               isp_params.channel_gain[c], 
-                               (c == 0)? 0 : 1);
-
-    image_vfilter_frame_init(&vfilter_accs[c][0]);
+  // send to the ISP to reset the filters
+  unsigned resp = isp_send_cmd(c_isp, FILTER_UPDATE);
+  if (resp != RESP_OK){
+    printf("Error in ISP\n");
   }
 }
+
 
 static
 void handle_unknown_packet(
@@ -57,22 +40,27 @@ void handle_unknown_packet(
 {
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-  // uknown packets could be the following:
-  // 1 - sensor specific packets (we let continue the app, uncomment print here for debug)
-  // printf("Unknown packet type: %d\n", data_type);
-  // 2 - invalid packets 
-  xassert(data_type < 0x3F && "Packet non valid");
+  xassert(data_type < 0x3F && "Packet non valid"); // note [1]
 }
-
 
 static
 unsigned handle_pixel_data(
     const mipi_packet_t* pkt,
-    int8_t output_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS])
+    int8_t output_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
+    chanend c_isp)
 {
 
   // First, service any raw requests.
   camera_new_row((int8_t*) &pkt->payload[0], ph_state.in_line_number);
+
+  
+
+  //Send row info
+  isp_send_cmd(c_isp, PROCESS_ROW);
+  row_info_t row_info;
+  row_info.row_ptr = (int8_t*) &pkt->payload[0];
+  row_info.state_ptr = &ph_state;
+  isp_send_row_info(c_isp, &row_info);
 
   // Bayer pattern is RGGB; even index rows have RG data, 
   // odd index rows have GB data.
@@ -138,7 +126,7 @@ unsigned handle_pixel_data(
 }
 
 
-static
+static //TODO this should be ISP
 void handle_frame_end(
     int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS])
 {
@@ -174,7 +162,8 @@ void handle_no_expected_lines()
  */
 static
 void handle_packet(
-    const mipi_packet_t* pkt)
+    const mipi_packet_t* pkt,
+    chanend c_isp)
 {
   /*
    * These buffers store rows of the fully decimated image. They are passed
@@ -212,7 +201,7 @@ void handle_packet(
       ph_state.out_line_number = 0;
       ph_state.frame_number++;
 
-      handle_frame_start();   
+      handle_frame_start(c_isp);   
       break;
 
     case MIPI_DT_FRAME_END:   
@@ -223,7 +212,7 @@ void handle_packet(
     case MIPI_EXPECTED_FORMAT:     
       handle_no_expected_lines();
 
-      unsigned new_row = handle_pixel_data(pkt, output_buff[out_dex]);
+      unsigned new_row = handle_pixel_data(pkt, output_buff[out_dex], c_isp);
       if(new_row){
         out_dex ^= 1;
       }
@@ -241,7 +230,8 @@ void handle_packet(
 
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
-    streaming_chanend_t c_ctrl)
+    streaming_chanend_t c_ctrl,
+    chanend c_isp)
 {
   /*
    * These buffers will be used to hold received MIPI packets while they're
@@ -280,7 +270,16 @@ void mipi_packet_handler(
 
     // Process the packet 
     // unsigned time_start = measure_time();
-    handle_packet(pkt);
+    handle_packet(pkt, c_isp);
     // unsigned time_proc = measure_time() - time_start;
   }
 }
+
+/* Notes
+[1]
+uknown packets could be the following:
+a - sensor specific packets (we let continue the app, uncomment print here for debug)
+printf("Unknown packet type: %d\n", data_type);
+b - invalid packets 
+
+*/

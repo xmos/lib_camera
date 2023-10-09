@@ -29,7 +29,7 @@ target_compile_options(${LIB_NAME}
   PRIVATE
     -Os
     -Wall
-    -Werror
+    #-Werror
     -g
     -fxscope
     -mcmodel=large

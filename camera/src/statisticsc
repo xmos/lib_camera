@@ -33,6 +33,17 @@ void stats_update_histogram(
   }
 }
 
+void compute_ch_hist(channel_histogram_t* hist,const int8_t* pix, const uint32_t pixel_size)
+{
+  int16_t val = 0;
+  for(uint32_t k = 0; k < pixel_size; k ++){
+    val = pix[k];
+    val += 128; // convert from int8_t to uint8_t
+    val >>= HIST_QUANT_BITS;
+    hist->bins[val]++;
+  }
+}
+
 
 /**
 * Update histogram based on pixel values. 
@@ -52,7 +63,7 @@ void stats_update_histogram_new(
   }
 }
 
-void stats_skewness(channel_stats_t *stats)
+void stats_skewness(channel_histogram_t* histogram, channel_stats_t* stats, const float inv_pix_size)
 {
   const float zk_values[] = {
     -1.000000, -0.907753, -0.821362, -0.740633, -0.665375, -0.595396, 
@@ -69,22 +80,22 @@ void stats_skewness(channel_stats_t *stats)
 
   float skew = 0.0;
   for(int k = 0; k < HISTOGRAM_BIN_COUNT; k++){
-    skew += zk_values[k] * stats->histogram.bins[k];
+    skew += zk_values[k] * histogram->bins[k];
   }
 
   // Normnalization [3]
-  stats -> skewness = skew * histogram_norm_factor;
+  stats -> skewness = skew * inv_pix_size;
 }
 
-void stats_simple(channel_stats_t *stats)
+void stats_ssimple(channel_histogram_t* histogram, channel_stats_t* stats, const float inv_pix_size)
 {
   // Calculate the histogram
   uint8_t temp_min = 0;
   uint8_t temp_max = 0;
-  float temp_mean = 0;
+  float temp_mean  = 0;
 
   for(int k = 0; k < HISTOGRAM_BIN_COUNT; k++){
-    uint32_t bin_count = stats->histogram.bins[k];
+    uint32_t bin_count = histogram->bins[k];
     // mean
     temp_mean += bin_count * k;
     // max and min
@@ -96,14 +107,15 @@ void stats_simple(channel_stats_t *stats)
     }
   }
   // max and min count
-  stats->max_count = stats->histogram.bins[temp_max];
-  stats->min_count = stats->histogram.bins[temp_min];
+  stats->max_count = histogram->bins[temp_max];
+  stats->min_count = histogram->bins[temp_min];
 
   // biased downwards due to truncation
   stats->max = (temp_max << HIST_QUANT_BITS);
   stats->min = (temp_min << HIST_QUANT_BITS);
-  stats->mean = (temp_mean) *(1 << HIST_QUANT_BITS) * histogram_norm_factor;
+  stats->mean = (temp_mean) * inv_pix_size;
 }
+
 
 void stats_print(channel_stats_t *stats, unsigned channel){
   const char* formattedString = "\nch:%d,Mi:%d,Ma:%d,Mean:%f,Sk:%f,pct:%d,mi_c:%lu,ma_c:%lu,pc:%lu\n";

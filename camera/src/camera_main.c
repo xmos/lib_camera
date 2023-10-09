@@ -12,7 +12,6 @@
 #include "camera_main.h"
 
 #include "mipi.h"
-#include "isp.h"
 #include "packet_handler.h"
 
 

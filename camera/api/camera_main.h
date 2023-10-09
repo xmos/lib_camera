@@ -19,10 +19,8 @@
 #include "image_hfilter.h"
 #include "image_vfilter.h"
 #include "packet_handler.h"
-#include "statistics.h"
 #include "camera_api.h"
 #include "camera_utils.h"
-#include "isp.h"
 
 // MIPI Shim configuration register layout (MIPI_SHIM_CFG0) 
 #define MIPI_SHIM_BIAS_ENABLE       1       //  Offset output pixels [1]

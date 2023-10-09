@@ -1,0 +1,91 @@
+
+// Copyright 2023 XMOS LIMITED.
+// This Software is subject to the terms of the XMOS Public Licence: Version 1.
+#pragma once
+
+#include <stdint.h>
+#include <string.h> // memset
+#include <stdio.h>  // null 
+#include <stdlib.h> // free, alloc
+#include <stdint.h>
+
+#include <xccompat.h>
+
+#include "sensor.h"
+#include "image_hfilter.h"
+
+#include "camera_utils.h" // for time measure
+
+// ISP settings
+#define AE_MARGIN 0.1 // default marging for the auto exposure error
+#define AE_INITIAL_EXPOSURE 35 // initial exposure value
+#define AWB_gain_RED 1.538
+#define AWB_gain_GREEN  1.0
+#define AWB_gain_BLUE   1.587
+#define AWB_MAX         1.7
+#define AWB_MIN         0.8
+#define APPLY_GAMMA     1
+#define ENABLE_PRINT_STATS  0
+#define HISTOGRAM_BIN_COUNT 64
+
+
+// Channel structs
+typedef struct {
+  uint32_t bins[HISTOGRAM_BIN_COUNT];
+} channel_histogram_t;
+
+typedef struct {
+  uint8_t min;
+  uint8_t max;
+  uint8_t percentile;
+  float skewness;
+  float mean;
+  uint32_t max_count;
+  uint32_t min_count;
+  uint32_t per_count;
+} channel_stats_t;
+
+// Group structs
+typedef struct{
+  channel_histogram_t histogram_red;
+  channel_histogram_t histogram_green;
+  channel_histogram_t histogram_blue;
+} histograms_t;
+
+typedef struct{
+  channel_stats_t stats_red;
+  channel_stats_t stats_green;
+  channel_stats_t stats_blue;
+} statistics_t;
+
+// Isp structs
+typedef struct {
+  float channel_gain[APP_IMAGE_CHANNEL_COUNT];
+} isp_params_t;
+
+typedef struct {
+  int8_t pixels[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
+} low_res_image_row_t;
+
+// ISP pipeline
+#if defined(__XC__)
+extern "C" {
+#endif
+void isp_pipeline(const int8_t pixel_data[CH][W], const unsigned row_index, chanend c_control);
+#if defined(__XC__)
+}
+#endif
+
+// ISP functions
+void compute_hist(channel_histogram_t* hist, const int8_t* pix, const uint32_t pixel_size);
+void stats_simple(channel_histogram_t* histogram, channel_stats_t* stats, const float inv_pix_size);
+void stats_skewness(channel_histogram_t* histogram, channel_stats_t* stats, const float inv_pix_size);
+uint8_t AE_control_exposure(statistics_t* global_stats, chanend c_control);
+uint8_t AE_is_adjusted(float sk);
+float AE_compute_mean_skewness(statistics_t* stats);
+uint8_t AE_compute_new_exposure(float exposure, float skewness);
+void AWB_compute_gains_static(isp_params_t* isp_params);
+void isp_gamma(uint8_t* img_in, const uint8_t* gamma_curve, const size_t height, const size_t width, const size_t channels);
+
+extern const uint8_t gamma_uint8[256];
+extern const int8_t  gamma_int8[256];

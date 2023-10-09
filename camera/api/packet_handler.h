@@ -8,7 +8,7 @@
 #include "xccompat.h"
 
 #include "camera_main.h"
-#include "isp.h"
+#include "isp_pipeline.h"
 
 /**
  * Represents a received MIPI packet.
@@ -34,5 +34,6 @@ isp_params_t isp_params;
  */
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
-    streaming_chanend_t c_ctrl);
+    streaming_chanend_t c_ctrl,
+    chanend c_isp);
     

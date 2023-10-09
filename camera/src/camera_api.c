@@ -13,7 +13,6 @@
 #include "mipi.h"
 #include "camera_utils.h"
 #include "camera_api.h"
-#include "isp.h"
 
 #define CHAN_RAW 0
 #define CHAN_DEC 1
@@ -73,43 +72,6 @@ void camera_new_row(
     }
 }
 
-DECLARE_JOB(say_hello, (channel_histogram_t*,const int8_t*, size_t));
-void say_hello(channel_histogram_t* hist,const int8_t* pix, size_t pix_size)
-{
-  for(uint32_t k = 0; k < pix_size; k ++){
-      int8_t val = pix[k] + 128;
-      val >>= HIST_QUANT_BITS; // we quantize the bins
-      hist->bins[val]++;
-  }
-}
-
-static
-void stats_isp(
-  const int8_t pixel_data[CH][W],
-  const unsigned row_index)
-{
-  //uint32_t start = get_reference_time();
-  unsigned start = measure_time();
-  // APPLY STATS
-  static global_stats_t global_stats = {{0}};
-  if (row_index == 0){
-    memset(&global_stats, 0, sizeof(global_stats));
-  }
-
-  channel_histogram_t histogram_red;
-  channel_histogram_t histogram_green;
-  //channel_histogram_t histogram_blue;
-
-  PAR_JOBS(
-    PJOB(say_hello, (&histogram_red, &pixel_data[0][0], W)),
-    PJOB(say_hello, (&histogram_green, &pixel_data[1][0], W)));
-  
-
-  // Time measure
-  unsigned end = measure_time();
-  printf(">%d\n", end - start);
-}
-
 void camera_new_row_decimated(
     const int8_t pixel_data[CH][W],
     const unsigned row_index)
@@ -127,17 +89,7 @@ void camera_new_row_decimated(
         break;
     default_handler:
         // statistics should be here, from pixel data
-        // make a new function called ISP pipeline
-        // it takes row index and the row
-        // if row  == 0 it resets
-        // static global_stats_t variable
-        stats_isp(pixel_data, row_index);
-        
-        
-
-        // APPLY STATS
-
-        // APPLY ISP
+        //TODO stats_isp(pixel_data, row_index);
         break;
     }
     

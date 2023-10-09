@@ -12,7 +12,7 @@
 #include "unity_fixture.h"
 
 #include "_helpers.h"
-#include "isp.h"            // gamma
+#include "new_isp.h"            // gamma
 #include "camera_utils.h"   // time
 
 // Unity

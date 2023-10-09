@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "image_hfilter.h"
-#include "isp.h"
+#include "sensor.h"
 
 //Note: for filter coefficients reference : python/filters.txt
 

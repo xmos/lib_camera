@@ -12,6 +12,7 @@
 
 #include "app.h"
 #include "sensor_control.h"
+#include "isp_pipeline.h"
 
 /**
 * Declaration of the MIPI interface ports:
@@ -39,7 +40,7 @@ void main_tile1(chanend_t c_control)
 {
   streaming chan c_pkt;
   streaming chan c_ctrl;
-
+  chan c_isp;
   camera_mipi_init(
     p_mipi_clk,
     p_mipi_rxa,
@@ -49,8 +50,8 @@ void main_tile1(chanend_t c_control)
   
   par{
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-    mipi_packet_handler(c_pkt, c_ctrl);
-    //isp_pipeline(NULL, c_control);
+    mipi_packet_handler(c_pkt, c_ctrl, c_isp);
+    isp_thread(c_isp, c_control);
     user_app();
   }
 }
