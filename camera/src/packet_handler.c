@@ -15,14 +15,6 @@
 #include "camera_utils.h"
 #include "sensor.h"
 
-// Contains the local state info for the packet handler thread.
-static frame_state ph_state = {
-    1,  // wait_for_frame_start
-    0,  // frame_number
-    0,  // in_line_number
-    0   // out_line_number
-};
-
 
 static 
 void handle_frame_start(chanend c_isp)
@@ -66,6 +58,7 @@ void handle_pixel_data(
 
 static 
 void handle_frame_end(
+    const mipi_packet_t* pkt,
     chanend c_isp)
 {
   // Drain the vertical filter's accumulators
@@ -74,14 +67,11 @@ void handle_frame_end(
 
   //Prepare row info
   row_info_t row_info; //TODO this can be static
+  row_info.row_ptr = (int8_t*) &pkt->payload[0];
   row_info.state_ptr = &ph_state;
 
   // Send the row
   isp_send_row_info(c_isp, &row_info);
-
-  // Pass final row(s) to the statistics thread  
-  ph_state.out_line_number++;
-
 }
 
 void handle_no_expected_lines()
@@ -117,6 +107,7 @@ void handle_packet(
 
 
   // Definitions
+  out_dex = 0;
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
@@ -143,7 +134,7 @@ void handle_packet(
       break;
 
     case MIPI_DT_FRAME_END:   
-      handle_frame_end(c_isp);
+      handle_frame_end(pkt, c_isp);
       out_dex ^= 1;
       break;
 

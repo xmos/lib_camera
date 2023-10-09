@@ -74,6 +74,7 @@ extern vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
 extern hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 extern int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
 extern uint8_t out_dex;
+extern frame_state ph_state;
 
 unsigned isp_send_cmd(chanend ch, isp_cmd_t cmd);
 isp_cmd_t isp_recieve_cmd(chanend ch);

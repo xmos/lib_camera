@@ -88,8 +88,6 @@ void camera_new_row_decimated(
         chan_out_word(c_user_api[CHAN_DEC].end_a, row_index);
         break;
     default_handler:
-        // statistics should be here, from pixel data
-        //TODO stats_isp(pixel_data, row_index);
         break;
     }
     
@@ -180,10 +178,12 @@ unsigned camera_capture_image(
   int8_t pixel_data[CH][W];
 
   // Loop, capturing rows until we get one with row_index==0
-  while (row_index != 0){
+  do {
     row_index = camera_capture_row_decimated(pixel_data);
-  }
+    // printf("rIdx:%d\n", row_index);
+  } while (row_index != 0);
   
+
   // Now row_index = 0, capture the rest of the rows
   for (unsigned row = 0; row < H; row++){
     if(row_index != row){return 1;} // Ensure captured line is correct

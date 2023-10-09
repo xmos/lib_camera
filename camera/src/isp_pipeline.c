@@ -16,22 +16,28 @@
 
 #include "isp_pipeline.h"
 
-// ISP settings
-isp_params_t isp_params = {
+// ISP global variables
+isp_params_t isp_params = {                                              //TODO remove extern
   .channel_gain = {
   AWB_gain_RED,
   AWB_gain_GREEN,
   AWB_gain_BLUE
   }
 };
+vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT]; //TODO remove extern
+hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];                 //TODO remove extern
 
-vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
-hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
-
+// Contains the local state info for the packet handler thread.
+frame_state ph_state = {                                                //TODO move to PH
+    1,  // wait_for_frame_start
+    0,  // frame_number
+    0,  // in_line_number
+    0   // out_line_number
+};
 
 __attribute__((aligned(8)))
-int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
-uint8_t out_dex = 0;
+int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];     //TODO remove extern
+uint8_t out_dex = 0;                                                        //TODO move from PH to ISP, remove extern
 
 // ------------- PH <> ISP communication -----------------------
 
@@ -42,16 +48,6 @@ isp_cmd_t isp_recieve_cmd(chanend ch){
 }
 unsigned isp_send_cmd(chanend ch, isp_cmd_t cmd){
     chanend_out_word(ch, (uint32_t)cmd);
-    return (unsigned)chanend_in_word(ch);
-}
-
-
-void recieve_isp_row_ptr(chanend ch, int8_t *pix_data){
-    pix_data = (int8_t *)chanend_in_word(ch);
-    chanend_out_word(ch, RESP_OK);
-}
-unsigned send_isp_row_ptr(chanend ch, int8_t *pix_data){
-    chanend_out_word(ch, (unsigned)pix_data);
     return (unsigned)chanend_in_word(ch);
 }
 
@@ -70,8 +66,6 @@ row_info_t isp_recieve_row_info(chanend ch){
 
 // ------------- Core functions -----------------------
 
-
-
 void filter_update()
 {
     for (int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++) {
@@ -85,7 +79,7 @@ void filter_update()
 }
 
 static 
-void on_new_output_row(
+void isp_new_row(
     const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
     row_info_t* info)
 {
@@ -155,10 +149,9 @@ void process_row(chanend c_isp){
             &hfilt_row[0]);
 
         if (new_row) {
-            on_new_output_row(output_buff[out_dex], &info);
-            out_dex ^= 1; //TODO this should be done by PH
+            isp_new_row(output_buff[out_dex], &info);
+            out_dex ^= 1;
         }
-        info.state_ptr->out_line_number++; //TODO this should be done in handler
     }
 }
 
@@ -167,10 +160,8 @@ void filter_drain(chanend c_isp)
     row_info_t info = isp_recieve_row_info(c_isp);
     image_vfilter_drain(&output_buff[out_dex][CHAN_RED][0], &vfilter_accs[CHAN_RED][0]);
     image_vfilter_drain(&output_buff[out_dex][CHAN_GREEN][0], &vfilter_accs[CHAN_GREEN][0]);
-    unsigned r = image_vfilter_drain(&output_buff[out_dex][CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0]);
-    if (r){ //TODO there is never an else
-        on_new_output_row(output_buff[out_dex], &info);
-    }
+    image_vfilter_drain(&output_buff[out_dex][CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0]);
+    isp_new_row(output_buff[out_dex], &info);
 }
 
 void isp_thread(chanend c_isp, chanend c_control){
