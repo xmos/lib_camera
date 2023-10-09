@@ -10,6 +10,7 @@
 #include <xcore/channel.h> // includes streaming channel and channend
 #include <xccompat.h>
 
+#include "camera_api.h"
 #include "sensor_control.h"
 #include "print.h"
 
@@ -26,6 +27,7 @@ isp_params_t isp_params = {
 
 vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
 hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
+
 
 __attribute__((aligned(8)))
 int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
@@ -55,13 +57,11 @@ unsigned send_isp_row_ptr(chanend ch, int8_t *pix_data){
 
 void isp_send_row_info(
     chanend ch,
-    row_info_t *info)
-{
+    row_info_t *info){
     chan_out_buf_byte(ch, (uint8_t*)info, sizeof(row_info_t));
 }
 
-row_info_t isp_recieve_row_info(chanend ch)
-{
+row_info_t isp_recieve_row_info(chanend ch){
     row_info_t info; 
     chan_in_buf_byte(ch, (uint8_t*)&info, sizeof(row_info_t));
     return info;
@@ -84,21 +84,29 @@ void filter_update()
     }
 }
 
+static 
+void on_new_output_row(
+    const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
+    row_info_t* info)
+{
+  camera_new_row_decimated(pix_out, info->state_ptr->out_line_number);
+  info->state_ptr->out_line_number++;
+}
+
 void process_row(chanend c_isp){
+    int8_t hfilt_row[APP_IMAGE_WIDTH_PIXELS];
 
     // recieve the row pointers
     row_info_t info = isp_recieve_row_info(c_isp);
 
+    // Print aux info
     //printf("rx_pix[0]=%d\n", (int8_t)info.row_ptr[0]);
-    //printf("row = %d\n", info.state_ptr->in_line_number);
+    //printf("R=%d\n", info.state_ptr->in_line_number);
 
     // Obtain pattern
     unsigned pattern = info.state_ptr->in_line_number % 2;
     
-    // Temporary buffer to store horizontally-filtered row data. [1]
-    int8_t hfilt_row[APP_IMAGE_WIDTH_PIXELS];
-
-    if(pattern == RG_PATTERN){
+    if(pattern == 0){
         // RED
         pixel_hfilter(
             &hfilt_row[0],
@@ -147,18 +155,22 @@ void process_row(chanend c_isp){
             &hfilt_row[0]);
 
         if (new_row) {
-            //camera_new_row_decimated()
-            info.state_ptr->out_line_number++; //TODO this should be done in handler
+            on_new_output_row(output_buff[out_dex], &info);
+            out_dex ^= 1; //TODO this should be done by PH
         }
+        info.state_ptr->out_line_number++; //TODO this should be done in handler
     }
 }
 
-void filter_drain()
+void filter_drain(chanend c_isp)
 {
+    row_info_t info = isp_recieve_row_info(c_isp);
     image_vfilter_drain(&output_buff[out_dex][CHAN_RED][0], &vfilter_accs[CHAN_RED][0]);
     image_vfilter_drain(&output_buff[out_dex][CHAN_GREEN][0], &vfilter_accs[CHAN_GREEN][0]);
-    image_vfilter_drain(&output_buff[out_dex][CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0]);
-    //TODO missing info here
+    unsigned r = image_vfilter_drain(&output_buff[out_dex][CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0]);
+    if (r){ //TODO there is never an else
+        on_new_output_row(output_buff[out_dex], &info);
+    }
 }
 
 void isp_thread(chanend c_isp, chanend c_control){
@@ -166,7 +178,7 @@ void isp_thread(chanend c_isp, chanend c_control){
         isp_cmd_t cmd = isp_recieve_cmd(c_isp);
         switch(cmd){
             case FILTER_DRAIN:
-                filter_drain();
+                filter_drain(c_isp);
                 break;
             case FILTER_UPDATE:
                 filter_update();

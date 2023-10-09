@@ -44,7 +44,7 @@ void handle_unknown_packet(
 }
 
 static
-unsigned handle_pixel_data(
+void handle_pixel_data(
     const mipi_packet_t* pkt,
     chanend c_isp)
 {
@@ -62,10 +62,6 @@ unsigned handle_pixel_data(
 
   // Send the row
   isp_send_row_info(c_isp, &row_info);
-
-  // get info 
-  unsigned X = 1; //TODO
-  return X;
 }
 
 static 
@@ -75,6 +71,13 @@ void handle_frame_end(
   // Drain the vertical filter's accumulators
   // Send cmd to isp
   isp_send_cmd(c_isp, FILTER_DRAIN);
+
+  //Prepare row info
+  row_info_t row_info; //TODO this can be static
+  row_info.state_ptr = &ph_state;
+
+  // Send the row
+  isp_send_row_info(c_isp, &row_info);
 
   // Pass final row(s) to the statistics thread  
   ph_state.out_line_number++;
@@ -112,28 +115,20 @@ void handle_packet(
    * that the statistics thread is currently using.
    */
 
-  
 
-
-  // definitions
+  // Definitions
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
-  // At start-up we usually want to wait for a new frame before processing
-  // anything
+  // Wait for a clean frame
   if(ph_state.wait_for_frame_start 
      && data_type != MIPI_DT_FRAME_START) return;
 
-  /*
-    The idea here is that logic that keeps the packet handler in a coherent
-    state, like tracking frame and line numbers, should go directly in here, but
-    logic that actually interprets, processes or reacts to packet data should go
-    into the individual functions.
-  */
+  // Handle packets depending on their type
+  // printf("PT:%d\n", data_type);
   switch(data_type)
   {
     case MIPI_DT_FRAME_START:
-      // update frame state
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
       ph_state.out_line_number = 0;
@@ -143,12 +138,7 @@ void handle_packet(
 
     case MIPI_EXPECTED_FORMAT:     
       handle_no_expected_lines();
-
-      unsigned new_row = handle_pixel_data(pkt, c_isp);
-      if(new_row){
-        out_dex ^= 1;
-      }
-
+      handle_pixel_data(pkt, c_isp);
       ph_state.in_line_number++;
       break;
 
@@ -161,6 +151,7 @@ void handle_packet(
       handle_unknown_packet(pkt);   
       break;
   }
+  // printf("LN:%d\n", ph_state.out_line_number);
 }
 
 

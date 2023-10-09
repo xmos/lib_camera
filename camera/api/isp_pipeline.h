@@ -30,8 +30,7 @@
 #define ENABLE_PRINT_STATS  0
 #define HISTOGRAM_BIN_COUNT 64
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
-#define RG_PATTERN 0
-#define GB_PATTERN 1
+
 
 // ISP cmd responses
 #define RESP_OK  0x0
