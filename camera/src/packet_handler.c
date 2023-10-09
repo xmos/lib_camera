@@ -2,7 +2,7 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
-#include <stdbool.h>
+
 
 #include <xcore/assert.h>
 #include <xcore/channel.h>
@@ -23,6 +23,7 @@ static frame_state ph_state = {
     0   // out_line_number
 };
 
+
 static 
 void handle_frame_start(chanend c_isp)
 {
@@ -32,7 +33,6 @@ void handle_frame_start(chanend c_isp)
     printf("Error in ISP\n");
   }
 }
-
 
 static
 void handle_unknown_packet(
@@ -46,101 +46,39 @@ void handle_unknown_packet(
 static
 unsigned handle_pixel_data(
     const mipi_packet_t* pkt,
-    int8_t output_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
     chanend c_isp)
 {
 
   // First, service any raw requests.
   camera_new_row((int8_t*) &pkt->payload[0], ph_state.in_line_number);
 
-  
-
-  //Send row info
+  // Send cmd to isp
   isp_send_cmd(c_isp, PROCESS_ROW);
-  row_info_t row_info;
+
+  //Prepare row info
+  row_info_t row_info; //TODO this can be static
   row_info.row_ptr = (int8_t*) &pkt->payload[0];
   row_info.state_ptr = &ph_state;
+
+  // Send the row
   isp_send_row_info(c_isp, &row_info);
 
-  // Bayer pattern is RGGB; even index rows have RG data, 
-  // odd index rows have GB data.
-  unsigned pattern = ph_state.in_line_number % 2;
-
-  // Temporary buffer to store horizontally-filtered row data. [1]
-  int8_t hfilt_row[APP_IMAGE_WIDTH_PIXELS];
- 
-  if(pattern == 0){ // Packet contains RGRGRGRGRGRGRGRGRG...
-    ////// RED
-    pixel_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  &hfilter_state[CHAN_RED].coef[0],
-                  hfilter_state[CHAN_RED].acc_init,
-                  hfilter_state[CHAN_RED].shift,
-                  HFILTER_INPUT_STRIDE,
-                  APP_IMAGE_WIDTH_PIXELS);
-
-    
-    image_vfilter_process_row(&output_buffer[CHAN_RED][0],
-                              &vfilter_accs[CHAN_RED][0],
-                              &hfilt_row[0]);
-
-    ////// GREEN
-    pixel_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  &hfilter_state[CHAN_GREEN].coef[0],
-                  hfilter_state[CHAN_GREEN].acc_init,
-                  hfilter_state[CHAN_GREEN].shift,
-                  HFILTER_INPUT_STRIDE,
-                  APP_IMAGE_WIDTH_PIXELS);
-
-    // we now it is not the las row [2]
-    image_vfilter_process_row(&output_buffer[CHAN_GREEN][0],
-                              &vfilter_accs[CHAN_GREEN][0],
-                              &hfilt_row[0]);
-
-  } 
-  else { // Packet contains GBGBGBGBGBGBGBGBGBGB...
-    ////// BLUE
-    pixel_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  &hfilter_state[CHAN_BLUE].coef[0],
-                  hfilter_state[CHAN_BLUE].acc_init,
-                  hfilter_state[CHAN_BLUE].shift,
-                  HFILTER_INPUT_STRIDE,
-                  APP_IMAGE_WIDTH_PIXELS);
-
-    unsigned new_row = image_vfilter_process_row(
-                            &output_buffer[CHAN_BLUE][0],
-                            &vfilter_accs[CHAN_BLUE][0],
-                            &hfilt_row[0]);
-
-    // If new_row is true, then the vertical decimator has output a new row for
-    // each of the three color channels, and so we should signal this upwards.
-    if(new_row){
-      camera_new_row_decimated(output_buffer, ph_state.out_line_number);
-      ph_state.out_line_number++;
-      return 1;
-    }
-  }
-  return 0;
+  // get info 
+  unsigned X = 1; //TODO
+  return X;
 }
 
-
-static //TODO this should be ISP
+static 
 void handle_frame_end(
-    int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS])
+    chanend c_isp)
 {
   // Drain the vertical filter's accumulators
-  image_vfilter_drain(&pix_out[CHAN_RED][0], &vfilter_accs[CHAN_RED][0]);
-  image_vfilter_drain(&pix_out[CHAN_GREEN][0], &vfilter_accs[CHAN_GREEN][0]);
-  if(image_vfilter_drain(&pix_out[CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0])){
-    // Pass final row(s) to the statistics thread
-    camera_new_row_decimated(pix_out, ph_state.out_line_number);
-    ph_state.out_line_number++;
-  }
+  // Send cmd to isp
+  isp_send_cmd(c_isp, FILTER_DRAIN);
 
-  // Signal statistics thread to do frame-end work by sending NULL.
-  // s_chan_out_word(c_stats, (unsigned) NULL);
+  // Pass final row(s) to the statistics thread  
+  ph_state.out_line_number++;
+
 }
 
 void handle_no_expected_lines()
@@ -173,9 +111,8 @@ void handle_packet(
    * Two are needed -- the one the decimator is currently filling, and the one
    * that the statistics thread is currently using.
    */
-  __attribute__((aligned(8)))
-  static int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
-  static bool out_dex = 0;
+
+  
 
 
   // definitions
@@ -196,23 +133,18 @@ void handle_packet(
   switch(data_type)
   {
     case MIPI_DT_FRAME_START:
+      // update frame state
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
       ph_state.out_line_number = 0;
       ph_state.frame_number++;
-
       handle_frame_start(c_isp);   
-      break;
-
-    case MIPI_DT_FRAME_END:   
-      handle_frame_end(output_buff[out_dex]);
-      out_dex ^= 1;
       break;
 
     case MIPI_EXPECTED_FORMAT:     
       handle_no_expected_lines();
 
-      unsigned new_row = handle_pixel_data(pkt, output_buff[out_dex], c_isp);
+      unsigned new_row = handle_pixel_data(pkt, c_isp);
       if(new_row){
         out_dex ^= 1;
       }
@@ -220,8 +152,12 @@ void handle_packet(
       ph_state.in_line_number++;
       break;
 
+    case MIPI_DT_FRAME_END:   
+      handle_frame_end(c_isp);
+      out_dex ^= 1;
+      break;
+
     default:              
-        // We've received a packet we don't know how to interpret.
       handle_unknown_packet(pkt);   
       break;
   }
@@ -274,12 +210,3 @@ void mipi_packet_handler(
     // unsigned time_proc = measure_time() - time_start;
   }
 }
-
-/* Notes
-[1]
-uknown packets could be the following:
-a - sensor specific packets (we let continue the app, uncomment print here for debug)
-printf("Unknown packet type: %d\n", data_type);
-b - invalid packets 
-
-*/
