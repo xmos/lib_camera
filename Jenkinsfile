@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.25.0')
+@Library('xmos_jenkins_shared_library@v0.27.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -18,6 +18,8 @@ pipeline {
   } // parameters
   options {
     skipDefaultCheckout()
+    timestamps()
+    buildDiscarder(xmosDiscardBuildSettings(onlyArtifacts=false))
   } // options
 
   stages {
@@ -51,7 +53,7 @@ pipeline {
                 sh "git clone git@github.com:xmos/infr_scripts_py"
                 // can't use createVenv on the top level yet
                 dir('fwk_camera') {
-                  createVenv()
+                  createVenv('requirements.txt')
                   withVenv {
                     sh "pip install -e ../infr_scripts_py"
                     sh "pip install -e ../infr_apps"
@@ -104,10 +106,19 @@ pipeline {
                         --rm \
                         -v ${WORKSPACE}:/build \
                         -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
+                        -e DOXYGEN_INCLUDE=/build/doc/Doxyfile.inc \
                         -e PDF=1 \
-                        ghcr.io/xmos/doc_builder:v3.0.0""" 
+                        ghcr.io/xmos/doc_builder:v3.0.0"""
+                
                 archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
-              }
+
+                script {
+                  def settings = readJSON file: 'settings.json'
+                  def doc_version = settings["version"]
+                  def zipFileName = "docs_fwk_camera_v${doc_version}.zip"
+                  zip zipFile: zipFileName, archive: true, dir: "doc/_build"
+                } // script
+              } // steps
             } // Build Docs
           } // stages
           post {

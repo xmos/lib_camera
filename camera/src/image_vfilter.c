@@ -1,12 +1,13 @@
 // Copyright 2023 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+//Note: for filter coefficients reference : python/filters.txt
+
 #include <stdint.h>
 #include <stdio.h>
 
 #include "image_vfilter.h"
 
-//Note: for filter coefficients reference : python/filters.txt
 static
 const int32_t vfilter_acc_offset = 0;
 
@@ -34,23 +35,7 @@ void image_vfilter_reset(
                          APP_IMAGE_WIDTH_PIXELS);
 }
 
-/**
- * Call this once at the start of each frame. The accumulator next_tap values
- * are set somewhat differently than image_vfilter_reset(), because the behavior
- * at the start of the image is a little different.
- * 
- * `acc_count` is the number of ROWS of accumulators, whereas
- * `image_width_lores` is the number of pixels per low-resolution image row 
- * (which is the number of individual accumulators PER ROW).
- * 
- * `image_width_lores` must be a multiple of 16 (atm)
- * 
- * NOTE: THE VFILTER FUNCTIONS ARE CHANNEL AGNOSTIC, SO IF THE IMAGE IS
- *       SEPARATED INTO DIFFERENT COLOR PLANES, THIS WILL NEED TO BE CALLED ONCE
- *       FOR EACH COLOR PLANE. IF THEY'RE INTERLEAVED, IT CAN BE CALLED ONCE,
- *       BUT THE IMAGE WIDTH MUST THEN BE THE WIDTH IN _BYTES_. AND IT MUST
- *       STILL BE A MULTIPLE OF 16.
- */
+
 void image_vfilter_frame_init(
     vfilter_acc_t accs[])
 {
@@ -61,10 +46,7 @@ void image_vfilter_frame_init(
   }
 }
 
-/**
- * 
- * 
- */
+
 unsigned image_vfilter_process_row(
     int8_t output[],
     vfilter_acc_t acc[],
