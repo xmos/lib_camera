@@ -17,23 +17,17 @@
 #include "isp_pipeline.h"
 
 // ISP global variables
-isp_params_t isp_params = {                                              //TODO remove extern
+isp_params_t isp_params = {                                              //TODO maybe add extern (?)
   .channel_gain = {
   AWB_gain_RED,
   AWB_gain_GREEN,
   AWB_gain_BLUE
   }
 };
-vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT]; //TODO remove extern
-hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];                 //TODO remove extern
+vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
+hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
-// Contains the local state info for the packet handler thread.
-frame_state ph_state = {                                                //TODO move to PH
-    1,  // wait_for_frame_start
-    0,  // frame_number
-    0,  // in_line_number
-    0   // out_line_number
-};
+
 
 __attribute__((aligned(8)))
 int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];     //TODO remove extern
@@ -85,6 +79,7 @@ void isp_new_row(
 {
   camera_new_row_decimated(pix_out, info->state_ptr->out_line_number);
   info->state_ptr->out_line_number++;
+  //TODO do stats per line here
 }
 
 void process_row(chanend c_isp){
@@ -155,6 +150,7 @@ void process_row(chanend c_isp){
     }
 }
 
+static
 void filter_drain(chanend c_isp)
 {
     row_info_t info = isp_recieve_row_info(c_isp);
@@ -162,6 +158,7 @@ void filter_drain(chanend c_isp)
     image_vfilter_drain(&output_buff[out_dex][CHAN_GREEN][0], &vfilter_accs[CHAN_GREEN][0]);
     image_vfilter_drain(&output_buff[out_dex][CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0]);
     isp_new_row(output_buff[out_dex], &info);
+    out_dex ^= 1;
 }
 
 void isp_thread(chanend c_isp, chanend c_control){

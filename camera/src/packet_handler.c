@@ -15,17 +15,16 @@
 #include "camera_utils.h"
 #include "sensor.h"
 
+// Contains the local state info for the packet handler thread.
+frame_state_t ph_state = {
+    1,  // wait_for_frame_start
+    0,  // frame_number
+    0,  // in_line_number
+    0   // out_line_number
+};
+static row_info_t row_info;
 
-static 
-void handle_frame_start(chanend c_isp)
-{
-  // send to the ISP to reset the filters
-  unsigned resp = isp_send_cmd(c_isp, FILTER_UPDATE);
-  if (resp != RESP_OK){
-    printf("Error in ISP\n");
-  }
-}
-
+// -------- Error handling --------
 static
 void handle_unknown_packet(
     const mipi_packet_t* pkt)
@@ -33,6 +32,28 @@ void handle_unknown_packet(
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
   xassert(data_type < 0x3F && "Packet non valid"); // note [1]
+}
+
+static
+void handle_no_expected_lines()
+{
+  if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
+    // We've received more lines of image data than we expected.
+    #ifdef ASSERT_ON_TOO_MANY_LINES
+          xassert(0 && "Recieved too many lines");
+    #endif
+  }
+}
+
+// -------- Frame handling --------
+static 
+void handle_frame_start(chanend c_isp)
+{
+  // send to the ISP to reset the filters
+  unsigned resp = isp_send_cmd(c_isp, FILTER_UPDATE);
+  if (resp != RESP_OK){
+    printf("Error in ISP filter init\n");
+  }
 }
 
 static
@@ -47,12 +68,9 @@ void handle_pixel_data(
   // Send cmd to isp
   isp_send_cmd(c_isp, PROCESS_ROW);
 
-  //Prepare row info
-  row_info_t row_info; //TODO this can be static
+  // Prepare row info and send it
   row_info.row_ptr = (int8_t*) &pkt->payload[0];
   row_info.state_ptr = &ph_state;
-
-  // Send the row
   isp_send_row_info(c_isp, &row_info);
 }
 
@@ -65,49 +83,21 @@ void handle_frame_end(
   // Send cmd to isp
   isp_send_cmd(c_isp, FILTER_DRAIN);
 
-  //Prepare row info
-  row_info_t row_info; //TODO this can be static
+  // Prepare row info and send it
   row_info.row_ptr = (int8_t*) &pkt->payload[0];
   row_info.state_ptr = &ph_state;
-
-  // Send the row
   isp_send_row_info(c_isp, &row_info);
+
+  //TODO frame end ISP here
 }
 
-void handle_no_expected_lines()
-{
-  if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
-    // We've received more lines of image data than we expected.
-#ifdef ASSERT_ON_TOO_MANY_LINES
-      xassert(0 && "Recieved too many lines");
-#endif
-  }
-}
 
-/**
- * Process a single packet.
- * 
- * This function keeps track of where we are within the input and output image
- * frames. It also passes the packet along to a function for processing
- * depending upon the data type.
- */
 static
 void handle_packet(
     const mipi_packet_t* pkt,
     chanend c_isp)
 {
-  /*
-   * These buffers store rows of the fully decimated image. They are passed
-   * along to the statistics thread once the packet handler thread no longer
-   * needs them.
-   *
-   * Two are needed -- the one the decimator is currently filling, and the one
-   * that the statistics thread is currently using.
-   */
-
-
   // Definitions
-  out_dex = 0;
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
@@ -116,7 +106,6 @@ void handle_packet(
      && data_type != MIPI_DT_FRAME_START) return;
 
   // Handle packets depending on their type
-  // printf("PT:%d\n", data_type);
   switch(data_type)
   {
     case MIPI_DT_FRAME_START:
@@ -135,26 +124,22 @@ void handle_packet(
 
     case MIPI_DT_FRAME_END:   
       handle_frame_end(pkt, c_isp);
-      out_dex ^= 1;
       break;
 
     default:              
       handle_unknown_packet(pkt);   
       break;
   }
-  // printf("LN:%d\n", ph_state.out_line_number);
 }
 
 
+// -------- Main packet handler thread --------
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
     chanend c_isp)
 {
-  /*
-   * These buffers will be used to hold received MIPI packets while they're
-   * being processed.
-   */
+
   __attribute__((aligned(8)))
   mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
   unsigned pkt_idx = 0;

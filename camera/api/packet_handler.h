@@ -10,20 +10,12 @@
 #include "camera_main.h"
 #include "isp_pipeline.h"
 
-/**
- * Represents a received MIPI packet.
- */
+// Represents a received MIPI packet.
 typedef struct
 {
   mipi_header_t header;
   uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
 } mipi_packet_t;
-
-/**
- * isp_params_t instance owned by the packet handler.
- */
-extern
-isp_params_t isp_params;
 
 /**
  * @brief Handles a MIPI packet. Receives MIPI packets from the

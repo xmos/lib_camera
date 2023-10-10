@@ -172,37 +172,35 @@ void pixelcpy(
 }
 
 unsigned camera_capture_image(
-  int8_t image_buff[H][W][CH])
+    int8_t image_buff[H][W][CH])
 {
-  unsigned row_index = 1;
-  int8_t pixel_data[CH][W];
+    unsigned row_index;
+    int8_t pixel_data[CH][W];
 
-  // Loop, capturing rows until we get one with row_index==0
-  do {
+    // Loop, capturing rows until we get one with row_index==0
+    do {
     row_index = camera_capture_row_decimated(pixel_data);
-    // printf("rIdx:%d\n", row_index);
-  } while (row_index != 0);
-  
+    } while (row_index != 0);
 
-  // Now row_index = 0, capture the rest of the rows
-  for (unsigned row = 0; row < H; row++){
-    if(row_index != row){return 1;} // Ensure captured line is correct
+    // Now capture the rest of the rows
+    for (unsigned row = 0; row < H; row++) {
+
+    // Ensure captured line is correct
+    if (row_index != row) {
+      return 1;
+    }
 
     // Loop over all pixels in the row
-    uint32_t start = get_reference_time();
-    for (uint8_t chan = 0; chan < CH; chan++){
-      for (uint32_t col = 0; col < W; col++){
-        pixelcpy(&image_buff[row][col][chan], pixel_data[chan][col]);
+    for (int col = 0; col < W; col++) {
+      for (int chan = 0; chan < CH; chan++) {
+          pixelcpy(&image_buff[row][col][chan], pixel_data[chan][col]);
       }
     }
-    uint32_t end = get_reference_time();
-    printf("Elapsed time = %0.3f (ms)\n", (end - start)*TO_MS);
 
     // capturing the next row
     row_index = camera_capture_row_decimated(pixel_data);
-  }
-
-  return 0;
+    }
+    return 0;
 }
 
 unsigned camera_capture_image_cropped(
