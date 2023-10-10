@@ -18,7 +18,7 @@
 #include "stats.h"
 
 // ISP global variables
-isp_params_t isp_params = {                                              //TODO maybe add extern (?)
+isp_params_t isp_params = {                                              
   .channel_gain = {
   AWB_gain_RED,
   AWB_gain_GREEN,
@@ -324,8 +324,7 @@ void process_end_of_frame(chanend c_isp, chanend c_control)
 
 }
 
-
-
+// ------------- ISP thread -----------------------
 void isp_thread(chanend c_isp, chanend c_control){
     while(1){
         isp_cmd_t cmd = isp_recieve_cmd(c_isp);
@@ -342,6 +341,8 @@ void isp_thread(chanend c_isp, chanend c_control){
             case EOF_ADJUST:
                 process_end_of_frame(c_isp, c_control);
                 break;
+            case ISP_STOP:
+                return;
             default:
                 printf("404 in ISP\n");
                 break;

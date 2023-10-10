@@ -164,7 +164,11 @@ void mipi_packet_handler(
     if (stop == 1){
         // send stop to MipiReciever
         s_chan_out_word(c_pkt, (unsigned) NULL);
-        puts("\nMipiPacketHandler: stop\n");
+        puts("\n> MipiPacketHandler: stop\n");
+        // send stop to isp
+        isp_send_cmd(c_isp, ISP_STOP);
+        puts("> ISP: stop\n");
+
         return;
     }
     else{

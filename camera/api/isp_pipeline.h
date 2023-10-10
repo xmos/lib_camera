@@ -46,6 +46,7 @@ typedef enum{
     PROCESS_ROW,
     FILTER_DRAIN,
     EOF_ADJUST,
+    ISP_STOP,
 } isp_cmd_t;
 
 // Isp structs

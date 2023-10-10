@@ -1,6 +1,5 @@
 #include "stats.h"
 
-
 static
 void compute_hist_channel(
     channel_histogram_t* hist,

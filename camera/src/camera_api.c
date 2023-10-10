@@ -15,16 +15,9 @@
 #include "camera_api.h"
 #include "isp_pipeline.h"
 
-
 #define CHAN_RAW 0
 #define CHAN_DEC 1
 #define CHAN_STOP 2
-
-// Optional //TODO: remove when dev is finish 
-#include <xs1.h> // for parallel jobs
-#include <xcore/hwtimer.h>
-#define TO_MS 1E-5f   
-#include <xcore/parallel.h>
 
 // In order to interface the handler and api
 channel_t c_user_api[3];
