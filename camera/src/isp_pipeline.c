@@ -15,6 +15,7 @@
 #include "print.h"
 
 #include "isp_pipeline.h"
+#include "stats.h"
 
 // ISP global variables
 isp_params_t isp_params = {                                              //TODO maybe add extern (?)
@@ -58,6 +59,11 @@ const int8_t gamma_int8[256] = {
 119, 120, 120, 121, 122, 122, 123, 124, 124, 125, 126, 126, 127, 127, 127, 127,
 };
 
+// Stats functions
+static histograms_t histograms;
+static statistics_t statistics;
+
+
 // ------------- PH <> ISP communication -----------------------
 
 isp_cmd_t isp_recieve_cmd(chanend ch){
@@ -90,8 +96,89 @@ void isp_signal(chanend ch){
     chanend_out_word(ch, RESP_OK);
 }
 
+// ------------- ISP functions -----------------------
+static
+int8_t csign(float x) {
+  return (x > 0) - (x < 0);
+}
+
+static inline uint8_t AE_is_adjusted(float sk) {
+  return (sk < AE_MARGIN && sk > -AE_MARGIN) ? 1 : 0;
+}
+
+static
+uint8_t AE_compute_new_exposure(float exposure, float skewness)
+{
+  static float a  = 0;     // minimum value for exposure
+  static float fa = -1;   // minimimum skewness
+  static float b  = 80;    // maximum value for exposure
+  static float fb = 1;    // minimum skewness
+  static int count = 0;
+  float c  = exposure;
+  float fc = skewness;
+
+  if(csign(fc) == csign(fa)){
+    a = c; fa = fc;
+  }
+  else{
+    b = c; fb = fc;
+  }
+  c  = b - fb*((b - a)/(fb - fa));
+
+  // each X samples, restart AE algorithm
+  if (count < 5){
+    count = count + 1;
+  }
+  else{
+    // restart auto exposure
+    count = 0; a = 0; fa = -1; b = 80; fb = 1;    
+  }
+  return c;
+}
+
+static
+uint8_t AE_control_exposure(
+    statistics_t* global_stats,
+    chanend c_control)
+{
+  // Initial exposure
+  static uint8_t new_exp = AE_INITIAL_EXPOSURE;
+  static uint8_t skip_ae_control = 0; // if too dark for a ceertain frames, skip AE control
+
+  // Compute skewness and adjust exposure if needed
+  float sk = stats_compute_mean_skewness(global_stats);
+  if (AE_is_adjusted(sk)) {
+    return 1;
+  } else {
+    // Adjust exposure
+    new_exp = AE_compute_new_exposure((float)new_exp, sk);
+    // Send new exposure
+    uint32_t encoded_cmd = ENCODE(SENSOR_SET_EXPOSURE, new_exp);
+    chan_out_word(c_control, encoded_cmd);
+    chan_in_word(c_control);
+    // Skip AE control if too dark
+    if (new_exp > 70) {
+      skip_ae_control++;
+      if (skip_ae_control > 5) {
+        skip_ae_control = 0;
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+
+static
+void AWB_compute_gains_static(isp_params_t *isp_params){
+  isp_params->channel_gain[0] = AWB_gain_RED;
+  isp_params->channel_gain[1] = AWB_gain_GREEN;
+  isp_params->channel_gain[2] = AWB_gain_BLUE;
+}
+
 // ------------- Core functions -----------------------
 
+static
 void filter_update()
 {
     for (int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++) {
@@ -113,9 +200,11 @@ void isp_new_row(
   
   info->state_ptr->out_line_number++;
   
-  //TODO do stats per line here
+  // Compute statistics
+  stats_compute_histograms(&histograms, pix_out, APP_IMAGE_WIDTH_PIXELS);
 }
 
+static
 void process_row(chanend c_isp){
     
     // Tmp buffer for horizontal filter
@@ -135,6 +224,7 @@ void process_row(chanend c_isp){
     //printf("rx_pix[0]=%d\n", (int8_t)info.row_ptr[0]);
     //printf("R=%d\n", info.state_ptr->in_line_number);
 
+    // Apply downsample
     if(pattern == 0){
         // RED
         pixel_hfilter(
@@ -191,6 +281,11 @@ void process_row(chanend c_isp){
 
     // Send response
     isp_signal(c_isp);
+
+    // Reset stats if ROW(0) (do not need sync here)
+    if(ln == 0){
+        stats_reset(&histograms, &statistics);
+    }
 }
 
 static
@@ -203,6 +298,34 @@ void filter_drain(chanend c_isp)
     isp_new_row(output_buff[out_dex], &info);
     out_dex ^= 1;
 }
+
+static
+void process_end_of_frame(chanend c_isp, chanend c_control)
+{
+    // Constants definitions
+    const size_t img_size = W*H;
+    const float inv_img_size = 1.0f / img_size;
+    
+    //const size_t row_size = W;
+    //const float inv_row_size = 1.0f / row_size;
+
+    // Compute stats
+    stats_compute_stats(&statistics, &histograms, inv_img_size);
+
+    // AE control exposure
+    uint8_t ae_done = AE_control_exposure(&statistics, c_control);
+
+    // Adjust AWB
+    static unsigned run_once = 0;
+    if (ae_done == 1 && run_once == 0) 
+    {
+    AWB_compute_gains_static(&isp_params);
+    run_once = 1; // Set to 1 to run only once
+    }
+
+}
+
+
 
 void isp_thread(chanend c_isp, chanend c_control){
     while(1){
@@ -217,9 +340,13 @@ void isp_thread(chanend c_isp, chanend c_control){
             case PROCESS_ROW:
                 process_row(c_isp);
                 break;
+            case EOF_ADJUST:
+                process_end_of_frame(c_isp, c_control);
+                break;
             default:
                 printf("404 in ISP\n");
                 break;
+            
         }
     }
 }

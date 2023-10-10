@@ -91,6 +91,7 @@ void handle_frame_end(
   isp_send_row_info(c_isp, &row_info);
 
   //TODO frame end ISP here
+  isp_send_cmd(c_isp, EOF_ADJUST);
 }
 
 

@@ -22,15 +22,15 @@
 #define AE_MARGIN 0.1 // default marging for the auto exposure error
 #define AE_INITIAL_EXPOSURE 35 // initial exposure value
 
-#define AWB_gain_RED    1.0
+#define AWB_gain_RED    1.538
 #define AWB_gain_GREEN  1.0
-#define AWB_gain_BLUE   1.0
+#define AWB_gain_BLUE   1.587
 
 #define AWB_MAX         1.7
 #define AWB_MIN         0.8
 #define APPLY_GAMMA     1
 #define ENABLE_PRINT_STATS  0
-#define HISTOGRAM_BIN_COUNT 64
+
 #define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
 
 
@@ -45,6 +45,7 @@ typedef enum{
     FILTER_UPDATE,
     PROCESS_ROW,
     FILTER_DRAIN,
+    EOF_ADJUST,
 } isp_cmd_t;
 
 // Isp structs
@@ -72,7 +73,7 @@ typedef struct{
 // Filter global state
 extern isp_params_t isp_params;
 
-// Functions
+// Mesage functions
 unsigned isp_send_cmd(chanend ch, isp_cmd_t cmd);
 isp_cmd_t isp_recieve_cmd(chanend ch);
 
@@ -82,11 +83,11 @@ row_info_t isp_recieve_row_info(chanend ch);
 isp_cmd_t isp_wait(chanend ch);
 void isp_signal(chanend ch);
 
-void filter_update();
+// Main thread
 void isp_thread(chanend c_ph_isp, chanend c_control);
 
+// Gamma
 extern const int8_t  gamma_int8[256];
-
 
 #if defined(__XC__)
 }
