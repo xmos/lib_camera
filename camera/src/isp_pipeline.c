@@ -88,7 +88,6 @@ row_info_t isp_recieve_row_info(chanend ch){
     return info;
 }
 
-
 isp_cmd_t isp_wait(chanend ch){
     return (isp_cmd_t)chanend_in_word(ch);
 }
@@ -305,7 +304,7 @@ void process_end_of_frame(chanend c_isp, chanend c_control)
     // Constants definitions
     const size_t img_size = W*H;
     const float inv_img_size = 1.0f / img_size;
-    
+
     //const size_t row_size = W;
     //const float inv_row_size = 1.0f / row_size;
 
