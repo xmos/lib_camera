@@ -7,6 +7,7 @@
 // xcore
 #include <xcore/select.h>
 #include <xcore/channel.h>
+#include <xcore/assert.h>
 // user
 #include "mipi.h"
 #include "camera_utils.h"
@@ -81,8 +82,14 @@ void camera_new_row_decimated(
         chan_out_word(c_user_api[CHAN_DEC].end_a, row_index);
         break;
     default_handler:
+        // statistics should be here, from pixel data
+        // make a new function called ISP pipeline
+        // it takes row index and the row
+        // if row  == 0 it resets
+        // static global_stats_t variable
         break;
     }
+    
 }
 
 unsigned camera_capture_row(
@@ -114,7 +121,7 @@ unsigned camera_capture_image_raw(
   for (unsigned i=1; i<H_RAW; i++) {
     row_index = camera_capture_row(&image_buff[i][0]);
     if (row_index != i) {
-      return 1; // TODO handle errors better
+      return 1;
     }
   }
 
@@ -154,36 +161,32 @@ unsigned camera_capture_image(
   int8_t image_buff[H][W][CH])
 {
   unsigned row_index;
-
   int8_t pixel_data[CH][W];
 
   // Loop, capturing rows until we get one with row_index==0
   do {
     row_index = camera_capture_row_decimated(pixel_data);
   } while (row_index != 0);
-
-  for (int i = 0; i < W; i++)
-    for (int c = 0; c < CH; c++)
-      image_buff[0][i][c] = pixel_data[c][i];
-
+  
   // Now capture the rest of the rows
-  for (unsigned row = 1; row < H; row++) {
-    row_index = camera_capture_row_decimated(pixel_data);
+  for (unsigned row = 0; row < H; row++) {
 
-    if (row_index != row){
-      return 1; // TODO handle errors better
-    }
+    // Ensure captured line is correct
+    if(row_index != row){return 1;}
 
-    for (int i = 0; i < W; i++){
-      for (int c = 0; c < CH; c++){
+    // Loop over all pixels in the row
+    for (int col = 0; col < W; col++){
+      for (int chan = 0; chan < CH; chan++){
         #if (APPLY_GAMMA == 1)
-          image_buff[row][i][c] = gamma_int8[pixel_data[c][i] + 127];
+          image_buff[row][col][chan] = gamma_int8[pixel_data[chan][col] + 127];
         #else
-          image_buff[row][i][c] = pixel_data[c][i];
+          image_buff[row][col][chan] = pixel_data[chan][col];
         #endif
-
       }
     }
+
+    // capturing the next row
+    row_index = camera_capture_row_decimated(pixel_data);
   }
 
   return 0;

@@ -17,7 +17,15 @@ void sensor_control(chanend_t c_control) {
   i2c_conf.p_sda = XS1_PORT_1O;
   i2c_conf.i2c_ctx_ptr = &i2c_ctx;
 
-  IMX219 snsr(i2c_conf, (resolution_t)CONFIG_MODE, (pixel_format_t)CONFIG_MIPI_FORMAT, true, true);
+  const bool binning = true;
+  const bool centralise = true;
+
+  IMX219 snsr(
+    i2c_conf, 
+    (resolution_t)CONFIG_MODE, 
+    (pixel_format_t)CONFIG_MIPI_FORMAT, 
+    binning, 
+    centralise);
 
   snsr.control(c_control);
 }

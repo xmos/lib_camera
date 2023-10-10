@@ -179,10 +179,4 @@ typedef enum {
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
 #define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)
 
-typedef enum {
-  SENSOR_INIT = 0,
-  SENSOR_CONFIG,
-  SENSOR_STREAM_START,
-  SENSOR_STREAM_STOP,
-  SENSOR_SET_EXPOSURE
-} sensor_control_t;
+
