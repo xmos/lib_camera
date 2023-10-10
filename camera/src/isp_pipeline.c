@@ -24,14 +24,39 @@ isp_params_t isp_params = {                                              //TODO 
   AWB_gain_BLUE
   }
 };
+
+static
 vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
+
+static
 hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
 
-
-
 __attribute__((aligned(8)))
-int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];     //TODO remove extern
-uint8_t out_dex = 0;                                                        //TODO move from PH to ISP, remove extern
+int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
+
+static 
+unsigned out_dex = 0;                                                       
+
+
+// gamma 1.8, with substract 10 and 1.05 multiplier (int8 version)
+const int8_t gamma_int8[256] = {
+-128,-128,-128,-128,-128,-128,-128,-126,-123,-120,-117,-114,-112,-109,-107,-105,
+-102,-100,-98, -96, -94, -92, -90, -88, -86, -85, -83, -81, -79, -78, -76, -74,
+-73, -71, -69, -68, -66, -65, -63, -62, -60, -59, -57, -56, -55, -53, -52, -51,
+-49, -48, -46, -45, -44, -43, -41, -40, -39, -37, -36, -35, -34, -33, -31, -30,
+-29, -28, -27, -25, -24, -23, -22, -21, -20, -19, -18, -16, -15, -14, -13, -12,
+-11, -10, -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,  -1,  0,2,3,4,5,
+6,6,7,8,9,10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,
+21,  22,  23,  24,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  33,  34,
+35,  36,  37,  38,  39,  39,  40,  41,  42,  43,  44,  45,  45,  46,  47,  48,
+49,  50,  50,  51,  52,  53,  54,  54,  55,  56,  57,  58,  58,  59,  60,  61,
+62,  62,  63,  64,  65,  66,  66,  67,  68,  69,  69,  70,  71,  72,  72,  73,
+74,  75,  75,  76,  77,  78,  78,  79,  80,  81,  81,  82,  83,  84,  84,  85,
+86,  87,  87,  88,  89,  89,  90,  91,  92,  92,  93,  94,  94,  95,  96,  97,
+97,  98,  99,  99,  100, 101, 101, 102, 103, 104, 104, 105, 106, 106, 107, 108,
+108, 109, 110, 110, 111, 112, 112, 113, 114, 114, 115, 116, 116, 117, 118, 118,
+119, 120, 120, 121, 122, 122, 123, 124, 124, 125, 126, 126, 127, 127, 127, 127,
+};
 
 // ------------- PH <> ISP communication -----------------------
 
@@ -45,18 +70,25 @@ unsigned isp_send_cmd(chanend ch, isp_cmd_t cmd){
     return (unsigned)chanend_in_word(ch);
 }
 
+
 void isp_send_row_info(
     chanend ch,
     row_info_t *info){
     chan_out_buf_byte(ch, (uint8_t*)info, sizeof(row_info_t));
 }
-
 row_info_t isp_recieve_row_info(chanend ch){
     row_info_t info; 
     chan_in_buf_byte(ch, (uint8_t*)&info, sizeof(row_info_t));
     return info;
 }
 
+
+isp_cmd_t isp_wait(chanend ch){
+    return (isp_cmd_t)chanend_in_word(ch);
+}
+void isp_signal(chanend ch){
+    chanend_out_word(ch, RESP_OK);
+}
 
 // ------------- Core functions -----------------------
 
@@ -78,23 +110,31 @@ void isp_new_row(
     row_info_t* info)
 {
   camera_new_row_decimated(pix_out, info->state_ptr->out_line_number);
+  
   info->state_ptr->out_line_number++;
+  
   //TODO do stats per line here
 }
 
 void process_row(chanend c_isp){
+    
+    // Tmp buffer for horizontal filter
     int8_t hfilt_row[APP_IMAGE_WIDTH_PIXELS];
 
     // recieve the row pointers
     row_info_t info = isp_recieve_row_info(c_isp);
+    
+    // Obtain pattern
+    unsigned ln = info.state_ptr->in_line_number;
+    unsigned pattern = ln % 2;
+
+    // First, service any raw requests.
+    camera_new_row((int8_t*) info.row_ptr, ln);
 
     // Print aux info
     //printf("rx_pix[0]=%d\n", (int8_t)info.row_ptr[0]);
     //printf("R=%d\n", info.state_ptr->in_line_number);
 
-    // Obtain pattern
-    unsigned pattern = info.state_ptr->in_line_number % 2;
-    
     if(pattern == 0){
         // RED
         pixel_hfilter(
@@ -148,6 +188,9 @@ void process_row(chanend c_isp){
             out_dex ^= 1;
         }
     }
+
+    // Send response
+    isp_signal(c_isp);
 }
 
 static

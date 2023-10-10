@@ -16,7 +16,7 @@
 #include "sensor.h"
 
 // Contains the local state info for the packet handler thread.
-frame_state_t ph_state = {
+static frame_state_t ph_state = {
     1,  // wait_for_frame_start
     0,  // frame_number
     0,  // in_line_number
@@ -61,17 +61,19 @@ void handle_pixel_data(
     const mipi_packet_t* pkt,
     chanend c_isp)
 {
-
-  // First, service any raw requests.
-  camera_new_row((int8_t*) &pkt->payload[0], ph_state.in_line_number);
-
   // Send cmd to isp
   isp_send_cmd(c_isp, PROCESS_ROW);
 
   // Prepare row info and send it
   row_info.row_ptr = (int8_t*) &pkt->payload[0];
   row_info.state_ptr = &ph_state;
-  isp_send_row_info(c_isp, &row_info);
+  isp_send_row_info(c_isp, &row_info); //TODO WAIT FOR RESPONSE
+
+  // Wait for response
+  isp_cmd_t resp = isp_wait(c_isp);
+  if (resp != RESP_OK){
+    printf("Error in ISP process row\n");
+  }
 }
 
 static 
@@ -119,6 +121,7 @@ void handle_packet(
     case MIPI_EXPECTED_FORMAT:     
       handle_no_expected_lines();
       handle_pixel_data(pkt, c_isp);
+
       ph_state.in_line_number++;
       break;
 

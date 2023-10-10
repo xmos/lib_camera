@@ -13,12 +13,14 @@
 #include "mipi.h"
 #include "camera_utils.h"
 #include "camera_api.h"
+#include "isp_pipeline.h"
+
 
 #define CHAN_RAW 0
 #define CHAN_DEC 1
 #define CHAN_STOP 2
 
-// Optional //TODO: check when dev is finish 
+// Optional //TODO: remove when dev is finish 
 #include <xs1.h> // for parallel jobs
 #include <xcore/hwtimer.h>
 #define TO_MS 1E-5f   
@@ -184,21 +186,20 @@ unsigned camera_capture_image(
 
     // Now capture the rest of the rows
     for (unsigned row = 0; row < H; row++) {
-
-    // Ensure captured line is correct
-    if (row_index != row) {
-      return 1;
-    }
-
-    // Loop over all pixels in the row
-    for (int col = 0; col < W; col++) {
-      for (int chan = 0; chan < CH; chan++) {
-          pixelcpy(&image_buff[row][col][chan], pixel_data[chan][col]);
+      // Ensure captured line is correct
+      if (row_index != row) {
+        return 1;
       }
-    }
 
-    // capturing the next row
-    row_index = camera_capture_row_decimated(pixel_data);
+      // Loop over all pixels in the row
+      for (int col = 0; col < W; col++) {
+        for (int chan = 0; chan < CH; chan++) {
+            pixelcpy(&image_buff[row][col][chan], pixel_data[chan][col]);
+        }
+      }
+
+      // capturing the next row
+      row_index = camera_capture_row_decimated(pixel_data);
     }
     return 0;
 }

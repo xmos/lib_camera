@@ -21,9 +21,11 @@
 // ISP settings
 #define AE_MARGIN 0.1 // default marging for the auto exposure error
 #define AE_INITIAL_EXPOSURE 35 // initial exposure value
-#define AWB_gain_RED 1.538
+
+#define AWB_gain_RED    1.0
 #define AWB_gain_GREEN  1.0
-#define AWB_gain_BLUE   1.587
+#define AWB_gain_BLUE   1.0
+
 #define AWB_MAX         1.7
 #define AWB_MIN         0.8
 #define APPLY_GAMMA     1
@@ -33,17 +35,16 @@
 
 
 // ISP cmd responses
-#define RESP_OK  0x0
-#define RESP_ERR 0x1
-
 #if defined(__XC__)
 extern "C" {
 #endif
 
 typedef enum{
+    RESP_OK = 0,
+    RESP_NOK,
     FILTER_UPDATE,
     PROCESS_ROW,
-    FILTER_DRAIN
+    FILTER_DRAIN,
 } isp_cmd_t;
 
 // Isp structs
@@ -69,9 +70,6 @@ typedef struct{
 
 
 // Filter global state
-// extern int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
-// extern uint8_t out_dex;
-extern frame_state_t ph_state;
 extern isp_params_t isp_params;
 
 // Functions
@@ -81,8 +79,14 @@ isp_cmd_t isp_recieve_cmd(chanend ch);
 void isp_send_row_info(chanend ch, row_info_t* info);
 row_info_t isp_recieve_row_info(chanend ch);
 
+isp_cmd_t isp_wait(chanend ch);
+void isp_signal(chanend ch);
+
 void filter_update();
 void isp_thread(chanend c_ph_isp, chanend c_control);
+
+extern const int8_t  gamma_int8[256];
+
 
 #if defined(__XC__)
 }
