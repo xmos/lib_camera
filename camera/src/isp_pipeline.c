@@ -167,7 +167,6 @@ uint8_t AE_control_exposure(
   return 0;
 }
 
-
 static
 void AWB_compute_gains_static(isp_params_t *isp_params){
   isp_params->channel_gain[0] = AWB_gain_RED;
@@ -175,6 +174,52 @@ void AWB_compute_gains_static(isp_params_t *isp_params){
   isp_params->channel_gain[2] = AWB_gain_BLUE;
 }
 
+/* Intended for future use
+static
+float AWB_clip_value(float tmp){
+  if (tmp > AWB_MAX){
+    tmp = AWB_MAX;
+  }
+  else if (tmp < AWB_MIN){
+    tmp = AWB_MIN;
+  }
+  return tmp;
+}
+
+static
+void AWB_compute_gains_percentile(statistics_t* global_stats, isp_params_t *isp_params){
+  // Adjust AWB 
+  float tmp0=1;
+  float tmp1=1;
+  float tmp2=1; 
+  
+  uint8_t red_p   = global_stats->stats_red.percentile;
+  uint8_t green_p = global_stats->stats_green.percentile;
+  uint8_t blue_p  = global_stats->stats_blue.percentile;
+
+  tmp0 = green_p/(float)red_p;
+  tmp1 = 1;
+  tmp2 = green_p/(float)blue_p;
+  
+  uint32_t r_per_count = global_stats->stats_red.per_count;
+  uint32_t g_per_count = global_stats->stats_green.per_count;
+  uint32_t b_per_count = global_stats->stats_blue.per_count;
+
+  float tmpA = (float)g_per_count/(float)r_per_count;
+  float tmpC = (float)g_per_count/(float)b_per_count;
+  
+  tmp0 = (tmp0 + tmpA)/2.0;
+  tmp2 = (tmp2 + tmpC)/2.0;
+
+  tmp0  = AWB_clip_value(tmp0);
+  tmp1  = AWB_clip_value(tmp1);
+  tmp2  = AWB_clip_value(tmp2);
+
+  isp_params->channel_gain[0] = tmp0;
+  isp_params->channel_gain[1] = tmp1;
+  isp_params->channel_gain[2] = tmp2;
+}
+*/
 
 // ------------- Core functions -----------------------
 
