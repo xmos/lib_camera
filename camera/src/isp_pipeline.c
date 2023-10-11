@@ -175,6 +175,7 @@ void AWB_compute_gains_static(isp_params_t *isp_params){
   isp_params->channel_gain[2] = AWB_gain_BLUE;
 }
 
+
 // ------------- Core functions -----------------------
 
 static
@@ -200,7 +201,7 @@ void isp_new_row(
   info->state_ptr->out_line_number++;
   
   // Compute statistics
-  stats_compute_histograms(&histograms, pix_out, APP_IMAGE_WIDTH_PIXELS);
+  stats_compute_histograms(&histograms, APP_IMAGE_WIDTH_PIXELS, pix_out);
 }
 
 static

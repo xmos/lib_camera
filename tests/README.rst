@@ -25,7 +25,7 @@ Windows
 
 .. code-block:: console
 
-  cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
+  cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
   ninja -C build tests
 
 Running the tests

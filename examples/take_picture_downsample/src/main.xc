@@ -41,6 +41,7 @@ void main_tile1(chanend_t c_control)
   streaming chan c_pkt;
   streaming chan c_ctrl;
   chan c_isp;
+  
   camera_mipi_init(
     p_mipi_clk,
     p_mipi_rxa,

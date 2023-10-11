@@ -74,12 +74,12 @@ void stats_skewness(channel_histogram_t* histogram, channel_stats_t* stats, cons
 // ---------------------- Statistics ----------------------
 void stats_compute_histograms(
     histograms_t *histograms,
-    const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS], 
-    const uint32_t pixel_size)
+    const uint32_t width,
+    const int8_t pix_out[3][width])
 {
-    compute_hist_channel(&histograms->histogram_red,   pix_out[0], pixel_size);
-    compute_hist_channel(&histograms->histogram_green, pix_out[1], pixel_size);
-    compute_hist_channel(&histograms->histogram_blue,  pix_out[2], pixel_size);
+    compute_hist_channel(&histograms->histogram_red,   pix_out[0], width);
+    compute_hist_channel(&histograms->histogram_green, pix_out[1], width);
+    compute_hist_channel(&histograms->histogram_blue,  pix_out[2], width);
 }
 
 void stats_reset(
@@ -104,6 +104,14 @@ void stats_compute_stats(
     stats_skewness(&histograms->histogram_green, &stats->stats_green, inv_img_size);
     stats_skewness(&histograms->histogram_blue,  &stats->stats_green, inv_img_size);
 }   
+
+void stats_print(statistics_t* stats){
+  printf("min: %d, max: %d, mean: %f, skewness: %f\n", 
+  stats->stats_red.min, 
+  stats->stats_red.max, 
+  stats->stats_red.mean, 
+  stats->stats_red.skewness);
+}
 
 float stats_compute_mean_skewness(statistics_t *stats)
 {

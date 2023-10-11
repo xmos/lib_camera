@@ -42,11 +42,13 @@ typedef struct{
   channel_stats_t stats_blue;
 } statistics_t;
 
+
 void stats_compute_histograms(
-    histograms_t* histograms, 
-    const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS], 
-    const uint32_t pixel_size);
+  histograms_t* histograms, 
+  const uint32_t width, 
+  const int8_t pix_out[3][width]);
 
 void stats_reset(histograms_t* histograms, statistics_t* stats);
 void stats_compute_stats(statistics_t* stats, histograms_t* histograms, const float inv_img_size);
+void stats_print(statistics_t* stats);
 float stats_compute_mean_skewness(statistics_t* stats);
