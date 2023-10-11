@@ -16,6 +16,8 @@
 #include "stats.h"      
 #include "camera_utils.h"   // time
 
+#define DELTA 16
+
 // Unity
 TEST_GROUP(stats_test);
 TEST_SETUP(stats_test) { fflush(stdout); print_separator("stats_test");}
@@ -24,7 +26,6 @@ TEST_GROUP_RUNNER(stats_test) {
   RUN_TEST_CASE(stats_test, stats_test__basic);
 }
 
-#define DELTA 16
 
 TEST(stats_test, stats_test__basic){
   // create a random array
