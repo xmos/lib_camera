@@ -30,11 +30,11 @@
 #define AWB_MIN         0.8
 #define APPLY_GAMMA     1
 
-// ISP cmd responses
 #if defined(__XC__)
 extern "C" {
 #endif
 
+// ISP cmd responses
 typedef enum{
     RESP_OK = 0,
     RESP_NOK,
