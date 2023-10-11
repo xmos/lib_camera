@@ -233,7 +233,7 @@ void process_row(chanend c_isp){
             &hfilter_state[CHAN_RED].coef[0],
             hfilter_state[CHAN_RED].acc_init,
             hfilter_state[CHAN_RED].shift,
-            HFILTER_INPUT_STRIDE,
+            APP_DECIMATION_FACTOR,
             APP_IMAGE_WIDTH_PIXELS);
 
         image_vfilter_process_row(
@@ -248,7 +248,7 @@ void process_row(chanend c_isp){
             &hfilter_state[CHAN_GREEN].coef[0],
             hfilter_state[CHAN_GREEN].acc_init,
             hfilter_state[CHAN_GREEN].shift,
-            HFILTER_INPUT_STRIDE,
+            APP_DECIMATION_FACTOR,
             APP_IMAGE_WIDTH_PIXELS);
 
         image_vfilter_process_row(
@@ -265,7 +265,7 @@ void process_row(chanend c_isp){
             &hfilter_state[CHAN_BLUE].coef[0],
             hfilter_state[CHAN_BLUE].acc_init,
             hfilter_state[CHAN_BLUE].shift,
-            HFILTER_INPUT_STRIDE,
+            APP_DECIMATION_FACTOR,
             APP_IMAGE_WIDTH_PIXELS);
 
         unsigned new_row = image_vfilter_process_row(

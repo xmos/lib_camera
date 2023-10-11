@@ -14,8 +14,8 @@
 
 #include "sensor.h"
 
-#define HISTOGRAM_BIN_COUNT 64
-
+#define HISTOGRAM_BIN_COUNT (64)
+#define HIST_QUANT_BITS     (2)
 
 typedef struct {
   uint32_t bins[HISTOGRAM_BIN_COUNT];

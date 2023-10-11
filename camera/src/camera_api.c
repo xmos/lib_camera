@@ -15,8 +15,8 @@
 #include "camera_api.h"
 #include "isp_pipeline.h"
 
-#define CHAN_RAW 0
-#define CHAN_DEC 1
+#define CHAN_RAW  0
+#define CHAN_DEC  1
 #define CHAN_STOP 2
 
 // In order to interface the handler and api

@@ -7,33 +7,27 @@
 #define XSTR(x) STR(x)
 #define STR(x) #x
 
-// ----- minimal commom definitions
+// -------------- Minimal commom definitions --------------
 #define DISABLED 0
-#define ENABLED 1
-
+#define ENABLED  1
 #define MODE_VGA_640x480         0x01       
-#define MODE_UXGA_1640x1232      0x02      
-#define MODE_WQSXGA_3280x2464    0x03
-#define MODE_FHD_1920x1080       0x04
-#define MODE_1280x960            0x05
+#define MODE_1280x960            0x02
+#define _MIPI_DT_RAW8            0x2A
+#define _MIPI_DT_RAW10           0x2B
+#define BIAS_DISABLED            0x00  // no demux
+#define BIAS_ENABLED             0x80  // bias
 
 typedef enum {
   RES_640_480 = MODE_VGA_640x480,
   RES_1280_960 = MODE_1280x960
 } resolution_t;
 
-#define _MIPI_DT_RAW8            0x2A
-#define _MIPI_DT_RAW10           0x2B
-
 typedef enum {
   FMT_RAW8 = _MIPI_DT_RAW8,
   FMT_RAW10 = _MIPI_DT_RAW10
 } pixel_format_t;
 
-#define BIAS_DISABLED            0x00  // no demux
-#define BIAS_ENABLED             0x80  // bias
-
-// -------------- Sensor abstraction layer. --------------
+// -------------- Sensor abstraction layer --------------
 // Camera support
 #define CONFIG_IMX219_SUPPORT   ENABLED
 #define CONFIG_GC2145_SUPPORT   DISABLED
@@ -49,10 +43,9 @@ typedef enum {
 #define MIPI_PKT_BUFFER_COUNT   4
 
 // Black level settings
-#define SENSOR_BLACK_LEVEL              16
-// --------------------------------------------------------
+#define SENSOR_BLACK_LEVEL      16
 
-// Modes configurations
+// -------------- Modes configurations --------------
 #ifndef CONFIG_MODE
 # error CONFIG_MODE has to be defined
 #endif
@@ -60,23 +53,9 @@ typedef enum {
 #if (CONFIG_MODE == MODE_VGA_640x480)
 # define MIPI_IMAGE_WIDTH_PIXELS         640 // csi2 packed (stride 800) 
 # define MIPI_IMAGE_HEIGHT_PIXELS        480
-
-#elif (CONFIG_MODE == MODE_UXGA_1640x1232)
-# define MIPI_IMAGE_WIDTH_PIXELS         1640 // csi2 packed (stride 800) 
-# define MIPI_IMAGE_HEIGHT_PIXELS        1232
-
-#elif (CONFIG_MODE == MODE_WQSXGA_3280x2464)
-# define MIPI_IMAGE_WIDTH_PIXELS         3280 // csi2 packed (stride 800) 
-# define MIPI_IMAGE_HEIGHT_PIXELS        2464
-
-#elif (CONFIG_MODE == MODE_FHD_1920x1080)
-# define MIPI_IMAGE_WIDTH_PIXELS         1920 // csi2 packed (stride 800) 
-# define MIPI_IMAGE_HEIGHT_PIXELS        1080
-
 #elif (CONFIG_MODE == MODE_1280x960)
 # define MIPI_IMAGE_WIDTH_PIXELS         1280
 # define MIPI_IMAGE_HEIGHT_PIXELS        960
-
 #else 
 # error Unknown configuration mode
 #endif
@@ -159,18 +138,6 @@ typedef enum {
 #define CHAN_GREEN  1
 #define CHAN_BLUE   2
 
-// Number of bits to collapse channel cardinality (larger value results in fewer
-// histogram bins)
-#ifndef HIST_QUANT_BITS
-#define HIST_QUANT_BITS   (2)
-#endif
-
-// Not every pixel of the image will be sampled. This is the distance between
-// sampled values in a row.
-#ifndef APP_HISTOGRAM_SAMPLE_STEP
-#define APP_HISTOGRAM_SAMPLE_STEP   (1)
-#endif
-
 // For simplicity here
 #define CH  (APP_IMAGE_CHANNEL_COUNT)
 #define H   (APP_IMAGE_HEIGHT_PIXELS)
@@ -178,5 +145,3 @@ typedef enum {
 
 #define H_RAW   (MIPI_IMAGE_HEIGHT_PIXELS)
 #define W_RAW   (MIPI_IMAGE_WIDTH_BYTES)
-
-

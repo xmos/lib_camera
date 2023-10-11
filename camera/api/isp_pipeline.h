@@ -29,10 +29,6 @@
 #define AWB_MAX         1.7
 #define AWB_MIN         0.8
 #define APPLY_GAMMA     1
-#define ENABLE_PRINT_STATS  0
-
-#define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
-
 
 // ISP cmd responses
 #if defined(__XC__)
