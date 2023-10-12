@@ -45,7 +45,7 @@ void stats_simple(channel_histogram_t* histogram, channel_stats_t* stats, const 
   // biased downwards due to truncation
   stats->max = (temp_max << HIST_QUANT_BITS);
   stats->min = (temp_min << HIST_QUANT_BITS);
-  stats->mean = (temp_mean) * inv_img_size;
+  stats->mean = (temp_mean) * (1 << HIST_QUANT_BITS) * inv_img_size;
 }
 
 static
@@ -101,11 +101,11 @@ void stats_compute_stats(
 {
     stats_simple(&histograms->histogram_red,   &stats->stats_red,   inv_img_size);
     stats_simple(&histograms->histogram_green, &stats->stats_green, inv_img_size);
-    stats_simple(&histograms->histogram_blue,  &stats->stats_green, inv_img_size);
+    stats_simple(&histograms->histogram_blue,  &stats->stats_blue, inv_img_size);
 
     stats_skewness(&histograms->histogram_red,   &stats->stats_red,   inv_img_size);
     stats_skewness(&histograms->histogram_green, &stats->stats_green, inv_img_size);
-    stats_skewness(&histograms->histogram_blue,  &stats->stats_green, inv_img_size);
+    stats_skewness(&histograms->histogram_blue,  &stats->stats_blue, inv_img_size);
 }   
 
 void stats_print(statistics_t* stats){
