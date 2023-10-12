@@ -41,6 +41,14 @@ static void manual_mean(
   }
 }
 
+static void print_hist(channel_histogram_t *hist){
+  printf("hist: [");
+  for (uint32_t k=0; k < HISTOGRAM_BIN_COUNT; k++){
+    printf("%ld,", hist->bins[k]);
+  }
+  printf("]\n");
+}
+
 TEST(stats_test, stats_test__basic){
   // create a random array
   const size_t height = APP_IMAGE_HEIGHT_PIXELS / K;
@@ -68,7 +76,7 @@ TEST(stats_test, stats_test__basic){
 
     // histogram version
     stats_compute_histograms(&histograms, width,pix_out);
-
+    
     // manual version
     manual_mean(width, pix_out, &tmp_red, &tmp_green, &tmp_blue);
   }
@@ -112,6 +120,7 @@ TEST(stats_test, stats_test__constants){
 
     // histogram version
     stats_compute_histograms(&histograms, width, pix_out);
+    print_hist(&histograms.histogram_red);
 
     // manual version
     manual_mean(width, pix_out, &red, &green, &blue);
