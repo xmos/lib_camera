@@ -71,9 +71,9 @@ isp_cmd_t isp_recieve_cmd(chanend ch){
     chanend_out_word(ch, RESP_OK);
     return cmd;
 }
-unsigned isp_send_cmd(chanend ch, isp_cmd_t cmd){
+isp_cmd_t isp_send_cmd(chanend ch, isp_cmd_t cmd){
     chanend_out_word(ch, (uint32_t)cmd);
-    return (unsigned)chanend_in_word(ch);
+    return (isp_cmd_t)chanend_in_word(ch);
 }
 
 
@@ -384,7 +384,7 @@ void isp_thread(chanend c_isp, chanend c_control){
             case PROCESS_ROW:
                 process_row(c_isp);
                 break;
-            case EOF_ADJUST:
+            case PROCESS_EOF:
                 process_end_of_frame(c_isp, c_control);
                 break;
             case ISP_STOP:

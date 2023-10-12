@@ -36,12 +36,14 @@ extern "C" {
 
 // ISP cmd responses
 typedef enum{
+    // Responses
     RESP_OK = 0,
     RESP_NOK,
+    // Commands
     FILTER_UPDATE,
     PROCESS_ROW,
     FILTER_DRAIN,
-    EOF_ADJUST,
+    PROCESS_EOF,
     ISP_STOP,
 } isp_cmd_t;
 
@@ -71,9 +73,9 @@ typedef struct{
  *            the Image Signal Processing thread (ISP)
  * @param ch  Channel to send the command
  * @param cmd Command to send
- * @return    unsigned response from the ISP
+ * @return    isp_cmd_t response from the ISP
  */
-unsigned isp_send_cmd(chanend ch, isp_cmd_t cmd);
+isp_cmd_t isp_send_cmd(chanend ch, isp_cmd_t cmd);
 
 /**
  * @brief     Recieve a command form the Packet Handler (PH) to

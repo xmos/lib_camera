@@ -27,11 +27,9 @@ static row_info_t row_info;
 // -------- Error handling --------
 static
 void handle_unknown_packet(
-    const mipi_packet_t* pkt)
+    mipi_data_type_t data_type)
 {
-  const mipi_header_t header = pkt->header;
-  const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-  xassert(data_type < 0x3F && "Packet non valid"); // note [1]
+  xassert(data_type < 0x3F && "Packet non valid");
 }
 
 static
@@ -50,10 +48,8 @@ static
 void handle_frame_start(chanend c_isp)
 {
   // send to the ISP to reset the filters
-  unsigned resp = isp_send_cmd(c_isp, FILTER_UPDATE);
-  if (resp != RESP_OK){
-    printf("Error in ISP filter init\n");
-  }
+  isp_cmd_t resp = isp_send_cmd(c_isp, FILTER_UPDATE);
+  xassert(resp == RESP_OK && "Error in ISP filter update\n");
 }
 
 static
@@ -71,9 +67,7 @@ void handle_pixel_data(
 
   // Wait for response
   isp_cmd_t resp = isp_wait(c_isp);
-  if (resp != RESP_OK){
-    printf("Error in ISP process row\n");
-  }
+  xassert(resp == RESP_OK && "Error in ISP process row\n");
 }
 
 static 
@@ -90,8 +84,9 @@ void handle_frame_end(
   row_info.state_ptr = &ph_state;
   isp_send_row_info(c_isp, &row_info);
 
-  //TODO frame end ISP here
-  isp_send_cmd(c_isp, EOF_ADJUST);
+  //Handle frame end
+  isp_cmd_t resp = isp_send_cmd(c_isp, PROCESS_EOF);
+  xassert(resp == RESP_OK && "Error in ISP process EOF\n"); 
 }
 
 
@@ -122,7 +117,6 @@ void handle_packet(
     case MIPI_EXPECTED_FORMAT:     
       handle_no_expected_lines();
       handle_pixel_data(pkt, c_isp);
-
       ph_state.in_line_number++;
       break;
 
@@ -131,7 +125,7 @@ void handle_packet(
       break;
 
     default:              
-      handle_unknown_packet(pkt);   
+      handle_unknown_packet(data_type);   
       break;
   }
 }
@@ -165,7 +159,7 @@ void mipi_packet_handler(
         // send stop to MipiReciever
         s_chan_out_word(c_pkt, (unsigned) NULL);
         puts("\n> MipiPacketHandler: stop\n");
-        // send stop to isp
+        // send stop to ISP
         isp_send_cmd(c_isp, ISP_STOP);
         puts("> ISP: stop\n");
 
