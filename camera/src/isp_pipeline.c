@@ -237,16 +237,30 @@ void filter_update()
 }
 
 static 
-void isp_new_row(
+void send_row_camera(
     const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
     row_info_t* info)
 {
   camera_new_row_decimated(pix_out, info->state_ptr->out_line_number);
-  
   info->state_ptr->out_line_number++;
-  
-  // Compute statistics
   stats_compute_histograms(&histograms, APP_IMAGE_WIDTH_PIXELS, pix_out);
+}
+
+static
+void hfilter(
+  const uint8_t channel,
+  int8_t hf_row[APP_IMAGE_WIDTH_PIXELS],
+  int8_t* input,
+  hfilter_state_t hf_state[APP_IMAGE_CHANNEL_COUNT])
+{
+  pixel_hfilter(
+    hf_row,
+    input,
+    &hf_state[channel].coef[0],
+    hf_state[channel].acc_init,
+    hf_state[channel].shift,
+    APP_DECIMATION_FACTOR,
+    APP_IMAGE_WIDTH_PIXELS);
 }
 
 static
@@ -272,30 +286,14 @@ void process_row(chanend c_isp){
     // Apply downsample
     if(pattern == 0){
         // RED
-        pixel_hfilter(
-            &hfilt_row[0],
-            (int8_t*) info.row_ptr,
-            &hfilter_state[CHAN_RED].coef[0],
-            hfilter_state[CHAN_RED].acc_init,
-            hfilter_state[CHAN_RED].shift,
-            APP_DECIMATION_FACTOR,
-            APP_IMAGE_WIDTH_PIXELS);
-
+        hfilter(CHAN_RED, hfilt_row, info.row_ptr, hfilter_state);
         image_vfilter_process_row(
             &output_buff[out_dex][CHAN_RED][0],
             &vfilter_accs[CHAN_RED][0],
             &hfilt_row[0]);
 
         // GREEN
-         pixel_hfilter(
-            &hfilt_row[0],
-            (int8_t*) info.row_ptr,
-            &hfilter_state[CHAN_GREEN].coef[0],
-            hfilter_state[CHAN_GREEN].acc_init,
-            hfilter_state[CHAN_GREEN].shift,
-            APP_DECIMATION_FACTOR,
-            APP_IMAGE_WIDTH_PIXELS);
-
+        hfilter(CHAN_GREEN, hfilt_row, info.row_ptr, hfilter_state);
         image_vfilter_process_row(
             &output_buff[out_dex][CHAN_GREEN][0],
             &vfilter_accs[CHAN_GREEN][0],
@@ -304,22 +302,14 @@ void process_row(chanend c_isp){
     } else{ // GB_PATTERN
 
         // BLUE
-        pixel_hfilter(
-            &hfilt_row[0],
-            (int8_t*) info.row_ptr,
-            &hfilter_state[CHAN_BLUE].coef[0],
-            hfilter_state[CHAN_BLUE].acc_init,
-            hfilter_state[CHAN_BLUE].shift,
-            APP_DECIMATION_FACTOR,
-            APP_IMAGE_WIDTH_PIXELS);
-
+        hfilter(CHAN_BLUE, hfilt_row, info.row_ptr, hfilter_state);
         unsigned new_row = image_vfilter_process_row(
             &output_buff[out_dex][CHAN_BLUE][0],
             &vfilter_accs[CHAN_BLUE][0],
             &hfilt_row[0]);
 
         if (new_row) {
-            isp_new_row(output_buff[out_dex], &info);
+            send_row_camera(output_buff[out_dex], &info);
             out_dex ^= 1;
         }
     }
@@ -340,7 +330,7 @@ void filter_drain(chanend c_isp)
     image_vfilter_drain(&output_buff[out_dex][CHAN_RED][0], &vfilter_accs[CHAN_RED][0]);
     image_vfilter_drain(&output_buff[out_dex][CHAN_GREEN][0], &vfilter_accs[CHAN_GREEN][0]);
     image_vfilter_drain(&output_buff[out_dex][CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0]);
-    isp_new_row(output_buff[out_dex], &info);
+    send_row_camera(output_buff[out_dex], &info);
     out_dex ^= 1;
 }
 
