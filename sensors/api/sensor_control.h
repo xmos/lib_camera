@@ -31,7 +31,7 @@ typedef enum {
 extern "C" {
 #endif
 
-void sensor_control(chanend c_control);
+void sensor_control(chanend_t c_control);
 
 #if defined(__XC__) || defined(__cplusplus)
 }

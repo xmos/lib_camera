@@ -66,32 +66,32 @@ static statistics_t statistics;
 
 // ------------- PH <> ISP communication -----------------------
 
-isp_cmd_t isp_recieve_cmd(chanend ch){
+isp_cmd_t isp_recieve_cmd(chanend_t ch){
     isp_cmd_t cmd = (isp_cmd_t)chanend_in_word(ch);
     chanend_out_word(ch, RESP_OK);
     return cmd;
 }
-isp_cmd_t isp_send_cmd(chanend ch, isp_cmd_t cmd){
+isp_cmd_t isp_send_cmd(chanend_t ch, isp_cmd_t cmd){
     chanend_out_word(ch, (uint32_t)cmd);
     return (isp_cmd_t)chanend_in_word(ch);
 }
 
 
 void isp_send_row_info(
-    chanend ch,
+    chanend_t ch,
     row_info_t *info){
     chan_out_buf_byte(ch, (uint8_t*)info, sizeof(row_info_t));
 }
-row_info_t isp_recieve_row_info(chanend ch){
+row_info_t isp_recieve_row_info(chanend_t ch){
     row_info_t info; 
     chan_in_buf_byte(ch, (uint8_t*)&info, sizeof(row_info_t));
     return info;
 }
 
-isp_cmd_t isp_wait(chanend ch){
+isp_cmd_t isp_wait(chanend_t ch){
     return (isp_cmd_t)chanend_in_word(ch);
 }
-void isp_signal(chanend ch){
+void isp_signal(chanend_t ch){
     chanend_out_word(ch, RESP_OK);
 }
 
@@ -138,7 +138,7 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
 static
 uint8_t AE_control_exposure(
     statistics_t* global_stats,
-    chanend c_control)
+    chanend_t c_control)
 {
   // Initial exposure
   static uint8_t new_exp = AE_INITIAL_EXPOSURE;
@@ -264,7 +264,7 @@ void hfilter(
 }
 
 static
-void process_row(chanend c_isp){
+void process_row(chanend_t c_isp){
     
     // Tmp buffer for horizontal filter
     int8_t hfilt_row[APP_IMAGE_WIDTH_PIXELS];
@@ -324,7 +324,7 @@ void process_row(chanend c_isp){
 }
 
 static
-void filter_drain(chanend c_isp)
+void filter_drain(chanend_t c_isp)
 {
     row_info_t info = isp_recieve_row_info(c_isp);
     image_vfilter_drain(&output_buff[out_dex][CHAN_RED][0], &vfilter_accs[CHAN_RED][0]);
@@ -335,7 +335,7 @@ void filter_drain(chanend c_isp)
 }
 
 static
-void process_end_of_frame(chanend c_isp, chanend c_control)
+void process_end_of_frame(chanend_t c_isp, chanend_t c_control)
 {
     // Constants definitions
     const size_t img_size = W*H;
@@ -361,7 +361,7 @@ void process_end_of_frame(chanend c_isp, chanend c_control)
 }
 
 // ------------- ISP thread -----------------------
-void isp_thread(chanend c_isp, chanend c_control){
+void isp_thread(chanend_t c_isp, chanend_t c_control){
     while(1){
         isp_cmd_t cmd = isp_recieve_cmd(c_isp);
         switch(cmd){
@@ -380,7 +380,7 @@ void isp_thread(chanend c_isp, chanend c_control){
             case ISP_STOP:
                 return;
             default:
-                printf("404 in ISP\n");
+                xassert(0 && "Invalid command");
                 break;
             
         }

@@ -23,9 +23,10 @@ typedef struct
  * processing.
  * @param c_pkt   Streaming channel to receive MIPI packets from. 
  * @param c_ctrl  Streaming channel to send control messages to.
+ * @param c_isp   Channel to send ISP commands to.
  */
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    chanend c_isp);
+    chanend_t c_isp);
     

@@ -45,7 +45,7 @@ void handle_no_expected_lines()
 
 // -------- Frame handling --------
 static 
-void handle_frame_start(chanend c_isp)
+void handle_frame_start(chanend_t c_isp)
 {
   // send to the ISP to reset the filters
   isp_cmd_t resp = isp_send_cmd(c_isp, FILTER_UPDATE);
@@ -55,7 +55,7 @@ void handle_frame_start(chanend c_isp)
 static
 void handle_pixel_data(
     const mipi_packet_t* pkt,
-    chanend c_isp)
+    chanend_t c_isp)
 {
   // Send cmd to isp
   isp_send_cmd(c_isp, PROCESS_ROW);
@@ -73,7 +73,7 @@ void handle_pixel_data(
 static 
 void handle_frame_end(
     const mipi_packet_t* pkt,
-    chanend c_isp)
+    chanend_t c_isp)
 {
   // Drain the vertical filter's accumulators
   // Send cmd to isp
@@ -93,7 +93,7 @@ void handle_frame_end(
 static
 void handle_packet(
     const mipi_packet_t* pkt,
-    chanend c_isp)
+    chanend_t c_isp)
 {
   // Definitions
   const mipi_header_t header = pkt->header;
@@ -135,7 +135,7 @@ void handle_packet(
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    chanend c_isp)
+    chanend_t c_isp)
 {
 
   __attribute__((aligned(8)))

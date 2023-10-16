@@ -75,7 +75,7 @@ typedef struct{
  * @param cmd Command to send
  * @return    isp_cmd_t response from the ISP
  */
-isp_cmd_t isp_send_cmd(chanend ch, isp_cmd_t cmd);
+isp_cmd_t isp_send_cmd(chanend_t ch, isp_cmd_t cmd);
 
 /**
  * @brief     Recieve a command form the Packet Handler (PH) to
@@ -83,7 +83,7 @@ isp_cmd_t isp_send_cmd(chanend ch, isp_cmd_t cmd);
  * @param ch  Channel to recieve the command
  * @return    isp_cmd_t command sent by the PH
  */
-isp_cmd_t isp_recieve_cmd(chanend ch);
+isp_cmd_t isp_recieve_cmd(chanend_t ch);
 
 /**
  * @brief       Send a row of data from the Packet Handler (PH) to
@@ -91,22 +91,27 @@ isp_cmd_t isp_recieve_cmd(chanend ch);
  * @param ch    Channel to send the row
  * @param info  row_info_t struct with the row pointer and the frame state
  */
-void isp_send_row_info(chanend ch, row_info_t* info);
+void isp_send_row_info(chanend_t ch, row_info_t* info);
 
 /**
  * @brief     Recieve a row of data from the PH.
  * @param ch  Channel to recieve the row
  * @return    row_info_t struct with the row pointer and the frame state
  */
-row_info_t isp_recieve_row_info(chanend ch);
+row_info_t isp_recieve_row_info(chanend_t ch);
 
 /**
  * @brief     Wait to revieve a command from the ISP
  * @param ch  channel to wait for the command
  * @return    isp_cmd_t  command sent by the ISP
  */
-isp_cmd_t isp_wait(chanend ch);
-void isp_signal(chanend ch);
+isp_cmd_t isp_wait(chanend_t ch);
+
+/**
+ * @brief     Send a RESP OK from the ISP to the PH
+ * @param ch  channel to send the command
+ */
+void isp_signal(chanend_t ch);
 
 /**
  * @brief ISP thread it recieves raw data and process it
@@ -114,7 +119,7 @@ void isp_signal(chanend ch);
  * @param c_isp 
  * @param c_control 
  */
-void isp_thread(chanend c_isp, chanend c_control);
+void isp_thread(chanend_t c_isp, chanend_t c_control);
 
 // Gamma
 extern const int8_t  gamma_int8[256];

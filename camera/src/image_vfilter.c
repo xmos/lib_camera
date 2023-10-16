@@ -85,8 +85,9 @@ unsigned image_vfilter_drain(
     vfilter_acc_t acc[])
 {
   for (int k = 0; k < VFILTER_ACC_COUNT; k++) {
-    if (acc[k].next_tap <= 0)
+    if (acc[k].next_tap <= 0){
       continue;
+    }
 
     pixel_vfilter_complete(
       output,
