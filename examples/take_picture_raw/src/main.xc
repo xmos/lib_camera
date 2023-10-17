@@ -22,8 +22,6 @@ on tile[MIPI_TILE] : in port p_mipi_rxv = XS1_PORT_1I;               // valid
 on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A;   // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
-typedef chanend chanend_t;
-
 extern "C" {
 #include "xscope_io_device.h"
 }

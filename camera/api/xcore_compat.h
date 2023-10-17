@@ -11,10 +11,9 @@
  */
 
 #ifdef __XC__
-    typedef chanend chanend_t;          // this allow to use chanend_t in XC
+    typedef chanend chanend_t;          // In order to use chanend_t in XC
 #else //__XC__
-    #include <xcore/channel.h>
-    #include <xccompat.h>
-    typedef chanend chanend_t;          // this allow to use chanend_t in C imported from XC
-
+    #include <xcore/channel.h>          // include channel, channend, streaming channel
+    #include <xccompat.h>               // for ports, clocks, and channends in purely C
+    typedef chanend chanend_t;          // chanend_t in C imported from XC
 #endif //__XC__
