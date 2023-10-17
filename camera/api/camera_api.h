@@ -4,7 +4,7 @@
 #pragma once
 
 // xcore
-#include "xccompat.h"
+#include <xccompat.h>
 // user
 #include "sensor.h"
 

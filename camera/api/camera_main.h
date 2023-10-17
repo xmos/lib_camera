@@ -5,8 +5,8 @@
 
 #include <stdint.h>
 
-#include "xs1.h"
-#include "xccompat.h"
+#include <xs1.h>
+#include <xccompat.h>
 
 #include "mipi.h"
 
