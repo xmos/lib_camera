@@ -5,8 +5,6 @@
 
 #include <stdint.h>
 
-#include <xccompat.h>
-
 #include "camera_main.h"
 #include "isp_pipeline.h"
 

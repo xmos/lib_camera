@@ -8,7 +8,6 @@
 #include <xs1.h>
 #include <platform.h>
 #include <xscope.h>
-#include <xccompat.h>
 
 #include "app_raw.h"
 #include "sensor_control.h"

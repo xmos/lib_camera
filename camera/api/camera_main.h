@@ -6,8 +6,8 @@
 #include <stdint.h>
 
 #include <xs1.h>
-#include <xccompat.h>
 
+#include "xcore_compat.h"
 #include "mipi.h"
 
 #ifndef MIPI_CLKBLK

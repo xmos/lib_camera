@@ -5,7 +5,6 @@
 
 
 #include <xcore/assert.h>
-#include <xcore/channel.h>
 #include <xcore/select.h>
 
 #include "packet_handler.h"

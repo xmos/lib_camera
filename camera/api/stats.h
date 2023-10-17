@@ -9,8 +9,6 @@
 #include <string.h>
 
 #include <xcore/assert.h>
-#include <xcore/channel.h> // includes streaming channel and channend
-#include <xccompat.h>
 
 #include "sensor.h"
 

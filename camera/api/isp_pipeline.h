@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <xccompat.h>
+#include "xcore_compat.h" // chanend_t
 
 #include "sensor.h"
 #include "image_hfilter.h"
