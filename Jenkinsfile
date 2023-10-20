@@ -97,24 +97,22 @@ pipeline {
           agent {
             label 'docker'
           }
+          environment { XMOSDOC_VERSION = "v4.0" }
           stages {        
             stage ('Build Docs') {
               steps {
                 runningOn(env.NODE_NAME)
                 checkout scm
-                sh """docker run --user "\$(id -u):\$(id -g)" \
+                sh "docker pull ghcr.io/xmos/xmosdoc:$XMOSDOC_VERSION"
+                sh """docker run -u "\$(id -u):\$(id -g)" \
                         --rm \
                         -v ${WORKSPACE}:/build \
-                        -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
-                        -e DOXYGEN_INCLUDE=/build/doc/Doxyfile.inc \
-                        -e PDF=1 \
-                        ghcr.io/xmos/doc_builder:v3.0.0"""
-                
+                        ghcr.io/xmos/xmosdoc:$XMOSDOC_VERSION -v"""
+
                 archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
 
                 script {
-                  def settings = readJSON file: 'settings.json'
-                  def doc_version = settings["version"]
+                  def doc_version = sh(script: "cat settings.yml | awk '/version:/ {print \$2}'", returnStdout: true).trim()
                   def zipFileName = "docs_fwk_camera_v${doc_version}.zip"
                   zip zipFile: zipFileName, archive: true, dir: "doc/_build"
                 } // script

@@ -7,7 +7,7 @@ Tests that check the contents of the files meet our standards
 
 from subprocess import run
 from pathlib import Path
-import json
+import yaml
 import re
 import pytest
 
@@ -39,10 +39,10 @@ def test_changelog_check():
 
 def test_version_matches():
     """
-    check the JSON version matches the changelog
+    check the YML version matches the changelog
     """
-    with open('../../settings.json', 'r') as f:
-        json_version = json.load(f)["version"]
+    with open('../../settings.yml', 'r') as f:
+        yml_version = yaml.safe_load(f)["version"]
     
     with open('../../CHANGELOG.rst', 'r') as f:
         changelog = f.readlines()
@@ -55,4 +55,4 @@ def test_version_matches():
                 break
         assert changelog_version is not None, "Version not found in changelog"
 
-    assert changelog_version == json_version, f"Versions do not match - changelog {changelog_version}, json {json_version}"
+    assert changelog_version == yml_version, f"Versions do not match - changelog {changelog_version}, json {yml_version}"

@@ -1,8 +1,6 @@
 Software customisation
 ======================
 
-.. include:: ../substitutions.rst
-
 Adding a new sensor
 -------------------
 

@@ -2,8 +2,6 @@
 FWK-CAMERA Programming Guide 
 ****************************
 
-.. include:: ../substitutions.rst
-  
 .. toctree::
   :maxdepth: 1
 
