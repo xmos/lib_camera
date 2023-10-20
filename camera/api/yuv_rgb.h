@@ -1,6 +1,8 @@
 // Copyright 2023 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+#pragma once
+
 // -------------------------- COLOR CONVERSION -------------------------------------
 // Macro arguments to get color components from packed result in the assembly program
 #define GET_R(rgb) (rgb & 0xFF)
