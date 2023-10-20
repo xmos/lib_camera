@@ -11,9 +11,9 @@
  */
 
 #ifdef __XC__
-    typedef chanend chanend_t;          // In order to use chanend_t in XC
+    typedef chanend chanend_t;          // chanend_t (XC only)
 #else //__XC__
-    #include <xcore/channel.h>          // include channel, channend, streaming channel
-    #include <xccompat.h>               // for ports, clocks, and channends in purely C
-    typedef chanend chanend_t;          // chanend_t in C imported from XC
+    #include <xcore/channel.h>          // include channel, channend, streaming channel (C only)
+    #include <xccompat.h>               // include ports, clocks, and channends (XC/C compat)
+    typedef chanend chanend_t;          // chanend_t (XC/C compat)
 #endif //__XC__
