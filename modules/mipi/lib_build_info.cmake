@@ -1,0 +1,7 @@
+set(LIB_NAME lib_mipi)
+set(LIB_VERSION 0.2.1)
+set(LIB_INCLUDES api)
+set(LIB_DEPENDENT_MODULES "")
+set(LIB_COMPILER_FLAGS -Os -g -Wall -Werror)
+
+XMOS_REGISTER_MODULE()

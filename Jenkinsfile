@@ -33,14 +33,27 @@ pipeline {
             stage ('Build') {
               steps {
                 runningOn(env.NODE_NAME)
+
+                sh 'git clone -b develop git@github.com:xmos/xcommon_cmake'
+                sh 'git -C xcommon_cmake rev-parse HEAD'
+
                 dir('fwk_camera') {
                   checkout scm
-                  // fetch submodules
-                  sh 'git submodule update --init --recursive --jobs 4'
                   // build examples and tests
                   withTools(params.TOOLS_VERSION) {
-                    sh 'cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake'
-                    sh 'make -C build -j4'
+                    withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
+                      script {
+                        ["examples/take_picture_downsample",
+                         "examples/take_picture_local",
+                         "examples/take_picture_raw",
+                         "tests/hardware_tests/test_timing",
+                         "tests/unit_tests"
+                        ].each {
+                          sh "cmake -G 'Unix Makefiles' -S ${it} -B ${it}/build"
+                          sh "xmake -C ${it}/build -j4"
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -77,7 +90,7 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                dir('fwk_camera/build/tests/unit_tests') {
+                dir('fwk_camera/tests/unit_tests/bin') {
                   withTools(params.TOOLS_VERSION) {
                     sh 'xsim --xscope "-offline trace.xmt" test_camera.xe'
                   }
