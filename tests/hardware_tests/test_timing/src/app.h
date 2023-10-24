@@ -3,15 +3,11 @@
 
 #pragma once
 
-#include "xs1.h"
-#include "platform.h"
-#include "xccompat.h"
+#include <xs1.h>
+#include <platform.h>
 
 #include "camera_main.h"
 
-#ifdef __XC__
-typedef chanend chanend_t;
-#endif
 
 #define MIPI_TILE  1
 

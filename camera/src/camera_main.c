@@ -7,12 +7,10 @@
 
 #include <xs1.h>
 #include <platform.h> // for ports
-#include <xccompat.h>
 
 #include "camera_main.h"
 
 #include "mipi.h"
-#include "isp.h"
 #include "packet_handler.h"
 
 

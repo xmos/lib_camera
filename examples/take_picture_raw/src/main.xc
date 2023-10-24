@@ -8,7 +8,6 @@
 #include <xs1.h>
 #include <platform.h>
 #include <xscope.h>
-#include <xccompat.h>
 
 #include "app_raw.h"
 #include "sensor_control.h"
@@ -23,8 +22,6 @@ on tile[MIPI_TILE] : in port p_mipi_rxv = XS1_PORT_1I;               // valid
 on tile[MIPI_TILE] : buffered in port:32 p_mipi_rxd = XS1_PORT_8A;   // data
 on tile[MIPI_TILE] : clock clk_mipi = MIPI_CLKBLK;
 
-typedef chanend chanend_t;
-
 extern "C" {
 #include "xscope_io_device.h"
 }
@@ -37,9 +34,9 @@ void main_tile0(chanend_t c_control){
 // Camera image processing channels
 void main_tile1(chanend_t c_control) 
 {
-  streaming chan c_stat_thread;
   streaming chan c_pkt;
   streaming chan c_ctrl;
+  chan c_isp;
 
   camera_mipi_init(
     p_mipi_clk,
@@ -50,8 +47,8 @@ void main_tile1(chanend_t c_control)
   
   par{
     MipiPacketRx(p_mipi_rxd, p_mipi_rxa, c_pkt, c_ctrl);
-    mipi_packet_handler(c_pkt, c_ctrl, c_stat_thread);
-    isp_pipeline(c_stat_thread, c_control);
+    mipi_packet_handler(c_pkt, c_ctrl, c_isp);
+    isp_thread(c_isp, c_control);
     user_app();
   }
 }

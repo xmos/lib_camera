@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "xccompat.h"
+#include <xccompat.h>
 
 #include "mipi_defines.h"
 
@@ -59,5 +59,3 @@ void MipiPacketRx(
     port_t p_mipi_rxa,
     streaming_chanend_t c_pkt,
     streaming_chanend_t c_ctrl);
-
-

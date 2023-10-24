@@ -3,8 +3,6 @@
 
 #pragma once
 
-// xcore
-#include "xccompat.h"
 // user
 #include "sensor.h"
 

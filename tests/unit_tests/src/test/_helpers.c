@@ -6,6 +6,7 @@
 
 #include "_helpers.h"
 #include "camera_main.h"
+#include "yuv_rgb.h"
 
 // Random generators
 int8_t generate_rand_int8(){

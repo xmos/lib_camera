@@ -2,227 +2,107 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
-#include <stdbool.h>
+
 
 #include <xcore/assert.h>
-#include <xcore/channel_streaming.h>
 #include <xcore/select.h>
 
 #include "packet_handler.h"
-#include "image_vfilter.h"
-#include "image_hfilter.h"
+
+#include "isp_pipeline.h"
 #include "camera_api.h"
 #include "camera_utils.h"
 #include "sensor.h"
 
-// Filter stride
-#define HFILTER_INPUT_STRIDE  (APP_DECIMATION_FACTOR)
-
-// Filter global state
-static
-vfilter_acc_t vfilter_accs[APP_IMAGE_CHANNEL_COUNT][VFILTER_ACC_COUNT];
-hfilter_state_t hfilter_state[APP_IMAGE_CHANNEL_COUNT];
-
 // Contains the local state info for the packet handler thread.
-static struct {
-  unsigned wait_for_frame_start;
-  unsigned frame_number;
-  unsigned in_line_number;
-  unsigned out_line_number;
-} ph_state = {
-  .wait_for_frame_start = 1, 
-  .frame_number = 0,
-  .in_line_number = 0,
-  .out_line_number = 0,
+static frame_state_t ph_state = {
+    1,  // wait_for_frame_start
+    0,  // frame_number
+    0,  // in_line_number
+    0   // out_line_number
 };
+static row_info_t row_info;
 
-
-static 
-void handle_frame_start()
-{
-  // New frame is starting, reset the vertical filter accumulator states.
-  for(int c = 0; c < APP_IMAGE_CHANNEL_COUNT; c++){
-    // printf("isp params = %f\n", isp_params.channel_gain[c]);
-    pixel_hfilter_update_scale(&hfilter_state[c], 
-                               isp_params.channel_gain[c], 
-                               (c == 0)? 0 : 1);
-
-    image_vfilter_frame_init(&vfilter_accs[c][0]);
-  }
-}
-
+// -------- Error handling --------
 static
 void handle_unknown_packet(
-    const mipi_packet_t* pkt)
+    mipi_data_type_t data_type)
 {
-  const mipi_header_t header = pkt->header;
-  const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
-  // uknown packets could be the following:
-  // 1 - sensor specific packets (we let continue the app, uncomment print here for debug)
-  // printf("Unknown packet type: %d\n", data_type);
-  // 2 - invalid packets 
   xassert(data_type < 0x3F && "Packet non valid");
 }
 
-/**
- * Handle a row of pixel data.
- * 
- * This function handles horizontal and vertical decimation of the image data.
- * 
- * Returns true iff output_buffer[][] has been filled and is ready to be sent to
- * the next thread.
- */
 static
-unsigned handle_pixel_data(
-    const mipi_packet_t* pkt,
-    int8_t output_buffer[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS])
-{
-
-  // First, service any raw requests.
-  camera_new_row((int8_t*) &pkt->payload[0], ph_state.in_line_number);
-
-  // Bayer pattern is RGGB; even index rows have RG data, 
-  // odd index rows have GB data.
-  unsigned pattern = ph_state.in_line_number % 2;
-
-  // Temporary buffer to store horizontally-filtered row data. [1]
-  int8_t hfilt_row[APP_IMAGE_WIDTH_PIXELS];
- 
-  if(pattern == 0){ // Packet contains RGRGRGRGRGRGRGRGRG...
-    ////// RED
-    pixel_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  &hfilter_state[CHAN_RED].coef[0],
-                  hfilter_state[CHAN_RED].acc_init,
-                  hfilter_state[CHAN_RED].shift,
-                  HFILTER_INPUT_STRIDE,
-                  APP_IMAGE_WIDTH_PIXELS);
-
-    
-    image_vfilter_process_row(&output_buffer[CHAN_RED][0],
-                              &vfilter_accs[CHAN_RED][0],
-                              &hfilt_row[0]);
-
-    ////// GREEN
-    pixel_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  &hfilter_state[CHAN_GREEN].coef[0],
-                  hfilter_state[CHAN_GREEN].acc_init,
-                  hfilter_state[CHAN_GREEN].shift,
-                  HFILTER_INPUT_STRIDE,
-                  APP_IMAGE_WIDTH_PIXELS);
-
-    // we now it is not the las row [2]
-    image_vfilter_process_row(&output_buffer[CHAN_GREEN][0],
-                              &vfilter_accs[CHAN_GREEN][0],
-                              &hfilt_row[0]);
-
-  } 
-  else { // Packet contains GBGBGBGBGBGBGBGBGBGB...
-    ////// BLUE
-    pixel_hfilter(&hfilt_row[0],
-                  (int8_t*) &pkt->payload[0],
-                  &hfilter_state[CHAN_BLUE].coef[0],
-                  hfilter_state[CHAN_BLUE].acc_init,
-                  hfilter_state[CHAN_BLUE].shift,
-                  HFILTER_INPUT_STRIDE,
-                  APP_IMAGE_WIDTH_PIXELS);
-
-    unsigned new_row = image_vfilter_process_row(
-                            &output_buffer[CHAN_BLUE][0],
-                            &vfilter_accs[CHAN_BLUE][0],
-                            &hfilt_row[0]);
-
-    // If new_row is true, then the vertical decimator has output a new row for
-    // each of the three color channels, and so we should signal this upwards.
-    if(new_row){
-      return 1;
-    }
-  }
-  return 0;
-}
-
-static 
-void on_new_output_row(
-    const int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
-    streaming_chanend_t c_stats)
-{
-  // Pass the output row along for statistics processing
-  s_chan_out_word(c_stats, (unsigned) &pix_out[0][0] );
-
-  // Service and user requests for decimated output
-  camera_new_row_decimated(pix_out, ph_state.out_line_number);
-
-  ph_state.out_line_number++;
-}
-
-static
-void handle_frame_end(
-    int8_t pix_out[APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS],
-    streaming_chanend_t c_stats)
-{
-  // Drain the vertical filter's accumulators
-  image_vfilter_drain(&pix_out[CHAN_RED][0], &vfilter_accs[CHAN_RED][0]);
-  image_vfilter_drain(&pix_out[CHAN_GREEN][0], &vfilter_accs[CHAN_GREEN][0]);
-  if(image_vfilter_drain(&pix_out[CHAN_BLUE][0], &vfilter_accs[CHAN_BLUE][0])){
-    // Pass final row(s) to the statistics thread
-    on_new_output_row(pix_out, c_stats);
-  }
-
-  // Signal statistics thread to do frame-end work by sending NULL.
-  s_chan_out_word(c_stats, (unsigned) NULL);
-}
-
 void handle_no_expected_lines()
 {
   if(ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS){
     // We've received more lines of image data than we expected.
-#ifdef ASSERT_ON_TOO_MANY_LINES
-      xassert(0 && "Recieved too many lines");
-#endif
+    #ifdef ASSERT_ON_TOO_MANY_LINES
+          xassert(0 && "Recieved too many lines");
+    #endif
   }
 }
 
-/**
- * Process a single packet.
- * 
- * This function keeps track of where we are within the input and output image
- * frames. It also passes the packet along to a function for processing
- * depending upon the data type.
- */
+// -------- Frame handling --------
+static 
+void handle_frame_start(chanend_t c_isp)
+{
+  // send to the ISP to reset the filters
+  isp_cmd_t resp = isp_send_cmd(c_isp, FILTER_UPDATE);
+  xassert(resp == RESP_OK && "Error in ISP filter update\n");
+}
+
+static
+void handle_pixel_data(
+    const mipi_packet_t* pkt,
+    chanend_t c_isp)
+{
+  // Send cmd to isp
+  isp_send_cmd(c_isp, PROCESS_ROW);
+
+  // Prepare row info and send it
+  row_info.row_ptr = (int8_t*) &pkt->payload[0];
+  row_info.state_ptr = &ph_state;
+  isp_send_row_info(c_isp, &row_info); //TODO WAIT FOR RESPONSE
+
+  // Wait for response
+  isp_cmd_t resp = isp_wait(c_isp);
+  xassert(resp == RESP_OK && "Error in ISP process row\n");
+}
+
+static 
+void handle_frame_end(
+    const mipi_packet_t* pkt,
+    chanend_t c_isp)
+{
+  // Drain the vertical filter's accumulators
+  // Send cmd to isp
+  isp_send_cmd(c_isp, FILTER_DRAIN);
+
+  // Prepare row info and send it
+  row_info.row_ptr = (int8_t*) &pkt->payload[0];
+  row_info.state_ptr = &ph_state;
+  isp_send_row_info(c_isp, &row_info);
+
+  //Handle frame end
+  isp_cmd_t resp = isp_send_cmd(c_isp, PROCESS_EOF);
+  xassert(resp == RESP_OK && "Error in ISP process EOF\n"); 
+}
+
+
 static
 void handle_packet(
     const mipi_packet_t* pkt,
-    streaming_chanend_t c_stats)
+    chanend_t c_isp)
 {
-  /*
-   * These buffers store rows of the fully decimated image. They are passed
-   * along to the statistics thread once the packet handler thread no longer
-   * needs them.
-   *
-   * Two are needed -- the one the decimator is currently filling, and the one
-   * that the statistics thread is currently using.
-   */
-  __attribute__((aligned(8)))
-  static int8_t output_buff[2][APP_IMAGE_CHANNEL_COUNT][APP_IMAGE_WIDTH_PIXELS];
-  static bool out_dex = 0;
-
-
-  // definitions
+  // Definitions
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
-  // At start-up we usually want to wait for a new frame before processing
-  // anything
+  // Wait for a clean frame
   if(ph_state.wait_for_frame_start 
      && data_type != MIPI_DT_FRAME_START) return;
 
-  /*
-    The idea here is that logic that keeps the packet handler in a coherent
-    state, like tracking frame and line numbers, should go directly in here, but
-    logic that actually interprets, processes or reacts to packet data should go
-    into the individual functions.
-  */
+  // Handle packets depending on their type
   switch(data_type)
   {
     case MIPI_DT_FRAME_START:
@@ -230,51 +110,33 @@ void handle_packet(
       ph_state.in_line_number = 0;
       ph_state.out_line_number = 0;
       ph_state.frame_number++;
-
-      handle_frame_start();   
-      break;
-
-    case MIPI_DT_FRAME_END:   
-      handle_frame_end(output_buff[out_dex], c_stats);
-      out_dex ^= 1;
+      handle_frame_start(c_isp);   
       break;
 
     case MIPI_EXPECTED_FORMAT:     
       handle_no_expected_lines();
-
-      if(handle_pixel_data(pkt, output_buff[out_dex])){
-        on_new_output_row(output_buff[out_dex], c_stats);
-        out_dex ^= 1;
-      }
-      
-      /*
-      TODO this 2 can be combined
-      but depends on supressing stats 
-      try first without deleting the
-      unsigned result = handle_pixel_data(pkt, output_buff[out_dex]);
-      if (result) out_dex ^= 1;...
-      */
-
+      handle_pixel_data(pkt, c_isp);
       ph_state.in_line_number++;
       break;
 
+    case MIPI_DT_FRAME_END:   
+      handle_frame_end(pkt, c_isp);
+      break;
+
     default:              
-        // We've received a packet we don't know how to interpret.
-      handle_unknown_packet(pkt);   
+      handle_unknown_packet(data_type);   
       break;
   }
 }
 
 
+// -------- Main packet handler thread --------
 void mipi_packet_handler(
     streaming_chanend_t c_pkt, 
     streaming_chanend_t c_ctrl,
-    streaming_chanend_t c_stats)
+    chanend_t c_isp)
 {
-  /*
-   * These buffers will be used to hold received MIPI packets while they're
-   * being processed.
-   */
+
   __attribute__((aligned(8)))
   mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
   unsigned pkt_idx = 0;
@@ -295,10 +157,11 @@ void mipi_packet_handler(
     if (stop == 1){
         // send stop to MipiReciever
         s_chan_out_word(c_pkt, (unsigned) NULL);
-        // send stop to statistics
-        s_chan_out_word(c_stats, (unsigned) 1); //TODO should not send anything to the stats
-        // end thread
-        puts("\nMipiPacketHandler: stop\n");
+        puts("\n> MipiPacketHandler: stop\n");
+        // send stop to ISP
+        isp_send_cmd(c_isp, ISP_STOP);
+        puts("> ISP: stop\n");
+
         return;
     }
     else{
@@ -311,7 +174,7 @@ void mipi_packet_handler(
 
     // Process the packet 
     // unsigned time_start = measure_time();
-    handle_packet(pkt, c_stats);
+    handle_packet(pkt, c_isp);
     // unsigned time_proc = measure_time() - time_start;
   }
 }

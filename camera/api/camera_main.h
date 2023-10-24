@@ -5,9 +5,9 @@
 
 #include <stdint.h>
 
-#include "xs1.h"
-#include "xccompat.h"
+#include <xs1.h>
 
+#include "xcore_compat.h"
 #include "mipi.h"
 
 #ifndef MIPI_CLKBLK
@@ -19,10 +19,8 @@
 #include "image_hfilter.h"
 #include "image_vfilter.h"
 #include "packet_handler.h"
-#include "statistics.h"
 #include "camera_api.h"
 #include "camera_utils.h"
-#include "isp.h"
 
 // MIPI Shim configuration register layout (MIPI_SHIM_CFG0) 
 #define MIPI_SHIM_BIAS_ENABLE       1       //  Offset output pixels [1]
