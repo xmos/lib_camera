@@ -6,3 +6,7 @@
 	path = utils/xscope_fileio
 	url = https://github.com/xmos/xscope_fileio
 	branch = develop
+[submodule "tests/Unity"]
+	path = tests/Unity
+	url = https://github.com/ThrowTheSwitch/Unity
+    branch = master
