@@ -2,10 +2,6 @@
 	path = xmos_cmake_toolchain
 	url  = git@github.com:xmos/xmos_cmake_toolchain # grouping some CMAKE utilities
 	branch = main
-[submodule "tests/Unity"]
-	path = tests/Unity
-	url  = https://github.com/ThrowTheSwitch/Unity						# unit testing
-	branch = master
 [submodule "utils/xscope_fileio"]
 	path = utils/xscope_fileio
 	url = https://github.com/xmos/xscope_fileio
