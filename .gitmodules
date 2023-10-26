@@ -8,5 +8,5 @@
 	branch = develop
 [submodule "tests/Unity"]
 	path = tests/Unity
-	url = https://github.com/ThrowTheSwitch/Unity
+	url = git@github.com:ThrowTheSwitch/Unity
     branch = master
