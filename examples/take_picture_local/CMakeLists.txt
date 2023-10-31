@@ -1,17 +1,28 @@
-# Executable name
-set(TARGET example_take_picture_local)  
+cmake_minimum_required(VERSION 3.21)
+include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
+project(take_picture_local)
 
-#**********************
-# Targets
-#**********************
-add_executable(${TARGET})
-target_sources(${TARGET} 
-  PRIVATE
-    src/app.c
-    src/main.xc
-)
+set(APP_HW_TARGET XCORE-AI-EXPLORER)
+set(APP_INCLUDES src)
 
-target_include_directories(${TARGET} PUBLIC src)
-target_compile_options(${TARGET} PRIVATE ${EXAMPLE_APP_COMPILER_FLAGS})
-target_link_libraries(${TARGET} PUBLIC ${EXAMPLE_APP_LINK_LIBRARIES})
-target_link_options(${TARGET} PRIVATE ${EXAMPLE_APP_LINK_OPTIONS})
+set(CONFIG_RAW8 0x2A)
+set(CONFIG_RAW10 0x2B)
+set(CONFIG_MIPI_FORMAT ${CONFIG_RAW8})
+
+set(APP_COMPILER_FLAGS
+    -Os
+    -g
+    -report
+    -Wall
+    -Werror
+    -fxscope
+    -mcmodel=large)
+
+set(APP_XSCOPE_SRCS ../config.xscope)
+
+set(APP_DEPENDENT_MODULES mipi sensors camera utils i2c "danielpieczko/xscope_fileio(xcommon_cmake)")
+
+set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
+include(${FWK_CAMERA_ROOT_DIR}/common.cmake)
+
+XMOS_REGISTER_APP()

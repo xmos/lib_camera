@@ -1,39 +1,27 @@
-# ##############################################################################
-set(TARGET test_timing)  
+cmake_minimum_required(VERSION 3.21)
+include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
+project(test_timing)
 
-set(SOURCES
-  src/app.c
-  src/main.xc
-  src/MipiGatherTiming.S
-)
+set(APP_HW_TARGET XCORE-AI-EXPLORER)
+
+set(CONFIG_RAW8 0x2A)
+set(CONFIG_RAW10 0x2B)
+set(CONFIG_MIPI_FORMAT ${CONFIG_RAW8})
 
 set(APP_COMPILER_FLAGS
-  -Os
-  -g
-  -report
-  -Wall
-  -Werror
-  -fxscope
-  -target=${XCORE_TARGET}
-  ${CONFIG_XSCOPE_PATH_TEST}/config.xscope
-)
+    -Os
+    -g
+    -report
+    -Wall
+    -Werror
+    -fxscope
+    -mcmodel=large)
 
-set(APP_LINK_OPTIONS 
-  "-report" 
-  "-target=${XCORE_TARGET}"
-  "${CONFIG_XSCOPE_PATH_TEST}/config.xscope"
-)
+set(APP_XSCOPE_SRCS ../../config.xscope)
 
-set(APP_COMMON_LINK_LIBRARIES                    
-  fwk_camera::mipi
-  lib_i2c
-  fwk_camera::sensors
-  fwk_camera::camera
-)
+set(APP_DEPENDENT_MODULES mipi sensors camera i2c)
 
-# ##############################################################################
-add_executable(${TARGET})
-target_sources(${TARGET} PUBLIC ${SOURCES})
-target_compile_options(${TARGET} PRIVATE ${APP_COMPILER_FLAGS})
-target_link_libraries(${TARGET} PUBLIC ${APP_COMMON_LINK_LIBRARIES})
-target_link_options(${TARGET} PRIVATE ${APP_LINK_OPTIONS})
+set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../../..)
+include(${FWK_CAMERA_ROOT_DIR}/common.cmake)
+
+XMOS_REGISTER_APP()
