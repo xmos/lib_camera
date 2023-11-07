@@ -4,10 +4,6 @@ project(test_timing)
 
 set(APP_HW_TARGET XCORE-AI-EXPLORER)
 
-set(CONFIG_RAW8 0x2A)
-set(CONFIG_RAW10 0x2B)
-set(CONFIG_MIPI_FORMAT ${CONFIG_RAW8})
-
 set(APP_COMPILER_FLAGS
     -Os
     -g
@@ -19,7 +15,7 @@ set(APP_COMPILER_FLAGS
 
 set(APP_XSCOPE_SRCS ../../config.xscope)
 
-set(APP_DEPENDENT_MODULES mipi sensors camera i2c)
+set(APP_DEPENDENT_MODULES mipi sensors camera i2c "danielpieczko/xscope_fileio(xcommon_cmake)")
 
 set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../../..)
 include(${FWK_CAMERA_ROOT_DIR}/common.cmake)

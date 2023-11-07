@@ -20,5 +20,3 @@ scikit-image==0.20.0
 scipy
 six==1.16.0
 tifffile==2023.4.12
-
--e ./utils/xscope_fileio
