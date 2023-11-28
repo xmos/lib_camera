@@ -339,6 +339,8 @@ void process_end_of_frame(chanend_t c_isp, chanend_t c_control)
     // Constants definitions
     const size_t img_size = W*H;
     const float inv_img_size = 1.0f / img_size;
+    static unsigned run_once = 0;
+    uint8_t ae_done = 0;
 
     //const size_t row_size = W;
     //const float inv_row_size = 1.0f / row_size;
@@ -347,10 +349,11 @@ void process_end_of_frame(chanend_t c_isp, chanend_t c_control)
     stats_compute_stats(&statistics, &histograms, inv_img_size);
 
     // AE control exposure
-    uint8_t ae_done = AE_control_exposure(&statistics, c_control);
+    if (run_once == 0){
+      ae_done = AE_control_exposure(&statistics, c_control);
+    }
 
     // Adjust AWB
-    static unsigned run_once = 0;
     if (ae_done == 1 && run_once == 0) 
     {
     AWB_compute_gains_static(&isp_params);
