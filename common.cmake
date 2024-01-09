@@ -6,6 +6,8 @@ endif()
 set(XMOS_SANDBOX_DIR ${FWK_CAMERA_ROOT_DIR}/../)
 set(XMOS_DEP_DIR_lib_camera ${FWK_CAMERA_ROOT_DIR})
 set(XMOS_DEP_DIR_i2c ${XMOS_SANDBOX_DIR}/fwk_io/modules)
+set(xscope_fileio "xscope_fileio(develop)")
+set(Unity "danielpieczko/lib_unity")
 
 if(NOT EXISTS ${XMOS_SANDBOX_DIR}/fwk_io)
     include(FetchContent)

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
 project(test_camera)
+set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
+include(${FWK_CAMERA_ROOT_DIR}/common.cmake)
 
 set(APP_HW_TARGET XCORE-AI-EXPLORER)
 set(APP_INCLUDES api)
@@ -16,10 +18,6 @@ set(APP_COMPILER_FLAGS
     -mcmodel=large)
 
 set(APP_XSCOPE_SRCS config.xscope)
-
-set(APP_DEPENDENT_MODULES lib_camera "danielpieczko/lib_unity" "danielpieczko/xscope_fileio(xcommon_cmake)")
-
-set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
-include(${FWK_CAMERA_ROOT_DIR}/common.cmake)
+set(APP_DEPENDENT_MODULES lib_camera ${xscope_fileio} ${Unity})
 
 XMOS_REGISTER_APP()

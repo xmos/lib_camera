@@ -12,21 +12,10 @@ Build Tests
 
 Run the following commands from the top level:
 
-Linux, Mac
-----------
-
-.. code-block:: console
-  
-  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  make -C build tests
-
-Windows
--------
-
 .. code-block:: console
 
-  cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  ninja -C build tests
+  cmake -G "Unix Makefiles" -S tests/unit_tests -B tests/unit_tests/build
+  xmake -C tests/unit_tests/build
 
 Running the tests
 =================
