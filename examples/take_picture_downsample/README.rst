@@ -23,17 +23,18 @@ Running example
 ***************
 
 .. warning::
-  Make sure ``xscope_fileio`` is installed. See /utils/README.rst section for more details.
+  Make sure ``xscope_fileio`` is installed (folow top level README.rst for installation)
 
-Run the following command from the example folder:
+Run the following command:
 
 .. code-block:: console
 
-  python ../../python/run_xscope_bin.py bin/take_picture_downsample.xe
-
+  python ../../python/run_xscope_bin.py bin/take_picture_downsample.xe # from the example folder
+  python python/run_xscope_bin.py examples/take_picture_downsample/bin/take_picture_downsample.xe # from the top level folder
 
 ******
 Output
 ******
 
-The output files ``capture.bin`` and ``capture.bmp`` will be generated at the top level the repository. ``capture.bin`` can be further processed using ``python/decode_downsampled.py`` script.
+The output files ``capture.bin`` and ``capture.bmp`` will be generated at the top level the repository. 
+``capture.bin`` can be further processed using ``python/decode_downsampled.py`` script.
