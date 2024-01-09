@@ -4,7 +4,7 @@ endif()
 
 # Sandbox configuration
 set(XMOS_SANDBOX_DIR ${FWK_CAMERA_ROOT_DIR}/../)
-set(XMOS_DEP_DIR_camera ${FWK_CAMERA_ROOT_DIR})
+set(XMOS_DEP_DIR_lib_camera ${FWK_CAMERA_ROOT_DIR})
 set(XMOS_DEP_DIR_i2c ${XMOS_SANDBOX_DIR}/fwk_io/modules)
 
 if(NOT EXISTS ${XMOS_SANDBOX_DIR}/fwk_io)
