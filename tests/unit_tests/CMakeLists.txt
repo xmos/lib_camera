@@ -17,7 +17,7 @@ set(APP_COMPILER_FLAGS
 
 set(APP_XSCOPE_SRCS config.xscope)
 
-set(APP_DEPENDENT_MODULES camera "danielpieczko/lib_unity" "danielpieczko/xscope_fileio(xcommon_cmake)")
+set(APP_DEPENDENT_MODULES lib_camera "danielpieczko/lib_unity" "danielpieczko/xscope_fileio(xcommon_cmake)")
 
 set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
 include(${FWK_CAMERA_ROOT_DIR}/common.cmake)
