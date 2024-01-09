@@ -12,7 +12,7 @@
 
 #include "camera_main.h"
 #include "_helpers.h"
-#include "yuv_rgb.h"
+#include "isp_yuv_rgb.h"
 
 #define INV_DELTA 20  // error allowed in YUV RGB color conversion 
 #define num_tests 3
