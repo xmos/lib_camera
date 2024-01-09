@@ -5,7 +5,7 @@
 
 #ifdef __cplusplus
 
-#include "SensorBase.hpp"
+#include "sensor_base.hpp"
 #include "sensor.h"
 #include "sensor_control.h"
 

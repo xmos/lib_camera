@@ -7,7 +7,7 @@
 
 #include "mipi.h"
 #include "packet_handler.h"
-#include "io_utils.h"
+#include "camera_io_utils.h"
 
 #include "packet_rx_simulate.h"
 

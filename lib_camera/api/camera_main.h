@@ -16,8 +16,8 @@
 
 #define MIPI_TILE                 1
 
-#include "image_hfilter.h"
-#include "image_vfilter.h"
+#include "isp_image_hfilter.h"
+#include "isp_image_vfilter.h"
 #include "packet_handler.h"
 #include "camera_api.h"
 #include "camera_utils.h"

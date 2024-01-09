@@ -9,7 +9,7 @@
 
 #include <xcore/assert.h>
 
-#include "io_utils.h"
+#include "camera_io_utils.h"
 #include "app.h"
 
 void user_app()

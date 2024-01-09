@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "image_hfilter.h"
+#include "isp_image_hfilter.h"
 #include "sensor.h" // black level
 
 //Note: for filter coefficients reference : python/filters.txt

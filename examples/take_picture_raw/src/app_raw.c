@@ -12,7 +12,7 @@
 #include "mipi.h"
 #include "camera_api.h"
 #include "app_raw.h"
-#include "io_utils.h"
+#include "camera_io_utils.h"
 
 void user_app()
 {    

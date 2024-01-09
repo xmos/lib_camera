@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "SensorBase.hpp"
+#include "sensor_base.hpp"
 
 using namespace sensor;
 

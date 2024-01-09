@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "image_vfilter.h"
+#include "isp_image_vfilter.h"
 
 static
 const int32_t vfilter_acc_offset = 0;

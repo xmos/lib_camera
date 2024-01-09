@@ -13,8 +13,8 @@
 #include "xcore_compat.h" // chanend_t
 
 #include "sensor.h"
-#include "image_hfilter.h"
-#include "image_vfilter.h"
+#include "isp_image_hfilter.h"
+#include "isp_image_vfilter.h"
 
 #include "camera_utils.h" // for time measure
 

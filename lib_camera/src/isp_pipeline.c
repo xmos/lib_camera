@@ -14,7 +14,7 @@
 #include "print.h"
 
 #include "isp_pipeline.h"
-#include "stats.h"
+#include "isp_stats.h"
 
 // ISP global variables
 isp_params_t isp_params = {                                              
