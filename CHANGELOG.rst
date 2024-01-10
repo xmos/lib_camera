@@ -1,6 +1,12 @@
 fwk_camera change log
 =====================
 
+0.3.0
+-----
+
+* ADDED: Support for xcommon_cmake
+* CHANGED: repository structure 
+
 0.2.1
 -----
 
@@ -38,4 +44,3 @@ fwk_camera change log
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
-
