@@ -4,8 +4,8 @@ fwk_camera change log
 0.3.0
 -----
 
-* ADDED: Support for xcommon_cmake
-* CHANGED: repository structure 
+  * ADDED: Support for xcommon_cmake
+  * CHANGED: repository structure 
 
 0.2.1
 -----
