@@ -29,9 +29,9 @@ Run unit tests
 
 .. code-block:: console
 
-  xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
+  xsim --xscope "-offline trace.xmt" tests/unit_tests/bin/test_camera.xe
   # or
-  xrun --xscope build/tests/unit_tests/test_camera.xe
+  xrun --xscope tests/unit_tests/bin/test_camera.xe
 
 Run hardware tests
 ------------------
