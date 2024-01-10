@@ -2,12 +2,16 @@ if(NOT DEFINED FWK_CAMERA_ROOT_DIR)
     message(FATAL_ERROR "FWK_CAMERA_ROOT_DIR must be defined")
 endif()
 
+
+set(repo_name fwk_camera)
+
 # Sandbox configuration
 set(XMOS_SANDBOX_DIR ${FWK_CAMERA_ROOT_DIR}/../)
-set(XMOS_DEP_DIR_lib_camera ${FWK_CAMERA_ROOT_DIR})
+set(XMOS_DEP_DIR_${repo_name} ${FWK_CAMERA_ROOT_DIR})
 set(XMOS_DEP_DIR_i2c ${XMOS_SANDBOX_DIR}/fwk_io/modules)
 set(xscope_fileio "xscope_fileio(develop)")
 set(Unity "danielpieczko/lib_unity")
+set(lib_camera ${repo_name})
 
 if(NOT EXISTS ${XMOS_SANDBOX_DIR}/fwk_io)
     include(FetchContent)

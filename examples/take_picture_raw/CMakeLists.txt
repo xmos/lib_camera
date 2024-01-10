@@ -19,7 +19,7 @@ set(APP_COMPILER_FLAGS
     -mcmodel=large)
 
 set(APP_XSCOPE_SRCS ../config.xscope)
-set(APP_DEPENDENT_MODULES lib_camera ${xscope_fileio})
+set(APP_DEPENDENT_MODULES ${lib_camera} ${xscope_fileio})
 
 
 XMOS_REGISTER_APP()
