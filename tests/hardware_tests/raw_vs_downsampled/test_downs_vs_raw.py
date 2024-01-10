@@ -13,21 +13,23 @@ from PIL import Image
 
 # path definitions
 cwd = Path(__file__).parent.resolve()
-top_level   = str(cwd.parent.parent.parent.resolve())
-examples    = top_level + "\\build\\examples"
-python_path = top_level + "\\python"
+top_level = cwd.parent.parent.parent.resolve()
+examples = top_level.joinpath("examples")
+python_path = top_level.joinpath("python")
 
 # globals
 ENABLE_IMSHOW   = True
 RUN_XE          = True
 MIN_PSNR        = 10  # DB, peak signal to noise ratio
 MIN_SCORE       = 0.7 # 70% of similarity
+TARGET_RAW =  examples / "take_picture_downsample/bin/take_picture_downsample.xe"
+TARGET_DOWNSAMPLE = examples / "take_picture_raw/bin/take_picture_raw.xe"
 
 # python dependencies
 sys.path.append(str(python_path))
 from FIR_pipeline import FIR_pipeline_func
 from utils import compute_score, peak_signal_noise_ratio, pipeline_raw8
-from run_xscope_bin import *
+from run_xscope_bin import run
 
 def load_image(input_name, height, width, ch=0):
     buffer = np.fromfile(input_name, dtype=np.uint8)
@@ -70,9 +72,9 @@ def plot_images(imgs, results):
 
 def test_downsampled_vs_raw():
     if RUN_XE:
-        run(examples + '/take_picture_raw/example_take_picture_raw.xe')
+        run(TARGET_RAW)
         time.sleep(1)
-        run(examples + '/take_picture_downsample/example_take_picture_downsample.xe')
+        run(TARGET_DOWNSAMPLE)
         time.sleep(1)
     
     # 0 - base image raw 640x480

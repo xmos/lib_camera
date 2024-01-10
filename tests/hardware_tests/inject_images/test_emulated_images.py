@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import cv2
 import numpy as np
+import shutil
 
 from matplotlib import pyplot as plt
 from PIL import Image
@@ -19,15 +20,15 @@ load_dotenv()
 
 # path definitions
 cwd = Path(__file__).parent.resolve()
-top_level = str(cwd.parent.parent.parent.resolve())
-examples = top_level + "\\build\\examples"
-python_path = top_level + "\\python"
-TARGET_NAME = "/take_picture_local/example_take_picture_local.xe"
+top_level = cwd.parent.parent.parent.resolve()
+examples = top_level.joinpath("examples")
+python_path = top_level.joinpath("python")
+TARGET_NAME = examples / "take_picture_local/bin/take_picture_local.xe"
 
 # python dependencies
 sys.path.append(str(python_path))
 from encode_raw8 import encode_raw8
-from run_xscope_bin import *
+from run_xscope_bin import run
 
 
 def test_pipeline_image():
@@ -67,3 +68,7 @@ def test_pipeline_image():
         shutil.copy("capture.bmp", os.path.join(test_imgs_dir, "output", img_name))
         
         time.sleep(0.2)
+
+
+if __name__ == "__main__":
+    test_pipeline_image()
