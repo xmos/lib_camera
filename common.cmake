@@ -9,9 +9,8 @@ set(repo_name fwk_camera)
 set(XMOS_SANDBOX_DIR ${FWK_CAMERA_ROOT_DIR}/../)
 set(XMOS_DEP_DIR_${repo_name} ${FWK_CAMERA_ROOT_DIR})
 set(xscope_fileio "xscope_fileio(develop)")
-set(Unity "danielpieczko/lib_unity(2.5.2)")
+set(Unity "lib_unity(2.5.2)")
 set(lib_camera ${repo_name})
-
 
 # RAW format configuration
 set(CONFIG_RAW8 0x2A)
