@@ -11,7 +11,7 @@ Core usage
 :ref:`Software Architecture<obj_diagram>` section.
 
 .. figure:: images/3_v0.2.0_thread_diagram.png
-  :alt: ``fwk_camera`` thread diagram
+  :alt: |fwk_camera| thread diagram
   :align: center
 
   Resource usage
