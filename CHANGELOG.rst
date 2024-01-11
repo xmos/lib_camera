@@ -5,7 +5,7 @@ fwk_camera change log
 -----
 
   * ADDED: Support for xcommon_cmake
-  * CHANGED: repository structure 
+  * CHANGED: repository structure
 
 0.2.1
 -----
