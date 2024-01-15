@@ -17,6 +17,8 @@ set(APP_COMPILER_FLAGS
 
 set(APP_XSCOPE_SRCS ../../config.xscope)
 set(APP_DEPENDENT_MODULES ${lib_camera})
+list(APPEND APP_C_SRCS src/app.c)
+list(APPEND APP_XC_SRCS src/main.xc)
 
 # xscope
 set(COM_DIR ../../../examples/common)
