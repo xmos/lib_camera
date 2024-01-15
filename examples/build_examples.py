@@ -15,20 +15,16 @@ cwd = Path(__file__).parent.absolute()
 cmake_template = Template(f'cmake -G {generator} -S $src_dir -B $src_dir/build')
 xmake_template = Template(f'{make} -C $src_dir/build')
 
-
 # List of folders
-dirs_srcs = [
+examples = [
     "take_picture_downsample",
     "take_picture_local",
     "take_picture_raw"
 ]
 
-# Store result codes
-result_codes = []
-
 # Run each command
-for dir in dirs_srcs:
-    src_dir = cwd / dir
+for example in examples:
+    src_dir = cwd / example
     # remove build and dir folders
     shutil.rmtree(src_dir / "build", ignore_errors=True)
     shutil.rmtree(src_dir / "bin", ignore_errors=True)
