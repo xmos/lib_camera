@@ -5,12 +5,16 @@ endif()
 
 set(repo_name fwk_camera)
 
-# Sandbox configuration
+# Sandbox configuration (#TODO remove patch after repo rename)
 set(XMOS_SANDBOX_DIR ${FWK_CAMERA_ROOT_DIR}/../)
 set(XMOS_DEP_DIR_${repo_name} ${FWK_CAMERA_ROOT_DIR})
-set(xscope_fileio "xscope_fileio(develop)")
-set(Unity "lib_unity(2.5.2)")
+
+# Library
 set(lib_camera ${repo_name})
+
+# External deps
+set(Unity "lib_unity(2.5.2)")
+set(xscope_fileio "xscope_fileio(develop)")
 
 # RAW format configuration
 set(CONFIG_RAW8 0x2A)
