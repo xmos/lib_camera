@@ -16,7 +16,7 @@ list(APPEND APP_DEPENDENT_MODULES ${lib_camera})
 # common
 set(COM_DIR ../common)
 list(APPEND APP_INCLUDES ${COM_DIR})
-list(APPEND APP_C_SRCS ${COM_DIR}/camera_io_utils.c)
+list(APPEND APP_C_SRCS ${COM_DIR}/camera_io_utils.c ${COM_DIR}/packet_rx_simulate.c)
 list(APPEND APP_DEPENDENT_MODULES ${xscope_fileio})
 
 # xscope
