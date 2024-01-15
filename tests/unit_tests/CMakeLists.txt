@@ -18,6 +18,12 @@ set(APP_COMPILER_FLAGS
     -mcmodel=large)
 
 set(APP_XSCOPE_SRCS config.xscope)
-set(APP_DEPENDENT_MODULES ${lib_camera} ${xscope_fileio} ${Unity})
+set(APP_DEPENDENT_MODULES ${lib_camera} ${Unity})
+
+# xscope
+set(COM_DIR ../../examples/common)
+list(APPEND APP_INCLUDES ${COM_DIR})
+list(APPEND APP_C_SRCS ${COM_DIR}/camera_io_utils.c)
+list(APPEND APP_DEPENDENT_MODULES ${xscope_fileio})
 
 XMOS_REGISTER_APP()
