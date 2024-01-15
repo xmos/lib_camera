@@ -5,11 +5,13 @@
 
 import shutil
 import subprocess
-from string import Template 
+from string import Template
+from pathlib import Path
 
 generator = "Ninja" # or "Unix Makefiles"
 make = "ninja" # or "xmake"
 
+cwd = Path(__file__).parent.absolute()
 cmake_template = Template(f'cmake -G {generator} -S $src_dir -B $src_dir/build')
 xmake_template = Template(f'{make} -C $src_dir/build')
 
@@ -26,20 +28,18 @@ result_codes = []
 
 # Run each command
 for dir in dirs_srcs:
+    src_dir = cwd / dir
     # remove build and dir folders
-    shutil.rmtree(dir + "/build", ignore_errors=True)
-    shutil.rmtree(dir + "/bin", ignore_errors=True)
+    shutil.rmtree(src_dir / "build", ignore_errors=True)
+    shutil.rmtree(src_dir / "bin", ignore_errors=True)
     # cmake
-    cmake_cmd = cmake_template.substitute(src_dir=dir)
+    cmake_cmd = cmake_template.substitute(src_dir=src_dir)
     cmake_result = subprocess.run(cmake_cmd, shell=True)
     # build
-    xmake_cmd = xmake_template.substitute(src_dir=dir)
+    xmake_cmd = xmake_template.substitute(src_dir=src_dir)
     xmake_result = subprocess.run(xmake_cmd, shell=True)
     # results
     assert(not cmake_result.returncode)
     assert(not xmake_result.returncode)
-    result_codes.append(cmake_result.returncode)
-    result_codes.append(xmake_result.returncode)
 
-# Print result codes
-print("Result codes:", result_codes)
+print("build OK")

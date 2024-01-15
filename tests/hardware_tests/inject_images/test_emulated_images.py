@@ -19,11 +19,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # path definitions
-cwd = Path(__file__).parent.resolve()
-top_level = cwd.parent.parent.parent.resolve()
-examples = top_level.joinpath("examples")
-python_path = top_level.joinpath("python")
-TARGET_NAME = examples / "take_picture_local/bin/take_picture_local.xe"
+top_level = Path(__file__).parents[3].absolute()
+examples = top_level / "examples"
+python_path = top_level / "python"
+app_local = examples / "take_picture_local" / "bin" / "take_picture_local.xe"
 
 # python dependencies
 sys.path.append(str(python_path))
@@ -62,7 +61,7 @@ def test_pipeline_image():
         # copy the image to tmp file
         shutil.copy(raw_img, "tmp.raw")
         # run the inference
-        run(examples + TARGET_NAME)
+        run(app_local)
         # Save capture.bmp to output folder
         img_name = os.path.basename(raw_img).replace(".raw", ".bmp")
         shutil.copy("capture.bmp", os.path.join(test_imgs_dir, "output", img_name))

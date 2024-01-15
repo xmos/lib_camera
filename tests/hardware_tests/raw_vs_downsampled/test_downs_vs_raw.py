@@ -12,18 +12,18 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 # path definitions
-cwd = Path(__file__).parent.resolve()
-top_level = cwd.parent.parent.parent.resolve()
-examples = top_level.joinpath("examples")
-python_path = top_level.joinpath("python")
+top_level = Path(__file__).parents[3].absolute()
+examples = top_level / "examples"
+python_path = top_level / "python"
+app_raw_path = examples / "take_picture_downsample" / "bin" / "take_picture_downsample.xe"
+app_downs_path = examples / "take_picture_raw" / "bin" / "take_picture_raw.xe"
 
 # globals
 ENABLE_IMSHOW   = True
 RUN_XE          = True
 MIN_PSNR        = 10  # DB, peak signal to noise ratio
 MIN_SCORE       = 0.7 # 70% of similarity
-TARGET_RAW =  examples / "take_picture_downsample/bin/take_picture_downsample.xe"
-TARGET_DOWNSAMPLE = examples / "take_picture_raw/bin/take_picture_raw.xe"
+
 
 # python dependencies
 sys.path.append(str(python_path))
@@ -72,9 +72,9 @@ def plot_images(imgs, results):
 
 def test_downsampled_vs_raw():
     if RUN_XE:
-        run(TARGET_RAW)
+        run(app_raw_path)
         time.sleep(1)
-        run(TARGET_DOWNSAMPLE)
+        run(app_downs_path)
         time.sleep(1)
     
     # 0 - base image raw 640x480
