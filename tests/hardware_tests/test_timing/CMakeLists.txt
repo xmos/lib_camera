@@ -21,7 +21,7 @@ list(APPEND APP_C_SRCS ${COM_DIR}/camera_io_utils.c)
 list(APPEND APP_DEPENDENT_MODULES ${xscope_fileio})
 
 # xscope
-set(APP_XSCOPE_SRCS ../config.xscope)
+set(APP_XSCOPE_SRCS ../../config.xscope)
 
 # flags
 set(APP_COMPILER_FLAGS
