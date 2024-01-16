@@ -12,7 +12,7 @@ list(APPEND APP_INCLUDES src)
 list(APPEND APP_C_SRCS src/app.c)
 list(APPEND APP_XC_SRCS src/main.xc)
 list(APPEND APP_ASM_SRCS src/MipiGatherTiming.S)
-list(APPEND APP_DEPENDENT_MODULES ${lib_camera})
+list(APPEND APP_DEPENDENT_MODULES lib_camera)
 
 # common
 set(COM_DIR ../../../examples/common)
