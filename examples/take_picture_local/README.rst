@@ -32,11 +32,11 @@ Running example
 .. warning::
   Make sure ``xscope_fileio`` is installed. See /utils/README.rst section for more details.
 
-Run the following command from the example folder:
+Run the following command from the top level folder:
 
 .. code-block:: console
     
-    python python/run_xscope_bin.py build/examples/take_picture_local/example_take_picture_local.xe
+    python python/run_xscope_bin.py examples/take_picture_local/bin/take_picture_local.xe
 
 
 ******

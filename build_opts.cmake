@@ -15,8 +15,3 @@ set(lib_camera ${repo_name})
 # External deps
 set(Unity "lib_unity(2.5.2)")
 set(xscope_fileio "xscope_fileio(develop)")
-
-# RAW format configuration
-set(CONFIG_RAW8 0x2A)
-set(CONFIG_RAW10 0x2B)
-set(CONFIG_MIPI_FORMAT ${CONFIG_RAW8})

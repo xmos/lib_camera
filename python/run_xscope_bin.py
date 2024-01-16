@@ -92,7 +92,7 @@ def choose_file_with_extension(folder_path, extension):
 if __name__ == "__main__":
     args = parse_arguments()
     if (args.xe is None):
-        build_folder = Path(__file__).parent.parent.resolve() / "build"
+        build_folder = Path(__file__).parent.parent.resolve() / "examples"
         choose_file_with_extension(build_folder, ".xe")
     else:   
         run(args.xe)

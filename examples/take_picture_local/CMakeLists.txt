@@ -4,7 +4,7 @@ project(take_picture_local)
 
 # root
 set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
-include(${FWK_CAMERA_ROOT_DIR}/lib_camera.cmake)
+include(${FWK_CAMERA_ROOT_DIR}/build_opts.cmake)
 
 # target
 set(APP_HW_TARGET XCORE-AI-EXPLORER)

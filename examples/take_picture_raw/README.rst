@@ -28,7 +28,7 @@ Run the following command from the example folder:
 
 .. code-block:: console
     
-    python python/run_xscope_bin.py build/examples/take_picture_raw/example_take_picture_raw.xe
+    python python/run_xscope_bin.py examples/take_picture_raw/bin/take_picture_raw.xe
 
 
 ******
