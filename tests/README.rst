@@ -12,21 +12,10 @@ Build Tests
 
 Run the following commands from the top level:
 
-Linux, Mac
-----------
-
-.. code-block:: console
-  
-  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  make -C build tests
-
-Windows
--------
-
 .. code-block:: console
 
-  cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  ninja -C build tests
+  cmake -G "Unix Makefiles" -S tests/unit_tests -B tests/unit_tests/build
+  xmake -C tests/unit_tests/build
 
 Running the tests
 =================
@@ -35,14 +24,13 @@ Running the tests
   1. Hardware tests require `xscope_fileio` to be installed.
   2. Run the following commands from the `fwk_camera` top level.
 
-Run unit tests
---------------
+Run unit tests (xrun or xsim)
+-----------------------------
 
 .. code-block:: console
 
-  xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
-  # or
-  xrun --xscope build/tests/unit_tests/test_camera.xe
+  xsim --xscope "-offline trace.xmt" tests/unit_tests/bin/test_camera.xe
+  xrun --xscope tests/unit_tests/bin/test_camera.xe
 
 Run hardware tests
 ------------------
