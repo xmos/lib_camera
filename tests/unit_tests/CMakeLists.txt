@@ -8,11 +8,9 @@ include(${FWK_CAMERA_ROOT_DIR}/lib_camera.cmake)
 
 # target
 set(APP_HW_TARGET XCORE-AI-EXPLORER)
-list(APPEND APP_INCLUDES src api src/test)
-list(APPEND APP_C_SRCS src/main.c)
-list(APPEND APP_DEPENDENT_MODULES ${lib_camera} ${Unity})
-
-list(APPEND APP_C_SRCS 
+list(APPEND APP_INCLUDES api src src/test)
+list(APPEND APP_C_SRCS
+    src/main.c
     src/test/_helpers.c
     src/test/color_conversion_test.c
     src/test/gamma_timing_test.c
@@ -20,6 +18,7 @@ list(APPEND APP_C_SRCS
     src/test/pixel_vfilter_test.c
     src/test/statistics_test.c
 )
+list(APPEND APP_DEPENDENT_MODULES ${lib_camera} ${Unity})
 
 # common
 set(COM_DIR ../../examples/common)
