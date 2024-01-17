@@ -1,4 +1,4 @@
-fwk_camera change log
+lib_camera change log
 =====================
 
 0.3.0
@@ -44,4 +44,3 @@ fwk_camera change log
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
-
