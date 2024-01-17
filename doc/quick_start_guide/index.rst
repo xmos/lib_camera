@@ -101,7 +101,7 @@ Then, this image can be decoded using the Python script ``python decode_raw8.py`
 
 1. Ensure that the camera is connected to the board.
 2. Connect the Power Supply and xTag debugger.
-3. Build the example using the following command:
+3. Build the example using the following command inside the examples/take_picure_raw folder:
    
   .. code-block:: console       
 
