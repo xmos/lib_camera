@@ -22,7 +22,7 @@ Running the tests
 
 .. note::
   1. Hardware tests require `xscope_fileio` to be installed.
-  2. Run the following commands from the `fwk_camera` top level.
+  2. Run the following commands from the `lib_camera` top level.
 
 Run unit tests (xrun or xsim)
 -----------------------------

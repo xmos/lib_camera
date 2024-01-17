@@ -3,8 +3,8 @@ include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
 project(take_picture_downsample)
 
 # root
-set(FWK_CAMERA_ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
-include(${FWK_CAMERA_ROOT_DIR}/build_opts.cmake)
+set(ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
+include(${ROOT_DIR}/build_opts.cmake)
 
 # target
 set(APP_HW_TARGET XCORE-AI-EXPLORER)
