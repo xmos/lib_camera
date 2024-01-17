@@ -25,7 +25,7 @@ Quick Start
 
 In order to setup the project and build the examples, please refer to the documentation:
 
-:doc:`doc/quick_start_guide/index.rst`
+:doc:`doc/quick_start_guide/index`
 
 
 Requirements
