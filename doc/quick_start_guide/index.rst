@@ -55,11 +55,9 @@ Xcommon cmake setup
 ^^^^^^^^^^^^^^^^^^^
 This repository uses ``xcommon_cmake`` and ``xmake`` as a build system. 
 
-- ``xcommon_cmake`` is a collection of CMake functions and macros that are used to build XCORE.AI projects. 
-More information can be found here: `xcommon_cmake/doc <https://github.com/xmos/xcommon_cmake/tree/develop/doc>`_. 
+- ``xcommon_cmake`` is a collection of CMake functions and macros that are used to build XCORE.AI projects. More information can be found here: `xcommon_cmake/doc <https://github.com/xmos/xcommon_cmake/tree/develop/doc>`_. 
 
-- ``xmake`` is native to XTC tools. 
-More information can be found here: `xmake-manual <https://www.xmos.com/documentation/XM-014363-PC-4/html/tools-guide/tools-ref/cmd-line-tools/xmake-manual/xmake-manual.html>`_.  
+- ``xmake`` is native to XTC tools. More information can be found here: `xmake-manual <https://www.xmos.com/documentation/XM-014363-PC-4/html/tools-guide/tools-ref/cmd-line-tools/xmake-manual/xmake-manual.html>`_.  
 
 In order to build the examples, you need to set the ``XCOMMON_CMAKE_PATH`` environment variable to the path of the ``xcommon_cmake`` repository. 
 For example for Windows:
