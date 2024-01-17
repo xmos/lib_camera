@@ -1,5 +1,5 @@
-Camera framework
-==================
+Camera Library
+==============
 
 This repository serves as a comprehensive software solution for camera manipulation using the XCORE.AI sensor.
 
