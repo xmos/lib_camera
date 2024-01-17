@@ -25,7 +25,7 @@ Quick Start
 
 In order to setup the project and build the examples, please refer to the documentation:
 
-[quick start guide](#quick_start_guide)
+:doc:`doc/quick_start_guide.rst`
 
 
 Requirements
