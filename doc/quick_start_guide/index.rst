@@ -2,6 +2,7 @@
 
 Quick Start Guide
 -------------------
+#quick_start_guide
 
 This document will provide a quick tour through the |fwk_camera| repository. It will go through the process
 of building the example application and taking a photo in RAW8 format.
