@@ -28,7 +28,6 @@ In order to setup the project and build the examples, please refer to the docume
 [quick start guide](#quick_start_guide)
 
 
--------------------------------------------------------------------
 Requirements
 ------------
 
