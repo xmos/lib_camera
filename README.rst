@@ -28,6 +28,7 @@ In order to setup the project and build the examples, please refer to the docume
 :doc:`doc/quick_start_guide/index`
 For more detailed information, see [doc/help](doc/help.rst).
 
+`doc/help.rst <./doc/help.rst>`_.
 
 Requirements
 ------------
