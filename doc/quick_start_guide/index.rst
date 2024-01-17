@@ -55,8 +55,9 @@ Xcommon cmake setup
 ^^^^^^^^^^^^^^^^^^^
 This repository uses ``xcommon_cmake`` and ``xmake`` as a build system. 
 
-``xcommon_cmake`` is a collection of CMake functions and macros that are used to build XCORE.AI projects. more information here: https://github.com/xmos/xcommon_cmake/tree/develop/doc
-``xmake`` is native to XTC tools. more information here: https://www.xmos.com/documentation/XM-014363-PC-4/html/tools-guide/tools-ref/cmd-line-tools/xmake-manual/xmake-manual.html
+- ``xcommon_cmake`` is a collection of CMake functions and macros that are used to build XCORE.AI projects. `xcommon_cmake/doc <https://github.com/xmos/xcommon_cmake/tree/develop/doc>`_. 
+
+- ``xmake`` is a fork of make, native to XTC tools. `xmake-manual <https://www.xmos.com/documentation/XM-014363-PC-4/html/tools-guide/tools-ref/cmd-line-tools/xmake-manual/xmake-manual.html>`_.  
 
 In order to build the examples, you need to set the ``XCOMMON_CMAKE_PATH`` environment variable to the path of the ``xcommon_cmake`` repository. 
 For example for Windows:
@@ -100,7 +101,7 @@ Then, this image can be decoded using the Python script ``python decode_raw8.py`
 
 1. Ensure that the camera is connected to the board.
 2. Connect the Power Supply and xTag debugger.
-3. Build the example using the following command:
+3. Build the example using the following command inside the ``examples/take_picure_raw`` folder:
    
   .. code-block:: console       
 
