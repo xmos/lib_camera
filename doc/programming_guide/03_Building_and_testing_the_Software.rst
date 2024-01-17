@@ -23,7 +23,7 @@ Software requirements
 Building the firmware and the examples
 --------------------------------------
 
-|fwk_camera| is intended to be used as part of an application. If |fwk_camera| has been submoduled, the user will only be able to build the ``.a`` components of the framework. On the other hand, if |fwk_camera| is used on it's own, the user will be able to build example applications and proceed with this guide.
+|lib_camera| is intended to be used as part of an application. If |lib_camera| has been submoduled, the user will only be able to build the ``.a`` components of the framework. On the other hand, if |lib_camera| is used on it's own, the user will be able to build example applications and proceed with this guide.
 
 Follow the instructions below to build all possible targets.
 
@@ -46,7 +46,7 @@ Follow the instructions below to build all possible targets.
 Building the host app (xscope_fileio)
 -------------------------------------
 
-All |fwk_camera| examples do file I/O over a tool called ``xscope_fileio``. There is a python wrapper script ``python/run_xcore_bin.py``
+All |lib_camera| examples do file I/O over a tool called ``xscope_fileio``. There is a python wrapper script ``python/run_xcore_bin.py``
 which will run the example binary of the user's choice using ``xscope_fileio``. This script requires some ``xscope_fileio``
 host binaries. To get host tools the user will need to follow the steps below:
 

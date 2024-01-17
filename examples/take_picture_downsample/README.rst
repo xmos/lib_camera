@@ -2,7 +2,7 @@
 Example: Take picture downsample
 ================================
 
-This example set the basic settings for the sony sensor and grab a single frame. 
+This example sets the basic settings for the Sony sensor and grabs a single frame. 
 By default the format is the following:
 - 160x120x3 RGB
 
