@@ -37,7 +37,7 @@ pipeline {
                 sh 'git clone -b develop git@github.com:xmos/xcommon_cmake'
                 sh 'git -C xcommon_cmake rev-parse HEAD'
 
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   checkout scm
                   // build examples and tests
                   withTools(params.TOOLS_VERSION) {
