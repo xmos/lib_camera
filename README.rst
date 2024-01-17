@@ -6,77 +6,84 @@ This repository serves as a comprehensive software solution for camera manipulat
 Repository Structure
 --------------------
 
+- **doc**         : documentation for the camera library
 - **examples**    : examples for taking pictures with the explorer board
-- **camera**      : useful functions to manipulate images
-- **modules**     : dependencies folder
-- **sensors**     : configuration and control of the sensors
+- **lib_camera**  : library to manipulate cameras
 - **python**      : python functions to decode RAW8, RAW10 pictures and other utilities to treat images
+- **tests**       : tests for the camera library
 
 Requirements
 ------------
 
-- CMAKE
-- XMOS tools
-- git submodules 
-- Ninja (Windows)
+- XTC tools 15.2.1
+- CMake 3.21 or later
+- Python 3.9 or later 
+
+Sandbox Structure
+-----------------
+
+This repository is structured as a sandbox. 
+It will install dependencies above the current folder. So the folder structure should look like this:
+
+sandbox
+  |
+  |--- lib_camera (current repository)
+  |--- xscope_fileio
+  |--- xcommon_cmake
+  |--- other_libs...
+
 
 Installation
 ------------
 
-Some dependent components are included as git submodules. These can be obtained by cloning this repository with the following command:
-(make sure you have the correct ssh access to clone)
+Clone the the following repositories using the commands:
 
 .. code-block:: console
 
-  git clone --recurse-submodules https://github.com/xmos/fwk_camera.git
+  git clone https://github.com/xmos/lib_camera.git
+  git clone https://github.com/xmos/xscope_fileio.git ../xscope_fileio
+  git clone https://github.com/xmos/xcommon_cmake.git ../xcommon_cmake
 
-Build instructions
-------------------
-
-The instructions below will build all modules, examples and tests.
-For building a specific example refer to examples/readme.rst.
-
-Linux, Mac
-~~~~~~~~~~
+Install a python environement and install the python dependencies:
 
 .. code-block:: console
 
-  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  make -C build
+  pip install -r requirements.txt
+  pip install -e ../xscope_fileio
 
+Xcommon cmake setup
+-------------------
 
-Windows
-~~~~~~~
+This repository uses ``xcommon_cmake`` and ``xmake`` as a build system. 
 
-.. code-block:: console
+``xcommon_cmake`` is a collection of cmake functions and macros that are used to build XCORE.AI projects. more information here: https://github.com/xmos/xcommon_cmake/tree/develop/doc
+``xmake`` is native to XTC tools. more information here: https://www.xmos.com/documentation/XM-014363-PC-4/html/tools-guide/tools-ref/cmd-line-tools/xmake-manual/xmake-manual.html
 
-  cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  ninja -C build
+In order to build the examples, you need set the ``XCOMMON_CMAKE_PATH`` environment variable to the path of the ``xcommon_cmake`` repository. For example:
 
+Xscope fileio setup (windows)
+-----------------------------
 
-Installing xscope_fileio host tools
------------------------------------
+To install ``xscope_fileio`` tool, please follow the steps below:
 
-To install ``xscope_fileio`` host tool, please follow the steps below:
-
-1. Make sure you have a C compiler  installed. If you are developing on Windows, we recomend using VS tools with a ``cl`` compiler.
+1. Make sure you have a C compiler  installed. We recomend using VS tools with a ``cl`` compiler.
 2. Open a terminal or command prompt.
+
 3. Install the xscope_fileio package:
 
-.. tab:: Linux and Mac
+.. code-block:: console
 
-  .. code-block:: console
-
-    >> Linux and Mac
-    pip install -e ../xscope_fileio
-
-.. tab:: Windows
-
-  .. code-block:: console
-
-    >> Windows
-    pip install -e ../xscope_fileio
     cmake -G Ninja -S ../xscope_fileio/host -B ../xscope_fileio/host
     ninja -C ../xscope_fileio/host
   
 Your ``xscope_fileio`` host app is now ready to use.
+
+Build instructions
+------------------
+
+Go the example that you want to build and follow the instructions in the ``README.rst`` file.
+Alternatively, you can build all the examples using the following command:
+
+.. code-block:: console
+
+  python examples/build_examples.py
