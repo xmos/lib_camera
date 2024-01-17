@@ -25,12 +25,14 @@ Sandbox Structure
 This repository is structured as a sandbox. 
 It will install dependencies above the current folder. So the folder structure should look like this:
 
-sandbox
-  |
-  |--- lib_camera (current repository)
-  |--- xscope_fileio
-  |--- xcommon_cmake
-  |--- other_libs...
+.. code-block:: console
+
+  sandbox
+    |
+    |--- lib_camera (current repository)
+    |--- xscope_fileio
+    |--- xcommon_cmake
+    |--- other_libs...
 
 
 Installation
