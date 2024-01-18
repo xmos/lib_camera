@@ -5,25 +5,25 @@ Version 0.2.0
 -------------
 
 Description
-***********
+^^^^^^^^^^^
 
 This release adds a support for a larger resolution and re-implements sensor control to be more flexible.
 
 New Features
-************
+^^^^^^^^^^^^
 
 Added support for 1280x960 frame with the downsampling factor of 8. Sensor component has been reimplemented to be more flexible with the resolution and the RAW format.
 Now it will take arguments into a class constructor rather then relying on pre-processor definitions.
 
 Limitations
-***********
+^^^^^^^^^^^
 
 - RAW10 downsample: RAW10 downsample is not supported.
 - 1280x960 in RAW: 1280x960 in RAW8 or RAW10 can't be fitted in RAM.
 - Still heavily relying on the pre-processor values.
 
 Known Issues
-************
+^^^^^^^^^^^^
 
 - Artefacts:
 
@@ -39,25 +39,25 @@ Version 0.1.0
 -------------
 
 Description
-***********
+^^^^^^^^^^^
 This is an initital release of the |lib_camera| repo. It contains a basic interface for acquiring images, processing them and sending them to the host.
 It also contains a basic interface for controlling the camera ISP features.
 
 New Features
-************
+^^^^^^^^^^^^
 
 In this first release we include two basic examples to capture an image from the Sony IMX219 sensor (Raspberry Pi Camera V2).
 For the first examples the image is directly captured as raw and saved as a .raw file.
 The second example is a more complex pipeline that involves the ISP. The image is captured as raw, processed by the ISP and saved as a .bmp and .bin file.
 
 Limitations
-***********
+^^^^^^^^^^^
 
 - RAW10 downsample: RAW10 downsample is not supported.
 - Galaxy core sensor pipeline is not yet supported.
 
 Known Issues
-************
+^^^^^^^^^^^^
 
 - Artefacts:
 
