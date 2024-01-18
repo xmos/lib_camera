@@ -67,7 +67,7 @@ For example for Windows:
   set XMOS_CMAKE_PATH=C:/Users/user_x/sandbox/xcommon_cmake
 
 Xscope fileio setup (Windows)
------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 On Windows the host app of ``xscope_fileio`` is not installed by default, please follow the steps below:
 
