@@ -1,4 +1,4 @@
-set(LIB_NAME lib_camera) #TODO change name
+set(LIB_NAME lib_camera)
 set(LIB_VERSION 0.3.0)
 set(LIB_DEPENDENT_MODULES i2c)
 set(LIB_INCLUDES api src/sensors/sony_imx219)
