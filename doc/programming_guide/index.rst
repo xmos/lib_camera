@@ -1,5 +1,5 @@
 ****************************
-FWK-CAMERA Programming Guide 
+Lib_camera Programming Guide 
 ****************************
 
 .. toctree::
