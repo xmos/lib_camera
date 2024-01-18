@@ -44,7 +44,7 @@ Clone the following repositories using the commands:
   git clone https://github.com/xmos/xscope_fileio.git ../xscope_fileio
   git clone https://github.com/xmos/xcommon_cmake.git ../xcommon_cmake
 
-Install a Python environment and install the Python dependencies:
+Install a Python virtual environment and install the Python dependencies:
 
 .. code-block:: console
 
