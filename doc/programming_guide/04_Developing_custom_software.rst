@@ -4,6 +4,8 @@ Software customisation
 Adding a new sensor
 -------------------
 
+This section describes how to add a new sensor to the xcore.ai camera library.
+
 Hardware
 ^^^^^^^^
 

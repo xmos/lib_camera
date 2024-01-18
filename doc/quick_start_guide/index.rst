@@ -94,8 +94,8 @@ Alternatively, you can build all the examples using the following command:
 
 Below we demonstrate how to build and run the take picture RAW camera demo.
 
-Running the RAW camera demo
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Building and Running the RAW camera demo
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This demo uses the RAW camera module to capture a RAW8 image and save it to a .raw file. 
 Then, this image can be decoded using the Python script ``python decode_raw8.py``.
 
