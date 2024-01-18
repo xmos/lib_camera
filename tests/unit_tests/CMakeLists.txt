@@ -18,7 +18,7 @@ list(APPEND APP_C_SRCS
     src/test/pixel_vfilter_test.c
     src/test/statistics_test.c
 )
-list(APPEND APP_DEPENDENT_MODULES ${lib_camera} ${Unity})
+list(APPEND APP_DEPENDENT_MODULES lib_camera ${Unity})
 
 # common
 set(COM_DIR ../../examples/common)

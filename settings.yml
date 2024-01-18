@@ -1,13 +1,13 @@
 ---
-project: fwk_camera
-title: XCORE Camera Framework
+project: lib_camera
+title: XCORE Camera Library
 version: 0.3.0
 
 documentation:
   exclude_patterns_path: doc/exclude_patterns.inc
   substitutions_path: doc/substitutions.inc
   doxygen_projects:
-    fwk_camera:
+    lib_camera:
       doxyfile_path: doc/Doxyfile.inc
   pdfs:
     doc/quick_start_guide/index:

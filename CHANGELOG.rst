@@ -1,4 +1,4 @@
-fwk_camera change log
+lib_camera change log
 =====================
 
 0.3.0

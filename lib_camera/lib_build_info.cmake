@@ -1,7 +1,7 @@
-set(LIB_NAME fwk_camera) #TODO change name
+set(LIB_NAME lib_camera) #TODO change name
 set(LIB_VERSION 0.3.0)
-set(LIB_DEPENDENT_MODULES i2c )
-set(LIB_INCLUDES api src/sensors/_sony_imx219)
+set(LIB_DEPENDENT_MODULES i2c)
+set(LIB_INCLUDES api src/sensors/sony_imx219)
 set(LIB_COMPILER_FLAGS -Os -Wall -Werror -g -fxscope -mcmodel=large)
 
 # I2C

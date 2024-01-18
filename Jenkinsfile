@@ -37,7 +37,7 @@ pipeline {
                 sh 'git clone -b develop git@github.com:xmos/xcommon_cmake'
                 sh 'git -C xcommon_cmake rev-parse HEAD'
 
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   checkout scm
                   // build examples and tests
                   withTools(params.TOOLS_VERSION) {
@@ -65,7 +65,7 @@ pipeline {
                 sh "git clone git@github.com:xmos/infr_apps"
                 sh "git clone git@github.com:xmos/infr_scripts_py"
                 // can't use createVenv on the top level yet
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   createVenv('requirements.txt')
                   withVenv {
                     sh "pip install -e ../infr_scripts_py"
@@ -78,7 +78,7 @@ pipeline {
             stage('Source check') {
               steps {
                 // bit weird for now but should changed after the next xjsl release
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   withVenv {
                     dir('tests/lib_checks') {
                       sh "pytest -s"
@@ -90,7 +90,7 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                dir('fwk_camera/tests/unit_tests/bin') {
+                dir('lib_camera/tests/unit_tests/bin') {
                   withTools(params.TOOLS_VERSION) {
                     sh 'xsim --xscope "-offline trace.xmt" test_camera.xe'
                   }
@@ -126,7 +126,7 @@ pipeline {
 
                 script {
                   def doc_version = sh(script: "cat settings.yml | awk '/version:/ {print \$2}'", returnStdout: true).trim()
-                  def zipFileName = "docs_fwk_camera_v${doc_version}.zip"
+                  def zipFileName = "docs_lib_camera_v${doc_version}.zip"
                   zip zipFile: zipFileName, archive: true, dir: "doc/_build"
                 } // script
               } // steps

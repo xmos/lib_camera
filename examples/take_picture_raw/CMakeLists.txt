@@ -11,7 +11,7 @@ set(APP_HW_TARGET XCORE-AI-EXPLORER)
 list(APPEND APP_INCLUDES src)
 list(APPEND APP_C_SRCS src/app_raw.c)
 list(APPEND APP_XC_SRCS src/main.xc)
-list(APPEND APP_DEPENDENT_MODULES ${lib_camera})
+list(APPEND APP_DEPENDENT_MODULES lib_camera)
 
 # common
 set(COM_DIR ../common)
