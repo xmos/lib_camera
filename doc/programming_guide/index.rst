@@ -1,6 +1,6 @@
-****************************
-Lib_camera Programming Guide 
-****************************
+********************************
+Camera Library Programming Guide 
+********************************
 
 .. toctree::
   :maxdepth: 1
