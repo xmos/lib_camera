@@ -50,7 +50,7 @@ Getting Started
 
 A Quick Start Guide is provided with this document. 
 It contains a step-by-step guide on how to get started with the |lib_camera| and run a basic ``image_capture`` example.
-PLease refer to `building and running the software <./03_Building_and_running_the_software.rst>`_.
+Please refer to :doc:`03_Building_and_running_the_software`
 
 Additional Resources
 ---------------------

@@ -25,4 +25,4 @@ Quick Start
 
 In order to setup the project and build the examples, please refer to the documentation:
 
-`doc/quick_start_guide <./doc/quick_start_guide/index.rst>`_.
+`doc/quick_start_guide <./doc/quick_start_guide/quick_start_guide.rst>`_.

@@ -1,8 +1,8 @@
-Building and running the Software
-=================================
+Quick Start Guide
+-------------------
 
-This section will provide details on how the software can be built and run. It will go through the full process from the requirements to the user seeing images taken from xcore on the their screen.
-
+This document will provide a quick tour through the |lib_camera| repository. It will go through the process
+of building the example application and taking a photo in RAW8 format.
 
 Hardware requirements
 ^^^^^^^^^^^^^^^^^^^^^
@@ -15,7 +15,7 @@ Hardware requirements
 Software requirements
 ^^^^^^^^^^^^^^^^^^^^^
 - XTC tools (15.2.1): `SW_TOOLS`_
-- CMake, Ninja (Windows)
+- CMake
 - Python 3.9 or later 
 
 Sandbox Structure
@@ -42,7 +42,7 @@ Clone the following repositories using the commands:
   git clone https://github.com/xmos/xscope_fileio.git ../xscope_fileio
   git clone https://github.com/xmos/xcommon_cmake.git ../xcommon_cmake
 
-Install a Python environment and install the Python dependencies:
+Install a Python virtual environment and install the Python dependencies:
 
 .. code-block:: console
 
@@ -58,16 +58,29 @@ This repository uses ``xcommon_cmake`` and ``xmake`` as a build system.
 - ``xmake`` is a fork of make, native to XTC tools. `xmake-manual <https://www.xmos.com/documentation/XM-014363-PC-4/html/tools-guide/tools-ref/cmd-line-tools/xmake-manual/xmake-manual.html>`_.  
 
 In order to build the examples, you need to set the ``XCOMMON_CMAKE_PATH`` environment variable to the path of the ``xcommon_cmake`` repository. 
-For example for Windows:
 
-.. code-block:: console
+.. tab:: MacOS and Linux
 
-  set XMOS_CMAKE_PATH=C:/Users/user_x/sandbox/xcommon_cmake
+    .. code-block:: console
+
+       # MacOS and Linux
+       export XMOS_CMAKE_PATH=/home/user/xcommon_cmake
+
+.. tab:: Windows
+
+    .. code-block:: console
+
+       # Windows
+       set XMOS_CMAKE_PATH=C:/Users/user/xcommon_cmake
+
 
 Xscope fileio setup (Windows)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-On Windows the host app of ``xscope_fileio`` is not installed by default, please follow the steps below:
+On Windows the host app of ``xscope_fileio`` is not built by default, the user needs to build it manually.
+Ninja can be used as a build system for building the host application.  
+
+Please follow the steps below:
 
 1. Make sure you have a C compiler installed. We recommend using VS tools with a ``cl`` compiler.
 2. Open a terminal or command prompt.
@@ -75,10 +88,23 @@ On Windows the host app of ``xscope_fileio`` is not installed by default, please
 
 .. code-block:: console
 
-  cmake -G Ninja -S ../xscope_fileio/host -B ../xscope_fileio/host
-  ninja -C ../xscope_fileio/host
+    cmake -G Ninja -S ../xscope_fileio/host -B ../xscope_fileio/host
+    ninja -C ../xscope_fileio/host
   
 Your ``xscope_fileio`` host app is now ready to use.
+
+Build instructions
+^^^^^^^^^^^^^^^^^^
+
+In order to build any example, go to the example that you want to build and follow the instructions in the ``README.rst`` file.
+Alternatively, you can build all the examples using the following command:
+
+.. code-block:: console
+
+  python examples/build_examples.py
+
+Below we demonstrate how to build and run the take picture RAW camera demo.
+
 
 Building and Running the RAW camera demo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -90,7 +116,7 @@ Then, this image can be decoded using the Python script ``python decode_raw8.py`
 2. Connect the Power Supply and xTag debugger.
 3. Build the example using the following command inside the ``examples/take_picure_raw`` folder:
    
-.. code-block:: console
+.. code-block:: console       
 
   cmake -G "Unix Makefiles" -B build
   xmake -C build

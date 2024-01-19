@@ -36,4 +36,4 @@ calling the new sensor API like this:
     snsr.control(c_control);
   }
 
-After that's been done, the user will need to put it into the build system by adding their sources and adapting the ``CMakeLists.txt`` file.
+After that's been done, the user will need rebuild the application. 
