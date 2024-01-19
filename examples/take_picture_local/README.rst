@@ -28,7 +28,7 @@ Running example
 
 .. warning::
 
-  Make sure ``xscope_fileio`` is installed (follow `doc/quick_start_guide <./doc/quick_start_guide/index.rst>`_. for installation)
+  Make sure ``xscope_fileio`` is installed (follow `doc/quick_start_guide <../../doc/quick_start_guide/index.rst>`_. for installation)
 
 Run the following command from the current directory:
 
