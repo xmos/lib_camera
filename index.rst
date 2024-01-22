@@ -1,8 +1,8 @@
-################
-Framework Camera
-################
+##############
+Camera Library
+##############
 
-Framework of camera processing libraries for XCORE.AI.
+Camera processing libraries for XCORE.AI.
 
 .. toctree::
   :maxdepth: 1

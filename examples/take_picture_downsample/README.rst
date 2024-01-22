@@ -1,15 +1,13 @@
-================================
-Example: Take picture downsample
+Example: take picture downsample
 ================================
 
-This example set the basic settings for the sony sensor and grab a single frame. 
-By default the format is the following:
+This example sets the basic settings for the Sony sensor and grabs a single frame. 
+By default, the output format is the following:
 - 160x120x3 RGB
 
-*************
-Build example
-*************
 
+Build example
+-------------
 Run the following command from the example folder: 
 
 .. code-block:: console
@@ -18,23 +16,22 @@ Run the following command from the example folder:
   xmake -C build
 
 
-***************
 Running example
-***************
+---------------
 
 .. warning::
-  Make sure ``xscope_fileio`` is installed (folow top level README.rst for installation)
 
-Run the following command:
+  Make sure ``xscope_fileio`` is installed (follow `doc/quick_start_guide <../../doc/quick_start_guide/quick_start_guide.rst>`_. for installation)
+
+Run the following command from the current directory:
 
 .. code-block:: console
 
   python ../../python/run_xscope_bin.py bin/take_picture_downsample.xe # from the example folder
-  python python/run_xscope_bin.py examples/take_picture_downsample/bin/take_picture_downsample.xe # from the top level folder
 
-******
+
 Output
-******
+------
 
 The output files ``capture.bin`` and ``capture.bmp`` will be generated at the top level the repository. 
-``capture.bin`` can be further processed using ``python/decode_downsampled.py`` script.
+``capture.bin`` can be further processed using ``decode_downsampled.py`` script inside the top level ``python`` folder.

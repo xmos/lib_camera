@@ -1,5 +1,5 @@
 # This file provides overrides to the Doxyfile configuration
-PROJECT_NAME = FWK_CAMERA
+PROJECT_NAME = lib_camera
 PROJECT_BRIEF = "Camera interface for xcore AI"
 
 # Camera module
