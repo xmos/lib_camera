@@ -58,11 +58,20 @@ This repository uses ``xcommon_cmake`` and ``xmake`` as a build system.
 - ``xmake`` is a fork of make, native to XTC tools. `xmake-manual <https://www.xmos.com/documentation/XM-014363-PC-4/html/tools-guide/tools-ref/cmd-line-tools/xmake-manual/xmake-manual.html>`_.  
 
 In order to build the examples, you need to set the ``XCOMMON_CMAKE_PATH`` environment variable to the path of the ``xcommon_cmake`` repository. 
-For example for Windows:
 
-.. code-block:: console
+.. tab:: MacOS and Linux
 
-  set XMOS_CMAKE_PATH=C:/Users/user_x/sandbox/xcommon_cmake
+    .. code-block:: console
+
+       # MacOS and Linux
+       export XMOS_CMAKE_PATH=/home/user/xcommon_cmake
+
+.. tab:: Windows
+
+    .. code-block:: console
+
+       # Windows
+       set XMOS_CMAKE_PATH=C:/Users/user/xcommon_cmake
 
 Xscope fileio setup (Windows)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
