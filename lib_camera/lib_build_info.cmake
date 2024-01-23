@@ -10,8 +10,8 @@ if(NOT EXISTS ${XMOS_SANDBOX_DIR}/fwk_io)
     include(FetchContent)
     FetchContent_Declare(
         fwk_io
-        GIT_REPOSITORY git@github.com:danielpieczko/fwk_io
-        GIT_TAG xcommon_cmake
+        GIT_REPOSITORY git@github.com:xmos/fwk_io
+        GIT_TAG feature/xcommon_cmake
         SOURCE_DIR ${XMOS_SANDBOX_DIR}/fwk_io
     )
     FetchContent_Populate(fwk_io)
