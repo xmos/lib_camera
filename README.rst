@@ -1,54 +1,28 @@
-Camera framework
-==================
+Camera Library
+==============
 
 This repository serves as a comprehensive software solution for camera manipulation using the XCORE.AI sensor.
 
 Repository Structure
 --------------------
 
+- **doc**         : documentation for the camera library
 - **examples**    : examples for taking pictures with the explorer board
-- **camera**      : useful functions to manipulate images
-- **modules**     : dependencies folder
-- **sensors**     : configuration and control of the sensors
+- **lib_camera**  : library to manipulate cameras
 - **python**      : python functions to decode RAW8, RAW10 pictures and other utilities to treat images
+- **tests**       : tests for the camera library
 
-Requirements
-------------
+Examples
+--------
 
-- CMAKE
-- XMOS tools
-- git submodules 
-- Ninja (Windows)
-
-Installation
-------------
-
-Some dependent components are included as git submodules. These can be obtained by cloning this repository with the following command:
-(make sure you have the correct ssh access to clone)
-
-.. code-block:: console
-
-  git clone --recurse-submodules https://github.com/xmos/fwk_camera.git
-
-Build instructions
-------------------
-
-The instructions below will build all modules, examples and tests.
-For building a specific example refer to examples/readme.rst.
-
-Linux, Mac
-~~~~~~~~~~
-
-.. code-block:: console
-
-  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  make -C build
+- **take_picture_downsample** : takes a picture from an input size of 680x480 or 1280x960 and downsample it down to 160x120. 
+- **take_picture_local**      : similar to ``take_picture_downsample`` but the MIPI input is a .raw image not the camera.
+- **take_picture_raw**        : takes a raw8 680x480 picture and save it to a .raw file.
 
 
-Windows
-~~~~~~~
+Quick Start
+-----------
 
-.. code-block:: console
+In order to setup the project and build the examples, please refer to the documentation:
 
-  cmake -G Ninja -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  ninja -C build
+`doc/quick_start_guide <./doc/quick_start_guide/quick_start_guide.rst>`_.

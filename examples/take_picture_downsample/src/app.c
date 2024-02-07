@@ -1,4 +1,4 @@
-// Copyright 2023 XMOS LIMITED.
+// Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 // std
@@ -9,7 +9,7 @@
 
 #include <xcore/assert.h>
 
-#include "io_utils.h"
+#include "camera_io_utils.h"
 #include "app.h"
 
 void user_app()

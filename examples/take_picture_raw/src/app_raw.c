@@ -1,4 +1,4 @@
-// Copyright 2023 XMOS LIMITED.
+// Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 // std
@@ -12,7 +12,7 @@
 #include "mipi.h"
 #include "camera_api.h"
 #include "app_raw.h"
-#include "io_utils.h"
+#include "camera_io_utils.h"
 
 void user_app()
 {    

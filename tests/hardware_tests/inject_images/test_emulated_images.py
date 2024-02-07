@@ -1,4 +1,4 @@
-# Copyright 2023 XMOS LIMITED.
+# Copyright 2023-2024 XMOS LIMITED.
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 import os
@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import cv2
 import numpy as np
+import shutil
 
 from matplotlib import pyplot as plt
 from PIL import Image
@@ -18,16 +19,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # path definitions
-cwd = Path(__file__).parent.resolve()
-top_level = str(cwd.parent.parent.parent.resolve())
-examples = top_level + "\\build\\examples"
-python_path = top_level + "\\python"
-TARGET_NAME = "/take_picture_local/example_take_picture_local.xe"
+top_level = Path(__file__).parents[3].absolute()
+examples = top_level / "examples"
+python_path = top_level / "python"
+app_local = examples / "take_picture_local" / "bin" / "take_picture_local.xe"
 
 # python dependencies
 sys.path.append(str(python_path))
 from encode_raw8 import encode_raw8
-from run_xscope_bin import *
+from run_xscope_bin import run
 
 
 def test_pipeline_image():
@@ -61,9 +61,13 @@ def test_pipeline_image():
         # copy the image to tmp file
         shutil.copy(raw_img, "tmp.raw")
         # run the inference
-        run(examples + TARGET_NAME)
+        run(app_local)
         # Save capture.bmp to output folder
         img_name = os.path.basename(raw_img).replace(".raw", ".bmp")
         shutil.copy("capture.bmp", os.path.join(test_imgs_dir, "output", img_name))
         
         time.sleep(0.2)
+
+
+if __name__ == "__main__":
+    test_pipeline_image()

@@ -33,14 +33,27 @@ pipeline {
             stage ('Build') {
               steps {
                 runningOn(env.NODE_NAME)
-                dir('fwk_camera') {
+
+                sh 'git clone -b develop git@github.com:xmos/xcommon_cmake'
+                sh 'git -C xcommon_cmake rev-parse HEAD'
+
+                dir('lib_camera') {
                   checkout scm
-                  // fetch submodules
-                  sh 'git submodule update --init --recursive --jobs 4'
                   // build examples and tests
                   withTools(params.TOOLS_VERSION) {
-                    sh 'cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake'
-                    sh 'make -C build -j4'
+                    withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
+                      script {
+                        ["examples/take_picture_downsample",
+                         "examples/take_picture_local",
+                         "examples/take_picture_raw",
+                         "tests/hardware_tests/test_timing",
+                         "tests/unit_tests"
+                        ].each {
+                          sh "cmake -G 'Unix Makefiles' -S ${it} -B ${it}/build"
+                          sh "xmake -C ${it}/build -j4"
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -52,7 +65,7 @@ pipeline {
                 sh "git clone git@github.com:xmos/infr_apps"
                 sh "git clone git@github.com:xmos/infr_scripts_py"
                 // can't use createVenv on the top level yet
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   createVenv('requirements.txt')
                   withVenv {
                     sh "pip install -e ../infr_scripts_py"
@@ -65,7 +78,7 @@ pipeline {
             stage('Source check') {
               steps {
                 // bit weird for now but should changed after the next xjsl release
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   withVenv {
                     dir('tests/lib_checks') {
                       sh "pytest -s"
@@ -77,7 +90,7 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                dir('fwk_camera/build/tests/unit_tests') {
+                dir('lib_camera/tests/unit_tests/bin') {
                   withTools(params.TOOLS_VERSION) {
                     sh 'xsim --xscope "-offline trace.xmt" test_camera.xe'
                   }
@@ -113,7 +126,7 @@ pipeline {
 
                 script {
                   def doc_version = sh(script: "cat settings.yml | awk '/version:/ {print \$2}'", returnStdout: true).trim()
-                  def zipFileName = "docs_fwk_camera_v${doc_version}.zip"
+                  def zipFileName = "docs_lib_camera_v${doc_version}.zip"
                   zip zipFile: zipFileName, archive: true, dir: "doc/_build"
                 } // script
               } // steps

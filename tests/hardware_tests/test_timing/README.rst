@@ -13,5 +13,7 @@ Legend:
 To run this test, from top level directory of the repo, run the following command:
 
 .. code-block:: console
-
-  xrun --xscope build/tests/hardware_tests/test_timing/test_timing.xe
+  
+  cmake -G "Unix Makefiles" -S tests/hardware_tests/test_timing/ -B tests/hardware_tests/test_timing/build
+  xmake -C tests/hardware_tests/test_timing/build
+  xrun --xscope tests/hardware_tests/test_timing/bin/test_timing.xe

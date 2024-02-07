@@ -1,47 +1,43 @@
-# ##############################################################################
-# Sources and definitions
-# ##############################################################################
-set(TARGET test_camera)
+cmake_minimum_required(VERSION 3.21)
+include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
+project(test_camera)
 
-file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.*c)
+# root
+set(ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
+include(${ROOT_DIR}/build_opts.cmake)
 
-set(APP_COMMON_LINK_LIBRARIES 
-    Unity
-    fwk_camera::camera 
+# target
+set(APP_HW_TARGET XCORE-AI-EXPLORER)
+list(APPEND APP_INCLUDES api src src/test)
+list(APPEND APP_C_SRCS
+    src/main.c
+    src/test/_helpers.c
+    src/test/color_conversion_test.c
+    src/test/gamma_timing_test.c
+    src/test/pixel_hfilter_test.c
+    src/test/pixel_vfilter_test.c
+    src/test/statistics_test.c
 )
+list(APPEND APP_DEPENDENT_MODULES lib_camera ${Unity})
 
-# ##############################################################################
-# Flags
-# ##############################################################################
-set(APP_LINK_OPTIONS 
-  "-report" 
-  "-target=${XCORE_TARGET}"
-  -fcmdline-buffer-bytes=1024
-  ${CMAKE_CURRENT_LIST_DIR}/config.xscope
-)
+# common
+set(COM_DIR ../../examples/common)
+list(APPEND APP_INCLUDES ${COM_DIR})
+list(APPEND APP_C_SRCS ${COM_DIR}/camera_io_utils.c)
+list(APPEND APP_DEPENDENT_MODULES ${xscope_fileio})
 
+# xscope
+set(APP_XSCOPE_SRCS ../config.xscope)
+
+# flags
 set(APP_COMPILER_FLAGS
-  -Os
-  -g
-  -report
-  -Wall
-  -Werror
-  -fxscope
-  -mcmodel=large
-  ${CMAKE_CURRENT_LIST_DIR}/config.xscope
-)
+    -Os
+    -g
+    -report
+    -Wall
+    -Werror
+    -fxscope
+    -mcmodel=large
+    -Wno-xcore-fptrgroup)
 
-set(APP_INCLUDES api)
-
-# ##############################################################################
-# Create executable
-# ##############################################################################
-add_executable(${TARGET} )
-target_sources(${TARGET} PUBLIC ${APP_SOURCES})
-target_include_directories(${TARGET} PUBLIC ${APP_INCLUDES})
-target_compile_options(${TARGET} PUBLIC -g -Os -Wall -Wno-xcore-fptrgroup)
-target_link_libraries(${TARGET} PUBLIC ${APP_COMMON_LINK_LIBRARIES})
-target_link_options(${TARGET} PRIVATE ${APP_LINK_OPTIONS})
-
-# enable testing functionality
-add_test(NAME ${TARGET} COMMAND ${TARGET})
+XMOS_REGISTER_APP()

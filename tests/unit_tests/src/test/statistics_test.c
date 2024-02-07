@@ -1,4 +1,4 @@
-// Copyright 2023 XMOS LIMITED.
+// Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdint.h>
@@ -13,7 +13,7 @@
 #include "unity_fixture.h"
 
 #include "_helpers.h"
-#include "stats.h"      
+#include "isp_stats.h"      
 #include "camera_utils.h"   // time
 
 #define DELTA 16
