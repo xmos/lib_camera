@@ -2,6 +2,9 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdint.h>
+#include <string.h>
+
+#include <xcore/assert.h>
 
 #include "isp_functions.hpp"
 
@@ -35,10 +38,10 @@ void isp_crop_template(
 }
 
 // -------------------------------- Resize  --------------------------------
-static void xmodf(float a, int *b, float *c, int *bp)
+void xmodf(float a, unsigned *b, float *c, unsigned *bp)
 {
-  // split integer and decimal part
-  *b = (int)(a);
+  // split unsignedeger and decimal part
+  *b = (unsigned)(a);
   *c = a - *b;
   // last operand for convinience 
   *bp = *b + 1;
