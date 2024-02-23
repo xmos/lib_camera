@@ -26,8 +26,8 @@ unsigned t1t = 0, t2t = 0, t3t = 0, t4t = 0, t5t = 0;
 // Unity
 TEST_GROUP_RUNNER(resize_group) {
     RUN_TEST_CASE(resize_group, resize__upsample);
-    //RUN_TEST_CASE(resize_group, resize__compare);
-    //RUN_TEST_CASE(resize_group, resize__constant);
+    RUN_TEST_CASE(resize_group, resize__compare);
+    RUN_TEST_CASE(resize_group, resize__constant);
 }
 TEST_GROUP(resize_group);
 TEST_SETUP(resize_group) {
