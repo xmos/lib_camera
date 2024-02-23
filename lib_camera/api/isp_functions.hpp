@@ -3,9 +3,11 @@
 
 #pragma once
 
-#include <cstdint>
+#include <stdint.h>
 
-// -------------------------- Cpp --------------------------
+// -------------------------- Cpp Only --------------------------
+#ifdef __cplusplus
+
 template<typename T>
 void isp_crop_template(
     T* img,
@@ -25,10 +27,13 @@ void isp_resize_template(
     const unsigned out_width,
     const unsigned out_height);
 
+#endif // __cplusplus
 
 // -------------------------- C --------------------------
+#if defined(__XC__) || defined(__cplusplus)
 extern "C" {
-    
+#endif
+
     void isp_crop_int8(
         int8_t* img,
         const unsigned in_width,
@@ -63,4 +68,14 @@ extern "C" {
         const unsigned out_width,
         const unsigned out_height);
 
+    void isp_resize_uint8_opt(
+        const uint8_t* img,
+        const unsigned in_width,
+        const unsigned in_height,
+        uint8_t* out_img,
+        const unsigned out_width,
+        const unsigned out_height);
+
+#if defined(__XC__) || defined(__cplusplus)
 } // extern "C"
+#endif
