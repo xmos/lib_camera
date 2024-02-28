@@ -64,7 +64,7 @@ void isp_crop_uint8(
 // -------------------------------- Resize  --------------------------------
 
 static inline void xmodf(float a, unsigned* b, float* c, unsigned* bp) {
-  int32_t zero = 0, tmp, exp;
+  int32_t zero = 0, tmp, exp; // tmp is used to mask the mantissa
   unsigned mant;
   asm("fsexp %0, %1, %2": "=r" (zero), "=r" (exp) : "r" (a));
   asm("fmant %0, %1": "=r" (mant) : "r" (a));
@@ -84,7 +84,7 @@ static inline float uint8_to_float(const uint8_t val) {
   return res;
 }
 static inline float unsigned_to_float(const unsigned val) {
-  // will lose some data with long words
+  // Note: if the word has more than 23 consecutive bits, data will be lost
   int32_t exp = 23, zero = 0;
   float res;
   asm("fmake %0, %1, %2, %3, %4" : "=r"(res) : "r"(zero), "r"(exp), "r"(zero), "r"(val));
@@ -134,7 +134,6 @@ void isp_resize_uint8(
         b = img[3 * in_width * y_l + 3 * x_h + plane];
         c = img[3 * in_width * y_h + 3 * x_l + plane];
         d = img[3 * in_width * y_h + 3 * x_h + plane];
-        // can be optimised with fmacc
         uint8_t pixel = float_to_uint8(uint8_to_float(a) * W + uint8_to_float(b) * X + uint8_to_float(c) * Y + uint8_to_float(d) * Z);
         out_img[3 * out_width * i + 3 * j + plane] = pixel;
       }
