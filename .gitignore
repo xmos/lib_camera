@@ -99,3 +99,4 @@ temp
 
 #documentation
 !**/images/*.png
+!person.bin
