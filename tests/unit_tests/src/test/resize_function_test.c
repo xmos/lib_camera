@@ -21,14 +21,19 @@
 #include <xcore/hwtimer.h>
 #define TO_MS 1E-5f
 
+#define DELTA_PIXEL 1 // allowed rounding error
+
 unsigned t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
 unsigned t1t = 0, t2t = 0, t3t = 0, t4t = 0, t5t = 0;
 
-// Unity
+
+// --------------------------- Unity -----------------------------------------
+
 TEST_GROUP_RUNNER(resize_group) {
-    RUN_TEST_CASE(resize_group, resize__upsample);
-    //RUN_TEST_CASE(resize_group, resize__compare);
-    //RUN_TEST_CASE(resize_group, resize__constant);
+    RUN_TEST_CASE(resize_group, resize__constant);     // resize with a constant value produces a cosntant value
+    RUN_TEST_CASE(resize_group, resize__compare);      // compare the output of the opt and no opt, compare time
+    RUN_TEST_CASE(resize_group, resize__upsample);     // test upsample a real image, save and decode
+    RUN_TEST_CASE(resize_group, resize__int8);         // test int8 resize, constant and time
 }
 TEST_GROUP(resize_group);
 TEST_SETUP(resize_group) {
@@ -38,111 +43,55 @@ TEST_SETUP(resize_group) {
 TEST_TEAR_DOWN(resize_group) {}
 
 
-// --------------------------------------------------------------------
-// Image creation
+// --------------------------- Image creation -----------------------------------------
 typedef struct
 {
     float x1, y1, x2, y2, score;
 } bbox_t;
 
-typedef struct {
-    uint8_t* ptr;
-    const uint16_t width;
-    const uint16_t height;
-    const uint16_t channels;
-    const size_t size;
-} Image_t;
+#define CREATE_IMG_UINT8(name, h, w, c)      \
+struct name {                                \
+    uint8_t data[h][w][c];                   \
+    uint8_t* ptr;                            \
+    const uint16_t width;                    \
+    const uint16_t height;                   \
+    const uint16_t channels;                 \
+    const unsigned size;                     \
+} name = {                                   \
+    .ptr = (uint8_t*)&name.data[0][0][0],    \
+    .width = w,                              \
+    .height = h,                             \
+    .channels = c,                           \
+    .size = w * h * c                        \
+}                             
 
-// --------------------------------------------------------------------
+#define CREATE_IMG_INT8(name, h, w, c)       \
+struct name {                                \
+    int8_t data[h][w][c];                    \
+    int8_t* ptr;                             \
+    const uint16_t width;                    \
+    const uint16_t height;                   \
+    const uint16_t channels;                 \
+    const unsigned size;                     \
+} name = {                                   \
+    .ptr = (int8_t*)&name.data[0][0][0],     \
+    .width = w,                              \
+    .height = h,                             \
+    .channels = c,                           \
+    .size = w * h * c                        \
+} 
 
-TEST(resize_group, resize__upsample) {
-    // image in
-    const unsigned width = 64, height = 64, channels = 3;
-    uint8_t img[height][width][channels];
-    Image_t img_st = { (uint8_t*)&img[0][0][0], width, height, channels, width * height * channels };
+// ------------------------------- Tests -------------------------------------
 
-    // image out
-    const unsigned out_width = 80, out_height = 80, out_channels = 3;
-    uint8_t img_out[out_height][out_width][out_channels];
-    Image_t img_out_st = { (uint8_t*)&img_out[0][0][0], out_width, out_height, out_channels, out_width * out_height * out_channels };
-
-    // read an image
-    printf("Reading image...\n");
-    char* filename = "imgs/person.bin";
-    char* filename_out = "imgs/person_upsampled.bin";
-
-    FILE* file = fopen(filename, "rb");
-    assert(file != NULL);
-    fread(img_st.ptr, sizeof(uint8_t), img_st.size, file);
-    fclose(file);
-
-    // upsample the image
-    printf("Upsampling image...\n");
-    unsigned t1 = get_reference_time();
-    isp_resize_uint8_opt(
-        img_st.ptr,
-        img_st.width,
-        img_st.height,
-        img_out_st.ptr,
-        img_out_st.width,
-        img_out_st.height
-    );
-    unsigned t2 = get_reference_time();
-    printf("Time: %u\n", t2 - t1);
-    // save the image
-    printf("Saving image...\n");
-    file = fopen(filename_out, "wb");
-    assert(file != NULL);
-    fwrite(img_out_st.ptr, sizeof(uint8_t), img_out_st.size, file);
-    fclose(file);
-
-    // decode the image
-    char cmd[200];
-    sprintf(cmd, "python ../../python/decode_downsampled.py --input imgs/person_upsampled.bin --width %d --height %d", img_out_st.width, img_out_st.height);
-    //system(cmd);
-    printf("Run the cmd >> : %s\n", cmd);
-}
-
-/*
-TEST(resize_group, resize__compare) {
-    // Seed the random number generator with the current time
-    srand(time(NULL));
-
-    // generate random numbers for the image buffer
-    fill_array_rand_uint8(img_data_ptr, in_size);
-
-    // compare pixel values
-    const unsigned N_times = 100;
-
-    for (unsigned i = 0; i < N_times; i++) {
-        unsigned loc = rand() % out_size;
-
-        isp_resize_uint8(
-            &bbox,
-            img_data_ptr,
-            out_width,
-            out_height,
-            img_data_out_ptr);
-        uint8_t pixel_val_out = img_data_out_ptr[loc];
-        isp_resize_uint8_opt(
-            &bbox,
-            img_data_ptr,
-            out_width,
-            out_height,
-            img_data_out_ptr);
-        uint8_t pixel_val_out_opt = img_data_out_ptr[loc];
-
-        TEST_ASSERT_EQUAL_UINT8(pixel_val_out, pixel_val_out_opt);
-    }
-}
 
 TEST(resize_group, resize__constant) {
-    // allowed rounding error
-    const unsigned delta = 1;
+    // create images
+    CREATE_IMG_UINT8(img, 64, 64, 3);
+    CREATE_IMG_UINT8(img_out, 80, 80, 3);
 
     // take N random pixel value
-    const unsigned N_times_pixel = 100;
-    const unsigned N_times = 100;
+    const unsigned N_times_pixel = 100; // Number of times to fill the image with a random value
+    const unsigned N_times = 100; // Number of times to pic random locations to check
     for (unsigned i = 0; i < N_times_pixel; i++) {
         // define manual cases
         uint8_t pixel_val_in;
@@ -151,26 +100,198 @@ TEST(resize_group, resize__constant) {
         }
         else if (i == N_times_pixel - 1) {
             pixel_val_in = 255;
-        }
+        } // random cases
         else {
             pixel_val_in = rand() % 255;
         }
 
-        memset(img_data, pixel_val_in, in_size);
+        memset(img.ptr, pixel_val_in, img.size);
 
-        isp_resize_uint8_opt(
-            &bbox,
-            img_data_ptr,
-            out_width,
-            out_height,
-            img_data_out_ptr);
-
+        // resize the image - 1 (no opt)
+        isp_resize_uint8(
+            img.ptr,
+            img.width,
+            img.height,
+            img_out.ptr,
+            img_out.width,
+            img_out.height
+        );
         // take N random pixel location
         for (unsigned i = 0; i < N_times; i++) {
-            unsigned loc = rand() % out_size;
-            uint8_t pixel_val_out = img_data_out_ptr[loc];
-            TEST_ASSERT_UINT8_WITHIN(delta, pixel_val_in, pixel_val_out);
+            unsigned loc = rand() % img_out.size;
+            uint8_t pixel_val_out = img_out.ptr[loc];
+            TEST_ASSERT_UINT8_WITHIN(DELTA_PIXEL, pixel_val_in, pixel_val_out);
+        }
+
+        // resize the image - 2 (opt)
+        isp_resize_uint8_opt(
+            img.ptr,
+            img.width,
+            img.height,
+            img_out.ptr,
+            img_out.width,
+            img_out.height
+        );
+        // take N random pixel location
+        for (unsigned i = 0; i < N_times; i++) {
+            unsigned loc = rand() % img_out.size;
+            uint8_t pixel_val_out = img_out.ptr[loc];
+            TEST_ASSERT_UINT8_WITHIN(DELTA_PIXEL, pixel_val_in, pixel_val_out);
         }
     }
 }
-*/
+
+
+TEST(resize_group, resize__compare) {
+    // create images
+    CREATE_IMG_UINT8(img, 64, 64, 3);
+    CREATE_IMG_UINT8(img_out, 80, 80, 3);
+
+    // Seed the random number generator with the current time
+    srand(time(NULL));
+
+    // generate random numbers for the image buffer
+    fill_array_rand_uint8(img.ptr, img.size);
+
+    // compare pixel values
+    const unsigned N_times = 100;
+
+    for (unsigned i = 0; i < N_times; i++) {
+        unsigned loc = rand() % img_out.size;
+        // no opt
+        isp_resize_uint8(
+            img.ptr,
+            img.width,
+            img.height,
+            img_out.ptr,
+            img_out.width,
+            img_out.height
+        );
+        uint8_t pixel_val_out = img_out.ptr[loc];
+        // compare with opt
+        isp_resize_uint8_opt(
+            img.ptr,
+            img.width,
+            img.height,
+            img_out.ptr,
+            img_out.width,
+            img_out.height
+        );
+        uint8_t pixel_val_out_opt = img_out.ptr[loc];
+        TEST_ASSERT_EQUAL_UINT8(pixel_val_out, pixel_val_out_opt);
+    }
+
+    // ---------------- Compare time
+    t1 = get_reference_time();
+    isp_resize_uint8(
+        img.ptr,
+        img.width,
+        img.height,
+        img_out.ptr,
+        img_out.width,
+        img_out.height
+    );
+    t2 = get_reference_time();
+    unsigned time_no_opt = t2 - t1;
+
+    t3 = get_reference_time();
+    isp_resize_uint8_opt(
+        img.ptr,
+        img.width,
+        img.height,
+        img_out.ptr,
+        img_out.width,
+        img_out.height
+    );
+    t4 = get_reference_time();
+    unsigned time_opt = t4 - t3;
+
+    printf("Time no opt: %d\n", time_no_opt);
+    printf("Time opt: %d\n", time_opt);
+}
+
+
+TEST(resize_group, resize__upsample) {
+    // create images
+    CREATE_IMG_UINT8(img, 64, 64, 3);
+    CREATE_IMG_UINT8(img_out, 80, 80, 3);
+
+    // read an image
+    printf("Reading image...\n");
+    char* filename = "imgs/person.bin";
+    char* filename_out = "imgs/person_upsampled.bin";
+
+    FILE* file = fopen(filename, "rb");
+    assert(file != NULL);
+    fread(img.ptr, sizeof(uint8_t), img.size, file);
+    fclose(file);
+
+    // upsample the image
+    isp_resize_uint8_opt(
+        img.ptr,
+        img.width,
+        img.height,
+        img_out.ptr,
+        img_out.width,
+        img_out.height
+    );
+
+    // save the image
+    printf("Saving image...\n");
+    file = fopen(filename_out, "wb");
+    assert(file != NULL);
+    fwrite(img_out.ptr, sizeof(uint8_t), img_out.size, file);
+    fclose(file);
+
+    // decode the image
+    char cmd[200];
+    sprintf(cmd, "python ../../python/decode_downsampled.py --input imgs/person_upsampled.bin --width %d --height %d", img_out.width, img_out.height);
+    //system(cmd);
+    printf("Run the cmd >> : %s\n", cmd);
+}
+
+
+TEST(resize_group, resize__int8) {
+    CREATE_IMG_INT8(img, 64, 64, 3);
+    CREATE_IMG_INT8(img_out, 80, 80, 3);
+
+    const unsigned N_times_pixel = 100; // Number of times to fill the image with a random value
+    const unsigned N_times = 100; // Number of times to pic random locations to check
+    for (unsigned i = 0; i < N_times_pixel; i++) {
+        int8_t pixel_val_in;
+        // define cases
+        switch (i) {
+            case 0:
+                pixel_val_in = INT8_MIN;
+                break;
+            case 1:
+                pixel_val_in = 0;
+                break;
+            case 2:
+                pixel_val_in = INT8_MAX;
+                break;
+            default:
+                pixel_val_in = (rand() % 256) - 128;
+                break;
+        }
+
+        memset(img.ptr, pixel_val_in, img.size);
+
+        // resize the image - 1 (no opt)
+        isp_resize_int8(
+            img.ptr,
+            img.width,
+            img.height,
+            img_out.ptr,
+            img_out.width,
+            img_out.height
+        );
+
+        // take N random pixel location
+        for (unsigned i = 0; i < N_times; i++) {
+            unsigned loc = rand() % img_out.size;
+            int8_t pixel_val_out = img_out.ptr[loc];
+            TEST_ASSERT_INT8_WITHIN(DELTA_PIXEL, pixel_val_in, pixel_val_out);
+        }
+    }
+}
