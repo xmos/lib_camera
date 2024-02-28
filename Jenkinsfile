@@ -92,7 +92,7 @@ pipeline {
               steps {
                 dir('lib_camera/tests/unit_tests/bin') {
                   withTools(params.TOOLS_VERSION) {
-                    sh 'xrun --xscope test_camera.xe'
+                    sh 'xrun --id 0 --xscope test_camera.xe'
                   }
                 }
               }
