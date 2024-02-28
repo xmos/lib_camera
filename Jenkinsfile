@@ -90,9 +90,9 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                dir('lib_camera/tests/unit_tests/bin') {
+                dir('lib_camera/tests/unit_tests') {
                   withTools(params.TOOLS_VERSION) {
-                    sh 'xrun --id 0 --xscope test_camera.xe'
+                    sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
               }
