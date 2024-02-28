@@ -81,8 +81,56 @@ struct name {                                \
     .size = w * h * c                        \
 } 
 
-// ------------------------------- Tests -------------------------------------
 
+// --------------------------- Aux functions -----------------------------------------
+static void xmodf(float a, unsigned* b, float* c, unsigned* bp)
+{
+    // split unsignedeger and decimal part
+    *b = (unsigned)(a);
+    *c = a - *b;
+    // last operand for convinience 
+    *bp = *b + 1;
+}
+static void isp_resize_uint8_base(
+  const uint8_t* img,
+  const unsigned in_width,
+  const unsigned in_height,
+  uint8_t* out_img,
+  const unsigned out_width,
+  const unsigned out_height) {
+  const float x_ratio = ((in_width - 1) / (float)(out_width - 1));
+  const float y_ratio = ((in_height - 1) / (float)(out_height - 1));
+
+  unsigned x_l, y_l, x_h, y_h;
+  float xw, yw;
+  uint8_t a, b, c, d;
+
+  for (unsigned i = 0; i < out_height; i++) {
+    for (unsigned j = 0; j < out_width; j++) {
+      float incrx = (x_ratio * j);
+      float incry = (y_ratio * i);
+
+      xmodf(incrx, &x_l, &xw, &x_h);
+      xmodf(incry, &y_l, &yw, &y_h);
+
+      for (unsigned plane = 0; plane < 3; plane++) {
+        a = img[3 * in_width * y_l + 3 * x_l + plane];
+        b = img[3 * in_width * y_l + 3 * x_h + plane];
+        c = img[3 * in_width * y_h + 3 * x_l + plane];
+        d = img[3 * in_width * y_h + 3 * x_h + plane];
+
+        uint8_t pixel = (uint8_t)(a * (1 - xw) * (1 - yw) +
+          b * xw * (1 - yw) +
+          c * yw * (1 - xw) +
+          d * xw * yw);
+
+        out_img[3 * out_width * i + 3 * j + plane] = pixel;
+      }
+    }
+  }
+}
+
+// ------------------------------- Tests -------------------------------------
 
 TEST(resize_group, resize__constant) {
     // create images
@@ -108,7 +156,7 @@ TEST(resize_group, resize__constant) {
         memset(img.ptr, pixel_val_in, img.size);
 
         // resize the image - 1 (no opt)
-        isp_resize_uint8(
+        isp_resize_uint8_base(
             img.ptr,
             img.width,
             img.height,
@@ -124,7 +172,7 @@ TEST(resize_group, resize__constant) {
         }
 
         // resize the image - 2 (opt)
-        isp_resize_uint8_opt(
+        isp_resize_uint8(
             img.ptr,
             img.width,
             img.height,
@@ -159,7 +207,7 @@ TEST(resize_group, resize__compare) {
     for (unsigned i = 0; i < N_times; i++) {
         unsigned loc = rand() % img_out.size;
         // no opt
-        isp_resize_uint8(
+        isp_resize_uint8_base(
             img.ptr,
             img.width,
             img.height,
@@ -169,7 +217,7 @@ TEST(resize_group, resize__compare) {
         );
         uint8_t pixel_val_out = img_out.ptr[loc];
         // compare with opt
-        isp_resize_uint8_opt(
+        isp_resize_uint8(
             img.ptr,
             img.width,
             img.height,
@@ -183,7 +231,7 @@ TEST(resize_group, resize__compare) {
 
     // ---------------- Compare time
     t1 = get_reference_time();
-    isp_resize_uint8(
+    isp_resize_uint8_base(
         img.ptr,
         img.width,
         img.height,
@@ -195,7 +243,7 @@ TEST(resize_group, resize__compare) {
     unsigned time_no_opt = t2 - t1;
 
     t3 = get_reference_time();
-    isp_resize_uint8_opt(
+    isp_resize_uint8(
         img.ptr,
         img.width,
         img.height,
@@ -206,8 +254,8 @@ TEST(resize_group, resize__compare) {
     t4 = get_reference_time();
     unsigned time_opt = t4 - t3;
 
-    printf("Time no opt: %d\n", time_no_opt);
-    printf("Time opt: %d\n", time_opt);
+    printf("Time resize base: %d\n", time_no_opt);
+    printf("Time resize: %d\n", time_opt);
 }
 
 
@@ -227,7 +275,7 @@ TEST(resize_group, resize__upsample) {
     fclose(file);
 
     // upsample the image
-    isp_resize_uint8_opt(
+    isp_resize_uint8(
         img.ptr,
         img.width,
         img.height,

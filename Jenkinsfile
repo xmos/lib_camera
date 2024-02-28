@@ -92,7 +92,7 @@ pipeline {
               steps {
                 dir('lib_camera/tests/unit_tests/bin') {
                   withTools(params.TOOLS_VERSION) {
-                    sh 'xsim --xscope "-offline trace.xmt" test_camera.xe'
+                    sh 'xrun --xscope test_camera.xe'
                   }
                 }
               }
