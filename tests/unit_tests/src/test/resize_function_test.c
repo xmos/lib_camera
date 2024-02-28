@@ -266,11 +266,11 @@ TEST(resize_group, resize__upsample) {
 
     // read an image
     printf("Reading image...\n");
-    char* filename = "imgs/person.bin";
-    char* filename_out = "imgs/person_upsampled.bin";
+    char* filename = "../imgs/person.bin";
+    char* filename_out = "../imgs/person_upsampled.bin";
 
     FILE* file = fopen(filename, "rb");
-    assert(file != NULL);
+    assert(file != NULL && "File not found");
     fread(img.ptr, sizeof(uint8_t), img.size, file);
     fclose(file);
 
