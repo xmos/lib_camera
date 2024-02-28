@@ -27,7 +27,7 @@ pipeline {
       parallel {
         stage ('Build and Unit test') {
           agent {
-            label 'linux&&x86_64'
+            label 'xcore.ai'
           }
           stages {
             stage ('Build') {
