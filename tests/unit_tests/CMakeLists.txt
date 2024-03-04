@@ -18,6 +18,7 @@ list(APPEND APP_C_SRCS
     src/test/pixel_vfilter_test.c
     src/test/statistics_test.c
     src/test/resize_function_test.c
+    src/test/crop_function_test.c
 )
 list(APPEND APP_DEPENDENT_MODULES lib_camera ${Unity})
 

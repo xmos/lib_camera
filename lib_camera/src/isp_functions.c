@@ -6,13 +6,12 @@
 
 #include <xcore/assert.h>
 
-#include "isp_functions.hpp"
+#include "isp_functions.h"
 
 // -------------------------------- Crop  --------------------------------
 
-template<typename T>
-void isp_crop_template(
-  T* img,
+void isp_crop(
+  void* img,
   const unsigned in_width,
   const unsigned in_height,
   unsigned xu1,
@@ -46,7 +45,7 @@ void isp_crop_int8(
   unsigned yu1,
   unsigned xu2,
   unsigned yu2) {
-  isp_crop_template(img, in_width, in_height, xu1, yu1, xu2, yu2);
+  isp_crop(img, in_width, in_height, xu1, yu1, xu2, yu2);
 }
 
 void isp_crop_uint8(
@@ -57,7 +56,7 @@ void isp_crop_uint8(
   unsigned yu1,
   unsigned xu2,
   unsigned yu2) {
-  isp_crop_template(img, in_width, in_height, xu1, yu1, xu2, yu2);
+  isp_crop(img, in_width, in_height, xu1, yu1, xu2, yu2);
 }
 
 

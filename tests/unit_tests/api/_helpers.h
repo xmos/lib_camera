@@ -16,6 +16,39 @@
 // Common difinitions
 #define CT_INT 127 // int conversion
 
+// --------------------------- Image creation -----------------------------------------
+#define CREATE_IMG_UINT8(name, h, w, c)      \
+struct name {                                \
+    uint8_t data[h][w][c];                   \
+    uint8_t* ptr;                            \
+    const uint16_t width;                    \
+    const uint16_t height;                   \
+    const uint16_t channels;                 \
+    const unsigned size;                     \
+} name = {                                   \
+    .ptr = (uint8_t*)&name.data[0][0][0],    \
+    .width = w,                              \
+    .height = h,                             \
+    .channels = c,                           \
+    .size = w * h * c                        \
+}                             
+
+#define CREATE_IMG_INT8(name, h, w, c)       \
+struct name {                                \
+    int8_t data[h][w][c];                    \
+    int8_t* ptr;                             \
+    const uint16_t width;                    \
+    const uint16_t height;                   \
+    const uint16_t channels;                 \
+    const unsigned size;                     \
+} name = {                                   \
+    .ptr = (int8_t*)&name.data[0][0][0],     \
+    .width = w,                              \
+    .height = h,                             \
+    .channels = c,                           \
+    .size = w * h * c                        \
+} 
+
 // Store the RGB color and corresponding values
 typedef struct
 {

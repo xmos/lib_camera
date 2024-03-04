@@ -22,6 +22,7 @@ int main(
   RUN_TEST_GROUP(gamma_timing);
   RUN_TEST_GROUP(stats_test);
   RUN_TEST_GROUP(resize_group);
+  RUN_TEST_GROUP(crop_group);
   
   return UNITY_END();
 }

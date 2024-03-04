@@ -14,7 +14,7 @@
 
 #include "camera_io_utils.h"
 #include "unity_fixture.h"
-#include "isp_functions.hpp"
+#include "isp_functions.h"
 #include "_helpers.h" // fill random array
 
 // get_reference_time();
@@ -41,46 +41,6 @@ TEST_SETUP(resize_group) {
     print_separator("resize_group");
 }
 TEST_TEAR_DOWN(resize_group) {}
-
-
-// --------------------------- Image creation -----------------------------------------
-typedef struct
-{
-    float x1, y1, x2, y2, score;
-} bbox_t;
-
-#define CREATE_IMG_UINT8(name, h, w, c)      \
-struct name {                                \
-    uint8_t data[h][w][c];                   \
-    uint8_t* ptr;                            \
-    const uint16_t width;                    \
-    const uint16_t height;                   \
-    const uint16_t channels;                 \
-    const unsigned size;                     \
-} name = {                                   \
-    .ptr = (uint8_t*)&name.data[0][0][0],    \
-    .width = w,                              \
-    .height = h,                             \
-    .channels = c,                           \
-    .size = w * h * c                        \
-}                             
-
-#define CREATE_IMG_INT8(name, h, w, c)       \
-struct name {                                \
-    int8_t data[h][w][c];                    \
-    int8_t* ptr;                             \
-    const uint16_t width;                    \
-    const uint16_t height;                   \
-    const uint16_t channels;                 \
-    const unsigned size;                     \
-} name = {                                   \
-    .ptr = (int8_t*)&name.data[0][0][0],     \
-    .width = w,                              \
-    .height = h,                             \
-    .channels = c,                           \
-    .size = w * h * c                        \
-} 
-
 
 // --------------------------- Aux functions -----------------------------------------
 static void xmodf(float a, unsigned* b, float* c, unsigned* bp)
