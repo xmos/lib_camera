@@ -30,6 +30,7 @@ extern "C" {
 }
 
 // Camera control channels
+//TODO change to tile 1
 void main_tile0(chanend_t c_control){
   sensor_control(c_control);
 }
@@ -64,9 +65,10 @@ int main(void)
   chan c_control;
 
   // Parallel jobs
-  par{
-    on tile[0]: main_tile0(c_control);
-    on tile[1]: main_tile1(c_control);
+  par
+  {
+    on tile[0]: main_tile0(c_control); //TODO remove main_tile0 and move sensor_control to tile 1
+    on tile[1]: main_tile1(c_control); 
     // xscope
     xscope_host_data(xscope_chan);
     on tile[1]: xscope_io_init(xscope_chan);
