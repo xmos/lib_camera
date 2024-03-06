@@ -155,13 +155,13 @@ void isp_resize_int8(
   int8_t a, b, c, d;
 
   for (unsigned i = 0; i < out_height; i++) {
+    float incry = (y_ratio * i);
+    xmodf(incry, &y_l, &yw, &y_h);
+
     for (unsigned j = 0; j < out_width; j++) {
       float incrx = (x_ratio * j);
-      float incry = (y_ratio * i);
-
       xmodf(incrx, &x_l, &xw, &x_h);
-      xmodf(incry, &y_l, &yw, &y_h);
-
+      
       for (unsigned plane = 0; plane < 3; plane++) {
         a = img[3 * in_width * y_l + 3 * x_l + plane];
         b = img[3 * in_width * y_l + 3 * x_h + plane];
