@@ -27,7 +27,7 @@ pipeline {
       parallel {
         stage ('Build and Unit test') {
           agent {
-            label 'linux&&x86_64'
+            label 'xcore.ai'
           }
           stages {
             stage ('Build') {
@@ -90,9 +90,9 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                dir('lib_camera/tests/unit_tests/bin') {
+                dir('lib_camera/tests/unit_tests') {
                   withTools(params.TOOLS_VERSION) {
-                    sh 'xsim --xscope "-offline trace.xmt" test_camera.xe'
+                    sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
               }

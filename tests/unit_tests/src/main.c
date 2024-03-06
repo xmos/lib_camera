@@ -1,4 +1,4 @@
-// Copyright 2023 XMOS LIMITED.
+// Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
@@ -21,6 +21,8 @@ int main(
   RUN_TEST_GROUP(color_conversion);
   RUN_TEST_GROUP(gamma_timing);
   RUN_TEST_GROUP(stats_test);
+  RUN_TEST_GROUP(resize_group);
+  RUN_TEST_GROUP(crop_group);
   
   return UNITY_END();
 }

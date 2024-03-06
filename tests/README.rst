@@ -10,12 +10,12 @@ It contains two types of tests:
 Build Tests
 =============
 
-Run the following commands from the top level:
+Run the following commands from the current folder:
 
 .. code-block:: console
 
-  cmake -G "Unix Makefiles" -S tests/unit_tests -B tests/unit_tests/build
-  xmake -C tests/unit_tests/build
+  cmake -G "Unix Makefiles" -B build
+  xmake -C build
 
 Running the tests
 =================
@@ -29,8 +29,8 @@ Run unit tests (xrun or xsim)
 
 .. code-block:: console
 
-  xsim --xscope "-offline trace.xmt" tests/unit_tests/bin/test_camera.xe
-  xrun --xscope tests/unit_tests/bin/test_camera.xe
+  xsim --xscope "-offline trace.xmt" bin/test_camera.xe
+  xrun --xscope bin/test_camera.xe
 
 Run hardware tests
 ------------------
