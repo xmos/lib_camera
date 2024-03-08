@@ -81,6 +81,10 @@ FUNCTION_NAME:
   setsr 1  // Sets the EEBLE bit (I couldn't find a #define!)
            // TODO: get more information on this becasue not sure is the EEBLE bit.  
 
+// Note: if needed, other events could be activated here.
+// For instance, c_ctrl could be used to skip one row so the bayer order changes
+// or drop some packets if we want a shorter data buffer.
+
 #if WAIT_FOR_CLEAN_PACKET 
 // Check whether the RxA signal is currently high.
 //    If so, we need to wait until it is low or we will start reading mid-packet
@@ -176,8 +180,8 @@ FUNCTION_NAME:
 
 // We've received the full packet and S0 contains the status byte
 // Disable the RxA event
-{ edu res[P_RXA]              ; shr S0, S0, 1      }
-{ out res[C_PKT], BUFF_HEAD   ;                    }
+{ edu res[P_RXA]              ; shr S0, S0, 1               }
+{ out res[C_PKT], BUFF_HEAD   ;                             }
 
 // And now we need a new buffer
 // Also reenable events.
