@@ -7,7 +7,7 @@ set(ROOT_DIR ${CMAKE_SOURCE_DIR}/../..)
 include(${ROOT_DIR}/build_opts.cmake)
 
 # target
-set(APP_HW_TARGET XCORE-AI-EXPLORER)
+set(APP_HW_TARGET XCORE-VISION-EXPLORER.xn)
 list(APPEND APP_INCLUDES src)
 list(APPEND APP_C_SRCS src/app.c)
 list(APPEND APP_XC_SRCS src/main.xc)
