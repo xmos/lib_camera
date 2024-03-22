@@ -27,7 +27,7 @@ Run the following command from the current directory:
 
 .. code-block:: console
 
-  python ../../python/run_xscope_bin.py bin/take_picture_downsample.xe # from the example folder
+  python ../../python/run_xscope_bin.py bin/take_picture_downsample.xe
 
 
 Output
