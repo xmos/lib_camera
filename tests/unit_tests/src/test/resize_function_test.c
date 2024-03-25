@@ -51,6 +51,7 @@ static void xmodf(float a, unsigned* b, float* c, unsigned* bp)
     // last operand for convinience 
     *bp = *b + 1;
 }
+
 static void isp_resize_uint8_base(
   const uint8_t* img,
   const unsigned in_width,
@@ -214,8 +215,8 @@ TEST(resize_group, resize__compare) {
     t4 = get_reference_time();
     unsigned time_opt = t4 - t3;
 
-    printf("Time resize base: %d\n", time_no_opt);
-    printf("Time resize: %d\n", time_opt);
+    printf("Time resize uint8 base: %d\n", time_no_opt);
+    printf("Time resize uint8: %d\n", time_opt);
 }
 
 
@@ -302,4 +303,17 @@ TEST(resize_group, resize__int8) {
             TEST_ASSERT_INT8_WITHIN(DELTA_PIXEL, pixel_val_in, pixel_val_out);
         }
     }
+
+    t1 = get_reference_time();
+    isp_resize_int8(
+        img.ptr,
+        img.width,
+        img.height,
+        img_out.ptr,
+        img_out.width,
+        img_out.height
+    );
+    t2 = get_reference_time();
+    unsigned time = t2 - t1;
+    printf("Time resize int8: %d\n", time);
 }
