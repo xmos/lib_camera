@@ -14,8 +14,8 @@ SensorBase::SensorBase(i2c_config_t _conf) : i2c_cfg(_conf) {
 void SensorBase::i2c_init() {
   i2c_master_init(
     this->i2c_cfg.i2c_ctx_ptr,
-    this->i2c_cfg.p_scl, 0, 0,
-    this->i2c_cfg.p_sda, 0, 0,
+    this->i2c_cfg.p_scl, 1, 0xC,
+    this->i2c_cfg.p_sda, 0, 0xC,
     this->i2c_cfg.speed);
   delay_milliseconds(100);
   puts("\nI2C initialized...");
