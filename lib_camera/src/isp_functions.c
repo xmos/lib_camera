@@ -62,6 +62,14 @@ void isp_crop_uint8(
 
 // -------------------------------- Resize  --------------------------------
 
+static inline float unsigned_to_float(const unsigned val) {
+  // Note: if the word has more than 23 consecutive bits, data will be lost
+  int32_t exp = 23, zero = 0;
+  float res;
+  asm("fmake %0, %1, %2, %3, %4" : "=r"(res) : "r"(zero), "r"(exp), "r"(zero), "r"(val));
+  return res;
+}
+
 static inline void xmodf(float a, unsigned* b, float* c, unsigned* bp) {
   int32_t zero = 0, tmp, exp; // tmp is used to mask the mantissa
   unsigned mant;
@@ -82,13 +90,7 @@ static inline float uint8_to_float(const uint8_t val) {
   asm("fmake %0, %1, %2, %3, %4" : "=r"(res) : "r"(zero), "r"(exp), "r"(zero), "r"(mant));
   return res;
 }
-static inline float unsigned_to_float(const unsigned val) {
-  // Note: if the word has more than 23 consecutive bits, data will be lost
-  int32_t exp = 23, zero = 0;
-  float res;
-  asm("fmake %0, %1, %2, %3, %4" : "=r"(res) : "r"(zero), "r"(exp), "r"(zero), "r"(val));
-  return res;
-}
+
 static inline uint8_t float_to_uint8(const float val) {
   // this assumes that the input [0.0, 255.0]
   int32_t zero, exp, mant;
@@ -133,11 +135,35 @@ void isp_resize_uint8(
         b = img[3 * in_width * y_l + 3 * x_h + plane];
         c = img[3 * in_width * y_h + 3 * x_l + plane];
         d = img[3 * in_width * y_h + 3 * x_h + plane];
-        uint8_t pixel = float_to_uint8(uint8_to_float(a) * W + uint8_to_float(b) * X + uint8_to_float(c) * Y + uint8_to_float(d) * Z);
+        uint8_t pixel = float_to_uint8(
+          uint8_to_float(a) * W
+        + uint8_to_float(b) * X
+        + uint8_to_float(c) * Y
+        + uint8_to_float(d) * Z);
         out_img[3 * out_width * i + 3 * j + plane] = pixel;
       }
     }
   }
+}
+
+static inline float int8_to_float(const int8_t val) {
+  int32_t mant = val, exp = 23, sign = 0, zero = 0;
+  asm("ashr %0, %1, 32": "=r" (sign): "r" (mant));
+  if(sign){mant = -mant;}
+  float res;
+  asm("fmake %0, %1, %2, %3, %4" : "=r"(res) : "r"(sign), "r"(exp), "r"(zero), "r"(mant));
+  return res;
+}
+
+static inline int8_t float_to_int8(const float val) {
+  // this assumes that the input [-128.0, 127.0]
+  int32_t sign, exp, mant;
+  asm("fsexp %0, %1, %2" : "=r"(sign), "=r"(exp) : "r"(val));
+  asm("fmant %0, %1" : "=r"(mant) : "r"(val));
+  if(sign){mant = -mant;}
+  exp -= 23;
+  mant >>= -exp;
+  return (int8_t)(mant & 0xff);
 }
 
 void isp_resize_int8(
@@ -147,20 +173,26 @@ void isp_resize_int8(
   int8_t* out_img,
   const unsigned out_width,
   const unsigned out_height) {
-  const float x_ratio = ((in_width - 1) / (float)(out_width - 1));
-  const float y_ratio = ((in_height - 1) / (float)(out_height - 1));
+  const float x_ratio = ((unsigned_to_float(in_width) - 1) / (unsigned_to_float(out_width) - 1));
+  const float y_ratio = ((unsigned_to_float(in_height) - 1) / (unsigned_to_float(out_height) - 1));
 
   unsigned x_l, y_l, x_h, y_h;
   float xw, yw;
   int8_t a, b, c, d;
 
   for (unsigned i = 0; i < out_height; i++) {
-    float incry = (y_ratio * i);
+    float incry = (y_ratio * unsigned_to_float(i));
     xmodf(incry, &y_l, &yw, &y_h);
+    float yw_inv = (1 - yw);
 
     for (unsigned j = 0; j < out_width; j++) {
-      float incrx = (x_ratio * j);
+      float incrx = (x_ratio * unsigned_to_float(j));
       xmodf(incrx, &x_l, &xw, &x_h);
+      float xw_inv = (1 - xw);
+      float W = xw_inv * yw_inv;
+      float X = xw * yw_inv;
+      float Y = yw * xw_inv;
+      float Z = xw * yw;
       
       for (unsigned plane = 0; plane < 3; plane++) {
         a = img[3 * in_width * y_l + 3 * x_l + plane];
@@ -168,10 +200,11 @@ void isp_resize_int8(
         c = img[3 * in_width * y_h + 3 * x_l + plane];
         d = img[3 * in_width * y_h + 3 * x_h + plane];
 
-        int8_t pixel = (int8_t)(a * (1 - xw) * (1 - yw) +
-          b * xw * (1 - yw) +
-          c * yw * (1 - xw) +
-          d * xw * yw);
+        int8_t pixel = float_to_int8(
+          int8_to_float(a) * W
+        + int8_to_float(b) * X
+        + int8_to_float(c) * Y
+        + int8_to_float(d) * Z);
 
         out_img[3 * out_width * i + 3 * j + plane] = pixel;
       }
