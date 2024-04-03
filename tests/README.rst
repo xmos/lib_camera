@@ -17,24 +17,27 @@ Run the following commands from the current folder:
   cmake -G "Unix Makefiles" -B build
   xmake -C build
 
-Running the tests
-=================
-
-.. note::
-  1. Hardware tests require `xscope_fileio` to be installed.
-  2. Run the following commands from the `lib_camera` top level.
-
 Run unit tests (xrun or xsim)
 -----------------------------
 
+Run the following commands from the ``unit_tests`` folder:
+
 .. code-block:: console
 
+  # Simulate the test
   xsim --xscope "-offline trace.xmt" bin/test_camera.xe
+  # Run the test on hardware
   xrun --xscope bin/test_camera.xe
 
 Run hardware tests
 ------------------
 
+.. note::
+  
+  Hardware tests require `xscope_fileio` to be installed.
+
+Run the following commands from the ``hardware_tests`` folder:
+
 .. code-block:: console
 
-   pytest
+  pytest
