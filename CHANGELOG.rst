@@ -1,9 +1,10 @@
 lib_camera change log
 =====================
 
-0.3.0
+1.0.0
 -----
 
+  * ADDED: Support for the XCORE-VISION board 
   * ADDED: Support for Xcommon_cmake
   * CHANGED: Repository structure
 
@@ -44,4 +45,3 @@ lib_camera change log
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
-
