@@ -9,12 +9,21 @@ This section describes how to add a new sensor to the xcore.ai camera library.
 Hardware
 ^^^^^^^^
 
-First the user will need to see if their sensor is compatible with xcore.ai evaluation kit (XK-EVK-XU316).
+First the user will need to see if their sensor is compatible with the |vision board|.
 
 The sensor has to:
 
 - Support MIPI CSI2 protocol
 - Be driven from 3.3V source
+- Have a compatible FPC-24 camera connector.
+
+The following diagram shows the pinout of the 24-pin FPC connector on the |vision board|:
+
+.. figure:: images/vision_board_fpc.png
+  :align: center
+  :alt: FPC-24 connector pinout
+  
+  FPC-24 connector pinout
 
 Software
 ^^^^^^^^

@@ -7,7 +7,7 @@ Repository Structure
 --------------------
 
 - **doc**         : documentation for the camera library
-- **examples**    : examples for taking pictures with the explorer board
+- **examples**    : examples for taking pictures with the ``XCORE-VISION board``
 - **lib_camera**  : library to manipulate cameras
 - **python**      : python functions to decode RAW8, RAW10 pictures and other utilities to treat images
 - **tests**       : tests for the camera library

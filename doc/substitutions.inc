@@ -6,4 +6,7 @@
 .. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 .. _SW_TOOLS: https://www.xmos.ai/software-tools/
 .. _XSCOPE_FILEIO: https://github.com/xmos/xscope_fileio
+
 .. |lib_camera| replace:: ``lib_camera``
+.. |vision board| replace:: ``XCORE-VISION board``
+.. |xcore-ai| replace:: ``xcore.ai``
