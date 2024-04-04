@@ -7,4 +7,4 @@ set(XMOS_SANDBOX_DIR ${ROOT_DIR}/../)
 
 # External deps
 set(Unity "lib_unity(2.5.2)")
-set(xscope_fileio "xscope_fileio(develop)")
+set(xscope_fileio "xscope_fileio(1.2.0)")
