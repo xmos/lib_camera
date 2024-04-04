@@ -2,7 +2,7 @@ Introduction
 =============
 
 The purpose of this programming guide is to provide developers with a comprehensive understanding 
-of the |lib_camera| architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
+of the |lib_camera| architecture and guide them on how to effectively interact with cameras using the |vision board|.
 
 Conventions and Terminology
 ---------------------------
@@ -15,13 +15,13 @@ To ensure clarity and consistency throughout this guide, the following conventio
 
 Features
 ---------
-The XCORE-AI-EXPLORER board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
+The |vision board| board features a built-in IMX219 Sony sensor connected to the |xcore-ai| chip. 
 This port is connected to the xcore.ai processor, so an image can be processed directly from an external sensor and have various operations performed over it,
 such as converting a RAW image to an RGB image (applying ISP functions),
 analyzing the image using AI models with xmos-ai-tools,
 converting a MIPI camera to other interfaces as USB, SPI, etc.
 
-The |lib_camera| alongside with the Explorer board architecture provides the following features:
+The |lib_camera| alongside with the |vision board| architecture provides the following features:
 
 - MIPI CSI2 interface
 - Up to 1 Gbps per lane

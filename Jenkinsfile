@@ -1,8 +1,23 @@
-@Library('xmos_jenkins_shared_library@v0.27.0')
+@Library('xmos_jenkins_shared_library@v0.28.0')
 
 def runningOn(machine) {
   println "Stage running on:"
   println machine
+}
+
+def buildApps(appList) {
+  appList.each { app ->
+    sh "cmake -G 'Unix Makefiles' -S ${app} -B ${app}/build"
+    sh "xmake -C ${app}/build -j\$(nproc)"
+  }
+}
+
+def buildDocs(String zipFileName) {
+  withVenv {
+    sh 'pip install git+ssh://git@github.com/xmos/xmosdoc'
+    sh 'xmosdoc'
+    zip zipFile: zipFileName, archive: true, dir: "doc/_build"
+  }
 }
 
 getApproval()
@@ -42,21 +57,17 @@ pipeline {
                   // build examples and tests
                   withTools(params.TOOLS_VERSION) {
                     withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
-                      script {
-                        ["examples/take_picture_downsample",
-                         "examples/take_picture_local",
-                         "examples/take_picture_raw",
-                         "tests/hardware_tests/test_timing",
-                         "tests/unit_tests"
-                        ].each {
-                          sh "cmake -G 'Unix Makefiles' -S ${it} -B ${it}/build"
-                          sh "xmake -C ${it}/build -j4"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+                      buildApps([
+                        "examples/take_picture_downsample",
+                        "examples/take_picture_local",
+                        "examples/take_picture_raw",
+                        "tests/hardware_tests/test_timing",
+                        "tests/unit_tests"
+                      ]) // buildApps
+                    } // withEnv
+                  } // withTools
+                } // dir
+              } // steps
             } // Build
 
             stage('Create Python enviroment') {
@@ -108,30 +119,18 @@ pipeline {
 
         stage ('Build Documentation') {
           agent {
-            label 'docker'
+            label 'documentation'
           }
-          environment { XMOSDOC_VERSION = "v4.0" }
-          stages {        
-            stage ('Build Docs') {
-              steps {
-                runningOn(env.NODE_NAME)
-                checkout scm
-                sh "docker pull ghcr.io/xmos/xmosdoc:$XMOSDOC_VERSION"
-                sh """docker run -u "\$(id -u):\$(id -g)" \
-                        --rm \
-                        -v ${WORKSPACE}:/build \
-                        ghcr.io/xmos/xmosdoc:$XMOSDOC_VERSION -v"""
-
-                archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
-
-                script {
-                  def doc_version = sh(script: "cat settings.yml | awk '/version:/ {print \$2}'", returnStdout: true).trim()
-                  def zipFileName = "docs_lib_camera_v${doc_version}.zip"
-                  zip zipFile: zipFileName, archive: true, dir: "doc/_build"
-                } // script
-              } // steps
-            } // Build Docs
-          } // stages
+          steps {
+            runningOn(env.NODE_NAME)
+            dir('lib_camera') {
+              checkout scm
+              createVenv("requirements.txt")
+              withTools(params.TOOLS_VERSION) {
+                buildDocs("lib_camera_docs.zip")
+              } // withTools
+            } // dir
+          } // steps
           post {
             cleanup {
               cleanWs()
