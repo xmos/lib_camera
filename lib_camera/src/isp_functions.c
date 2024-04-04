@@ -84,21 +84,13 @@ static inline void xmodf(float a, unsigned* b, float* c, unsigned* bp) {
   *bp = *b + 1;
 }
 
-static inline float uint8_to_float(const uint8_t val) {
-  int32_t mant = val, exp = 23, zero = 0;
-  float res;
-  asm("fmake %0, %1, %2, %3, %4" : "=r"(res) : "r"(zero), "r"(exp), "r"(zero), "r"(mant));
-  return res;
-}
-
-static inline uint8_t float_to_uint8(const float val) {
-  // this assumes that the input [0.0, 255.0]
-  int32_t zero, exp, mant;
+static inline uint32_t float_to_uq23(const float val) {
+  // this assumes that the input [0.0, 1.0)
+  int32_t zero, exp; uint32_t mant;
   asm("fsexp %0, %1, %2" : "=r"(zero), "=r"(exp) : "r"(val));
   asm("fmant %0, %1" : "=r"(mant) : "r"(val));
-  exp -= 23;
-  mant >>= -exp;
-  return (uint8_t)(mant & 0xff);
+  mant <<= exp;
+  return mant;
 }
 
 void isp_resize_uint8(
@@ -114,56 +106,50 @@ void isp_resize_uint8(
 
   unsigned x_l, y_l, x_h, y_h;
   float xw, yw;
-  uint8_t a, b, c, d;
+  uint32_t a, b, c, d;
 
   for (unsigned i = 0; i < out_height; i++) {
     float incry = (y_ratio * unsigned_to_float(i));
     xmodf(incry, &y_l, &yw, &y_h);
-    float yw_inv = (1 - yw);
 
     for (unsigned j = 0; j < out_width; j++) {
       float incrx = (x_ratio * unsigned_to_float(j));
       xmodf(incrx, &x_l, &xw, &x_h);
-      float xw_inv = (1 - xw);
-      float W = xw_inv * yw_inv;
-      float X = xw * yw_inv;
-      float Y = yw * xw_inv;
-      float Z = xw * yw;
+
+      float xyw = xw * yw;
+      float yw_m_xyw = yw - xyw;
+      uint32_t W = float_to_uq23(1 - xw - yw_m_xyw);
+      uint32_t X = float_to_uq23(xw - xyw);
+      uint32_t Y = float_to_uq23(yw_m_xyw);
+      uint32_t Z = float_to_uq23(xyw);
 
       for (unsigned plane = 0; plane < 3; plane++) {
         a = img[3 * in_width * y_l + 3 * x_l + plane];
         b = img[3 * in_width * y_l + 3 * x_h + plane];
         c = img[3 * in_width * y_h + 3 * x_l + plane];
         d = img[3 * in_width * y_h + 3 * x_h + plane];
-        uint8_t pixel = float_to_uint8(
-          uint8_to_float(a) * W
-        + uint8_to_float(b) * X
-        + uint8_to_float(c) * Y
-        + uint8_to_float(d) * Z);
+
+        uint32_t ah = 0, al = 0;
+        asm("maccu %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (a), "r" (W), "0" (ah), "1" (al));
+        asm("maccu %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (b), "r" (X), "0" (ah), "1" (al));
+        asm("maccu %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (c), "r" (Y), "0" (ah), "1" (al));
+        asm("maccu %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (d), "r" (Z), "0" (ah), "1" (al));
+        // assumes that a * W + b * X + c * Y + d * Z never overflows uint8
+        uint8_t pixel = (uint8_t)(al >> 23);
         out_img[3 * out_width * i + 3 * j + plane] = pixel;
       }
     }
   }
 }
 
-static inline float int8_to_float(const int8_t val) {
-  int32_t mant = val, exp = 23, sign = 0, zero = 0;
-  asm("ashr %0, %1, 32": "=r" (sign): "r" (mant));
-  if(sign){mant = -mant;}
-  float res;
-  asm("fmake %0, %1, %2, %3, %4" : "=r"(res) : "r"(sign), "r"(exp), "r"(zero), "r"(mant));
-  return res;
-}
-
-static inline int8_t float_to_int8(const float val) {
-  // this assumes that the input [-128.0, 127.0]
+static inline int32_t float_to_q23(const float val) {
+  // this assumes that the input [-1.0, 1.0)
   int32_t sign, exp, mant;
   asm("fsexp %0, %1, %2" : "=r"(sign), "=r"(exp) : "r"(val));
   asm("fmant %0, %1" : "=r"(mant) : "r"(val));
   if(sign){mant = -mant;}
-  exp -= 23;
-  mant >>= -exp;
-  return (int8_t)(mant & 0xff);
+  mant <<= exp;
+  return mant;
 }
 
 void isp_resize_int8(
@@ -178,33 +164,36 @@ void isp_resize_int8(
 
   unsigned x_l, y_l, x_h, y_h;
   float xw, yw;
-  int8_t a, b, c, d;
+  int32_t a, b, c, d;
 
   for (unsigned i = 0; i < out_height; i++) {
     float incry = (y_ratio * unsigned_to_float(i));
     xmodf(incry, &y_l, &yw, &y_h);
-    float yw_inv = (1 - yw);
 
     for (unsigned j = 0; j < out_width; j++) {
       float incrx = (x_ratio * unsigned_to_float(j));
       xmodf(incrx, &x_l, &xw, &x_h);
-      float xw_inv = (1 - xw);
-      float W = xw_inv * yw_inv;
-      float X = xw * yw_inv;
-      float Y = yw * xw_inv;
-      float Z = xw * yw;
+
+      float xyw = xw * yw;
+      float yw_m_xyw = yw - xyw;
+      int32_t W = float_to_q23(1 - xw - yw_m_xyw);
+      int32_t X = float_to_q23(xw - xyw);
+      int32_t Y = float_to_q23(yw_m_xyw);
+      int32_t Z = float_to_q23(xyw);
       
       for (unsigned plane = 0; plane < 3; plane++) {
-        a = img[3 * in_width * y_l + 3 * x_l + plane];
-        b = img[3 * in_width * y_l + 3 * x_h + plane];
-        c = img[3 * in_width * y_h + 3 * x_l + plane];
-        d = img[3 * in_width * y_h + 3 * x_h + plane];
+        a = (int32_t)img[3 * in_width * y_l + 3 * x_l + plane];
+        b = (int32_t)img[3 * in_width * y_l + 3 * x_h + plane];
+        c = (int32_t)img[3 * in_width * y_h + 3 * x_l + plane];
+        d = (int32_t)img[3 * in_width * y_h + 3 * x_h + plane];
 
-        int8_t pixel = float_to_int8(
-          int8_to_float(a) * W
-        + int8_to_float(b) * X
-        + int8_to_float(c) * Y
-        + int8_to_float(d) * Z);
+        int32_t ah = 0, al = 0;
+        asm("maccs %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (a), "r" (W), "0" (ah), "1" (al));
+        asm("maccs %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (b), "r" (X), "0" (ah), "1" (al));
+        asm("maccs %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (c), "r" (Y), "0" (ah), "1" (al));
+        asm("maccs %0, %1, %2, %3": "=r" (ah), "=r" (al): "r" (d), "r" (Z), "0" (ah), "1" (al));
+        // assumes that a * W + b * X + c * Y + d * Z never overflows int8
+        int8_t pixel = (int8_t)(al >> 23);
 
         out_img[3 * out_width * i + 3 * j + plane] = pixel;
       }

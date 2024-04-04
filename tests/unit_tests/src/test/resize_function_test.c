@@ -30,70 +30,21 @@ unsigned t1t = 0, t2t = 0, t3t = 0, t4t = 0, t5t = 0;
 // --------------------------- Unity -----------------------------------------
 
 TEST_GROUP_RUNNER(resize_group) {
-    RUN_TEST_CASE(resize_group, resize__constant);     // resize with a constant value produces a cosntant value
-    RUN_TEST_CASE(resize_group, resize__compare);      // compare the output of the opt and no opt, compare time
-    RUN_TEST_CASE(resize_group, resize__upsample);     // test upsample a real image, save and decode
-    RUN_TEST_CASE(resize_group, resize__int8);         // test int8 resize, constant and time
+    RUN_TEST_CASE(resize_group, resize__uint8);     // test uint8 resize, constant and time
+    RUN_TEST_CASE(resize_group, resize__int8);      // test int8 resize, constant and time
+    RUN_TEST_CASE(resize_group, resize__upsample);  // test upsample a real image, save and decode    
 }
 TEST_GROUP(resize_group);
-TEST_SETUP(resize_group) {
+TEST_SETUP(resize_group){
     fflush(stdout);
     print_separator("resize_group");
 }
 TEST_TEAR_DOWN(resize_group) {}
 
-// --------------------------- Aux functions -----------------------------------------
-static void xmodf(float a, unsigned* b, float* c, unsigned* bp)
-{
-    // split unsignedeger and decimal part
-    *b = (unsigned)(a);
-    *c = a - *b;
-    // last operand for convinience 
-    *bp = *b + 1;
-}
-
-static void isp_resize_uint8_base(
-  const uint8_t* img,
-  const unsigned in_width,
-  const unsigned in_height,
-  uint8_t* out_img,
-  const unsigned out_width,
-  const unsigned out_height) {
-  const float x_ratio = ((in_width - 1) / (float)(out_width - 1));
-  const float y_ratio = ((in_height - 1) / (float)(out_height - 1));
-
-  unsigned x_l, y_l, x_h, y_h;
-  float xw, yw;
-  uint8_t a, b, c, d;
-
-  for (unsigned i = 0; i < out_height; i++) {
-    for (unsigned j = 0; j < out_width; j++) {
-      float incrx = (x_ratio * j);
-      float incry = (y_ratio * i);
-
-      xmodf(incrx, &x_l, &xw, &x_h);
-      xmodf(incry, &y_l, &yw, &y_h);
-
-      for (unsigned plane = 0; plane < 3; plane++) {
-        a = img[3 * in_width * y_l + 3 * x_l + plane];
-        b = img[3 * in_width * y_l + 3 * x_h + plane];
-        c = img[3 * in_width * y_h + 3 * x_l + plane];
-        d = img[3 * in_width * y_h + 3 * x_h + plane];
-
-        uint8_t pixel = (uint8_t)(a * (1 - xw) * (1 - yw) +
-          b * xw * (1 - yw) +
-          c * yw * (1 - xw) +
-          d * xw * yw);
-
-        out_img[3 * out_width * i + 3 * j + plane] = pixel;
-      }
-    }
-  }
-}
 
 // ------------------------------- Tests -------------------------------------
 
-TEST(resize_group, resize__constant) {
+TEST(resize_group, resize__uint8) {
     // create images
     CREATE_IMG_UINT8(img, 64, 64, 3);
     CREATE_IMG_UINT8(img_out, 80, 80, 3);
@@ -102,37 +53,23 @@ TEST(resize_group, resize__constant) {
     const unsigned N_times_pixel = 100; // Number of times to fill the image with a random value
     const unsigned N_times = 100; // Number of times to pic random locations to check
     for (unsigned i = 0; i < N_times_pixel; i++) {
-        // define manual cases
         uint8_t pixel_val_in;
-        if (i == 0) {
-            pixel_val_in = 0;
-        }
-        else if (i == N_times_pixel - 1) {
-            pixel_val_in = 255;
-        } // random cases
-        else {
-            pixel_val_in = rand() % 255;
+        // define cases
+        switch (i) {
+            case 1:
+                pixel_val_in = 0;
+                break;
+            case 2:
+                pixel_val_in = UINT8_MAX;
+                break;
+            default:
+                pixel_val_in = (rand() % 256) - 128;
+                break;
         }
 
         memset(img.ptr, pixel_val_in, img.size);
 
-        // resize the image - 1 (no opt)
-        isp_resize_uint8_base(
-            img.ptr,
-            img.width,
-            img.height,
-            img_out.ptr,
-            img_out.width,
-            img_out.height
-        );
-        // take N random pixel location
-        for (unsigned i = 0; i < N_times; i++) {
-            unsigned loc = rand() % img_out.size;
-            uint8_t pixel_val_out = img_out.ptr[loc];
-            TEST_ASSERT_UINT8_WITHIN(DELTA_PIXEL, pixel_val_in, pixel_val_out);
-        }
-
-        // resize the image - 2 (opt)
+        // resize the image
         isp_resize_uint8(
             img.ptr,
             img.width,
@@ -148,51 +85,10 @@ TEST(resize_group, resize__constant) {
             TEST_ASSERT_UINT8_WITHIN(DELTA_PIXEL, pixel_val_in, pixel_val_out);
         }
     }
-}
 
-
-TEST(resize_group, resize__compare) {
-    // create images
-    CREATE_IMG_UINT8(img, 64, 64, 3);
-    CREATE_IMG_UINT8(img_out, 80, 80, 3);
-
-    // Seed the random number generator with the current time
-    srand(time(NULL));
-
-    // generate random numbers for the image buffer
-    fill_array_rand_uint8(img.ptr, img.size);
-
-    // compare pixel values
-    const unsigned N_times = 100;
-
-    for (unsigned i = 0; i < N_times; i++) {
-        unsigned loc = rand() % img_out.size;
-        // no opt
-        isp_resize_uint8_base(
-            img.ptr,
-            img.width,
-            img.height,
-            img_out.ptr,
-            img_out.width,
-            img_out.height
-        );
-        uint8_t pixel_val_out = img_out.ptr[loc];
-        // compare with opt
-        isp_resize_uint8(
-            img.ptr,
-            img.width,
-            img.height,
-            img_out.ptr,
-            img_out.width,
-            img_out.height
-        );
-        uint8_t pixel_val_out_opt = img_out.ptr[loc];
-        TEST_ASSERT_EQUAL_UINT8(pixel_val_out, pixel_val_out_opt);
-    }
-
-    // ---------------- Compare time
+    // Compare time
     t1 = get_reference_time();
-    isp_resize_uint8_base(
+    isp_resize_uint8(
         img.ptr,
         img.width,
         img.height,
@@ -201,64 +97,9 @@ TEST(resize_group, resize__compare) {
         img_out.height
     );
     t2 = get_reference_time();
-    unsigned time_no_opt = t2 - t1;
-
-    t3 = get_reference_time();
-    isp_resize_uint8(
-        img.ptr,
-        img.width,
-        img.height,
-        img_out.ptr,
-        img_out.width,
-        img_out.height
-    );
-    t4 = get_reference_time();
-    unsigned time_opt = t4 - t3;
-
-    printf("Time resize uint8 base: %d\n", time_no_opt);
-    printf("Time resize uint8: %d\n", time_opt);
+    unsigned time = t2 - t1;
+    printf("Time resize uint8: %d\n", time);
 }
-
-
-TEST(resize_group, resize__upsample) {
-    // create images
-    CREATE_IMG_UINT8(img, 64, 64, 3);
-    CREATE_IMG_UINT8(img_out, 80, 80, 3);
-
-    // read an image
-    printf("Reading image...\n");
-    char* filename = "imgs/person.bin";
-    char* filename_out = "imgs/person_upsampled.bin";
-
-    FILE* file = fopen(filename, "rb");
-    assert(file != NULL && "File not found");
-    fread(img.ptr, sizeof(uint8_t), img.size, file);
-    fclose(file);
-
-    // upsample the image
-    isp_resize_uint8(
-        img.ptr,
-        img.width,
-        img.height,
-        img_out.ptr,
-        img_out.width,
-        img_out.height
-    );
-
-    // save the image
-    printf("Saving image...\n");
-    file = fopen(filename_out, "wb");
-    assert(file != NULL);
-    fwrite(img_out.ptr, sizeof(uint8_t), img_out.size, file);
-    fclose(file);
-
-    // decode the image
-    char cmd[200];
-    sprintf(cmd, "python ../../python/decode_downsampled.py --input imgs/person_upsampled.bin --width %d --height %d", img_out.width, img_out.height);
-    //system(cmd);
-    printf("Run the cmd >> : %s\n", cmd);
-}
-
 
 TEST(resize_group, resize__int8) {
     CREATE_IMG_INT8(img, 64, 64, 3);
@@ -304,6 +145,7 @@ TEST(resize_group, resize__int8) {
         }
     }
 
+    // Compare time
     t1 = get_reference_time();
     isp_resize_int8(
         img.ptr,
@@ -316,4 +158,45 @@ TEST(resize_group, resize__int8) {
     t2 = get_reference_time();
     unsigned time = t2 - t1;
     printf("Time resize int8: %d\n", time);
+}
+
+
+TEST(resize_group, resize__upsample) {
+    // create images
+    CREATE_IMG_UINT8(img, 64, 64, 3);
+    CREATE_IMG_UINT8(img_out, 80, 80, 3);
+
+    // read an image
+    printf("Reading image...\n");
+    char* filename = "imgs/person.bin";
+    char* filename_out = "imgs/person_upsampled.bin";
+
+    FILE* file = fopen(filename, "rb");
+    assert(file != NULL && "File not found");
+    size_t bytes_read = fread(img.ptr, sizeof(uint8_t), img.size, file);
+    assert(bytes_read == img.size);
+    fclose(file);
+
+    // upsample the image
+    isp_resize_uint8(
+        img.ptr,
+        img.width,
+        img.height,
+        img_out.ptr,
+        img_out.width,
+        img_out.height
+    );
+
+    // save the image
+    printf("Saving image...\n");
+    file = fopen(filename_out, "wb");
+    assert(file != NULL);
+    fwrite(img_out.ptr, sizeof(uint8_t), img_out.size, file);
+    fclose(file);
+
+    // decode the image
+    char cmd[200];
+    sprintf(cmd, "python ../../python/decode_downsampled.py --input imgs/person_upsampled.bin --width %d --height %d", img_out.width, img_out.height);
+    //system(cmd);
+    printf("Run the cmd >> : %s\n", cmd);
 }

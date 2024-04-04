@@ -17,29 +17,32 @@ import sys
 from utils import show_histogram_by_channel
 
 
-def decode_downsampled_image(input_name="capture.bin", width=160, height=120, img_dtype="uint8"):
+def decode_downsampled_image(input_name="capture.bin", width=160, height=120, img_dtype="uint8", plot=True):
     # read the data
     with open(input_name, "rb") as f:
         data = f.read()
 
     # unpack the data
-    if img_dtype == np.uint8:
+    if img_dtype == "uint8":
         buffer = np.frombuffer(data, dtype=np.uint8)
-    else:
+    elif img_dtype == "int8":
         buffer = np.frombuffer(data, dtype=np.int8)
         buffer = buffer + 128
         buffer = buffer.astype(np.uint8)
-
+    else:
+        raise ValueError(f"Invalid dtype: {img_dtype}")
+    
     img = buffer.reshape(height, width, 3)
-    print("unpacked_data")
 
-    # show image
-    plt.figure()
-    plt.imshow(img)
-    plt.show()
+    if plot:
+        # show image
+        plt.figure()
+        plt.imshow(img)
+        plt.show()
 
-    # show histograms
-    show_histogram_by_channel(img, 3000)
+        # show histograms
+        show_histogram_by_channel(img, 3000)
+    return img
 
 
 if __name__ == "__main__":
