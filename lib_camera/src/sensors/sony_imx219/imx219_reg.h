@@ -28,10 +28,10 @@
 #define PREPLLCK_OP_DIV     0x0305 
 #define PREDVIDE_2          0x02
 #define PLL_VT_MPY_REG      0x0306 
-#define PLL_OP_MPY          0x0010 // no effect in timing performance
+#define PLL_OP_MPY          0x0040
 
 #ifndef PLL_VT_MPY
-#define PLL_VT_MPY          0x0027 // pll multiplier
+#define PLL_VT_MPY          0x0040 // pll multiplier
 #endif
 
 // Gain params

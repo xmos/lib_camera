@@ -9,4 +9,3 @@ Camera processing libraries for XCORE.AI.
 
   ./doc/quick_start_guide/index
   ./doc/programming_guide/index
-  ./doc/release_notes/index

@@ -1,9 +1,11 @@
 lib_camera change log
 =====================
 
-0.3.0
+1.0.0
 -----
 
+  * ADDED: functions for crop and resize. See "isp_functions.h"
+  * ADDED: Support for the XCORE-VISION-EXPLORER board
   * ADDED: Support for Xcommon_cmake
   * CHANGED: Repository structure
 

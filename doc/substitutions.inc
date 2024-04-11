@@ -8,5 +8,5 @@
 .. _XSCOPE_FILEIO: https://github.com/xmos/xscope_fileio
 
 .. |lib_camera| replace:: ``lib_camera``
-.. |vision board| replace:: ``XCORE-VISION board``
+.. |vision board| replace:: ``XCORE-VISION-EXPLORER board``
 .. |xcore-ai| replace:: ``xcore.ai``
