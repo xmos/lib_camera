@@ -1,4 +1,4 @@
-// Copyright 2023 XMOS LIMITED.
+// Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 // std
@@ -7,12 +7,13 @@
 // xcore
 #include <xcore/assert.h>
 #include <xcore/select.h>
-#include <xcore/channel_streaming.h>
+#include <xcore/channel.h>
+#include <xcore/hwtimer.h>
 // user
 #include "mipi.h"
 #include "camera_api.h"
 #include "app_raw.h"
-#include "io_utils.h"
+#include "camera_io_utils.h"
 
 void user_app()
 {    
@@ -28,7 +29,9 @@ void user_app()
 
   // Request an image
   printf("Requesting image...\n");
+  unsigned t0 = get_reference_time();
   xassert((camera_capture_image_raw(image_buffer) == 0) && "Could not capture an image");
+  unsigned t1 = get_reference_time();
   printf("Image captured...\n");
 
   // stop the threads and camera stream
@@ -44,6 +47,7 @@ void user_app()
   write_image_file("capture.raw", (uint8_t * ) &image_buffer[0][0],   
       MIPI_IMAGE_HEIGHT_PIXELS, MIPI_IMAGE_WIDTH_BYTES, 1);
 
+  printf("Image capture time: %f ms\n", (float)((t1 - t0) / XS1_TIMER_KHZ));
   printf("Image saved. Exiting.\n");
   xscope_close_all_files();
   exit(0);

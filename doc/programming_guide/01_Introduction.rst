@@ -1,29 +1,27 @@
 Introduction
 =============
 
-.. include:: ../substitutions.rst
-
 The purpose of this programming guide is to provide developers with a comprehensive understanding 
-of the ``fwk_camera`` architecture and guide them on how to effectively interact with cameras using the XCORE-AI-EXPLORER board.
+of the |lib_camera| architecture and guide them on how to effectively interact with cameras using the |vision board|.
 
 Conventions and Terminology
 ---------------------------
 To ensure clarity and consistency throughout this guide, the following conventions and terminology are used:
 
-- MIPI: Mobile Industry Processor Interface. It is a standard interface specification for mobile devices, including cameras. The ``fwk_camera`` architecture utilises MIPI specifications for camera communication.
+- MIPI: Mobile Industry Processor Interface. It is a standard interface specification for mobile devices, including cameras. The |lib_camera| architecture utilises MIPI specifications for camera communication.
 - xcore: XMOS proprietary event-driven processor architecture. It provides high-performance parallel processing capabilities and is used in XMOS devices to handle camera interface and data processing.
-- Channels: In the context of XMOS devices, channels are communication pathways that allow data exchange between different components. Channels play a crucial role in camera control and data transfer within the ``fwk_camera`` architecture.
-- I2C: Inter-Integrated Circuit. It is a widely used serial communication protocol for controlling and configuring devices. Within the ``fwk_camera`` architecture, I2C is utilised for camera control operations, such as adjusting settings and retrieving sensor information.
+- Channels: In the context of XMOS devices, channels are communication pathways that allow data exchange between different components. Channels play a crucial role in camera control and data transfer within the |lib_camera| architecture.
+- I2C: Inter-Integrated Circuit. It is a widely used serial communication protocol for controlling and configuring devices. Within the |lib_camera| architecture, I2C is utilised for camera control operations, such as adjusting settings and retrieving sensor information.
 
 Features
 ---------
-The XCORE-AI-EXPLORER board features an 15-pin MIPI CSI2 port (compatible with Raspberry PI). 
+The |vision board| board features a built-in IMX219 Sony sensor connected to the |xcore-ai| chip. 
 This port is connected to the xcore.ai processor, so an image can be processed directly from an external sensor and have various operations performed over it,
 such as converting a RAW image to an RGB image (applying ISP functions),
 analyzing the image using AI models with xmos-ai-tools,
 converting a MIPI camera to other interfaces as USB, SPI, etc.
 
-The ``fwk_camera`` alongside with the Explorer board architecture provides the following features:
+The |lib_camera| alongside with the |vision board| architecture provides the following features:
 
 - MIPI CSI2 interface
 - Up to 1 Gbps per lane
@@ -37,7 +35,7 @@ The architecture, viewed from a high level, is composed of the following element
   :alt: High-level block diagram
   :align: center
 
-  High-level block diagram of the ``fwk_camera``.
+  High-level block diagram of the |lib_camera|.
 
 1. Camera hardware and interface
 2. Camera drivers
@@ -51,7 +49,8 @@ Getting Started
 ----------------
 
 A Quick Start Guide is provided with this document. 
-It contains a step-by-step guide on how to get started with the ``fwk_camera`` and run a basic ``image_capture`` example.
+It contains a step-by-step guide on how to get started with the |lib_camera| and run a basic ``image_capture`` example.
+Please refer to :doc:`03_Building_and_running_the_software`
 
 Additional Resources
 ---------------------

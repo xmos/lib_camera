@@ -11,6 +11,7 @@
 .python-version
 
 # Build & debug cruft
+bin/
 **/.build*/*
 **/bin/*
 *.o
@@ -98,3 +99,4 @@ temp
 
 #documentation
 !**/images/*.png
+!person.bin

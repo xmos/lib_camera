@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "xs1.h"
-#include "platform.h"
-#include "xccompat.h"
+#include <xs1.h>
+#include <platform.h>
+#include <xccompat.h>
 
 #include "camera_main.h"
 

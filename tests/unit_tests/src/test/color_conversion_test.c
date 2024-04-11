@@ -1,4 +1,4 @@
-// Copyright 2020-2023 XMOS LIMITED.
+// Copyright 2020-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdint.h>
@@ -12,6 +12,7 @@
 
 #include "camera_main.h"
 #include "_helpers.h"
+#include "isp_yuv_rgb.h"
 
 #define INV_DELTA 20  // error allowed in YUV RGB color conversion 
 #define num_tests 3

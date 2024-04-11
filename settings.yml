@@ -1,0 +1,18 @@
+---
+project: lib_camera
+title: XCORE Camera Library
+version: 1.0.0
+
+documentation:
+  exclude_patterns_path: doc/exclude_patterns.inc
+  substitutions_path: doc/substitutions.inc
+  doxygen_projects:
+    lib_camera:
+      doxyfile_path: doc/Doxyfile.inc
+  pdfs:
+    doc/quick_start_guide/index:
+      pdf_title: "{{title}} - Quick Start Guide"
+      pdf_filename: "{{project}}_quick_start_guide_v{{version}}"
+    doc/programming_guide/index:
+      pdf_title: "{{title}} - Programming Guide"
+      pdf_filename: "{{project}}_programming_guide_v{{version}}"

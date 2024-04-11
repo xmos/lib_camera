@@ -1,4 +1,4 @@
-// Copyright 2023 XMOS LIMITED.
+// Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 // std
@@ -8,8 +8,9 @@
 #include <stdlib.h>
 
 #include <xcore/assert.h>
+#include <xcore/hwtimer.h>
 
-#include "io_utils.h"
+#include "camera_io_utils.h"
 #include "app.h"
 
 void user_app()
@@ -28,7 +29,9 @@ void user_app()
 
   // grab a frame
   printf("Requesting image...\n");
+  unsigned t0 = get_reference_time();
   xassert((camera_capture_image(image_buffer) == 0) && "Could not capture an image");
+  unsigned t1 = get_reference_time();
   printf("Image captured...\n");
 
   // stop the threads and camera stream
@@ -55,6 +58,7 @@ void user_app()
                   APP_IMAGE_WIDTH_PIXELS,
                   APP_IMAGE_CHANNEL_COUNT);
 
+  printf("Image capture time: %f ms\n", (float)((t1 - t0) / XS1_TIMER_KHZ));
   printf("Images saved. Exiting.\n");
   xscope_close_all_files();
   exit(0);

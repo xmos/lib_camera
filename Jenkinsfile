@@ -1,8 +1,23 @@
-@Library('xmos_jenkins_shared_library@v0.27.0')
+@Library('xmos_jenkins_shared_library@v0.28.0')
 
 def runningOn(machine) {
   println "Stage running on:"
   println machine
+}
+
+def buildApps(appList) {
+  appList.each { app ->
+    sh "cmake -G 'Unix Makefiles' -S ${app} -B ${app}/build"
+    sh "xmake -C ${app}/build -j\$(nproc)"
+  }
+}
+
+def buildDocs(String zipFileName) {
+  withVenv {
+    sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.1.1'
+    sh 'xmosdoc'
+    zip zipFile: zipFileName, archive: true, dir: "doc/_build"
+  }
 }
 
 getApproval()
@@ -27,23 +42,32 @@ pipeline {
       parallel {
         stage ('Build and Unit test') {
           agent {
-            label 'linux&&x86_64'
+            label 'xcore.ai'
           }
           stages {
             stage ('Build') {
               steps {
                 runningOn(env.NODE_NAME)
-                dir('fwk_camera') {
+
+                sh 'git clone -b develop git@github.com:xmos/xcommon_cmake'
+                sh 'git -C xcommon_cmake rev-parse HEAD'
+
+                dir('lib_camera') {
                   checkout scm
-                  // fetch submodules
-                  sh 'git submodule update --init --recursive --jobs 4'
                   // build examples and tests
                   withTools(params.TOOLS_VERSION) {
-                    sh 'cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake'
-                    sh 'make -C build -j4'
-                  }
-                }
-              }
+                    withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
+                      buildApps([
+                        "examples/take_picture_downsample",
+                        "examples/take_picture_local",
+                        "examples/take_picture_raw",
+                        "tests/hardware_tests/test_timing",
+                        "tests/unit_tests"
+                      ]) // buildApps
+                    } // withEnv
+                  } // withTools
+                } // dir
+              } // steps
             } // Build
 
             stage('Create Python enviroment') {
@@ -52,7 +76,7 @@ pipeline {
                 sh "git clone git@github.com:xmos/infr_apps"
                 sh "git clone git@github.com:xmos/infr_scripts_py"
                 // can't use createVenv on the top level yet
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   createVenv('requirements.txt')
                   withVenv {
                     sh "pip install -e ../infr_scripts_py"
@@ -65,7 +89,7 @@ pipeline {
             stage('Source check') {
               steps {
                 // bit weird for now but should changed after the next xjsl release
-                dir('fwk_camera') {
+                dir('lib_camera') {
                   withVenv {
                     dir('tests/lib_checks') {
                       sh "pytest -s"
@@ -77,9 +101,9 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                dir('fwk_camera/build/tests/unit_tests') {
+                dir('lib_camera/tests/unit_tests') {
                   withTools(params.TOOLS_VERSION) {
-                    sh 'xsim --xscope "-offline trace.xmt" test_camera.xe'
+                    sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
               }
@@ -95,32 +119,18 @@ pipeline {
 
         stage ('Build Documentation') {
           agent {
-            label 'docker'
+            label 'documentation'
           }
-          stages {        
-            stage ('Build Docs') {
-              steps {
-                runningOn(env.NODE_NAME)
-                checkout scm
-                sh """docker run --user "\$(id -u):\$(id -g)" \
-                        --rm \
-                        -v ${WORKSPACE}:/build \
-                        -e EXCLUDE_PATTERNS="/build/doc/exclude_patterns.inc" \
-                        -e DOXYGEN_INCLUDE=/build/doc/Doxyfile.inc \
-                        -e PDF=1 \
-                        ghcr.io/xmos/doc_builder:v3.0.0"""
-                
-                archiveArtifacts artifacts: "doc/_build/**", allowEmptyArchive: true
-
-                script {
-                  def settings = readJSON file: 'settings.json'
-                  def doc_version = settings["version"]
-                  def zipFileName = "docs_fwk_camera_v${doc_version}.zip"
-                  zip zipFile: zipFileName, archive: true, dir: "doc/_build"
-                } // script
-              } // steps
-            } // Build Docs
-          } // stages
+          steps {
+            runningOn(env.NODE_NAME)
+            dir('lib_camera') {
+              checkout scm
+              createVenv("requirements.txt")
+              withTools(params.TOOLS_VERSION) {
+                buildDocs("lib_camera_docs.zip")
+              } // withTools
+            } // dir
+          } // steps
           post {
             cleanup {
               cleanWs()

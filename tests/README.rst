@@ -10,43 +10,34 @@ It contains two types of tests:
 Build Tests
 =============
 
-Run the following commands from the top level:
-
-Linux, Mac
-----------
-
-.. code-block:: console
-  
-  cmake -B build --toolchain=xmos_cmake_toolchain/xs3a.cmake
-  make -C build tests
-
-Windows
--------
+Run the following commands from the current folder:
 
 .. code-block:: console
 
-  cmake -G "Ninja" -B build --toolchain=xmos_cmake_toolchain\xs3a.cmake
-  ninja -C build tests
+  cmake -G "Unix Makefiles" -B build
+  xmake -C build
 
-Running the tests
-=================
+Run unit tests (xrun or xsim)
+-----------------------------
 
-.. note::
-  1. Hardware tests require `xscope_fileio` to be installed.
-  2. Run the following commands from the `fwk_camera` top level.
-
-Run unit tests
---------------
+Run the following commands from the ``unit_tests`` folder:
 
 .. code-block:: console
 
-  xsim --xscope "-offline trace.xmt" build/tests/unit_tests/test_camera.xe
-  # or
-  xrun --xscope build/tests/unit_tests/test_camera.xe
+  # Simulate the test
+  xsim --xscope "-offline trace.xmt" bin/test_camera.xe
+  # Run the test on hardware
+  xrun --xscope bin/test_camera.xe
 
 Run hardware tests
 ------------------
 
+.. note::
+  
+  Hardware tests require `xscope_fileio` to be installed.
+
+Run the following commands from the ``hardware_tests`` folder:
+
 .. code-block:: console
 
-   pytest
+  pytest

@@ -1,16 +1,14 @@
 Architecture and Design
 =======================
 
-.. include:: ../substitutions.rst
-
-In this section the main components of ``fwk_camera`` and their interactions will be described.
+In this section the main components of |lib_camera| and their interactions will be described.
 Some design decisions and the reasoning behind them will also be explained.
-The main components of ``fwk_camera`` are the following:
+The main components of |lib_camera| are the following:
 
 
 Hardware Architecture
 ---------------------
-From a hardware point of view, ``fwk_camera`` is composed of the following modules:
+From a hardware point of view, |lib_camera| is composed of the following modules:
 
 #.  Camera connector : 15-PIN MIPI CSI connector for the camera module. (compatible with Raspberry Pi).
 #.  MIPI Shim : XMOS MIPI hardware to convert MIPI signals to xcore ports.
@@ -19,12 +17,12 @@ From a hardware point of view, ``fwk_camera`` is composed of the following modul
 
 Software Architecture
 ---------------------
-From a software point of view, ``fwk_camera`` is composed of the following modules:
+From a software point of view, |lib_camera| is composed of the following modules:
 
 .. _obj_diagram:
 
 .. figure:: images/2_object_diagram.png
-  :alt: ``fwk_camera`` object diagram
+  :alt: |lib_camera| object diagram
   :figclass: custom-class
 
   Object Diagram

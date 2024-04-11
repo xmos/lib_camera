@@ -10,8 +10,8 @@ Core usage
 ``take_picture_downsample`` application thread diagram can be found below. For more detals about thread commutication, please refer to
 :ref:`Software Architecture<obj_diagram>` section.
 
-.. figure:: images/3_v0.2.0_thread_diagram.png
-  :alt: ``fwk_camera`` thread diagram
+.. figure:: images/3_thread_diagram.png
+  :alt: |lib_camera| thread diagram
   :align: center
 
   Resource usage
@@ -27,10 +27,15 @@ A more accurate memory report can be found below.
 .. code-block:: console
 
   Constraint check for tile[0]:
-    Memory available:       524288,   used:      14084 .  OKAY
-      (Stack: 748, Code: 11692, Data: 1644)
+  Memory available:       524288,   used:       4068 .  OKAY
+    (Stack: 356, Code: 3180, Data: 532)
   Constraints checks PASSED.
   Constraint check for tile[1]:
-    Memory available:       524288,   used:      88896 .  OKAY
-      (Stack: 62900, Code: 16284, Data: 9712)
-  Constraints checks PASSED.
+  Memory available:       524288,   used:      95720 .  OKAY
+    (Stack: 62844, Code: 20832, Data: 12044)
+
+
+.. note:: 
+  
+  The memory usage below is based on the ``take_picture_downsample`` application. The memory usage will vary depending on the application.
+  
