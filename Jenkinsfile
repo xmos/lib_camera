@@ -12,6 +12,15 @@ def buildApps(appList) {
   }
 }
 
+def checkSkipLink() {
+    def skip_linkcheck = ""
+    if (env.GH_LABEL_ALL.contains("skip_linkcheck")) {
+        println "skip_linkcheck set, skipping link check..."
+        skip_linkcheck = "clean html pdf"
+    }
+    return skip_linkcheck
+}
+
 def buildDocs(String zipFileName) {
   withVenv {
     sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.1.1'
