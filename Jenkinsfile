@@ -23,7 +23,7 @@ def checkSkipLink() {
 
 def buildDocs(String zipFileName) {
   withVenv {
-    sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.1.1'
+    sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.2.0'
     sh "xmosdoc ${checkSkipLink()}"
     zip zipFile: zipFileName, archive: true, dir: "doc/_build"
   }
