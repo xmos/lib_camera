@@ -27,10 +27,6 @@ inline void delay_seconds_cpp(unsigned int delay) {
   hwtimer_free(tmr);
 }
 
-
-
-
-
 #ifdef __cplusplus
 } //extern "C"
 #endif
