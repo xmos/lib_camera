@@ -16,4 +16,5 @@
     #include <xcore/channel.h>          // include channel, channend, streaming channel (C only)
     #include <xccompat.h>               // include ports, clocks, and channends (XC/C compat)
     typedef chanend chanend_t;          // chanend_t (XC/C compat)
+    typedef unsigned tileref_t;         // tileref_t (XC/C compat)
 #endif //__XC__

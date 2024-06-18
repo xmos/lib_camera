@@ -6,7 +6,7 @@
 
 .issue_mode dual
 
-#define FUNCTION_NAME   MipiPacketRx
+#define FUNCTION_NAME   mipi_packet_rx
 #define NSTACKWORDS     8
 
 .globl FUNCTION_NAME.nstackwords

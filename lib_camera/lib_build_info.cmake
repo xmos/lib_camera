@@ -1,8 +1,8 @@
 set(LIB_NAME lib_camera)
-set(LIB_VERSION 1.0.0)
+set(LIB_VERSION 2.0.0)
 set(LIB_DEPENDENT_MODULES i2c)
-set(LIB_INCLUDES api src/sensors/sony_imx219)
-set(LIB_COMPILER_FLAGS -Os -Wall -Werror -g -fxscope -mcmodel=large)
+set(LIB_INCLUDES api src src/asm src/sensors)
+set(LIB_COMPILER_FLAGS -Os -Wall -g -fxscope -mcmodel=large) #-Werror)
 
 # I2C
 set(XMOS_DEP_DIR_i2c ${XMOS_SANDBOX_DIR}/fwk_io/modules)
