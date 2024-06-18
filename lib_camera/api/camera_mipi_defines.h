@@ -3,33 +3,71 @@
 
 #pragma once
 
-typedef unsigned mipi_header_t;
 
-#define MIPI_HAS_PACKET_ERROR(STATUS)   ((STATUS) & (0xFE))
+#include <xcore/port.h>
+#include <xccompat.h>
 
+#include "xcore_compat.h"
+
+// ----------- Mipi, packet, and shim definitions -------------------------
+
+// MIPI packet header layout functions
+#define MIPI_HAS_PACKET_ERROR(STATUS) ((STATUS) & (0xFE))
 #define MIPI_LONG_PACKET_MASK         (0x30)
 #define MIPI_IS_LONG_PACKET(HEADER)   ((HEADER) & (MIPI_LONG_PACKET_MASK))
-
 #define MIPI_DATA_TYPE_MASK           (0x0000003F)
 #define MIPI_GET_DATA_TYPE(HEADER)    ((HEADER) & (MIPI_DATA_TYPE_MASK))
+#define MIPI_GET_WORD_COUNT(HEADER)   (((HEADER) >> 8) & 0xFFFF )
 
-#define MIPI_GET_WORD_COUNT(HEADER)   ( ((HEADER) >> 8) & 0xFFFF )
+// Mipi shim configuration (MIPI_SHIM_CFG0)
+#define MIPI_SHIM_CFG0_PACK(DMUX_EN, DMUX_DT, DMUX_MODE, DMUX_STFF, DMUX_BIAS) \
+    ( (((DMUX_EN != 0)   & 0x1  ) << 0)     \
+    | (((DMUX_DT)   & 0xFF ) << 8)          \
+    | (((DMUX_MODE) & 0x3F ) << 16)         \
+    | (((DMUX_STFF != 0) & 0x1  ) << 22)    \
+    | (((DMUX_BIAS != 0) & 0x1  ) << 23))
+
+// Mipi shim configuration (MIPI_SHIM_CFG3)
+#define _ENABLE_LAN1       (1 << 14)
+#define _ENABLE_LAN0       (1 << 13)
+#define _ENABLE_CLK        (1 << 12)
+#define _DPDN_SWAP_LAN1    (1 << 11)
+#define _DPDN_SWAP_LAN0    (1 << 10)
+#define _DPDN_SWAP_CLK     (1 << 9)
+
+#define _LANE_SWAP_LAN1_DEFAULT (1 << 6)
+#define _LANE_SWAP_LAN0_DEFAULT (0 << 3)
+#define _LANE_SWAP_CLK_DEFAULT  (2 << 0)
+
+#define DEFAULT_MIPI_DPHY_CFG3 ( \
+  _ENABLE_LAN1  |\
+  _ENABLE_LAN0  |\
+  _ENABLE_CLK   |\
+  _DPDN_SWAP_LAN1 |\
+  _DPDN_SWAP_LAN0 |\
+  _DPDN_SWAP_CLK |\
+  _LANE_SWAP_LAN1_DEFAULT |\
+  _LANE_SWAP_LAN0_DEFAULT |\
+  _LANE_SWAP_CLK_DEFAULT \
+)
+
+// MIPI Shim configuration (MIPI_SHIM_CFG0) 
+#define MIPI_SHIM_BIAS_ENABLE       1       //  Offset output pixels [1]
+#define MIPI_SHIM_STUFF_ENABLE      0       // Add a zero byte after every RGB pixel [2]
+#define MIPI_SHIM_DEMUX_MODE        0       // demux mode (see xMIPI_DemuxMode_t), Unused if MIPI_SHIM_DEMUX_EN = 0 
+#define MIPI_SHIM_DEMUX_DATATYPE    0       // CSI-2 packet type to demux, Unused if MIPI_SHIM_DEMUX_EN = 0
+#define MIPI_SHIM_DEMUX_EN          0       // MIPI shim 0 = disabled, 1 = enabled
+
+// Mipi shim clock settings
+#define MIPI_CLK_DIV      1     // CLK DIVIDER
+#define MIPI_CFG_CLK_DIV  3     // CFG DIVIDER
+#ifndef MIPI_CLKBLK
+#define MIPI_CLKBLK XS1_CLKBLK_1
+#endif
 
 
 
-/**
- * 0x00 to 0x07 - Synchronization Short Packet Data Types
- * 0x08 to 0x0F - Generic Short Packet Data Types
- * 0x10 to 0x17 - Generic Long Packet Data Types
- * 0x18 to 0x1F - YUV Data
- * 0x20 to 0x26 - RGB Data
- * 0x27 to 0x2F - RAW Data
- * 0x30 to 0x37 - User Defined Byte-based Data
- * 0x38 - USL Commands
- * 0x39 to 0x3E - Reserved for future use
- * 0x3F - Unavailable (0x3F is used for LRTE EPD Spacer)
- *
- */
+// ----------- Mipi, packet, and shim structures -------------------------
 
 typedef enum {
   // 0x00 to 0x07 - Synchronization Short Packet Data Types
@@ -127,9 +165,37 @@ typedef enum xMIPI_DemuxMode_t {
   XMIPI_DEMUXMODE_14TO8 = 7  // These are not in the shim documentation
 } xMIPI_DemuxMode_t;
 
-/*
-  MIPI DPHY configuration register layout (MIPI_DPHY_CFG3)
 
+typedef struct
+{
+    port_t p_mipi_clk;
+    port_t p_mipi_rxa;
+    port_t p_mipi_rxv;
+    in_buffered_port_32_t p_mipi_rxd;
+    xclock_t clk_mipi;
+} camera_mipi_ctx_t;
+
+/*
+  Notes
+  -----
+  Notes from MIPI D-PHY specification and Mipi Shim documentation
+
+  MIPI Data Typesfrom MIPI D-PHY specification
+  --------------------------------------------
+  0x00 to 0x07 - Synchronization Short Packet Data Types
+  0x08 to 0x0F - Generic Short Packet Data Types
+  0x10 to 0x17 - Generic Long Packet Data Types
+  0x18 to 0x1F - YUV Data
+  0x20 to 0x26 - RGB Data
+  0x27 to 0x2F - RAW Data
+  0x30 to 0x37 - User Defined Byte-based Data
+  0x38 - USL Commands
+  0x39 to 0x3E - Reserved for future use
+  0x3F - Unavailable (0x3F is used for LRTE EPD Spacer)
+
+
+  MIPI DPHY configuration register layout (MIPI_DPHY_CFG3)
+  --------------------------------------------------------
     Bits    Name                    Meaning
     14      _ENABLE_LAN1            Set to 0 to disable lane 1 receiver
     13      _ENABLE_LAN0            Set to 0 to disable lane 0 receiver
@@ -140,11 +206,10 @@ typedef enum xMIPI_DemuxMode_t {
     8:6     _LANE_SWAP_LAN1         The pin over which to input lane 1
     5:3     _LANE_SWAP_LAN0         The pin over which to input lane 0
     2:0     _LANE_SWAP_CLK          The pin over which to input clock
-*/
 
-/*
+
   MIPI Shim configuration register layout (MIPI_SHIM_CFG0)
-
+  --------------------------------------------------------
     Bits    Name                    Meaning
     23      _BIAS                   Bias output pixels for VPU usage
     22      _DEMUX_STUFF            Add zero byte after every RGB pixel
@@ -152,35 +217,3 @@ typedef enum xMIPI_DemuxMode_t {
     15:8    _PIXEL_DEMUX_DATATYPE   CSI-2 packet type to demux
     0       _PIXEL_DEMUX_EN         Enable pixel demuxing
 */
-#define MIPI_SHIM_CFG0_PACK(DMUX_EN, DMUX_DT, DMUX_MODE, DMUX_STFF, DMUX_BIAS) \
-    ( (((DMUX_EN != 0)   & 0x1  ) << 0)     \
-    | (((DMUX_DT)   & 0xFF ) << 8)          \
-    | (((DMUX_MODE) & 0x3F ) << 16)         \
-    | (((DMUX_STFF != 0) & 0x1  ) << 22)    \
-    | (((DMUX_BIAS != 0) & 0x1  ) << 23))
-
-
-
-// Mipi shim configuration
-#define _ENABLE_LAN1       (1 << 14)
-#define _ENABLE_LAN0       (1 << 13)
-#define _ENABLE_CLK        (1 << 12)
-#define _DPDN_SWAP_LAN1    (1 << 11)
-#define _DPDN_SWAP_LAN0    (1 << 10)
-#define _DPDN_SWAP_CLK     (1 << 9)
-
-#define _LANE_SWAP_LAN1_DEFAULT (1 << 6)
-#define _LANE_SWAP_LAN0_DEFAULT (0 << 3)
-#define _LANE_SWAP_CLK_DEFAULT  (2 << 0)
-
-#define DEFAULT_MIPI_DPHY_CFG3 ( \
-  _ENABLE_LAN1  |\
-  _ENABLE_LAN0  |\
-  _ENABLE_CLK   |\
-  _DPDN_SWAP_LAN1 |\
-  _DPDN_SWAP_LAN0 |\
-  _DPDN_SWAP_CLK |\
-  _LANE_SWAP_LAN1_DEFAULT |\
-  _LANE_SWAP_LAN0_DEFAULT |\
-  _LANE_SWAP_CLK_DEFAULT \
-)
