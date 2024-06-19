@@ -7,7 +7,7 @@
 
 #include "api.h"
 #include "xcore_compat.h"
-#include "sensor_control.h"
+#include "camera_mipi_defines.h"
 
 C_API_START
 

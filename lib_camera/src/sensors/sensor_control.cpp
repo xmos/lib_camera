@@ -6,7 +6,7 @@
 #include "sensor_base.hpp"
 #include "imx219.hpp"
 
-void sensor_control(chanend_t c_control) {
+void camera_sensor_control(chanend_t c_control) {
   
   i2c_master_t i2c_ctx;
   sensor::i2c_config_t i2c_conf;

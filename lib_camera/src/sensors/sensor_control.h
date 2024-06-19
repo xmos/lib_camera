@@ -25,6 +25,6 @@ C_API_START
  * and call the control function
  * @param c_control Channel to control the sensor
  */
-void sensor_control(chanend c_control);
+void camera_sensor_control(chanend c_control);
 
 C_API_END
