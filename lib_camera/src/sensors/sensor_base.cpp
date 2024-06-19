@@ -3,9 +3,6 @@
 
 #include <stdio.h>
 
-#include <timer.h>
-// #include <xcore/hwtimer.h>
-
 #include "sensor_base.hpp"
 #include "camera_utils.h"
 

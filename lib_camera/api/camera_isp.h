@@ -10,20 +10,43 @@
 
 C_API_START
 
+typedef struct {
+    unsigned height;
+    unsigned width;
+    unsigned channels;
+    int8_t *ptr;
+} Image_t;
 
-/**
- * @brief Handles a MIPI packet. Receives MIPI packets from the
- * packet receiver and passes them to `camera_isp_packet_handler()` for parsing and
- * processing.
- * @param c_pkt   Streaming channel to receive MIPI packets from.
- * @param c_ctrl  Streaming channel to send control messages to.
- * @param c_isp   Channel to send ISP commands to.
- */
+typedef struct
+{
+  // Offsets
+  unsigned offset_x;
+  unsigned offset_y;
+  // Scale
+  float sx;
+  float sy;
+  // Shear
+  float shx;
+  float shy;
+  // Rotation
+  float angle;
+  // Transform
+  float *T;
+  // Delay
+  unsigned delay;
+  unsigned cmd;
+} Camera_configure_t;
+
+
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
   streaming_chanend_t c_ctrl,
   chanend_t c_isp,
   chanend_t c_user);
 
+void camera_isp_capture_in_ms(
+  chanend_t c_user, 
+  unsigned ms, 
+  Image_t* image);
 
 C_API_END

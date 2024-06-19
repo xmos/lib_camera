@@ -1,15 +1,16 @@
 // Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+
 #include "sensor_control.h"
+#include "sensor_base.hpp"
 #include "imx219.hpp"
 
-using namespace sensor;
-
-i2c_master_t i2c_ctx;
-i2c_config_t i2c_conf;
-
 void sensor_control(chanend_t c_control) {
+  
+  i2c_master_t i2c_ctx;
+  sensor::i2c_config_t i2c_conf;
+
   // I2C settings
   i2c_conf.device_addr = I2C_DEV_ADDR;
   i2c_conf.speed = I2C_DEV_SPEED;
@@ -20,12 +21,14 @@ void sensor_control(chanend_t c_control) {
   const bool binning = true;
   const bool centralise = true;
 
-  IMX219 snsr(
+  // Create sensor object, to change if different sensor is used
+  sensor::IMX219 snsr(
     i2c_conf, 
     (resolution_t)CONFIG_MODE, 
     (pixel_format_t)CONFIG_MIPI_FORMAT, 
     binning, 
     centralise);
 
+  // Initialize sensor loop
   snsr.control(c_control);
 }

@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include <xcore/assert.h>
+#include <xcore/select.h>
 #include <print.h>
 
 #include "imx219.hpp"
@@ -70,70 +71,6 @@ int IMX219::configure() {
   return ret;
 }
 
-void IMX219::control(chanend_t c_control) {
-  // Init the I2C sensor first configuration
-  int ret = 0;
-  ret |= this->initialize();
-  delay_milliseconds_cpp(100);
-  ret |= this->configure();
-  delay_milliseconds_cpp(600);
-  ret |= this->stream_start();
-  delay_milliseconds_cpp(600);
-  xassert((ret == 0) && "Could not initialise camera");
-  puts("\nCamera_started and configured...");
-
-  // store the response
-  uint32_t encoded_response;
-  sensor_control_t cmd;
-  uint8_t arg;
-
-  // sensor control logic
-  while(1) {
-    encoded_response = chan_in_word(c_control);
-    chan_out_word(c_control, 0);
-    cmd = (sensor_control_t) DECODE_CMD(encoded_response);
-
-    #if ENABLE_PRINT_SENSOR_CONTROL
-      printf("--------------- Received command %d\n", cmd);
-    #endif
-    
-    switch (cmd)
-    {
-    case SENSOR_INIT:
-      ret = this->initialize();
-      break;
-    case SENSOR_CONFIG:
-      //TODO reimplement when dynamic configuration is supported
-      ret = this->configure();
-      break;
-    case SENSOR_STREAM_START:
-      arg = DECODE_ARG(encoded_response);
-      if (arg){
-        delay_milliseconds_cpp(arg);
-      }
-      ret = this->stream_start();
-      break;
-    case SENSOR_STREAM_STOP:
-      ret = this->stream_stop();
-      break;
-    case SENSOR_SET_EXPOSURE:
-      arg = DECODE_ARG(encoded_response);
-      ret = this->set_exposure(arg);
-      break;
-    case SENSOR_STREAM_STANBY:
-      arg = DECODE_ARG(encoded_response);
-      ret = this->stream_stop();
-      delay_seconds_cpp(arg);
-      printstrln("-----> Reactivating sensor stream");
-      this->stream_start();            
-      break;
-    default:
-      break;
-    }
-    xassert((ret == 0) && "Could not perform I2C write");
-  }
-}
-
 i2c_table_t IMX219::get_exp_gains_table(uint32_t dBGain) {
   static i2c_line_t exposure_regs[5];
   static i2c_table_t exposure_table = {exposure_regs, 5};
@@ -175,9 +112,9 @@ i2c_table_t IMX219::get_pxl_fmt_table() {
   static i2c_line_t format_regs[3];
   static i2c_table_t format_table = {format_regs, 3};
   uint16_t val = 0;
-  if(pix_fmt == FMT_RAW8) {
+  if(pix_fmt == MIPI_DT_RAW8) {
     val = 0x08;
-  } else if(pix_fmt == FMT_RAW10) {
+  } else if(pix_fmt == MIPI_DT_RAW10) {
     val = 0x0a;
   } else {
     xassert(0 && "Pixel format has to be either RAW8 or RAW10");
@@ -256,5 +193,67 @@ void IMX219::check_ranges() {
   uint16_t y_full_len = (this->binning_2x2) ? this->y_len * 2 : this->y_len;
   if(((this->x_offset + x_full_len) >= SENSOR_X_LIM) || ((this->y_offset + y_full_len) >= SENSOR_Y_LIM)) {
     xassert(0 && "Given resolution and binnig mode exceed sensor frame limits");
+  }
+}
+
+void IMX219::control(chanend_t c_control) {
+  // Init the I2C sensor first configuration
+  int ret = 0;
+  ret |= this->initialize();
+  delay_milliseconds_cpp(100);
+  ret |= this->configure();
+  delay_milliseconds_cpp(600);
+  ret |= this->stream_start();
+  delay_milliseconds_cpp(600);
+  xassert((ret == 0) && "Could not initialise camera");
+  puts("\nCamera_started and configured.");
+
+  // store the response
+  uint32_t encoded_response;
+  sensor_control_t cmd;
+  uint8_t arg;
+
+  // sensor control logic
+  SELECT_RES(
+    CASE_THEN(c_control, on_c_control))
+  {
+    on_c_control:{
+      // Old legacy version
+      encoded_response = chan_in_word(c_control);
+      chan_out_word(c_control, 0);
+      cmd = (sensor_control_t) DECODE_CMD(encoded_response);
+
+      switch (cmd){ 
+        case SENSOR_STREAM_STOP:
+          ret = this->stream_stop();
+          break;
+        case SENSOR_STREAM_START:
+          arg = DECODE_ARG(encoded_response);
+          if (arg){
+            delay_milliseconds_cpp(arg);
+          }
+          ret = this->stream_start();
+          break;
+        case SENSOR_INIT:
+          break;
+        case SENSOR_CONFIG:
+          break;
+        case SENSOR_SET_EXPOSURE:
+          arg = DECODE_ARG(encoded_response);
+          ret = this->set_exposure(arg);
+          break;
+      }
+      xassert((ret == 0) && "Could not perform I2C write");
+      continue;
+
+      // ----------------- New version -----------------
+      //TODO recieve camera configuration
+
+      // Configure the camera
+
+      // Start the camera
+
+      // Add option to stop the camera
+    }
   }
 }

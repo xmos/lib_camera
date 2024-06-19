@@ -7,12 +7,13 @@
 #include <xcore/select.h>
 #include <print.h>
 
+#include "lib_camera.h"  // in reality image def could be in isp.h
+
 #include "camera_isp.h"
 #include "camera_utils.h"
 #include "camera_mipi_defines.h"
 
 #include "sensor_control.h"
-#include "sensor.h"
 
 #define FRAMES_TO_STOP 30
 #define PIPELINE_TIME_MS 100
@@ -55,7 +56,7 @@ void handle_unknown_packet(
 
 static
 void handle_no_expected_lines() {
-  if (ph_state.in_line_number >= SENSOR_RAW_IMAGE_HEIGHT_PIXELS) {
+  if (ph_state.in_line_number >= MIPI_IMAGE_HEIGHT_PIXELS) {
     // We've received more lines of image data than we expected.
 #ifdef ASSERT_ON_TOO_MANY_LINES
     xassert(0 && "Recieved too many lines");
@@ -68,7 +69,8 @@ static
 void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
   chanend_t c_control,
-  chanend_t c_user) {
+  chanend_t c_user,
+  Image_t* image) {
   // Definitions
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
@@ -87,14 +89,14 @@ void camera_isp_packet_handler(
     ph_state.frame_number++;
     break;
 
-  case MIPI_EXPECTED_FORMAT:
+  case CONFIG_MIPI_FORMAT:
     printstr("d,");
     handle_no_expected_lines();
     ph_state.in_line_number++;
     break;
 
   case MIPI_DT_FRAME_END:
-    printstrln("EOF");
+    printstrln("\nEOF");
     send_stop(c_control);
     break;
 
@@ -102,6 +104,15 @@ void camera_isp_packet_handler(
     handle_unknown_packet(data_type);
     break;
   }
+}
+
+void camera_isp_capture_in_ms(
+  chanend_t c_user,
+  unsigned ms,
+  Image_t* image) {
+  chan_out_word(c_user, ms);
+  chan_out_buf_byte(c_user, (uint8_t*)image, sizeof(Image_t));
+  //TODO dothe same with image configuration
 }
 
 
@@ -116,8 +127,9 @@ void camera_isp_thread(
   mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
   mipi_packet_t* pkt;
   unsigned pkt_idx = 0;
+  Image_t image;
 
-  delay_milliseconds_cpp(2200);
+  delay_milliseconds_cpp(2200); // Wait for the sensor to start
 
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
@@ -125,23 +137,26 @@ void camera_isp_thread(
 
   SELECT_RES(
     CASE_THEN(c_pkt, on_c_pkt_change),
-    CASE_THEN(c_user, on_c_user_change)){
-    
-    on_c_pkt_change: { // attending mipi_packet_rx
-      pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
-      pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
-      s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
-      camera_isp_packet_handler(pkt, c_control, c_user);
-      continue;
+    CASE_THEN(c_user, on_c_user_change)) {
+
+  on_c_pkt_change: { // attending mipi_packet_rx
+    pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
+    pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
+    s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
+    camera_isp_packet_handler(pkt, c_control, c_user, &image);
+    continue;
     }
-    on_c_user_change: { // attending user_app
-      unsigned miliseconds = chan_in_word(c_user);
-      unsigned start_delay = miliseconds - PIPELINE_TIME_MS;
-      printf("User asked: %d\n", miliseconds);
-      printf("Pipeline time: %d\n", PIPELINE_TIME_MS);
-      printf("Starting in %d ms\n", miliseconds - PIPELINE_TIME_MS);
-      send_delay_start(c_control, start_delay);
-      continue;
+  on_c_user_change: { // attending user_app
+    unsigned miliseconds = chan_in_word(c_user);
+    chan_in_buf_byte(c_user, (uint8_t*)&image, sizeof(Image_t));
+    unsigned start_delay = miliseconds - PIPELINE_TIME_MS;
+    printf("User asked: %d\n", miliseconds);
+    printf("Pipeline time: %d\n", PIPELINE_TIME_MS);
+    printf("Starting in %d ms\n", miliseconds - PIPELINE_TIME_MS);
+    // TODO I should send config first
+    send_delay_start(c_control, start_delay); // at this point isp is ready to recieve
+
+    continue;
     }
   }
 

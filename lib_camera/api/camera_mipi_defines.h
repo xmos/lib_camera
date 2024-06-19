@@ -5,9 +5,12 @@
 
 #include <xcore/port.h>
 #include "xcore_compat.h"
-#include "sensor.h"
 
 // ----------- Mipi, packet, and shim definitions -------------------------
+
+// Mipi payload
+#define MIPI_MAX_PKT_SIZE_BYTES     ((800) + 4)  // max payload 800+4 bytes x 4 lines
+#define MIPI_PKT_BUFFER_COUNT                 4
 
 // MIPI packet header layout functions
 #define MIPI_HAS_PACKET_ERROR(STATUS) ((STATUS) & (0xFE))
