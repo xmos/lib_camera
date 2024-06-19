@@ -18,7 +18,7 @@
 
 
 static
-void mipi_packet_init(
+void camera_mipi_packet_init(
   unsigned tile,
   port_t p_mipi_rxd,
   port_t p_mipi_rxv,
@@ -70,8 +70,7 @@ void mipi_packet_init(
   setps(XS1_PS_XCORE_CTRL0, val | 0x100);
 }
 
-
-void mipi_ctx_init(
+void camera_mipi_ctx_init(
   camera_mipi_ctx_t* ctx) {
   port_enable(ctx->p_mipi_clk);
   port_enable(ctx->p_mipi_rxa);
@@ -80,8 +79,7 @@ void mipi_ctx_init(
   clock_enable(ctx->clk_mipi);
 }
 
-
-void mipi_camera_init(
+void camera_mipi_init(
   camera_mipi_ctx_t* ctx
 ) {
   // Tile ids have weird values, so we get them with this API
@@ -96,8 +94,9 @@ void mipi_camera_init(
     MIPI_SHIM_DEMUX_MODE,
     MIPI_SHIM_STUFF_ENABLE,
     1); // enable bias
+  
   // Initialize MIPI receiver
-  mipi_packet_init(tileid,
+  camera_mipi_packet_init(tileid,
     ctx->p_mipi_rxd,
     ctx->p_mipi_rxv,
     ctx->p_mipi_rxa,

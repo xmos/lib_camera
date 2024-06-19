@@ -3,11 +3,9 @@
 
 #pragma once
 
-
 #include <xcore/port.h>
-#include <xccompat.h>
-
 #include "xcore_compat.h"
+#include "sensor.h"
 
 // ----------- Mipi, packet, and shim definitions -------------------------
 
@@ -68,6 +66,8 @@
 
 
 // ----------- Mipi, packet, and shim structures -------------------------
+
+typedef unsigned mipi_header_t;
 
 typedef enum {
   // 0x00 to 0x07 - Synchronization Short Packet Data Types
@@ -174,6 +174,21 @@ typedef struct
     in_buffered_port_32_t p_mipi_rxd;
     xclock_t clk_mipi;
 } camera_mipi_ctx_t;
+
+// Represents a received MIPI packet.
+typedef struct
+{
+  mipi_header_t header;
+  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
+} mipi_packet_t;
+
+// Represents the state of the MIPI receiver.
+typedef struct {
+  unsigned wait_for_frame_start;
+  unsigned frame_number;
+  unsigned in_line_number;
+  unsigned out_line_number;
+} frame_state_t;
 
 /*
   Notes

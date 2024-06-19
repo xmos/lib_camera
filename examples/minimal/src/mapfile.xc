@@ -9,12 +9,13 @@
 #include <platform.h>
 #include <xscope.h>
 
+#include <lib_camera.h>
+
 extern "C" {
 #include "xscope_io_device.h"
 }
 
 extern "C" {
-void camera_main(chanend_t c_user);
 void user_app(chanend_t c_user);
 }
 
@@ -28,7 +29,7 @@ int main(void)
   par{
     xscope_host_data(xscope_chan);
     on tile[1]: xscope_io_init(xscope_chan);
-    on tile[1]: camera_main(c_user);
+    on tile[1]: lib_camera_main(c_user);
     on tile[1]: user_app(c_user);
   }
   return 0;

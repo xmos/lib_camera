@@ -7,7 +7,7 @@
 #include <print.h>
 
 #include "imx219.hpp"
-#include "delay.h"
+#include "camera_utils.h"
 
 using namespace sensor;
 

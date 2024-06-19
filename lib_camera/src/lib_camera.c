@@ -9,19 +9,22 @@
 #include <platform.h>
 #include <xcore/channel.h>
 #include <xcore/port.h>
+#include <xcore/parallel.h>
 #include <xccompat.h>
 
 #include "camera_mipi.h"
+#include "camera_mipi_rx.h"
 #include "camera_isp.h"
 #include "sensor_control.h"
 
+#include "lib_camera.h"
 
-DECLARE_JOB(mipi_packet_rx, (in_buffered_port_32_t, port_t, streaming_chanend_t, streaming_chanend_t));
-DECLARE_JOB(isp_packet_handler, (streaming_chanend_t, streaming_chanend_t, chanend_t, chanend_t));
+DECLARE_JOB(camera_mipi_rx, (in_buffered_port_32_t, port_t, streaming_chanend_t, streaming_chanend_t));
+DECLARE_JOB(camera_isp_thread, (streaming_chanend_t, streaming_chanend_t, chanend_t, chanend_t));
 DECLARE_JOB(sensor_control, (chanend_t));
 
 
-void camera_main(chanend_t c_user){
+void lib_camera_main(chanend_t c_user){
 
     // Channels
     streaming_channel_t c_pkt = s_chan_alloc();
@@ -36,13 +39,13 @@ void camera_main(chanend_t c_user){
         .p_mipi_rxd = XS1_PORT_8A,
         .clk_mipi = MIPI_CLKBLK
     };
-    mipi_ctx_init(&ctx);
-    mipi_camera_init(&ctx);
+    camera_mipi_ctx_init(&ctx);
+    camera_mipi_init(&ctx);
 
     // Parallel Jobs
     PAR_JOBS(
-        PJOB(mipi_packet_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)),
-        PJOB(isp_packet_handler,(c_pkt.end_b, c_ctrl.end_b, c_control.end_a, c_user)),
+        PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)),
+        PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_control.end_a, c_user)),
         PJOB(sensor_control,(c_control.end_b))
     );
 

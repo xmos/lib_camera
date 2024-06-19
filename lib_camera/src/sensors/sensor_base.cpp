@@ -7,7 +7,7 @@
 // #include <xcore/hwtimer.h>
 
 #include "sensor_base.hpp"
-#include "delay.h"
+#include "camera_utils.h"
 
 using namespace sensor;
 

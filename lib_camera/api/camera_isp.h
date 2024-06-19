@@ -5,37 +5,25 @@
 
 #include <stdint.h>
 
-#include <xcore/channel.h>
-#include <xcore/parallel.h>
-#include <xccompat.h>
+#include "api.h"
+#include "xcore_compat.h"
 
-#include "sensor.h"
-#include "camera_mipi_defines.h"
+C_API_START
 
-// Represents a received MIPI packet.
-typedef struct
-{
-  mipi_header_t header;
-  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
-} mipi_packet_t;
-
-typedef struct {
-  unsigned wait_for_frame_start;
-  unsigned frame_number;
-  unsigned in_line_number;
-  unsigned out_line_number;
-} frame_state_t;
 
 /**
  * @brief Handles a MIPI packet. Receives MIPI packets from the
- * packet receiver and passes them to `handle_packet()` for parsing and
+ * packet receiver and passes them to `camera_isp_packet_handler()` for parsing and
  * processing.
  * @param c_pkt   Streaming channel to receive MIPI packets from.
  * @param c_ctrl  Streaming channel to send control messages to.
  * @param c_isp   Channel to send ISP commands to.
  */
-void isp_packet_handler(
+void camera_isp_thread(
   streaming_chanend_t c_pkt,
   streaming_chanend_t c_ctrl,
   chanend_t c_isp,
   chanend_t c_user);
+
+
+C_API_END

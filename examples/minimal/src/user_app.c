@@ -5,14 +5,16 @@
 #include <stdlib.h> 
 #include <stdint.h>
 
-#include "delay.h"
+#include "camera_utils.h"
 
 #include <xcore/channel.h>
 
-static void get_image_in_ms(chanend_t c_user, unsigned ms){
-    chan_out_word(c_user, ms); // to isp_packet_handler
+static 
+void get_image_in_ms(chanend_t c_user, unsigned ms){
+    chan_out_word(c_user, ms); // to camera_isp_thread
 }
 
+static
 void sim_model_invoke(){
     printf("Simulating model\n");
     delay_milliseconds_cpp(1000);

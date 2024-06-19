@@ -3,14 +3,16 @@
 
 #include <stdio.h>
 
-
 #include <xcore/assert.h>
 #include <xcore/select.h>
 #include <print.h>
 
 #include "camera_isp.h"
+#include "camera_utils.h"
+#include "camera_mipi_defines.h"
+
 #include "sensor_control.h"
-#include "delay.h"
+#include "sensor.h"
 
 #define FRAMES_TO_STOP 30
 #define PIPELINE_TIME_MS 100
@@ -63,7 +65,7 @@ void handle_no_expected_lines() {
 
 // -------- Frame handling --------
 static
-void handle_packet(
+void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
   chanend_t c_control,
   chanend_t c_user) {
@@ -104,7 +106,7 @@ void handle_packet(
 
 
 // -------- Main packet handler thread --------
-void isp_packet_handler(
+void camera_isp_thread(
   streaming_chanend_t c_pkt,
   streaming_chanend_t c_ctrl,
   chanend_t c_control,
@@ -129,7 +131,7 @@ void isp_packet_handler(
       pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
       pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
       s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
-      handle_packet(pkt, c_control, c_user);
+      camera_isp_packet_handler(pkt, c_control, c_user);
       continue;
     }
     on_c_user_change: { // attending user_app
