@@ -35,7 +35,7 @@ typedef struct
   // Delay
   unsigned delay;
   unsigned cmd;
-} Camera_configure_t;
+} camera_configure_t;
 
 
 void camera_isp_thread(
