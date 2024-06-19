@@ -3,6 +3,7 @@ Example: take picture downsample
 
 This example runs intermetly a sequence of start-capture-stop. 
 It prints in the console every time it recieves a:
+
 - start of frame
 - expected packet
 - end of frame 
