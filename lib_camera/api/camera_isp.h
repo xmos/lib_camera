@@ -7,16 +7,11 @@
 
 #include "api.h"
 #include "xcore_compat.h"
+#include "sensor_control.h"
 
 C_API_START
 
-typedef struct {
-    unsigned height;
-    unsigned width;
-    unsigned channels;
-    int8_t *ptr;
-} Image_t;
-
+// this struct will hold the configuration for the camera
 typedef struct
 {
   // Offsets
@@ -34,9 +29,26 @@ typedef struct
   float *T;
   // Delay
   unsigned delay;
-  unsigned cmd;
+  // Command
+  sensor_control_t cmd;
 } camera_configure_t;
 
+
+// this will hold the image data and possible configurations
+// we could split this into two structs, but for now we will keep it simple
+// splitting will just cause have more functions, so is a balance to decide
+typedef struct {
+    unsigned height;
+    unsigned width;
+    unsigned channels;
+    int8_t *ptr;
+    camera_configure_t *config;
+} Image_cfg_t; 
+
+
+void camera_isp_send_cfg(chanend_t c_user, Image_cfg_t* image);
+
+void camera_isp_recv_cfg(chanend_t c_user, Image_cfg_t* image);
 
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
@@ -44,9 +56,5 @@ void camera_isp_thread(
   chanend_t c_isp,
   chanend_t c_user);
 
-void camera_isp_capture_in_ms(
-  chanend_t c_user, 
-  unsigned ms, 
-  Image_t* image);
 
 C_API_END

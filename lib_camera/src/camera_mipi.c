@@ -16,6 +16,15 @@
 #include "camera_mipi.h"
 #include "camera_mipi_defines.h"
 
+static
+void camera_mipi_ctx_init(
+  camera_mipi_ctx_t* ctx) {
+  port_enable(ctx->p_mipi_clk);
+  port_enable(ctx->p_mipi_rxa);
+  port_enable(ctx->p_mipi_rxv);
+  port_start_buffered(ctx->p_mipi_rxd, 32);
+  clock_enable(ctx->clk_mipi);
+}
 
 static
 void camera_mipi_packet_init(
@@ -70,18 +79,13 @@ void camera_mipi_packet_init(
   setps(XS1_PS_XCORE_CTRL0, val | 0x100);
 }
 
-void camera_mipi_ctx_init(
-  camera_mipi_ctx_t* ctx) {
-  port_enable(ctx->p_mipi_clk);
-  port_enable(ctx->p_mipi_rxa);
-  port_enable(ctx->p_mipi_rxv);
-  port_start_buffered(ctx->p_mipi_rxd, 32);
-  clock_enable(ctx->clk_mipi);
-}
 
 void camera_mipi_init(
   camera_mipi_ctx_t* ctx
 ) {
+  // Start context
+  camera_mipi_ctx_init(ctx);
+
   // Tile ids have weird values, so we get them with this API
   unsigned tileid = get_local_tile_id();
   // Assign lanes and polarities

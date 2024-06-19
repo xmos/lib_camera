@@ -11,14 +11,6 @@
 
 C_API_START
 
-
-/**
- * @brief Initialize the MIPI context.
- *
- * @param ctx  The MIPI context to initialize
- */
-void camera_mipi_ctx_init(camera_mipi_ctx_t* ctx);
-
 /**
  * @brief Initialize the MIPI camera.
  *

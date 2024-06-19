@@ -3,7 +3,6 @@
 
 #pragma once
 
-
 // Macro for C api definitions
 #if defined(__cplusplus) || defined(__XC__)
 #define C_API_START extern "C" {

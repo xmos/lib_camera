@@ -24,6 +24,7 @@ DECLARE_JOB(camera_isp_thread, (streaming_chanend_t, streaming_chanend_t, chanen
 DECLARE_JOB(sensor_control, (chanend_t));
 
 
+
 void lib_camera_main(chanend_t c_user){
 
     // Channels
@@ -39,7 +40,6 @@ void lib_camera_main(chanend_t c_user){
         .p_mipi_rxd = XS1_PORT_8A,
         .clk_mipi = MIPI_CLKBLK
     };
-    camera_mipi_ctx_init(&ctx);
     camera_mipi_init(&ctx);
 
     // Parallel Jobs

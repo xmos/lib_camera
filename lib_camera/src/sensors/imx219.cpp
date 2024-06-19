@@ -9,6 +9,7 @@
 
 #include "imx219.hpp"
 #include "camera_utils.h"
+#include "camera_isp.h"
 
 using namespace sensor;
 
@@ -209,28 +210,27 @@ void IMX219::control(chanend_t c_control) {
   puts("\nCamera_started and configured.");
 
   // store the response
-  uint32_t encoded_response;
+  Image_cfg_t image_ctrl;
   sensor_control_t cmd;
-  uint8_t arg;
-
+  unsigned delay = 0;
+  
   // sensor control logic
   SELECT_RES(
     CASE_THEN(c_control, on_c_control))
   {
     on_c_control:{
-      // Old legacy version
-      encoded_response = chan_in_word(c_control);
-      chan_out_word(c_control, 0);
-      cmd = (sensor_control_t) DECODE_CMD(encoded_response);
+      
+      camera_isp_recv_cfg(c_control, &image_ctrl);
+      cmd = image_ctrl.config->cmd;
+      delay = image_ctrl.config->delay;
 
       switch (cmd){ 
         case SENSOR_STREAM_STOP:
           ret = this->stream_stop();
           break;
         case SENSOR_STREAM_START:
-          arg = DECODE_ARG(encoded_response);
-          if (arg){
-            delay_milliseconds_cpp(arg);
+          if (delay){
+            delay_milliseconds_cpp(delay);
           }
           ret = this->stream_start();
           break;
@@ -239,21 +239,13 @@ void IMX219::control(chanend_t c_control) {
         case SENSOR_CONFIG:
           break;
         case SENSOR_SET_EXPOSURE:
-          arg = DECODE_ARG(encoded_response);
-          ret = this->set_exposure(arg);
+          //TODO reimplement
+          //arg = DECODE_ARG(encoded_response);
+          //ret = this->set_exposure(arg);
           break;
       }
       xassert((ret == 0) && "Could not perform I2C write");
       continue;
-
-      // ----------------- New version -----------------
-      //TODO recieve camera configuration
-
-      // Configure the camera
-
-      // Start the camera
-
-      // Add option to stop the camera
     }
   }
 }

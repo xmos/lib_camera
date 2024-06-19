@@ -8,15 +8,28 @@
 
 // ----------- Mipi, packet, and shim definitions -------------------------
 
-// Mipi payload
-#define MIPI_MAX_PKT_SIZE_BYTES     ((800) + 4)  // max payload 800+4 bytes x 4 lines
-#define MIPI_PKT_BUFFER_COUNT                 4
+// Sensor defines
+#define MODE_VGA_640x480            0x01       
+#define MODE_1280x960             0x02
 
-// MIPI packet header layout functions
-#define MIPI_HAS_PACKET_ERROR(STATUS) ((STATUS) & (0xFE))
-#define MIPI_LONG_PACKET_MASK         (0x30)
-#define MIPI_IS_LONG_PACKET(HEADER)   ((HEADER) & (MIPI_LONG_PACKET_MASK))
+// Mipi defines
+#define MIPI_IMAGE_WIDTH_BYTES      640
+#define MIPI_IMAGE_HEIGHT_PIXELS    480
+
+// Mipi Configuration (could be modified by user)
+#define CONFIG_MODE                 MODE_VGA_640x480
+#define CONFIG_MIPI_FORMAT          MIPI_DT_RAW8
+
+// Mipi payload
+#define MIPI_MAX_PKT_SIZE_BYTES     ((MIPI_IMAGE_WIDTH_BYTES) + 4)  // max payload 800+4 bytes x 4 lines
+#define MIPI_PKT_BUFFER_COUNT       (4)
+
+// MIPI packet header functions
 #define MIPI_DATA_TYPE_MASK           (0x0000003F)
+#define MIPI_LONG_PACKET_MASK         (0x30)
+
+#define MIPI_HAS_PACKET_ERROR(STATUS) ((STATUS) & (0xFE))
+#define MIPI_IS_LONG_PACKET(HEADER)   ((HEADER) & (MIPI_LONG_PACKET_MASK))
 #define MIPI_GET_DATA_TYPE(HEADER)    ((HEADER) & (MIPI_DATA_TYPE_MASK))
 #define MIPI_GET_WORD_COUNT(HEADER)   (((HEADER) >> 8) & 0xFFFF )
 
@@ -157,6 +170,9 @@ typedef enum {
 
 } mipi_data_type_t;
 
+// alias
+typedef mipi_data_type_t pixel_format_t;
+
 typedef enum xMIPI_DemuxMode_t {
   XMIPI_DEMUXMODE_RESERVED = 0,
   XMIPI_DEMUXMODE_10TO16 = 1,
@@ -192,6 +208,22 @@ typedef struct {
   unsigned in_line_number;
   unsigned out_line_number;
 } frame_state_t;
+
+
+typedef enum {
+  SENSOR_INIT = 0,
+  SENSOR_CONFIG,
+  SENSOR_STREAM_START,
+  SENSOR_STREAM_STOP,
+  SENSOR_SET_EXPOSURE
+} sensor_control_t;
+
+typedef enum {
+  RES_640_480 = MODE_VGA_640x480,
+  RES_1280_960 = MODE_1280x960
+} resolution_t;
+
+
 
 /*
   Notes

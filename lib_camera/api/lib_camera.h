@@ -18,5 +18,4 @@ C_API_START
  */
 void lib_camera_main(chanend_t c_user);
 
-
 C_API_END

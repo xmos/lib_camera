@@ -15,12 +15,10 @@
 
 #include "sensor_control.h"
 
-#define PIPELINE_TIME_MS 100
-
 #define ALIGNED_8 __attribute__((aligned(8)))
 
 
-// Contains the local state info for the packet handler thread.
+// -------- State and Error handling --------
 static frame_state_t ph_state = {
     1,  // wait_for_frame_start
     0,  // frame_number
@@ -28,20 +26,10 @@ static frame_state_t ph_state = {
     0   // out_line_number
 };
 
-static void send_delay_start(
-  chanend_t c_control,
-  unsigned milliseconds) {
-  chan_out_word(c_control, ENCODE(SENSOR_STREAM_START, milliseconds));
-  chan_in_word(c_control);
-}
+// Aux control configuration
+camera_configure_t config = { .cmd = SENSOR_STREAM_STOP };
+Image_cfg_t stop_cfg = { .config = &config };
 
-static void send_stop(
-  chanend_t c_control) {
-  chan_out_word(c_control, ENCODE(SENSOR_STREAM_STOP, 0));
-  chan_in_word(c_control);
-}
-
-// -------- Error handling --------
 static
 void handle_unknown_packet(
   mipi_data_type_t data_type) {
@@ -58,13 +46,36 @@ void handle_no_expected_lines() {
   }
 }
 
+// -------- ISP communication --------
+
+// user -> ISP
+// ISP -> cam ctrl
+void camera_isp_send_cfg(
+  chanend_t c_isp,
+  Image_cfg_t* image) 
+{
+  chan_out_buf_byte(c_isp, (uint8_t*)image, sizeof(Image_cfg_t));
+}
+
+// ISP <- user
+// cam ctrl <- ISP
+void camera_isp_recv_cfg(
+  chanend_t c_isp,
+  Image_cfg_t* image) 
+{
+  chan_in_buf_byte(c_isp, (uint8_t*)image, sizeof(Image_cfg_t));
+}
+
+
 // -------- Frame handling --------
 static
 void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
   chanend_t c_control,
-  chanend_t c_user,
-  Image_t* image) {
+  Image_cfg_t* image_cfg) {
+
+  // WARNING!: Image_cfg_t argument should be read only here.
+  
   // Definitions
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
@@ -75,39 +86,31 @@ void camera_isp_packet_handler(
 
   // Handle packets depending on their type
   switch (data_type) {
-  case MIPI_DT_FRAME_START:
-    printstrln("SOF");
-    ph_state.wait_for_frame_start = 0;
-    ph_state.in_line_number = 0;
-    ph_state.out_line_number = 0;
-    ph_state.frame_number++;
-    break;
+    case MIPI_DT_FRAME_START:
+      printstrln("SOF");
+      ph_state.wait_for_frame_start = 0;
+      ph_state.in_line_number = 0;
+      ph_state.out_line_number = 0;
+      ph_state.frame_number++;
+      break;
 
-  case CONFIG_MIPI_FORMAT:
-    printstr("d,");
-    handle_no_expected_lines();
-    ph_state.in_line_number++;
-    break;
+    case CONFIG_MIPI_FORMAT:
+      printstr("d,");
+      handle_no_expected_lines();
+      ph_state.in_line_number++;
+      break;
 
-  case MIPI_DT_FRAME_END:
-    printstrln("\nEOF");
-    send_stop(c_control);
-    break;
+    case MIPI_DT_FRAME_END:
+      printstrln("\nEOF");
+      camera_isp_send_cfg(c_control, &stop_cfg);
+      break;
 
-  default:
-    handle_unknown_packet(data_type);
-    break;
+    default:
+      handle_unknown_packet(data_type);
+      break;
   }
 }
 
-void camera_isp_capture_in_ms(
-  chanend_t c_user,
-  unsigned ms,
-  Image_t* image) {
-  chan_out_word(c_user, ms);
-  chan_out_buf_byte(c_user, (uint8_t*)image, sizeof(Image_t));
-  //TODO dothe same with image configuration
-}
 
 
 // -------- Main packet handler thread --------
@@ -121,7 +124,10 @@ void camera_isp_thread(
   mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
   mipi_packet_t* pkt;
   unsigned pkt_idx = 0;
-  Image_t image;
+
+
+  // Image configuration
+  Image_cfg_t image;
 
   delay_milliseconds_cpp(2200); // Wait for the sensor to start
 
@@ -137,19 +143,13 @@ void camera_isp_thread(
     pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
     pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
     s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
-    camera_isp_packet_handler(pkt, c_control, c_user, &image);
+    camera_isp_packet_handler(pkt, c_control, &image);
     continue;
     }
   on_c_user_change: { // attending user_app
-    unsigned miliseconds = chan_in_word(c_user);
-    chan_in_buf_byte(c_user, (uint8_t*)&image, sizeof(Image_t));
-    unsigned start_delay = miliseconds - PIPELINE_TIME_MS;
-    printf("User asked: %d\n", miliseconds);
-    printf("Pipeline time: %d\n", PIPELINE_TIME_MS);
-    printf("Starting in %d ms\n", miliseconds - PIPELINE_TIME_MS);
-    // TODO I should send config first
-    send_delay_start(c_control, start_delay); // at this point isp is ready to recieve
-
+    // user petition to ctrl or mipi
+    camera_isp_recv_cfg(c_user, &image); // so we can work with img data
+    camera_isp_send_cfg(c_control, &image); // so we can send cmds to control
     continue;
     }
   }
