@@ -15,16 +15,10 @@
 
 #include "sensor_control.h"
 
-#define FRAMES_TO_STOP 30
 #define PIPELINE_TIME_MS 100
-
-#define APP_TO_ISP 0
-#define ISP_TO_APP 1
 
 #define ALIGNED_8 __attribute__((aligned(8)))
 
-unsigned only_once = 1;
-unsigned cam_stop = 0;
 
 // Contains the local state info for the packet handler thread.
 static frame_state_t ph_state = {
