@@ -30,6 +30,7 @@ void save_image(Image_cfg_t* image) {
 
     vect_int8_to_uint8(img_ptr, (int8_t*)image->ptr, size);
     write_image_file("capture.raw", img_ptr, H, W, CH);
+    xscope_close_all_files();
 }
 
 
@@ -64,27 +65,24 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     // wait a few seconds and ask somthing
     delay_seconds_cpp(3);
 
-    static unsigned just_once = 1;
-
+    // image synchro
+    static uint8_t capture_done = 0;
+    
     // User app loop
     SELECT_RES(
         CASE_THEN(c_isp_user, on_c_isp_user),
         DEFAULT_THEN(on_user_app))
     {
-        on_c_isp_user: {
-            uint8_t data = chan_in_byte(c_isp_user);
+        on_c_isp_user: { // isp responses
+            capture_done = chan_in_byte(c_isp_user);
             printf("Image recieved\n");
-            printf("Data: %d\n", data);
             save_image(&image);
-            xscope_close_all_files();
             break;
+            //continue;
         }
-        on_user_app: {
-            if (just_once) {
-                printf("Sending configuration\n");
-                camera_isp_send_cfg(c_user_isp, &image);
-                just_once = 0;
-            }
+        on_user_app: { // user app actions
+            printf("Sending configuration\n");
+            camera_isp_send_cfg(c_user_isp, &image);
             sim_model_invoke(); // this is just some delay to show is non-blocking
             continue;
         }

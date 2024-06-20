@@ -108,7 +108,7 @@ int camera_isp_packet_handler(
   static uint32_t t_init=0;
   static uint32_t t_end=0;
 
-  // Data pointers
+  // Data pointers calculation
   unsigned width = image_cfg->width;
   int8_t* data_in = (int8_t*)(&pkt->payload[0]);
   int8_t* data_out = &image_cfg->ptr[0] + (ph_state.in_line_number * width);
@@ -128,7 +128,7 @@ int camera_isp_packet_handler(
       handle_no_expected_lines();
       if (image_cfg->ptr != NULL && ph_state.in_line_number < image_cfg->height) {
         printuintln(ph_state.in_line_number);
-        memcpy(
+        xs3_memcpy(
           data_out,
           data_in,
           width);
@@ -138,7 +138,7 @@ int camera_isp_packet_handler(
 
     case MIPI_DT_FRAME_END:
       t_end = get_reference_time();
-      printf("\nFrame time: %lu\n", t_end - t_init);
+      printf("\nFrame time: %lu cycles\n", t_end - t_init);
       printstrln("EOF\n");
       is_EOF = 1;
       break;

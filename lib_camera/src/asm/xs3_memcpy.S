@@ -1,8 +1,8 @@
-// Copyright 2020-2021 XMOS LIMITED.
+// Copyright 2020-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #if defined(__XS3A__)
-#ifndef XS3_MATH_NO_ASM
+
 
 /*  
 void xs3_memcpy(
@@ -28,7 +28,7 @@ void xs3_memcpy(
 FUNCTION_NAME:
     dualentsp NSTACKWORDS
   { shr tmp, len, 5               ; zext len, 5                   }
-  { ldc r11, 32                   ; bt tmp, .L_loop_bot           } 
+  { ldc r11, 32                   ; bf tmp, .L_loop_bot           } 
   .L_loop_top:
     { add b, b, r11                 ; vldd b[0]                     }
     { sub tmp, tmp, 1               ; vstd a[0]                     }
@@ -52,5 +52,5 @@ FUNCTION_NAME:
 .set FUNCTION_NAME.maxtimers,0;              .global FUNCTION_NAME.maxtimers
 .set FUNCTION_NAME.maxchanends,0;            .global FUNCTION_NAME.maxchanends
 
-#endif //!defined(XS3_MATH_NO_ASM)
+
 #endif //defined(__XS3A__)
