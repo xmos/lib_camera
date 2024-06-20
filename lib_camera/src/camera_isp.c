@@ -40,7 +40,7 @@ sensor_control_t ctrl_start = {
   .arg = 50
 };
 
-// -------- Error handling --------
+// -------- State handlers --------
 static
 void handle_unknown_packet(
   mipi_data_type_t data_type) {
@@ -52,6 +52,19 @@ void handle_no_expected_lines() {
   if (ph_state.in_line_number >= MIPI_IMAGE_HEIGHT_PIXELS) {
     // We've received more lines of image data than we expected.
     xassert(0 && "Recieved too many lines");
+  }
+}
+
+static
+void handle_end_of_frame(
+  Image_cfg_t* image,
+  chanend_t c_control,
+  chanend_t c_isp_user)  
+{
+  printstrln("EOF");
+  camera_isp_send_ctrl(c_control, &ctrl_stop);
+  if (image->ptr != NULL) {
+    chan_out_byte(c_isp_user, 1);
   }
 }
 
@@ -91,18 +104,19 @@ inline void camera_isp_recv_ctrl(
 
 // -------- Frame handling --------
 static
-int camera_isp_packet_handler(
+void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
-  Image_cfg_t* image_cfg) {
+  Image_cfg_t* image_cfg,
+  chanend_t c_control,
+  chanend_t c_isp_to_user) {
   
   // Definitions
-  int8_t is_EOF = 0;
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
 
   // Wait for a clean frame
   if (ph_state.wait_for_frame_start
-    && data_type != MIPI_DT_FRAME_START) return -1;
+    && data_type != MIPI_DT_FRAME_START) return;
 
   // Timing
   static uint32_t t_init=0;
@@ -126,9 +140,9 @@ int camera_isp_packet_handler(
 
     case CONFIG_MIPI_FORMAT:
       handle_no_expected_lines();
-      if (image_cfg->ptr != NULL && ph_state.in_line_number < image_cfg->height) {
-        printuintln(ph_state.in_line_number);
-        xs3_memcpy(
+      if (image_cfg->ptr != NULL && ph_state.in_line_number < image_cfg->height) { //TODO second condition inside another fn
+        printuintln(ph_state.in_line_number); // can be removed
+        xs3_memcpy(  //TODO inside another fn
           data_out,
           data_in,
           width);
@@ -139,17 +153,15 @@ int camera_isp_packet_handler(
     case MIPI_DT_FRAME_END:
       t_end = get_reference_time();
       printf("\nFrame time: %lu cycles\n", t_end - t_init);
-      printstrln("EOF\n");
-      is_EOF = 1;
+      handle_end_of_frame(image_cfg, c_control, c_isp_to_user);
       break;
 
     default:
       handle_unknown_packet(data_type);
       break;
   }
-  return is_EOF;
+  return;
 }
-
 
 
 // -------- Main packet handler thread --------
@@ -182,23 +194,16 @@ void camera_isp_thread(
 
   SELECT_RES(
     CASE_THEN(c_pkt, on_c_pkt_change),
-    CASE_THEN(c_user_isp, on_c_user_change)) {
+    CASE_THEN(c_user_isp, on_c_user_isp_change)) {
 
   on_c_pkt_change: { // attending mipi_packet_rx
     pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
     pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
     s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
-    is_EOF = camera_isp_packet_handler(pkt, &image);
-    if (is_EOF == 1){
-      printstrln(" >> EOF");
-      camera_isp_send_ctrl(c_control, &ctrl_stop);
-      if (image.ptr != NULL){
-        chan_out_byte(c_isp_user, 1);
-      }
-    }
+    camera_isp_packet_handler(pkt, &image, c_control, c_isp_user);
     continue;
     }
-  on_c_user_change: { // attending user_app
+  on_c_user_isp_change: { // attending user_app
     // user petition
     camera_isp_recv_cfg(c_user_isp, &image); // so we can work with img data
     // Start camera

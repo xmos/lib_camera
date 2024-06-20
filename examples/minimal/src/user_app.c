@@ -16,11 +16,12 @@
 #define H   480
 #define W   640
 #define CH    1 // RAW
+#define DELAY_MILISECONDS 1000
 
 static
 void sim_model_invoke() {
     printf("Simulating model\n");
-    delay_milliseconds_cpp(1000);
+    delay_milliseconds_cpp(DELAY_MILISECONDS);
 }
 
 static
@@ -68,24 +69,10 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     // image synchro
     static uint8_t capture_done = 0;
     
-    // User app loop
-    SELECT_RES(
-        CASE_THEN(c_isp_user, on_c_isp_user),
-        DEFAULT_THEN(on_user_app))
-    {
-        on_c_isp_user: { // isp responses
-            capture_done = chan_in_byte(c_isp_user);
-            printf("Image recieved\n");
-            save_image(&image);
-            break;
-            //continue;
-        }
-        on_user_app: { // user app actions
-            printf("Sending configuration\n");
-            camera_isp_send_cfg(c_user_isp, &image);
-            sim_model_invoke(); // this is just some delay to show is non-blocking
-            continue;
-        }
-    }
+    // User app
+    camera_isp_send_cfg(c_user_isp, &image); // send the image configuration
+    sim_model_invoke(); // this is just some big delay to show is non-blocking
+    chan_in_byte(c_isp_user); // wait for the image
+    save_image(&image);
     exit(0);
 }
