@@ -39,7 +39,7 @@ int IMX219::initialize() {
   // Configure two or four Lane mode
   ret |= this->i2c_write_table(GET_TABLE(imx219_lanes_regs));
   // set gain
-  ret |= this->set_exposure(GAIN_DB);
+  ret |= this->set_exposure(GAIN_DEFAULT_DB);
   return ret;
 }
 
@@ -210,8 +210,8 @@ void IMX219::control(chanend_t c_control) {
   puts("\nCamera_started and configured.");
 
   // store the response
-  Image_cfg_t image_ctrl;
-  sensor_control_t cmd;
+  sensor_control_t cmd_ctrl;
+  sensor_command_t cmd;
   unsigned delay = 0;
   
   // sensor control logic
@@ -220,10 +220,9 @@ void IMX219::control(chanend_t c_control) {
   {
     on_c_control:{
       
-      camera_isp_recv_cfg(c_control, &image_ctrl);
-      cmd = image_ctrl.config->cmd;
-      delay = image_ctrl.config->delay;
-
+      camera_isp_recv_ctrl(c_control, &cmd_ctrl);
+      cmd = cmd_ctrl.cmd;
+      delay = cmd_ctrl.arg;
       switch (cmd){ 
         case SENSOR_STREAM_STOP:
           ret = this->stream_stop();

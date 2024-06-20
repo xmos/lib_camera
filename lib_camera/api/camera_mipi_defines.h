@@ -10,7 +10,7 @@
 
 // Sensor defines
 #define MODE_VGA_640x480            0x01       
-#define MODE_1280x960             0x02
+#define MODE_1280x960               0x02
 
 // Mipi defines
 #define MIPI_IMAGE_WIDTH_BYTES      640
@@ -209,6 +209,10 @@ typedef struct {
   unsigned out_line_number;
 } frame_state_t;
 
+typedef enum {
+  RES_640_480 = MODE_VGA_640x480,
+  RES_1280_960 = MODE_1280x960
+} resolution_t;
 
 typedef enum {
   SENSOR_INIT = 0,
@@ -216,14 +220,12 @@ typedef enum {
   SENSOR_STREAM_START,
   SENSOR_STREAM_STOP,
   SENSOR_SET_EXPOSURE
+} sensor_command_t;
+
+typedef struct{
+  sensor_command_t cmd;
+  uint8_t arg;
 } sensor_control_t;
-
-typedef enum {
-  RES_640_480 = MODE_VGA_640x480,
-  RES_1280_960 = MODE_1280x960
-} resolution_t;
-
-
 
 /*
   Notes

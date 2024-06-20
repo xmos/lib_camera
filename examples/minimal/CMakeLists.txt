@@ -16,11 +16,11 @@ set(APP_XSCOPE_SRCS config.xscope)
 
 # flags
 set(APP_COMPILER_FLAGS
-    -Os
+    -O3
     -g
     -report
     -Wall
-    -Werror
+    #-Werror
     -fxscope
     -mcmodel=large)
 

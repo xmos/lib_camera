@@ -1,7 +1,7 @@
 // Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-#include <stdio.h>
+#include <print.h>
 
 #include "sensor_base.hpp"
 #include "camera_utils.h"
@@ -19,7 +19,7 @@ void SensorBase::i2c_init() {
     this->i2c_cfg.p_sda, 0, 0xC,
     this->i2c_cfg.speed);
   delay_milliseconds_cpp(100);
-  puts("\nI2C initialized...");
+  printstrln("I2C initialized.");
 }
 
 uint16_t SensorBase::i2c_read(uint16_t reg) {

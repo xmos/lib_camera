@@ -16,21 +16,21 @@ extern "C" {
 }
 
 extern "C" {
-void user_app(chanend_t c_user);
+void user_app(chanend_t c_user_isp[N_CH_USER_ISP]);
 }
 
 int main(void)
 {
   // xscope
   chan xscope_chan;
-  chan c_user;
- 
+  chan c_cam[N_CH_USER_ISP];
+  
   // Parallel jobs
   par{
     xscope_host_data(xscope_chan);
     on tile[1]: xscope_io_init(xscope_chan);
-    on tile[1]: lib_camera_main(c_user);
-    on tile[1]: user_app(c_user);
+    on tile[1]: lib_camera_main(c_cam);
+    on tile[1]: user_app(c_cam);
   }
   return 0;
 }

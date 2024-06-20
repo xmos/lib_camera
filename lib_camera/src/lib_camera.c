@@ -20,12 +20,12 @@
 #include "lib_camera.h"
 
 DECLARE_JOB(camera_mipi_rx, (in_buffered_port_32_t, port_t, streaming_chanend_t, streaming_chanend_t));
-DECLARE_JOB(camera_isp_thread, (streaming_chanend_t, streaming_chanend_t, chanend_t, chanend_t));
+DECLARE_JOB(camera_isp_thread, (streaming_chanend_t, streaming_chanend_t, chanend_t, chanend_t*));
 DECLARE_JOB(camera_sensor_control, (chanend_t));
 
 
 
-void lib_camera_main(chanend_t c_user){
+void lib_camera_main(chanend_t c_cam[N_CH_USER_ISP]){
 
     // Channels
     streaming_channel_t c_pkt = s_chan_alloc();
@@ -45,7 +45,7 @@ void lib_camera_main(chanend_t c_user){
     // Parallel Jobs
     PAR_JOBS(
         PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)),
-        PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_control.end_a, c_user)),
+        PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_control.end_a, c_cam)),
         PJOB(camera_sensor_control,(c_control.end_b))
     );
 
