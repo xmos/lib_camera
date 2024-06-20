@@ -22,4 +22,4 @@ Run the following command from the current folder:
     cmake -G "Ninja" -B build
     ninja -C build
     # Run 
-    xrun --xscope bin\minimal.xe
+    xrun --xscope bin/minimal.xe
