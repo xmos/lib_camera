@@ -23,7 +23,8 @@
 #define ALIGNED_8 __attribute__((aligned(8)))
 
 
-// -------- Globals --------
+// -------- Globals -------------
+
 static frame_state_t ph_state = {
     1,  // wait_for_frame_start
     0,  // frame_number
@@ -41,7 +42,9 @@ sensor_control_t ctrl_start = {
   .arg = 50
 };
 
+
 // -------- State handlers --------
+
 static
 void handle_unknown_packet(
   mipi_data_type_t data_type) {
@@ -93,9 +96,7 @@ void handle_expected_lines(Image_cfg_t* image, int8_t* data_in) {
 }
 
 
-
 // -------- ISP communication --------
-
 
 // ISP <> USER
 inline void camera_isp_send_cfg(
@@ -127,6 +128,7 @@ inline void camera_isp_recv_ctrl(
   chan_in_buf_byte(c_ctrl, (uint8_t*)ctrl, sizeof(sensor_control_t));
 }
 
+
 // -------- Image transformation --------
 
 inline
@@ -157,6 +159,7 @@ void camera_isp_coordinates_compute(Image_cfg_t* img_cfg){
 
 
 // -------- Frame handling --------------
+
 static
 void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
@@ -214,6 +217,7 @@ void camera_isp_packet_handler(
 
 
 // -------- Main packet handler thread --------
+
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
   streaming_chanend_t c_ctrl,
