@@ -64,13 +64,13 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     // wait a few seconds and ask somthing
     delay_seconds_cpp(3);
     
-    // User app
+    // From here, it could be a while loop
     
     // set coords and send to ISP
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
     camera_isp_send_cfg(c_user_to_isp, &image); // send the image configuration
-    sim_model_invoke(); // this is just some big delay to show is non-blocking
+    sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     chan_in_byte(c_isp_to_user); // wait for the image
     save_image(&image, "capture1.raw");
 
@@ -80,9 +80,17 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
     camera_isp_send_cfg(c_user_to_isp, &image); // send the image configuration
-    sim_model_invoke(); // this is just some big delay to show is non-blocking
+    sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     chan_in_byte(c_isp_to_user); // wait for the image
     save_image(&image, "capture2.raw");
+
+    // (Optional) try somthing makes no sense
+    /*
+    config.offset_x = 0.5; // 640*0.5 + 400 (width) = 720 > 640 !!
+    config.offset_y = 0.5; // 480*0.5 + 300 (height) = 540 > 480 !!
+    camera_isp_coordinates_compute(&image);
+    camera_isp_coordinates_print(&image);
+    */
 
     xscope_close_all_files();
     exit(0);

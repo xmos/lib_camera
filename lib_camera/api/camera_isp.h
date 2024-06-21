@@ -15,20 +15,20 @@ C_API_START
 // this struct will hold the configuration for the camera
 typedef struct
 {
-  // Offsets
+  // Offsets: [0,1] range form the sensor
   float offset_x;
   float offset_y;
-  // Scale
-  float sx;
-  float sy;
-  // Shear
-  float shx;
-  float shy;
-  // Rotation
+  // Scale: [1,4] scale
+  float sx;        
+  float sy;        
+  // Shear: [0,1] shear ratio
+  float shx;       
+  float shy;      
+  // Rotation: [-90,90] degrees
   float angle;
-  // Transform
+  // Transform: 3x3 matrix
   float* T;
-  // mipi region
+  // Mipi region
   unsigned x1, y1, x2, y2;
 } camera_configure_t;
 

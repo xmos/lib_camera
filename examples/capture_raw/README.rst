@@ -23,5 +23,5 @@ Run the following command from the current folder:
     ninja -C build
     # Run 
     xrun --xscope bin/minimal.xe
-    python ../../python/run_xscope_bin.py bin/minimal.xe
-    python decoderaw8.py
+    python _run.py
+    python _decode.py
