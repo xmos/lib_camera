@@ -15,6 +15,8 @@
 // Mipi defines
 #define MIPI_IMAGE_WIDTH_BYTES      640
 #define MIPI_IMAGE_HEIGHT_PIXELS    480
+#define SENSOR_WIDHT                MIPI_IMAGE_WIDTH_BYTES
+#define SENSOR_HEIGHT               MIPI_IMAGE_HEIGHT_PIXELS
 
 // Mipi Configuration (could be modified by user)
 #define CONFIG_MODE                 MODE_VGA_640x480

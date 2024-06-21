@@ -8,6 +8,7 @@
 #include <xcore/assert.h>
 #include <xcore/select.h>
 #include <xcore/hwtimer.h>
+#include <xcore/assert.h>
 #include <print.h>
 
 #include "lib_camera.h"  // in reality image def could be in isp.h
@@ -68,6 +69,31 @@ void handle_end_of_frame(
   }
 }
 
+static
+void handle_expected_lines(Image_cfg_t* image, int8_t* data_in) {
+  unsigned ln = ph_state.in_line_number;
+  unsigned img_ln = ln - image->config->y1;
+
+  // Check if the image region is valid
+  uint8_t c1 = image->ptr == NULL;
+  uint8_t c2 = ln < image->config->y1;
+  uint8_t c3 = ln >= image->config->y2;
+  if (c1 || c2 || c3) {
+    return;
+  }
+
+  // we are in a valid region, copy the row
+  // printuintln(img_ln);
+  int8_t* data_src = data_in + image->config->x1;
+  int8_t* data_dst = image->ptr + (img_ln * image->width);
+  xs3_memcpy(
+    data_dst,
+    data_src,
+    image->width);
+}
+
+
+
 // -------- ISP communication --------
 
 
@@ -101,8 +127,36 @@ inline void camera_isp_recv_ctrl(
   chan_in_buf_byte(c_ctrl, (uint8_t*)ctrl, sizeof(sensor_control_t));
 }
 
+// -------- Image transformation --------
 
-// -------- Frame handling --------
+inline
+void camera_isp_coordinates_print(Image_cfg_t* img_cfg){
+  camera_configure_t *cfg = img_cfg->config;
+  printf("x1: %u, y1: %u, x2: %u, y2: %u\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);
+}
+
+void camera_isp_coordinates_compute(Image_cfg_t* img_cfg){
+  camera_configure_t *cfg = img_cfg->config;
+
+  // Compute the coordinates of the region of interest
+  cfg->x1 = cfg->offset_x * SENSOR_WIDHT;
+  cfg->y1 = cfg->offset_y * SENSOR_HEIGHT;
+  cfg->x2 = cfg->x1 + img_cfg->width * cfg->sx;
+  cfg->y2 = cfg->y1 + img_cfg->height * cfg->sy;
+
+  // ensure all are even and unsigned
+  cfg->x1 = ((unsigned)cfg->x1) & ~1;
+  cfg->y1 = ((unsigned)cfg->y1) & ~1;
+  cfg->x2 = ((unsigned)cfg->x2) & ~1;
+  cfg->y2 = ((unsigned)cfg->y2) & ~1;
+
+  // ensure is logical
+  xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
+  xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
+}
+
+
+// -------- Frame handling --------------
 static
 void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
@@ -123,9 +177,8 @@ void camera_isp_packet_handler(
   static uint32_t t_end=0;
 
   // Data pointers calculation
-  unsigned width = image_cfg->width;
   int8_t* data_in = (int8_t*)(&pkt->payload[0]);
-  int8_t* data_out = &image_cfg->ptr[0] + (ph_state.in_line_number * width);
+  
 
   // Handle packets depending on their type
   switch (data_type) {
@@ -140,13 +193,9 @@ void camera_isp_packet_handler(
 
     case CONFIG_MIPI_FORMAT:
       handle_no_expected_lines();
-      if (image_cfg->ptr != NULL && ph_state.in_line_number < image_cfg->height) { //TODO second condition inside another fn
-        printuintln(ph_state.in_line_number); // can be removed
-        xs3_memcpy(  //TODO inside another fn
-          data_out,
-          data_in,
-          width);
-      }
+      handle_expected_lines(image_cfg, data_in);
+
+
       ph_state.in_line_number++;
       break;
 
@@ -184,9 +233,8 @@ void camera_isp_thread(
   Image_cfg_t image;
   image.ptr = NULL;
 
-  uint8_t is_EOF = 0;
-
-  delay_milliseconds_cpp(2200); // Wait for the sensor to start
+  // Wait for the sensor to start
+  delay_milliseconds_cpp(2200); 
 
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);

@@ -11,10 +11,9 @@
 #include "lib_camera.h"
 #include "camera_utils.h"
 #include "camera_isp.h"
-#include "camera_io_utils.h"
 
-#define H   480
-#define W   640
+#define H   300
+#define W   400
 #define CH    1 // RAW
 #define DELAY_MILISECONDS 1000
 
@@ -25,35 +24,34 @@ void sim_model_invoke() {
 }
 
 static
-void save_image(Image_cfg_t* image) {
+void save_image(Image_cfg_t* image, char* filename) {
     uint8_t * img_ptr = (uint8_t*)image->ptr;
     size_t size = image->height * image->width * image->channels;
 
     vect_int8_to_uint8(img_ptr, (int8_t*)image->ptr, size);
-    write_image_file("capture.raw", img_ptr, H, W, CH);
-    xscope_close_all_files();
+    io_write_image_file(filename, img_ptr, H, W, CH); // this will close the file as well
 }
 
 
 void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     // channel unpack
-    chanend_t c_user_isp = c_cam[CH_USER_ISP];
-    chanend_t c_isp_user = c_cam[CH_ISP_USER];
+    chanend_t c_user_to_isp = c_cam[CH_USER_ISP];
+    chanend_t c_isp_to_user = c_cam[CH_ISP_USER];
 
-    // Create configuration
+    // Create a Configuration
     camera_configure_t config = {
-        .offset_x = 0,
-        .offset_y = 0,
-        .sx = 1.0,
-        .sy = 1.0,
+        .offset_x = 0.2,
+        .offset_y = 0.1,
+        .sx = 1,
+        .sy = 1,
         .shx = 0.0,
         .shy = 0.0,
         .angle = 0.0,
         .T = NULL,
     };
 
-    // Create an Image
-    int8_t __attribute__((aligned(8))) image_buffer[H][W][CH];
+    // Create an Image Structure
+    int8_t __attribute__((aligned(8))) image_buffer[H][W][CH] = {{{0}}};
     int8_t* image_ptr = &image_buffer[0][0][0];
     Image_cfg_t image = {
         .height = H,
@@ -65,14 +63,27 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
 
     // wait a few seconds and ask somthing
     delay_seconds_cpp(3);
-
-    // image synchro
-    static uint8_t capture_done = 0;
     
     // User app
-    camera_isp_send_cfg(c_user_isp, &image); // send the image configuration
+    
+    // set coords and send to ISP
+    camera_isp_coordinates_compute(&image);
+    camera_isp_coordinates_print(&image);
+    camera_isp_send_cfg(c_user_to_isp, &image); // send the image configuration
     sim_model_invoke(); // this is just some big delay to show is non-blocking
-    chan_in_byte(c_isp_user); // wait for the image
-    save_image(&image);
+    chan_in_byte(c_isp_to_user); // wait for the image
+    save_image(&image, "capture1.raw");
+
+    // change coordinates
+    config.offset_x = 0.1;
+    config.offset_y = 0.3;
+    camera_isp_coordinates_compute(&image);
+    camera_isp_coordinates_print(&image);
+    camera_isp_send_cfg(c_user_to_isp, &image); // send the image configuration
+    sim_model_invoke(); // this is just some big delay to show is non-blocking
+    chan_in_byte(c_isp_to_user); // wait for the image
+    save_image(&image, "capture2.raw");
+
+    xscope_close_all_files();
     exit(0);
 }

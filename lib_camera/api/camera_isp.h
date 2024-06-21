@@ -16,8 +16,8 @@ C_API_START
 typedef struct
 {
   // Offsets
-  unsigned offset_x;
-  unsigned offset_y;
+  float offset_x;
+  float offset_y;
   // Scale
   float sx;
   float sy;
@@ -28,6 +28,8 @@ typedef struct
   float angle;
   // Transform
   float* T;
+  // mipi region
+  unsigned x1, y1, x2, y2;
 } camera_configure_t;
 
 
@@ -43,13 +45,17 @@ typedef struct {
 } Image_cfg_t;
 
 
-void camera_isp_send_cfg(chanend_t c_user, Image_cfg_t* image);
+void camera_isp_send_cfg(chanend_t c_user, Image_cfg_t* image_cfg);
 
-void camera_isp_recv_cfg(chanend_t c_user, Image_cfg_t* image);
+void camera_isp_recv_cfg(chanend_t c_user, Image_cfg_t* image_cfg);
 
 void camera_isp_send_ctrl(chanend_t c_ctrl, sensor_control_t* ctrl);
 
 void camera_isp_recv_ctrl(chanend_t c_user, sensor_control_t* ctrl);
+
+void camera_isp_coordinates_compute(Image_cfg_t* image_cfg);
+
+void camera_isp_coordinates_print(Image_cfg_t* image_cfg);
 
 void camera_isp_thread(
   streaming_chanend_t c_pkt,

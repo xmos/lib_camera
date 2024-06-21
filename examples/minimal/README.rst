@@ -24,4 +24,4 @@ Run the following command from the current folder:
     # Run 
     xrun --xscope bin/minimal.xe
     python ../../python/run_xscope_bin.py bin/minimal.xe
-    python ../../python/decode_raw8.py
+    python decoderaw8.py
