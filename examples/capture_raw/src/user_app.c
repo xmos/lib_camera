@@ -42,7 +42,7 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     camera_configure_t config = {
         .offset_x = 0.2,
         .offset_y = 0.1,
-        .sx = 1,
+        .sx = 1, // Note: in raw sx sy has to be 1
         .sy = 1,
         .shx = 0.0,
         .shy = 0.0,
