@@ -153,6 +153,8 @@ void camera_isp_coordinates_compute(Image_cfg_t* img_cfg){
   cfg->y2 = ((unsigned)cfg->y2) & ~1;
 
   // ensure is logical
+  xassert(cfg->x1 < cfg->x2 && "x1");
+  xassert(cfg->y1 < cfg->y2 && "y1");
   xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
   xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
 }
