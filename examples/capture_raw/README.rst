@@ -22,6 +22,6 @@ Run the following command from the current folder:
     cmake -G "Ninja" -B build
     ninja -C build
     # Run 
-    xrun --xscope bin/minimal.xe
     python _run.py
+    # Decode Image
     python _decode.py
