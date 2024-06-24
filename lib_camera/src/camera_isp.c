@@ -62,11 +62,10 @@ void handle_no_expected_lines() {
 static
 void handle_end_of_frame(
   Image_cfg_t* image,
-  chanend_t c_control,
   chanend_t c_isp_user)  
 {
   printstrln("EOF");
-  camera_isp_send_ctrl(c_control, &ctrl_stop);
+  camera_sensor_stop();
   if (image->ptr != NULL) {
     chan_out_byte(c_isp_user, 1);
   }
@@ -166,7 +165,6 @@ static
 void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
   Image_cfg_t* image_cfg,
-  chanend_t c_control,
   chanend_t c_isp_to_user) {
   
   // Definitions
@@ -199,15 +197,13 @@ void camera_isp_packet_handler(
     case CONFIG_MIPI_FORMAT:
       handle_no_expected_lines();
       handle_expected_lines(image_cfg, data_in);
-
-
       ph_state.in_line_number++;
       break;
 
     case MIPI_DT_FRAME_END:
       t_end = get_reference_time();
       printf("\nFrame time: %lu cycles\n", t_end - t_init);
-      handle_end_of_frame(image_cfg, c_control, c_isp_to_user);
+      handle_end_of_frame(image_cfg, c_isp_to_user);
       break;
 
     default:
@@ -223,7 +219,6 @@ void camera_isp_packet_handler(
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
   streaming_chanend_t c_ctrl,
-  chanend_t c_control,
   chanend_t c_cam[N_CH_USER_ISP]) {
 
   __attribute__((aligned(8)))
@@ -239,8 +234,11 @@ void camera_isp_thread(
   Image_cfg_t image;
   image.ptr = NULL;
 
+  // Sensor configuration
+  camera_sensor_init();
+
   // Wait for the sensor to start
-  delay_milliseconds_cpp(2200); 
+  delay_milliseconds_cpp(1200); 
 
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
@@ -254,14 +252,14 @@ void camera_isp_thread(
     pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
     pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
     s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
-    camera_isp_packet_handler(pkt, &image, c_control, c_isp_user);
+    camera_isp_packet_handler(pkt, &image, c_isp_user);
     continue;
     }
   on_c_user_isp_change: { // attending user_app
     // user petition
     camera_isp_recv_cfg(c_user_isp, &image); // so we can work with img data
     // Start camera
-    camera_isp_send_ctrl(c_control, &ctrl_start);
+    camera_sensor_start();
     continue;
     }
   }

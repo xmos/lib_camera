@@ -49,10 +49,6 @@ void camera_isp_send_cfg(chanend_t c_user, Image_cfg_t* image_cfg);
 
 void camera_isp_recv_cfg(chanend_t c_user, Image_cfg_t* image_cfg);
 
-void camera_isp_send_ctrl(chanend_t c_ctrl, sensor_control_t* ctrl);
-
-void camera_isp_recv_ctrl(chanend_t c_user, sensor_control_t* ctrl);
-
 void camera_isp_coordinates_compute(Image_cfg_t* image_cfg);
 
 void camera_isp_coordinates_print(Image_cfg_t* image_cfg);
@@ -60,7 +56,6 @@ void camera_isp_coordinates_print(Image_cfg_t* image_cfg);
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
   streaming_chanend_t c_ctrl,
-  chanend_t c_control,
   chanend_t c_cam[N_CH_USER_ISP]);
 
 

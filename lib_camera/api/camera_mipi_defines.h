@@ -21,9 +21,11 @@
 // Mipi Configuration (could be modified by user)
 #define CONFIG_MODE                 MODE_VGA_640x480
 #define CONFIG_MIPI_FORMAT          MIPI_DT_RAW8
+#define CONFIG_BINNING              1
+#define CONFIG_CENTRALISE           1
 
 // Mipi payload
-#define MIPI_MAX_PKT_SIZE_BYTES     ((MIPI_IMAGE_WIDTH_BYTES) + 4)  // max payload 800+4 bytes x 4 lines
+#define MIPI_MAX_PKT_SIZE_BYTES     ((MIPI_IMAGE_WIDTH_BYTES) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)
 
 // MIPI packet header functions

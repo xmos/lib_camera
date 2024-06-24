@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <xccompat.h>
-#include <xcore/parallel.h>
 
 #include "api.h"
 #include "camera_mipi_defines.h"
@@ -19,12 +18,8 @@
 
 C_API_START
 
-/**
- * @brief Sensor control function
- * this is a C wrapper, it will just instantiate the sensor object
- * and call the control function
- * @param c_control Channel to control the sensor
- */
-void camera_sensor_control(chanend c_control);
+void camera_sensor_init();
+void camera_sensor_start();
+void camera_sensor_stop();
 
 C_API_END

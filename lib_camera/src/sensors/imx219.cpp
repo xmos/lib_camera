@@ -198,53 +198,6 @@ void IMX219::check_ranges() {
 }
 
 void IMX219::control(chanend_t c_control) {
-  // Init the I2C sensor first configuration
-  int ret = 0;
-  ret |= this->initialize();
-  delay_milliseconds_cpp(100);
-  ret |= this->configure();
-  delay_milliseconds_cpp(600);
-  ret |= this->stream_start();
-  delay_milliseconds_cpp(600);
-  xassert((ret == 0) && "Could not initialise camera");
-  puts("\nCamera_started and configured.");
-
-  // store the response
-  sensor_control_t cmd_ctrl;
-  sensor_command_t cmd;
-  unsigned delay = 0;
-  
-  // sensor control logic
-  SELECT_RES(
-    CASE_THEN(c_control, on_c_control))
-  {
-    on_c_control:{
-      
-      camera_isp_recv_ctrl(c_control, &cmd_ctrl);
-      cmd = cmd_ctrl.cmd;
-      delay = cmd_ctrl.arg;
-      switch (cmd){ 
-        case SENSOR_STREAM_STOP:
-          ret = this->stream_stop();
-          break;
-        case SENSOR_STREAM_START:
-          if (delay){
-            delay_milliseconds_cpp(delay);
-          }
-          ret = this->stream_start();
-          break;
-        case SENSOR_INIT:
-          break;
-        case SENSOR_CONFIG:
-          break;
-        case SENSOR_SET_EXPOSURE:
-          //TODO reimplement
-          //arg = DECODE_ARG(encoded_response);
-          //ret = this->set_exposure(arg);
-          break;
-      }
-      xassert((ret == 0) && "Could not perform I2C write");
-      continue;
-    }
-  }
+  // as there is no dynamic control
+  // this function is empty  
 }
