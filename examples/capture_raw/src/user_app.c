@@ -15,7 +15,7 @@
 #define H   300
 #define W   400
 #define CH    1 // RAW
-#define DELAY_MILISECONDS 1000
+#define DELAY_MILISECONDS 100
 
 static
 void sim_model_invoke() {
