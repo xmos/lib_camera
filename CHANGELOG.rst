@@ -1,6 +1,16 @@
 lib_camera change log
 =====================
 
+Unreleased
+----------
+
+  * CHANGED: camera capture mode from streaming to single capture. 
+  * CHANGED: packet handler and sensor control thread are embded in ISP thread.
+  * ADDED: vertical flip support.
+  * CHANGED: lib_camera repository structure
+  * CHANGED: camera init xc code from examples moved to lib_camera.c
+  * DELETED: sensor.h file
+
 1.0.0
 -----
 
@@ -46,4 +56,3 @@ lib_camera change log
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
-
