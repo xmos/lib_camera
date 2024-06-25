@@ -12,8 +12,6 @@
 #include <xcore/clock.h>
 
 #include "camera_mipi.h"
-
-#include "camera_mipi.h"
 #include "camera_mipi_defines.h"
 
 static
