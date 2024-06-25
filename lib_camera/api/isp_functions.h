@@ -46,6 +46,11 @@ void isp_resize_uint8(
 	const unsigned out_width,
 	const unsigned out_height);
 
+void isp_rgb_to_greyscale(
+	int8_t * gs_img,
+	int8_t * img,
+	unsigned n_pix);
+
 #if defined(__XC__) || defined(__cplusplus)
 } // extern "C"
 #endif

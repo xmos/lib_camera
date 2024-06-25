@@ -13,6 +13,7 @@
 #include "camera_main.h"
 #include "_helpers.h"
 #include "isp_yuv_rgb.h"
+#include "isp_functions.h"
 
 #define INV_DELTA 20  // error allowed in YUV RGB color conversion 
 #define num_tests 3
@@ -24,7 +25,9 @@ color_table_t ct_test_vector[num_tests];
 TEST_GROUP_RUNNER(color_conversion) {
   RUN_TEST_CASE(color_conversion, conversion__yuv_to_rgb);
   RUN_TEST_CASE(color_conversion, conversion__rgb_to_yuv);
-  RUN_TEST_CASE(color_conversion, conversion__timming);
+  RUN_TEST_CASE(color_conversion, conversion__yuv_timming);
+  RUN_TEST_CASE(color_conversion, conversion__rgb_to_gs);
+  RUN_TEST_CASE(color_conversion, conversion__gs_timing);
 }
 TEST_GROUP(color_conversion);
 TEST_SETUP(color_conversion) { fflush(stdout); print_separator("color_conversion");}
@@ -80,8 +83,7 @@ TEST(color_conversion, conversion__rgb_to_yuv)
   }
 }
 
-
-TEST(color_conversion, conversion__timming)
+TEST(color_conversion, conversion__yuv_timming)
 {
     // Define number of tests
     const unsigned num_tests_timing = 10;
@@ -112,9 +114,65 @@ TEST(color_conversion, conversion__timming)
 
     // Compare the time
     printf("\tnumber of conversions: %d\n", num_tests_timing);
-    static const char func_name[] = "Color conversion VPU";
+    static const char func_name[] = "YUV color conversion VPU";
     PRINT_NAME_TIME(func_name, vpu_conv_time);
 
-    static const char func_name2[] = "Color conversion non VPU";
+    static const char func_name2[] = "YUV color conversion non VPU";
     PRINT_NAME_TIME(func_name2, non_vpu_conv_time);
+}
+
+extern void isp_rgb_to_greyscale8(int8_t * gs_img, int8_t * img, unsigned n_pix);
+
+TEST(color_conversion, conversion__rgb_to_gs)
+{
+  const unsigned num_pix = 16;
+  __attribute__((aligned(4)))
+  int8_t img[num_tests][num_pix * 3];
+  int8_t gs_img[num_pix];
+  int8_t gs_img8[num_pix];
+  int8_t gs_img_ref[num_pix];
+
+  fill_array_rand_int8((int8_t *)img, num_tests * num_pix * 3);
+
+  for(unsigned i = 0; i < num_tests; i++) {
+    isp_rgb_to_greyscale(gs_img, &img[i][0], num_pix);
+    isp_rgb_to_greyscale8(gs_img8, &img[i][0], num_pix);
+    rgb_to_greyscale_float(gs_img_ref, &img[i][0], num_pix);
+
+    for(unsigned j = 0; j < num_pix; j++) {
+      TEST_ASSERT_INT8_WITHIN(1, gs_img[j], gs_img_ref[j]);
+      TEST_ASSERT_INT8_WITHIN(1, gs_img8[j], gs_img_ref[j]);
+    }
+  }
+}
+
+TEST(color_conversion, conversion__gs_timing)
+{
+  const unsigned num_pix = 64;
+  __attribute__((aligned(4)))
+  int8_t img[num_pix * 3];
+  int8_t gs_img[num_pix];
+
+  unsigned start = measure_time();
+  isp_rgb_to_greyscale(gs_img, img, num_pix);
+  unsigned vpu_time = measure_time() - start;
+
+  start = measure_time();
+  isp_rgb_to_greyscale8(gs_img, img, num_pix);
+  unsigned vpu8_time = measure_time() - start;
+
+  start = measure_time();
+  rgb_to_greyscale_float(gs_img, img, num_pix);
+  unsigned non_vpu_time = measure_time() - start;
+
+  // Compare the time
+  printf("\tnumber of %u-pixel conversions: %d\n", num_pix, 1);
+  static const char func_name[] = "GS color conversion 4 pix VPU";
+  PRINT_NAME_TIME(func_name, vpu_time);
+
+  static const char func_name1[] = "GS color conversion 8 pix VPU";
+  PRINT_NAME_TIME(func_name1, vpu8_time);
+
+  static const char func_name2[] = "GS color conversion non VPU";
+  PRINT_NAME_TIME(func_name2, non_vpu_time);
 }

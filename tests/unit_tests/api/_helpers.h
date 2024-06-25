@@ -85,5 +85,6 @@ void printColorTable(color_table_t *table, uint8_t ref);
 void yuv_to_rgb_ct(color_table_t *ct_ref, color_table_t *ct_res);
 void rgb_to_yuv_ct(color_table_t *ct_ref, color_table_t *ct_res);
 
+void rgb_to_greyscale_float(int8_t * gs_img, int8_t * img, unsigned n_pix);
 RgbValues yuvToRgb(uint8_t y, uint8_t u, uint8_t v);
 YuvValues rgbToYuv(uint8_t r, uint8_t g, uint8_t b);

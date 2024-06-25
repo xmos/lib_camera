@@ -126,3 +126,19 @@ void rgb_to_yuv_ct(color_table_t* ct_ref, color_table_t* ct_res){
   ct_res -> U =  (uint8_t)(GET_U(result) + CT_INT);
   ct_res -> V =  (uint8_t)(GET_V(result) + CT_INT);
 }
+
+void rgb_to_greyscale_float(int8_t * gs_img, int8_t * img, unsigned n_pix) {
+  const float vc0 = 0.299;
+  const float vc1 = 0.587;
+  const float vc2 = 0.114;
+ 
+  for (size_t i = 0; i < n_pix; i++) {
+    int8_t *byte_ptr = (int8_t *)&img[i * 3];
+ 
+    float sum = byte_ptr[0] * vc0 +
+                byte_ptr[1] * vc1 +
+                byte_ptr[2] * vc2;
+ 
+    gs_img[i] = (int8_t)sum;
+  }
+}
