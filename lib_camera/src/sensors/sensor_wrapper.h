@@ -9,7 +9,6 @@
 #include <xccompat.h>
 
 #include "api.h"
-#include "camera_mipi_defines.h"
 
 // I2C defines
 #define I2C_DEV_ADDR             0x10

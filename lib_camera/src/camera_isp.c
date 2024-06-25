@@ -17,8 +17,7 @@
 #include "camera_utils.h"
 #include "camera_mipi_defines.h"
 #include "xs3_memcpy.h"
-
-#include "sensor_control.h"
+#include "sensor_wrapper.h"
 
 #define ALIGNED_8 __attribute__((aligned(8)))
 
@@ -110,21 +109,6 @@ inline void camera_isp_recv_cfg(
   Image_cfg_t* image) 
 {
   chan_in_buf_byte(c_isp, (uint8_t*)image, sizeof(Image_cfg_t));
-}
-
-// ISP <> CTRL
-inline void camera_isp_send_ctrl(
-  chanend_t c_ctrl,
-  sensor_control_t* ctrl) 
-{
-  chan_out_buf_byte(c_ctrl, (uint8_t*)ctrl, sizeof(sensor_control_t));
-}
-
-inline void camera_isp_recv_ctrl(
-  chanend_t c_ctrl,
-  sensor_control_t* ctrl) 
-{
-  chan_in_buf_byte(c_ctrl, (uint8_t*)ctrl, sizeof(sensor_control_t));
 }
 
 
