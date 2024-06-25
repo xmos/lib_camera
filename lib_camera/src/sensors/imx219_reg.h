@@ -23,6 +23,9 @@
 #define SENSOR_X_LIM      3280
 #define SENSOR_Y_LIM      2464
 
+// Orientation
+#define REG_ORIENTATION   0x0172
+
 // PLL settings
 #define PLL_VT_MPY          0x0040 // pll1 - pix clk
 #define PLL_OP_MPY          0x0040 // pll2 - mipi clk

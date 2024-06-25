@@ -151,6 +151,12 @@ void camera_isp_coordinates_compute(Image_cfg_t* img_cfg){
   cfg->x2 = ((unsigned)cfg->x2) & ~1;
   cfg->y2 = ((unsigned)cfg->y2) & ~1;
 
+  // if flip vertical add one to y1 and y2
+  if (CONFIG_FLIP == FLIP_VERTICAL) {
+    cfg->y1 += 1;
+    cfg->y2 += 1;
+  }
+
   // ensure is logical
   xassert(cfg->x1 < cfg->x2 && "x1");
   xassert(cfg->y1 < cfg->y2 && "y1");

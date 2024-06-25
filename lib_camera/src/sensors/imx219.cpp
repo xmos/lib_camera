@@ -40,20 +40,9 @@ int IMX219::initialize() {
   ret |= this->i2c_write_table(GET_TABLE(imx219_lanes_regs));
   // set gain
   ret |= this->set_exposure(GAIN_DEFAULT_DB);
+  // set orientation
+  ret |= this->set_orientation(CONFIG_FLIP);
   return ret;
-}
-
-int IMX219::stream_start() {
-  return this->i2c_write_table(GET_TABLE(start_regs));
-}
-
-int IMX219::stream_stop() {
-  return this->i2c_write_table(GET_TABLE(stop_regs));
-}
-
-int IMX219::set_exposure(uint32_t dBGain) {
-  i2c_table_t exposure_regs = this->get_exp_gains_table(dBGain);
-  return this->i2c_write_table(exposure_regs);
 }
 
 int IMX219::configure() {
@@ -70,6 +59,24 @@ int IMX219::configure() {
   // set binning
   ret |= this->i2c_write_table(GET_TABLE(binning_reg));
   return ret;
+}
+
+int IMX219::stream_start() {
+  return this->i2c_write_table(GET_TABLE(start_regs));
+}
+
+int IMX219::stream_stop() {
+  return this->i2c_write_table(GET_TABLE(stop_regs));
+}
+
+int IMX219::set_exposure(uint32_t dBGain) {
+  i2c_table_t exposure_regs = this->get_exp_gains_table(dBGain);
+  return this->i2c_write_table(exposure_regs);
+}
+
+int IMX219::set_orientation(orientation_t orientation) {
+  i2c_line_t orient_reg = {REG_ORIENTATION, (uint16_t)orientation};
+  return this->i2c_write_line(orient_reg);
 }
 
 i2c_table_t IMX219::get_exp_gains_table(uint32_t dBGain) {

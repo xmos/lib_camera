@@ -6,7 +6,6 @@
 #ifdef __cplusplus
 
 #include "sensor_base.hpp"
-//#include "sensor.h"
 #include "sensor_control.h"
 
 namespace sensor {
@@ -140,6 +139,13 @@ class IMX219 : public SensorBase {
      * @param c_control   Control channel
      */
     void control(chanend_t c_control);
+
+    /**
+     * @brief Set sensor orientation
+     *
+     * @param orientation FLIP_NONE, FLIP_VERTICAL
+     */
+    int set_orientation(orientation_t orientation);
 
 }; // IMX219
 

@@ -21,6 +21,7 @@
 // Mipi Configuration (could be modified by user)
 #define CONFIG_MODE                 MODE_VGA_640x480
 #define CONFIG_MIPI_FORMAT          MIPI_DT_RAW8
+#define CONFIG_FLIP                 FLIP_VERTICAL
 #define CONFIG_BINNING              1
 #define CONFIG_CENTRALISE           1
 
@@ -230,6 +231,11 @@ typedef struct{
   sensor_command_t cmd;
   uint8_t arg;
 } sensor_control_t;
+
+typedef enum{
+  FLIP_NONE = (0 | (0 << 1)),
+  FLIP_VERTICAL = (0 | (1 << 1))
+} orientation_t;
 
 /*
   Notes
