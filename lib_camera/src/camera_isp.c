@@ -15,7 +15,7 @@
 
 #include "camera_isp.h"
 #include "camera_utils.h"
-#include "camera_mipi_defines.h"
+#include "camera_defs.h"
 #include "xs3_memcpy.h"
 #include "sensor_wrapper.h"
 

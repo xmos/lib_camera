@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "api.h"
-#include "camera_mipi_defines.h"
+#include "camera_defs.h"
 
 C_API_START
 

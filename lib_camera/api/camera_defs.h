@@ -21,7 +21,7 @@
 // Mipi Configuration (could be modified by user)
 #define CONFIG_MODE                 MODE_VGA_640x480
 #define CONFIG_MIPI_FORMAT          MIPI_DT_RAW8
-#define CONFIG_FLIP                 FLIP_VERTICAL
+#define CONFIG_FLIP                 FLIP_NONE
 #define CONFIG_BINNING              1
 #define CONFIG_CENTRALISE           1
 

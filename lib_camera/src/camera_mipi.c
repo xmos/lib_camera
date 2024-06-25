@@ -12,7 +12,7 @@
 #include <xcore/clock.h>
 
 #include "camera_mipi.h"
-#include "camera_mipi_defines.h"
+#include "camera_defs.h"
 
 static
 void camera_mipi_ctx_init(

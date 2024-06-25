@@ -64,23 +64,25 @@ def process_image(input_name, width=400, height=300, flip=False, as_shot_neutral
     name = f"{input_name}_postprocess_.png"
     Image.fromarray(imgs).save(name) 
     print(name)
-
-    plot_imgs(img, img_raw_RGB, flip)
-    plt.show()
-
-    red = int(img_demoisaic[:,:,0].sum())
-    green = int(img_demoisaic[:,:,1].sum())
-    blue = int(img_demoisaic[:,:,2].sum())
-
-    txt = f"blue: {blue}, green: {green}, red: {red}"
-    print(txt)
+    return imgs
 
 def main():
     input_name = "capture1.raw"
-    process_image(input_name)
+    img1 = process_image(input_name)
     
     input_name = "capture2.raw"
-    process_image(input_name)
+    img2 = process_image(input_name)
+
+    plt.figure(figsize=(10, 10))
+    
+    plt.subplot(1, 2, 1)
+    plt.title("Capture Region 1")
+    plt.imshow(img1)
+    plt.subplot(1, 2, 2)
+    plt.title("Capture Region 2")
+    plt.imshow(img2)
+    
+    plt.show()
 
 if __name__ == "__main__":
     main()

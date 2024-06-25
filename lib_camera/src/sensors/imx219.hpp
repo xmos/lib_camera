@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 
 #include "sensor_base.hpp"
-#include "camera_mipi_defines.h"
+#include "camera_defs.h"
 
 namespace sensor {
 
