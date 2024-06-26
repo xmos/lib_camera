@@ -69,7 +69,7 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     // set coords and send to ISP
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
-    camera_isp_send_cfg(c_user_to_isp, &image); // send the image configuration
+    chan_out_buf_byte(c_user_to_isp, (uint8_t*)&image, sizeof(Image_cfg_t));
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     chan_in_byte(c_isp_to_user); // wait for the image
     save_image(&image, "capture1.raw");
@@ -79,7 +79,7 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     config.offset_y = 0.3;
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
-    camera_isp_send_cfg(c_user_to_isp, &image); // send the image configuration
+    chan_out_buf_byte(c_user_to_isp, (uint8_t*)&image, sizeof(Image_cfg_t));
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     chan_in_byte(c_isp_to_user); // wait for the image
     save_image(&image, "capture2.raw");
