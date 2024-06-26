@@ -18,7 +18,7 @@ void isp_rgb_to_greyscale(int8_t * out_img, int8_t * img, size_t img_size)
 .gs_coeffs0: .byte  38, 75, 14, 0,   0, 0, 0, 0,     0, 0, 0, 0,      0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0
 .gs_sat:     .short 7, 7, 7, 7,      0, 0, 0, 0,     0, 0, 0, 0,      0, 0, 0, 0
 
-#define FUNC_NAME       isp_rgb_to_greyscale
+#define FUNC_NAME       isp_rgb_to_greyscale4
 #define NSTACKWORDS     2
 
 .cc_top FUNC_NAME.func, FUNC_NAME
