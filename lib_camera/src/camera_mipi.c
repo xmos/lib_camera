@@ -14,24 +14,11 @@
 #include "camera_mipi.h"
 #include "camera_defs.h"
 
-static
-void camera_mipi_ctx_init(
-  camera_mipi_ctx_t* ctx) {
-  port_enable(ctx->p_mipi_clk);
-  port_enable(ctx->p_mipi_rxa);
-  port_enable(ctx->p_mipi_rxv);
-  port_start_buffered(ctx->p_mipi_rxd, 32);
-  clock_enable(ctx->clk_mipi);
-}
 
 static
 void camera_mipi_packet_init(
   unsigned tile,
-  port_t p_mipi_rxd,
-  port_t p_mipi_rxv,
-  port_t p_mipi_rxa,
-  port_t p_mipi_clk,
-  xclock_t clk_mipi,
+  camera_mipi_ctx_t* ctx,
   unsigned mipi_shim_cfg0,
   uint32_t mipiClkDiv,
   uint32_t cfgClkDiv) {
@@ -39,22 +26,22 @@ void camera_mipi_packet_init(
   // original code is kept uncommented
 
   //configure_in_port_strobed_slave(p_mipi_rxd, p_mipi_rxv, clk_mipi);
-  port_protocol_in_strobed_slave(p_mipi_rxd, p_mipi_rxv, clk_mipi);
+  port_protocol_in_strobed_slave(ctx->p_mipi_rxd, ctx->p_mipi_rxv, ctx->clk_mipi);
 
   //set_clock_src(clk_mipi, p_mipi_clk);
-  clock_set_source_port(clk_mipi, p_mipi_clk);
+  clock_set_source_port(ctx->clk_mipi, ctx->p_mipi_clk);
 
   // Sample on falling edge - shim outputting on rising 
   //set_clock_rise_delay(clk_mipi, 1);
   // 0x9007 is a RISE_DELAY config, see XU316 documentation
-  __xcore_resource_setc(clk_mipi, XS1_SETC_VALUE_SET(0x9007, 1));
+  __xcore_resource_setc(ctx->clk_mipi, XS1_SETC_VALUE_SET(0x9007, 1));
 
   //set_pad_delay(p_mipi_rxa, 1);
   // 0x7007 is a PAD_DELAY config, see XU316 documentation
-  __xcore_resource_setc(p_mipi_rxa, XS1_SETC_VALUE_SET(0x7007, 1));
+  __xcore_resource_setc(ctx->p_mipi_rxa, XS1_SETC_VALUE_SET(0x7007, 1));
 
   //start_clock(clk_mipi);
-  clock_start(clk_mipi);
+  clock_start(ctx->clk_mipi);
 
   // take DPHY out of reset
 
@@ -81,8 +68,12 @@ void camera_mipi_packet_init(
 void camera_mipi_init(
   camera_mipi_ctx_t* ctx
 ) {
-  // Start context
-  camera_mipi_ctx_init(ctx);
+  // Enable ports and clock
+  port_enable(ctx->p_mipi_clk);
+  port_enable(ctx->p_mipi_rxa);
+  port_enable(ctx->p_mipi_rxv);
+  port_start_buffered(ctx->p_mipi_rxd, 32);
+  clock_enable(ctx->clk_mipi);
 
   // Tile ids have weird values, so we get them with this API
   unsigned tileid = get_local_tile_id();
@@ -99,11 +90,7 @@ void camera_mipi_init(
   
   // Initialize MIPI receiver
   camera_mipi_packet_init(tileid,
-    ctx->p_mipi_rxd,
-    ctx->p_mipi_rxv,
-    ctx->p_mipi_rxa,
-    ctx->p_mipi_clk,
-    ctx->clk_mipi,
+    ctx,
     mipi_shim_cfg0,
     MIPI_CLK_DIV,
     MIPI_CFG_CLK_DIV);
