@@ -30,16 +30,6 @@ static frame_state_t ph_state = {
     0   // out_line_number
 };
 
-sensor_control_t ctrl_stop = {
-  .cmd = SENSOR_STREAM_STOP,
-  .arg = 0
-};
-
-sensor_control_t ctrl_start = {
-  .cmd = SENSOR_STREAM_START,
-  .arg = 50
-};
-
 
 // -------- State handlers --------
 
@@ -90,24 +80,6 @@ void handle_expected_lines(Image_cfg_t* image, int8_t* data_in) {
     data_dst,
     data_src,
     image->width);
-}
-
-
-// -------- ISP communication --------
-
-// ISP <> USER
-inline void camera_isp_send_cfg(
-  chanend_t c_isp,
-  Image_cfg_t* image) 
-{
-  chan_out_buf_byte(c_isp, (uint8_t*)image, sizeof(Image_cfg_t));
-}
-
-inline void camera_isp_recv_cfg(
-  chanend_t c_isp,
-  Image_cfg_t* image) 
-{
-  chan_in_buf_byte(c_isp, (uint8_t*)image, sizeof(Image_cfg_t));
 }
 
 
@@ -246,7 +218,7 @@ void camera_isp_thread(
     }
   on_c_user_isp_change: { // attending user_app
     // user petition
-    camera_isp_recv_cfg(c_user_isp, &image); // so we can work with img data
+    chan_in_buf_byte(c_user_isp, (uint8_t*)&image, sizeof(Image_cfg_t)); // recieve info from user
     // Start camera
     camera_sensor_start();
     continue;

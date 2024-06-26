@@ -44,11 +44,6 @@ typedef struct {
   camera_configure_t* config;
 } Image_cfg_t;
 
-
-void camera_isp_send_cfg(chanend_t c_user, Image_cfg_t* image_cfg);
-
-void camera_isp_recv_cfg(chanend_t c_user, Image_cfg_t* image_cfg);
-
 void camera_isp_coordinates_compute(Image_cfg_t* image_cfg);
 
 void camera_isp_coordinates_print(Image_cfg_t* image_cfg);
