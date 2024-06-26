@@ -22,8 +22,12 @@
 
 
 // -------- Globals -------------
-
-static frame_state_t ph_state = {
+static struct {
+  unsigned wait_for_frame_start;
+  unsigned frame_number;
+  unsigned in_line_number;
+  unsigned out_line_number;
+} ph_state = {
     1,  // wait_for_frame_start
     0,  // frame_number
     0,  // in_line_number
@@ -41,7 +45,7 @@ void handle_unknown_packet(
 
 static
 void handle_no_expected_lines() {
-  if (ph_state.in_line_number >= MIPI_IMAGE_HEIGHT_PIXELS) {
+  if (ph_state.in_line_number >= SENSOR_HEIGHT) {
     // We've received more lines of image data than we expected.
     xassert(0 && "Recieved too many lines");
   }
@@ -155,7 +159,7 @@ void camera_isp_packet_handler(
       ph_state.frame_number++;
       break;
 
-    case CONFIG_MIPI_FORMAT:
+    case CONFIG_MIPI_FORMAT: // RAW-8 format
       handle_no_expected_lines();
       handle_expected_lines(image_cfg, data_in);
       ph_state.in_line_number++;
@@ -181,9 +185,8 @@ void camera_isp_thread(
   streaming_chanend_t c_pkt,
   streaming_chanend_t c_ctrl,
   chanend_t c_cam[N_CH_USER_ISP]) {
-
-  __attribute__((aligned(8)))
-  mipi_packet_t packet_buffer[MIPI_PKT_BUFFER_COUNT];
+  
+  mipi_packet_t ALIGNED_8 packet_buffer[MIPI_PKT_BUFFER_COUNT];
   mipi_packet_t* pkt;
   unsigned pkt_idx = 0;
 

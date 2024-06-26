@@ -7,8 +7,10 @@
 
 #include "api.h"
 #include "xcore_compat.h"
-#include "camera_defs.h"
 #include "camera.h"
+
+#define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
+#define MIPI_PKT_BUFFER_COUNT       (4)
 
 C_API_START
 
@@ -43,6 +45,15 @@ typedef struct {
   int8_t* ptr;
   camera_configure_t* config;
 } Image_cfg_t;
+
+// this struct will hold the mipi header and data
+typedef unsigned mipi_header_t;
+typedef struct {
+  mipi_header_t header;
+  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
+} mipi_packet_t;
+
+
 
 void camera_isp_coordinates_compute(Image_cfg_t* image_cfg);
 

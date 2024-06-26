@@ -16,17 +16,26 @@ using namespace sensor;
 // This header has to be after imx219.hpp and the namespace
 #include "imx219_reg.h"
 
-IMX219::IMX219(i2c_config_t _conf,resolution_t _res, pixel_format_t _pix_fmt, bool _binning, bool _centralize)
-        : sensor::SensorBase(_conf), frame_res(_res), pix_fmt(_pix_fmt),
-        binning_2x2(_binning) {
+IMX219::IMX219(
+  i2c_config_t _conf, 
+  resolution_t _res, 
+  pixel_format_t _pix_fmt, 
+  binning_t _binning, 
+  centralise_t _centralize) \
+  : sensor::SensorBase(_conf), frame_res(_res), pix_fmt(_pix_fmt), binning_2x2(_binning) {
   this->get_x_y_len();
   this->get_offsets_and_check_ranges(_centralize);
   this->adjust_offsets();
 }
 
-IMX219::IMX219(i2c_config_t _conf,resolution_t _res, pixel_format_t _pix_fmt, bool _binning, uint16_t _x_offset, uint16_t _y_offset)
-        : sensor::SensorBase(_conf), frame_res(_res), pix_fmt(_pix_fmt),
-        binning_2x2(_binning), x_offset(_x_offset), y_offset(_y_offset) {
+IMX219::IMX219(
+  i2c_config_t _conf, 
+  resolution_t _res, 
+  pixel_format_t _pix_fmt, 
+  binning_t _binning, 
+  uint16_t _x_offset, uint16_t _y_offset) \
+  : sensor::SensorBase(_conf), frame_res(_res), pix_fmt(_pix_fmt),
+  binning_2x2(_binning), x_offset(_x_offset), y_offset(_y_offset) {
   this->get_x_y_len();
   this->check_ranges();
   this->adjust_offsets();
@@ -159,18 +168,13 @@ i2c_table_t IMX219::get_res_table() {
 }
 
 void IMX219::get_x_y_len() {
-  if(this->frame_res == RES_640_480) {
-    this->x_len = 640;
-    this->y_len = 480;
-  } else if (this->frame_res == RES_1280_960) {
-    this->x_len = 1280;
-    this->y_len = 960;
-  } else {
-    xassert(0 && "Given resolution format is not supported");
-  }
+  this->x_len = this->frame_res.sensor_width;
+  this->y_len = this->frame_res.sensor_height;
+  xassert(this->x_len <= SENSOR_X_LIM && "X resolution exceeds sensor frame limits");
+  xassert(this->y_len <= SENSOR_Y_LIM && "Y resolution exceeds sensor frame limits");
 }
 
-void IMX219::get_offsets_and_check_ranges(bool centralize) {
+void IMX219::get_offsets_and_check_ranges(centralise_t centralize) {
   uint16_t x_full_len = (this->binning_2x2) ? this->x_len * 2 : this->x_len;
   uint16_t y_full_len = (this->binning_2x2) ? this->y_len * 2 : this->y_len;
   if((x_full_len > SENSOR_X_LIM) || (y_full_len > SENSOR_Y_LIM)) {

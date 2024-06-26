@@ -8,6 +8,9 @@
 #include "sensor_base.hpp"
 #include "camera_defs.h"
 
+
+
+
 namespace sensor {
 
 class IMX219 : public SensorBase {
@@ -19,7 +22,7 @@ class IMX219 : public SensorBase {
      */
     resolution_t frame_res;
     pixel_format_t pix_fmt;
-    bool binning_2x2;
+    binning_t binning_2x2;
 
     /**
      * @brief X and Y lenghts and offsets
@@ -37,7 +40,7 @@ class IMX219 : public SensorBase {
      *
      * @param centralise If set, offsets will be calculated to centralise the frame, otherwise will start from (0, 0)
      */
-    void get_offsets_and_check_ranges(bool centralize);
+    void get_offsets_and_check_ranges(centralise_t centralize);
 
     /**
      * @brief Checks that given resolution, binning mode and offsets are within sensor limits
@@ -82,7 +85,7 @@ class IMX219 : public SensorBase {
      * @param _centralize If set, offsets will be calculated to centralise the frame, otherwise will start from (0, 0)
      * @note This will initialize I2C interface
      */
-    IMX219(i2c_config_t _conf, resolution_t _res, pixel_format_t _pix_fmt, bool _binning, bool _centralize);
+    IMX219(i2c_config_t _conf, resolution_t _res, pixel_format_t _pix_fmt, binning_t _binning, centralise_t _centralize);
 
     /**
      * @brief Construct new `IMX219`
@@ -95,7 +98,7 @@ class IMX219 : public SensorBase {
      * @param _y_offset   Y offset
      * @note This will initialize I2C interface
      */
-    IMX219(i2c_config_t _conf, resolution_t _res, pixel_format_t _pix_fmt, bool _binning, uint16_t _x_offset, uint16_t _y_offset);
+    IMX219(i2c_config_t _conf, resolution_t _res, pixel_format_t _pix_fmt, binning_t _binning, uint16_t _x_offset, uint16_t _y_offset);
 
     /**
      * @brief Initialise sensor

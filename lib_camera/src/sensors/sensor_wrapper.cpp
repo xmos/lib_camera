@@ -1,9 +1,15 @@
 // Copyright 2023-2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+#include <xcore/assert.h>
+#include "print.h"
+
+#include "camera.h"
 #include "sensor_wrapper.h"
 #include "sensor_base.hpp"
 #include "camera_utils.h"
+#include "camera_defs.h"
+
 
 #include "imx219.hpp"
 
@@ -22,16 +28,22 @@ void camera_sensor_init() {
   i2c_conf.p_sda = XS1_PORT_4E;
   i2c_conf.i2c_ctx_ptr = &i2c_ctx;
 
+  // Sensor settings
+  resolution_t res = {
+    .sensor_width = SENSOR_WIDHT,
+    .sensor_height = SENSOR_HEIGHT
+  };
+  
   // Global sensor object
   camera_sensor_ptr = new IMX219(
-    i2c_conf, 
-    (resolution_t)CONFIG_MODE, 
+    (i2c_config_t)i2c_conf, 
+    (resolution_t)res, 
     (pixel_format_t)CONFIG_MIPI_FORMAT, 
-    CONFIG_BINNING, 
-    CONFIG_CENTRALISE);
+    (binning_t)CONFIG_BINNING, 
+    (centralise_t)CONFIG_CENTRALISE);
 
   // Init the I2C sensor first configuration
-  puts("Camera init.\n");
+  printstr("Camera init\n");
   int ret = 0;
   ret |= camera_sensor_ptr->initialize();
   delay_milliseconds_cpp(100);
@@ -40,7 +52,7 @@ void camera_sensor_init() {
   ret |= camera_sensor_ptr->stream_start();
   delay_milliseconds_cpp(500);
   xassert((ret == 0) && "Could not initialise camera");
-  puts("Camera_started and configured.\n");
+  printstr("Camera_started and configured\n");
 }
 
 void camera_sensor_start() {
