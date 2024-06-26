@@ -12,16 +12,21 @@
 #include <xcore/parallel.h>
 #include <xccompat.h>
 
-#include "camera_mipi.h"
-#include "camera_mipi_rx.h"
-#include "camera_isp.h"
+#include "camera.h"
 
-#include "lib_camera.h"
+#include "camera_mipi.h"
+#include "camera_isp.h"
 
 DECLARE_JOB(camera_mipi_rx, (in_buffered_port_32_t, port_t, streaming_chanend_t, streaming_chanend_t));
 DECLARE_JOB(camera_isp_thread, (streaming_chanend_t, streaming_chanend_t, chanend_t*));
 
-void lib_camera_main(chanend_t c_cam[N_CH_USER_ISP]){
+extern void camera_mipi_rx(
+    in_buffered_port_32_t p_mipi_rxd,
+    port_t p_mipi_rxa,
+    streaming_chanend_t c_pkt,
+    streaming_chanend_t c_ctrl);
+
+void camera_main(chanend_t c_cam[N_CH_USER_ISP]){
 
     // Channels
     streaming_channel_t c_pkt = s_chan_alloc();

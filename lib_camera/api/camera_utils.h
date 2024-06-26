@@ -108,5 +108,21 @@ void io_write_bmp_file(
     const size_t width, 
     const size_t channels);
 
+/**
+ * @brief VPU-based memcpy implementation.
+ *
+ * Same as standard `memcpy()` except for an extra constraint that both `dst and `src` must be
+ * word-aligned addresses.
+ *
+ * @param[out]  dst   Destination address
+ * @param[in]   src   Source address
+ * @param[in]   bytes Number of bytes to copy
+ *
+ * @ingroup util_macros
+ */
+void vpu_memcpy(
+    void* dst,
+    const void* src,
+    unsigned bytes);
 
 C_API_END

@@ -8,7 +8,7 @@
 #include "api.h"
 #include "xcore_compat.h"
 #include "camera_defs.h"
-#include "lib_camera.h"
+#include "camera.h"
 
 C_API_START
 

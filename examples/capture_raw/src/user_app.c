@@ -8,7 +8,7 @@
 #include <xcore/channel.h>
 #include <xcore/select.h>
 
-#include "lib_camera.h"
+#include "camera.h"
 #include "camera_utils.h"
 #include "camera_isp.h"
 

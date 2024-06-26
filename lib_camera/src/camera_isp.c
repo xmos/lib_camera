@@ -11,12 +11,11 @@
 #include <xcore/assert.h>
 #include <print.h>
 
-#include "lib_camera.h"  // in reality image def could be in isp.h
+#include "camera.h"  // in reality image def could be in isp.h
 
 #include "camera_isp.h"
 #include "camera_utils.h"
 #include "camera_defs.h"
-#include "xs3_memcpy.h"
 #include "sensor_wrapper.h"
 
 #define ALIGNED_8 __attribute__((aligned(8)))
@@ -87,7 +86,7 @@ void handle_expected_lines(Image_cfg_t* image, int8_t* data_in) {
   // printuintln(img_ln);
   int8_t* data_src = data_in + image->config->x1;
   int8_t* data_dst = image->ptr + (img_ln * image->width);
-  xs3_memcpy(
+  vpu_memcpy(
     data_dst,
     data_src,
     image->width);
