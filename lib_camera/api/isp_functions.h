@@ -55,14 +55,6 @@ void isp_rgb_to_greyscale4(
 	unsigned n_pix);
 
 /** Will convert RGB image to the greyscale one.
- *  Memory can be reused safely. n_pix must be a multiple of 8
- */
-void isp_rgb_to_greyscale8(
-	int8_t * gs_img,
-	int8_t * img,
-	unsigned n_pix);
-
-/** Will convert RGB image to the greyscale one.
  *  Memory can be reused safely. n_pix must be a multiple of 16
  */
 void isp_rgb_to_greyscale16(
@@ -77,7 +69,7 @@ inline void isp_rgb_to_greyscale(
 	int8_t * gs_img,
 	int8_t * img,
 	unsigned n_pix) {
-	isp_rgb_to_greyscale16(gs_img, img, n_pix);
+	isp_rgb_to_greyscale4(gs_img, img, n_pix);
 }
 
 #if defined(__XC__) || defined(__cplusplus)

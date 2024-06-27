@@ -2,12 +2,15 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 
-// the cpu version
 /*
 void isp_rgb_to_greyscale4(int8_t * out_img, int8_t * img, size_t img_size)
 */
 /*
-Sooo, for the coefficients:
+The conversion formula is gs_pixel = 0.299 * R + 0.587 * G + 0.114 * B
+0.299, 0.587 and 0.114 are 38, 75 and 14 in q7.
+
+We start from the pixel 3 and going to pixel 0 by changing the coeffs accordingly,
+then shift-sat the 4 pixels by 7.
 
 They are in the text section so we can use ldap which can be used in a short u10 M+R form, 
 which is essential as all VPU instructions are memory lane only.
