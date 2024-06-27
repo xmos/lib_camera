@@ -51,7 +51,7 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     };
 
     // Create an Image Structure
-    int8_t __attribute__((aligned(8))) image_buffer[H][W][CH] = {{{0}}};
+    int8_t image_buffer[H][W][CH] = {{{0}}};
     int8_t* image_ptr = &image_buffer[0][0][0];
     image_cfg_t image = {
         .height = H,
