@@ -4,9 +4,17 @@
 
 // the cpu version
 /*
-void isp_rgb_to_greyscale(int8_t * out_img, int8_t * img, size_t img_size)
+void isp_rgb_to_greyscale16(int8_t * out_img, int8_t * img, size_t img_size)
 */
+/*
+Sooo, for the coefficients:
 
+They are in the text section so we can use ldap which can be used in a short u10 M+R form, 
+which is essential as all VPU instructions are memory lane only.
+
+Coefficients are interleaved with each other for the memory reuse.
+P.S. On vx4a VPU will not require word-alignment, so can use even less memory.
+*/
 
 .text
 .issue_mode dual
@@ -80,7 +88,7 @@ FUNC_NAME:
 
 {                             ; ldw r6, sp[2]               }
   ldd r4, r5, sp[0]
-  retsp NSTACKWORDS
+{                             ; retsp NSTACKWORDS           }
 
 .size FUNC_NAME, .-FUNC_NAME
 .cc_bottom FUNC_NAME.func

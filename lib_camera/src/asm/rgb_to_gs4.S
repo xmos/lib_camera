@@ -4,9 +4,16 @@
 
 // the cpu version
 /*
-void isp_rgb_to_greyscale(int8_t * out_img, int8_t * img, size_t img_size)
+void isp_rgb_to_greyscale4(int8_t * out_img, int8_t * img, size_t img_size)
 */
+/*
+Sooo, for the coefficients:
 
+They are in the text section so we can use ldap which can be used in a short u10 M+R form, 
+which is essential as all VPU instructions are memory lane only.
+
+P.S. On vx4a VPU will not require word-alignment, so can use less memory.
+*/
 
 .text
 .issue_mode dual
@@ -32,15 +39,14 @@ void isp_rgb_to_greyscale(int8_t * out_img, int8_t * img, size_t img_size)
 #define coeff           r11
 
 FUNC_NAME:
-  dualentsp NSTACKWORDS
+{ add r3, n_pix, 0            ; dualentsp NSTACKWORDS       }
   std r4, r5, sp[0]
 
   ldc r11, 0x200
-{ add r11, n_pix, 0           ; vsetc r11                   }
+{                             ; vsetc r11                   }
   // n_pix must be a multiple of 4
-{ ldc _12, 12                 ; zext r11, 2                 }
-{ ecallt r11                  ; mkmsk msk, 4                }
-
+{ ldc _12, 12                 ; zext r3, 2                  }
+{ ecallt r3                   ; mkmsk msk, 4                }
 
 .l_top:
 
@@ -58,7 +64,7 @@ FUNC_NAME:
   { add gs_img, gs_img, 4       ; bt n_pix, .l_top            }
 
   ldd r4, r5, sp[0]
-  retsp NSTACKWORDS
+{                             ; retsp NSTACKWORDS           }
 
 .size FUNC_NAME, .-FUNC_NAME
 .cc_bottom FUNC_NAME.func
