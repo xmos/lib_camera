@@ -127,7 +127,6 @@ TEST(color_conversion, conversion__rgb_to_gs)
   __attribute__((aligned(4)))
   int8_t img[num_tests][num_pix * 3];
   int8_t gs_img4[num_pix];
-  int8_t gs_img8[num_pix];
   int8_t gs_img16[num_pix];
   int8_t gs_img_ref[num_pix];
 
@@ -135,13 +134,11 @@ TEST(color_conversion, conversion__rgb_to_gs)
 
   for(unsigned i = 0; i < num_tests; i++) {
     isp_rgb_to_greyscale4(gs_img4, &img[i][0], num_pix);
-    isp_rgb_to_greyscale8(gs_img8, &img[i][0], num_pix);
     isp_rgb_to_greyscale16(gs_img16, &img[i][0], num_pix);
     rgb_to_greyscale_float(gs_img_ref, &img[i][0], num_pix);
 
     for(unsigned j = 0; j < num_pix; j++) {
       TEST_ASSERT_INT8_WITHIN(1, gs_img4[j], gs_img_ref[j]);
-      TEST_ASSERT_INT8_WITHIN(1, gs_img8[j], gs_img_ref[j]);
       TEST_ASSERT_INT8_WITHIN(1, gs_img16[j], gs_img_ref[j]);
     }
   }
@@ -159,10 +156,6 @@ TEST(color_conversion, conversion__gs_timing)
   unsigned vpu4_time = measure_time() - start;
 
   start = measure_time();
-  isp_rgb_to_greyscale8(gs_img, img, num_pix);
-  unsigned vpu8_time = measure_time() - start;
-
-  start = measure_time();
   isp_rgb_to_greyscale16(gs_img, img, num_pix);
   unsigned vpu16_time = measure_time() - start;
 
@@ -174,9 +167,6 @@ TEST(color_conversion, conversion__gs_timing)
   printf("\tnumber of %u-pixel conversions: %d\n", num_pix, 1);
   static const char func_name[] = "GS color conversion 4 pix VPU";
   PRINT_NAME_TIME(func_name, vpu4_time);
-
-  static const char func_name1[] = "GS color conversion 8 pix VPU";
-  PRINT_NAME_TIME(func_name1, vpu8_time);
 
   static const char func_name2[] = "GS color conversion 16 pix VPU";
   PRINT_NAME_TIME(func_name2, vpu16_time);
