@@ -21,11 +21,6 @@ typedef struct {
   uint16_t sensor_height;
 } resolution_t;
 
-typedef enum{
-  SENSOR_MIPI_RAW8 = 0x2A,
-  SENSOR_MIPI_RAW10 = 0x2B,
-} pixel_format_t;
-
 typedef enum {
   BINNING_OFF = 0,
   BINNING_ON = 1,

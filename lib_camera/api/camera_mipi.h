@@ -150,7 +150,8 @@ typedef enum {
   // 0x3F - Unavailable (0x3F is used for LRTE EPD Spacer)
 
 } mipi_data_type_t;
-
+// alias
+typedef mipi_data_type_t pixel_format_t;
 
 typedef struct
 {

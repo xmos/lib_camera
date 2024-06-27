@@ -5,6 +5,7 @@
 #include "print.h"
 
 #include "camera.h"
+#include "camera_mipi.h"
 #include "sensor_wrapper.h"
 #include "sensor_base.hpp"
 #include "camera_utils.h"
@@ -37,7 +38,7 @@ void camera_sensor_init() {
   camera_sensor_ptr = new IMX219(
     (i2c_config_t)i2c_conf, 
     (resolution_t)res, 
-    (pixel_format_t)CONFIG_MIPI_FORMAT, 
+    (pixel_format_t)MIPI_DT_RAW8, 
     (binning_t)CONFIG_BINNING, 
     (centralise_t)CONFIG_CENTRALISE);
 

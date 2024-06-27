@@ -128,14 +128,8 @@ i2c_table_t IMX219::get_exp_gains_table(uint32_t dBGain) {
 i2c_table_t IMX219::get_pxl_fmt_table() {
   static i2c_line_t format_regs[3];
   static i2c_table_t format_table = {format_regs, 3};
-  uint16_t val = 0;
-  if(pix_fmt == SENSOR_MIPI_RAW8) {
-    val = 0x08;
-  } else if(pix_fmt == SENSOR_MIPI_RAW10) {
-    val = 0x0a;
-  } else {
-    xassert(0 && "Pixel format has to be either RAW8 or RAW10");
-  }
+  uint16_t val = 0x08;
+  xassert(pix_fmt == MIPI_DT_RAW8 && "Pixel format has to be RAW8");
   format_regs[0] = {0x018c, val};
   format_regs[1] = {0x018d, val};
   format_regs[2] = {0x0309, val};

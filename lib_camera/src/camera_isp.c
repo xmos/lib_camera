@@ -19,7 +19,6 @@
 
 #include "sensor_wrapper.h"
 
-
 #define ALIGNED_8 __attribute__((aligned(8)))
 
 
@@ -65,6 +64,12 @@ void handle_end_of_frame(
   }
 }
 
+extern
+void xmemcpy(
+  void* dst,
+  const void* src,
+  unsigned bytes);
+
 static
 void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
   unsigned ln = ph_state.in_line_number;
@@ -82,7 +87,7 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
   // printuintln(img_ln);
   int8_t* data_src = data_in + image->config->x1;
   int8_t* data_dst = image->ptr + (img_ln * image->width);
-  vpu_memcpy(
+  xmemcpy(
     data_dst,
     data_src,
     image->width);
@@ -161,7 +166,7 @@ void camera_isp_packet_handler(
       ph_state.frame_number++;
       break;
 
-    case CONFIG_MIPI_FORMAT: // RAW-8 format
+    case MIPI_DT_RAW8:
       handle_no_expected_lines();
       handle_expected_lines(image_cfg, data_in);
       ph_state.in_line_number++;

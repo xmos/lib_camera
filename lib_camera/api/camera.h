@@ -20,11 +20,9 @@
 #define SENSOR_WIDHT                640
 #define SENSOR_HEIGHT               480
 
-#define CONFIG_MIPI_FORMAT          SENSOR_MIPI_RAW8
 #define CONFIG_FLIP                 FLIP_NONE
 #define CONFIG_BINNING              BINNING_ON
 #define CONFIG_CENTRALISE           CENTRALISE_ON
-
 
 C_API_START
 

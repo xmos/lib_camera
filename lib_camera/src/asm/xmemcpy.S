@@ -5,14 +5,14 @@
 
 
 /*  
-void vpu_memcpy(
+void xmemcpy(
     void* dst,
     const void* src,
     unsigned bytes);
 */
 
 #define NSTACKWORDS     (0)
-#define FUNCTION_NAME   vpu_memcpy
+#define FUNCTION_NAME   xmemcpy
 
 #define a           r0
 #define b           r1
