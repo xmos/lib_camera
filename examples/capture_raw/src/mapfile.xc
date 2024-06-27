@@ -9,7 +9,7 @@
 #include <platform.h>
 #include <xscope.h>
 
-#include <lib_camera.h>
+#include "camera.h"
 
 extern "C" {
 #include "xscope_io_device.h"
@@ -29,7 +29,7 @@ int main(void)
   par{
     xscope_host_data(xscope_chan);
     on tile[1]: xscope_io_init(xscope_chan);
-    on tile[1]: lib_camera_main(c_cam);
+    on tile[1]: camera_main(c_cam);
     on tile[1]: user_app(c_cam);
   }
   return 0;

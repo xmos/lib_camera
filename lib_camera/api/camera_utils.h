@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdint.h>
+
 #include "api.h"
 #include "xscope_io_device.h"
 
@@ -107,6 +108,5 @@ void io_write_bmp_file(
     const size_t height, 
     const size_t width, 
     const size_t channels);
-
 
 C_API_END
