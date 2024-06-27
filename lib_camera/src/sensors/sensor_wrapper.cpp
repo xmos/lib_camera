@@ -8,7 +8,6 @@
 #include "sensor_wrapper.h"
 #include "sensor_base.hpp"
 #include "camera_utils.h"
-#include "camera_defs.h"
 
 
 #include "imx219.hpp"

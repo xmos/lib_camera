@@ -18,6 +18,26 @@ Examples
 - **take_picture_downsample** : takes a picture from an input size of 680x480 or 1280x960 and downsample it down to 160x120. 
 
 
+How to Use
+----------
+
+.. code-block:: c
+
+    // ---- main.xc
+    #include <camera.h>
+    ...
+    chan c_cam[2];
+    on tile[1]: camera_main(c_cam);
+    ...
+
+    // ask for image
+    camera_isp_coordinates_compute(&image);
+    chan_out_buf_byte(c_user_to_isp, (uint8_t*)&image, sizeof(image_cfg_t));
+
+    // get image
+    chan_in_byte(c_isp_to_user); // wait for the image
+    
+
 Quick Start
 -----------
 

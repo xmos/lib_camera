@@ -6,8 +6,7 @@
 #include <stdint.h>
 
 #include "api.h"
-#include "xcore_compat.h"
-#include "camera.h"
+#include "camera.h" // packet size
 
 #define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)
@@ -44,7 +43,7 @@ typedef struct {
   unsigned channels;
   int8_t* ptr;
   camera_configure_t* config;
-} Image_cfg_t;
+} image_cfg_t;
 
 // this struct will hold the mipi header and data
 typedef unsigned mipi_header_t;
@@ -55,9 +54,9 @@ typedef struct {
 
 
 
-void camera_isp_coordinates_compute(Image_cfg_t* image_cfg);
+void camera_isp_coordinates_compute(image_cfg_t* image_cfg);
 
-void camera_isp_coordinates_print(Image_cfg_t* image_cfg);
+void camera_isp_coordinates_print(image_cfg_t* image_cfg);
 
 void camera_isp_thread(
   streaming_chanend_t c_pkt,

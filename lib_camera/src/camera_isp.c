@@ -15,8 +15,10 @@
 
 #include "camera_isp.h"
 #include "camera_utils.h"
-#include "camera_defs.h"
+#include "camera_mipi.h"
+
 #include "sensor_wrapper.h"
+
 
 #define ALIGNED_8 __attribute__((aligned(8)))
 
@@ -53,7 +55,7 @@ void handle_no_expected_lines() {
 
 static
 void handle_end_of_frame(
-  Image_cfg_t* image,
+  image_cfg_t* image,
   chanend_t c_isp_user)  
 {
   printstrln("EOF");
@@ -64,7 +66,7 @@ void handle_end_of_frame(
 }
 
 static
-void handle_expected_lines(Image_cfg_t* image, int8_t* data_in) {
+void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
   unsigned ln = ph_state.in_line_number;
   unsigned img_ln = ln - image->config->y1;
 
@@ -90,12 +92,12 @@ void handle_expected_lines(Image_cfg_t* image, int8_t* data_in) {
 // -------- Image transformation --------
 
 inline
-void camera_isp_coordinates_print(Image_cfg_t* img_cfg){
+void camera_isp_coordinates_print(image_cfg_t* img_cfg){
   camera_configure_t *cfg = img_cfg->config;
   printf("x1: %u, y1: %u, x2: %u, y2: %u\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);
 }
 
-void camera_isp_coordinates_compute(Image_cfg_t* img_cfg){
+void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   camera_configure_t *cfg = img_cfg->config;
 
   // Compute the coordinates of the region of interest
@@ -129,7 +131,7 @@ void camera_isp_coordinates_compute(Image_cfg_t* img_cfg){
 static
 void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
-  Image_cfg_t* image_cfg,
+  image_cfg_t* image_cfg,
   chanend_t c_isp_to_user) {
   
   // Definitions
@@ -155,7 +157,7 @@ void camera_isp_packet_handler(
       t_init = get_reference_time();
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
-      ph_state.out_line_number = 0;
+      //ph_state.out_line_number = 0;
       ph_state.frame_number++;
       break;
 
@@ -195,7 +197,7 @@ void camera_isp_thread(
   chanend_t c_isp_user = c_cam[CH_ISP_USER];
 
   // Image configuration
-  Image_cfg_t image;
+  image_cfg_t image;
   image.ptr = NULL;
 
   // Sensor configuration
@@ -221,7 +223,7 @@ void camera_isp_thread(
     }
   on_c_user_isp_change: { // attending user_app
     // user petition
-    chan_in_buf_byte(c_user_isp, (uint8_t*)&image, sizeof(Image_cfg_t)); // recieve info from user
+    chan_in_buf_byte(c_user_isp, (uint8_t*)&image, sizeof(image_cfg_t)); // recieve info from user
     // Start camera
     camera_sensor_start();
     continue;

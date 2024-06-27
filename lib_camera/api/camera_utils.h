@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdint.h>
+
 #include "api.h"
 #include "xscope_io_device.h"
 

@@ -6,13 +6,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "api.h"
-
-C_API_START
-
 #include <xccompat.h>
 #include <xcore/port.h>
-#include "xcore_compat.h"
+
+#include "api.h"
 
 // Mipi shim configuration
 #define MIPI_SHIM_STUFF_ENABLE      0 // enable mipi conversion
@@ -163,6 +160,9 @@ typedef struct
     in_buffered_port_32_t p_mipi_rxd;
     xclock_t clk_mipi;
 } camera_mipi_ctx_t;
+
+
+C_API_START
 
 /**
  * @brief Initialize the MIPI camera.

@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 
 #include "sensor_base.hpp"
-#include "camera_defs.h"
+#include "sensor_wrapper.h"
 
 
 
