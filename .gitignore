@@ -96,6 +96,7 @@ temp
 *.bmp
 *.raw
 *.png
+!tests/hw_tests/imgs/*
 
 #documentation
 !**/images/*.png

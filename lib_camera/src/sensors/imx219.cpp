@@ -8,7 +8,6 @@
 #include <print.h>
 
 #include "imx219.hpp"
-#include "camera_utils.h"
 #include "camera_isp.h"
 
 using namespace sensor;
