@@ -12,13 +12,13 @@ void dot_product(const int16_t T[3][4], int16_t x, int16_t y, int16_t z, int16_t
     //out[2] = T[2][0] * x + T[2][1] * y + T[2][2] * z; // not needed
 }
 
-void camera_conv_swap_dims(uint8_t* image_in, uint8_t* image_out, const size_t height, const size_t width, const size_t channels) {
+void camera_conv_swap_dims(uint8_t* image_in, uint8_t* image_out, const unsigned height, const unsigned width, const unsigned channels) {
     printstrln("Swapping image dimensions...");
-    for (size_t k = 0; k < height; k++) {
-        for (size_t j = 0; j < width; j++) {
-            for (size_t c = 0; c < channels; c++) {
-                size_t index_in = c * (height * width) + k * width + j;
-                size_t index_out = k * (width * channels) + j * channels + c;
+    for (unsigned k = 0; k < height; k++) {
+        for (unsigned j = 0; j < width; j++) {
+            for (unsigned c = 0; c < channels; c++) {
+                unsigned index_in = c * (height * width) + k * width + j;
+                unsigned index_out = k * (width * channels) + j * channels + c;
                 image_out[index_out] = image_in[index_in];
             }
         }

@@ -43,9 +43,9 @@
 void camera_conv_swap_dims(
     uint8_t* image_in, 
     uint8_t* image_out, 
-    const size_t height, 
-    const size_t width, 
-    const size_t channels);
+    const unsigned height, 
+    const unsigned width, 
+    const unsigned channels);
 
 /**
  * @brief Rotates an RGB image 90 degrees clockwise 

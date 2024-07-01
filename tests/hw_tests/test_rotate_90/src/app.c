@@ -28,7 +28,7 @@ void app() {
     // allocate space for the image
     uint8_t img_in[in_width * in_height * in_channels];
     uint8_t img_out[out_width * out_height * out_channels];
-    size_t img_size = in_width * in_height * in_channels;
+    unsigned img_size = in_width * in_height * in_channels;
 
     printstrln("Reading image from file");
     camera_io_fopen(FILE_IN);
