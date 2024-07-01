@@ -126,7 +126,7 @@ void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t hei
       xscope_fwrite(&fp, padding_array, paddingSize * sizeof(unsigned char));
     }
   }
-  
+  xscope_fclose(&fp);
   printf("Image written into file: %s\n", filename);
   printf("Image dimentions: %d x %d\n", width, height);
 }

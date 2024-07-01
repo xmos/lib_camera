@@ -31,8 +31,8 @@
 // -------------------- Spatial -----------------------
 
 /**
- * @brief Swaps image dimensions from [channel][height][width]
- * to [height][width][channel]
+ * @brief Swaps image dimensions from [x][y][z]
+ * to [y][z][x]
  *
  * @param image_in  Input image
  * @param image_out Output image
@@ -52,6 +52,7 @@ void camera_conv_swap_dims(
  * assumes both src and dst images are previously allocated
  * Input image dimensions are [height][width][channel]
  * and output image dimensions are [width][height][channel]
+ * Input image pointer can't be reused for the output image
  * 
  * @param dst_img pointer to the destination image
  * @param src_img pointer to the source image
@@ -71,6 +72,7 @@ void camera_conv_rotate90_uint8(
  * assumes both src and dst images are previously allocated
  * Input image dimensions are [height][width][channel]
  * and output image dimensions are [width][height][channel]
+ * Input image pointer can't be reused for the output image
  * 
  * @param dst_img pointer to the destination image
  * @param src_img pointer to the source image
