@@ -30,7 +30,7 @@ void save_image(image_cfg_t* image, char* filename) {
     uint8_t * img_ptr = (uint8_t*)image->ptr;
     size_t size = image->height * image->width * image->channels;
 
-    cam_conv_int8_to_uint8(img_ptr, (int8_t*)image->ptr, size);
+    camera_conv_int8_to_uint8(img_ptr, (int8_t*)image->ptr, size);
     camera_io_write_image_file(filename, img_ptr, H, W, CH); // this will close the file as well
 }
 

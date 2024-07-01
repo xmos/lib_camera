@@ -23,7 +23,7 @@
  * @param input - Array of int8_t that contains the input
  * @param length - Length of the input and output arrays
  */
-    void cam_conv_int8_to_uint8(
+    void camera_conv_int8_to_uint8(
         uint8_t output[],
         int8_t input[],
         const unsigned length);
@@ -47,6 +47,18 @@ void camera_conv_swap_dims(
     const size_t width, 
     const size_t channels);
 
+/**
+ * @brief Rotates an RGB image 90 degrees clockwise 
+ * assumes both src and dst images are previously allocated
+ * Input image dimensions are [height][width][channel]
+ * and output image dimensions are [width][height][channel]
+ * 
+ * @param dst_img pointer to the destination image
+ * @param src_img pointer to the source image
+ * @param h height of the input image
+ * @param w width of the input image
+ * @param ch channels of the input image
+ */
 void camera_conv_rotate90_uint8(
     uint8_t* dst_img, 
     uint8_t* src_img, 
@@ -54,6 +66,18 @@ void camera_conv_rotate90_uint8(
     const int16_t w, 
     const int16_t ch);
 
+/**
+ * @brief Rotates an RGB image 90 degrees clockwise 
+ * assumes both src and dst images are previously allocated
+ * Input image dimensions are [height][width][channel]
+ * and output image dimensions are [width][height][channel]
+ * 
+ * @param dst_img pointer to the destination image
+ * @param src_img pointer to the source image
+ * @param h height of the input image
+ * @param w width of the input image
+ * @param ch channels of the input image
+ */
 void camera_conv_rotate90_int8(
     int8_t* dst_img, 
     int8_t* src_img, 

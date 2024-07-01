@@ -41,16 +41,14 @@ void camera_conv_rotate90_uint8(uint8_t* dst_img, uint8_t* src_img, const int16_
     int16_t x = 0, y = 0;
     int16_t xp = 0, yp = 0;
     int16_t pix_out[3] = { 0 };
+
     for (y = 0; y < h; y++) {
         for (x = 0; x < w; x++) {
-
             // Compute the dot product
             dot_product(T, x, y, 1, pix_out);
             xp = pix_out[0];
             yp = pix_out[1];
-
             // Copy from location (y, x) to location (yp, xp)
-            // we assume RGB ortder = 012 in memory 
             uint8_t* src_pixel = &src_img[y * w * ch + x * ch];
             uint8_t* dst_pixel = &dst_img[yp * h * ch + xp * ch];
             dst_pixel[0] = src_pixel[0];
@@ -75,16 +73,14 @@ void camera_conv_rotate90_int8(int8_t* dst_img, int8_t* src_img, const int16_t h
     int16_t x = 0, y = 0;
     int16_t xp = 0, yp = 0;
     int16_t pix_out[3] = { 0 };
+
     for (y = 0; y < h; y++) {
         for (x = 0; x < w; x++) {
-
             // Compute the dot product
             dot_product(T, x, y, 1, pix_out);
             xp = pix_out[0];
             yp = pix_out[1];
-
             // Copy from location (y, x) to location (yp, xp)
-            // we assume RGB ortder = 012 in memory 
             int8_t* src_pixel = &src_img[y * w * ch + x * ch];
             int8_t* dst_pixel = &dst_img[yp * h * ch + xp * ch];
             dst_pixel[0] = src_pixel[0];

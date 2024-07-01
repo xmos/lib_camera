@@ -72,17 +72,6 @@ build/
 # macOS cruft
 .DS_Store
 
-# ai_tools
-tools/ai/ai_tools
-*xcore_sdk_venv/*
-
-# west
-.west
-
-# temp folder
-temp
-!CMakeLists.txt
-
 # dotenv
 .env
 
@@ -90,7 +79,6 @@ temp
 .ninja_deps
 .ninja_log
 /build.ninja
-*.exe
 
 # Images
 *.bmp
@@ -98,6 +86,5 @@ temp
 *.png
 !tests/hw_tests/imgs/*
 
-#documentation
-!**/images/*.png
-!person.bin
+# Documentation
+!doc/**/images/*.png
