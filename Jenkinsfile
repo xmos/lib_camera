@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.28.0')
+@Library('xmos_jenkins_shared_library@v0.32.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -98,8 +98,8 @@ pipeline {
 
             stage('Source check') {
               steps {
-                // bit weird for now but should changed after the next xjsl release
                 dir('lib_camera') {
+                  versionCheck()
                   withVenv {
                     dir('tests/lib_checks') {
                       sh "pytest -s"
