@@ -70,7 +70,7 @@ pipeline {
                         // uncommented till better times
                         //"examples/take_picture_downsample",
                         //"examples/take_picture_local",
-                        "examples/take_picture_raw",
+                        "examples/capture_raw",
                         //"tests/hardware_tests/test_timing",
                         //"tests/unit_tests"
                       ]) // buildApps
