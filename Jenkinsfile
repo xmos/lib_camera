@@ -99,7 +99,7 @@ pipeline {
             stage('Source check') {
               steps {
                 dir('lib_camera') {
-                  versionCheck()
+                  versionChecks()
                   withVenv {
                     dir('tests/lib_checks') {
                       sh "pytest -s"

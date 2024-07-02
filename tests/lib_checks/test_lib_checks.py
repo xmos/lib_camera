@@ -29,7 +29,6 @@ def test_license_check():
     ret = run(f"xmos_license_check check {REPO_ROOT} xmos_public_v1".split())
     assert 0 == ret.returncode
 
-@pytest.mark.skip(reason = "infr_apps do not support unreleased versions yet")
 def test_changelog_check():
     """
     checks changelog conforms with the standards

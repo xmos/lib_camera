@@ -1,10 +1,10 @@
 lib_camera change log
 =====================
 
-Unreleased
-----------
+2.0.0
+-----
 
-  * CHANGED: camera capture mode from streaming to single capture. 
+  * CHANGED: camera capture mode from streaming to single capture.
   * CHANGED: packet handler and sensor control thread are embded in ISP thread.
   * ADDED: vertical flip support.
   * CHANGED: lib_camera repository structure
@@ -56,3 +56,4 @@ Unreleased
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
+
