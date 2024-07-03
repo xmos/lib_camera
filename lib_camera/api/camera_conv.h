@@ -6,22 +6,67 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "api.h"
+
+C_API_START
 
 // -------------------- Color -----------------------
 
+/**
+ * @brief Convert an RGB image to the greyscale one.
+ * The operation can be performed safely in-place on the same pointer.
+ * `n_pix` must be a multiple of 4.
+ *
+ * @param gs_img    Greyscale image
+ * @param img       RGB image
+ * @param n_pix     Number of RGB pixels
+ */
+void isp_rgb_to_greyscale4(
+	int8_t * gs_img,
+	int8_t * img,
+	unsigned n_pix);
 
+/**
+ * @brief Convert an RGB image to the greyscale one.
+ * The operation can be performed safely in-place on the same pointer.
+ * `n_pix` must be a multiple of 16.
+ *
+ * @param gs_img    Greyscale image
+ * @param img       RGB image
+ * @param n_pix     Number of RGB pixels
+ */
+void isp_rgb_to_greyscale16(
+	int8_t * gs_img,
+	int8_t * img,
+	unsigned n_pix);
+
+/**
+ * @brief Convert an RGB image to the greyscale one.
+ * The operation can be performed safely in-place on the same pointer.
+ * `n_pix` must be a multiple of 4.
+ *
+ * @param gs_img    Greyscale image
+ * @param img       RGB image
+ * @param n_pix     Number of RGB pixels
+ */
+inline void isp_rgb_to_greyscale(
+	int8_t * gs_img,
+	int8_t * img,
+	unsigned n_pix) {
+	isp_rgb_to_greyscale4(gs_img, img, n_pix);
+}
 
 
 
 // -------------------- Dtype -----------------------
 
 /**
- * Convert an array of int8 to an array of uint8.
+ * @brief Convert an array of int8 to an array of uint8.
  * Data can be updated in-place.
  *
- * @param output - Array of uint8_t that will contain the output
- * @param input - Array of int8_t that contains the input
- * @param length - Length of the input and output arrays
+ * @param output    Array of uint8_t that will contain the output
+ * @param input     Array of int8_t that contains the input
+ * @param length    Length of the input and output arrays
  */
     void camera_conv_int8_to_uint8(
         uint8_t output[],
@@ -54,11 +99,11 @@ void camera_conv_swap_dims(
  * and output image dimensions are [width][height][channel]
  * Input image pointer can't be reused for the output image
  * 
- * @param dst_img pointer to the destination image
- * @param src_img pointer to the source image
- * @param h height of the input image
- * @param w width of the input image
- * @param ch channels of the input image
+ * @param dst_img   Destination image
+ * @param src_img   Source image
+ * @param h         Image height
+ * @param w         Image width
+ * @param ch        Number of channels
  */
 void camera_conv_rotate90_uint8(
     uint8_t* dst_img, 
@@ -74,11 +119,11 @@ void camera_conv_rotate90_uint8(
  * and output image dimensions are [width][height][channel]
  * Input image pointer can't be reused for the output image
  * 
- * @param dst_img pointer to the destination image
- * @param src_img pointer to the source image
- * @param h height of the input image
- * @param w width of the input image
- * @param ch channels of the input image
+ * @param dst_img   Destination image
+ * @param src_img   Source image
+ * @param h         Image height
+ * @param w         Image width
+ * @param ch        Number of channels
  */
 void camera_conv_rotate90_int8(
     int8_t* dst_img, 
@@ -86,3 +131,5 @@ void camera_conv_rotate90_int8(
     const int16_t h, 
     const int16_t w, 
     const int16_t ch);
+
+C_API_END

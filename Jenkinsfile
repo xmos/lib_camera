@@ -69,7 +69,7 @@ pipeline {
                       buildApps([
                         "examples/capture_raw",
                         "tests/hw_tests/test_rotate_90",
-                        //"tests/unit_tests"
+                        "tests/unit_tests"
                       ]) // buildApps
                     } // withEnv
                   } // withTools
@@ -109,10 +109,9 @@ pipeline {
             stage('Unit tests') {
               steps {
                 dir('lib_camera/tests/unit_tests') {
-                  // uncommented till better times
-                  /*withTools(params.TOOLS_VERSION) {
+                  withTools(params.TOOLS_VERSION) {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
-                  }*/
+                  }
                 }
               }
             } // Unit tests
