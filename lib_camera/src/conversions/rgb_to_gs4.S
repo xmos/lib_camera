@@ -1,7 +1,6 @@
 // Copyright 2024 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-
 /*
 void isp_rgb_to_greyscale4(int8_t * out_img, int8_t * img, size_t img_size)
 */
