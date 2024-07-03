@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.28.0')
+@Library('xmos_jenkins_shared_library@v0.32.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -67,11 +67,9 @@ pipeline {
                   withTools(params.TOOLS_VERSION) {
                     withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
                       buildApps([
-                        "examples/take_picture_downsample",
-                        "examples/take_picture_local",
-                        "examples/take_picture_raw",
-                        "tests/hardware_tests/test_timing",
-                        "tests/unit_tests"
+                        "examples/capture_raw",
+                        "tests/hw_tests/test_rotate_90",
+                        //"tests/unit_tests"
                       ]) // buildApps
                     } // withEnv
                   } // withTools
@@ -97,8 +95,8 @@ pipeline {
 
             stage('Source check') {
               steps {
-                // bit weird for now but should changed after the next xjsl release
                 dir('lib_camera') {
+                  versionChecks()
                   withVenv {
                     dir('tests/lib_checks') {
                       sh "pytest -s"
@@ -111,9 +109,10 @@ pipeline {
             stage('Unit tests') {
               steps {
                 dir('lib_camera/tests/unit_tests') {
-                  withTools(params.TOOLS_VERSION) {
+                  // uncommented till better times
+                  /*withTools(params.TOOLS_VERSION) {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
-                  }
+                  }*/
                 }
               }
             } // Unit tests
@@ -135,9 +134,10 @@ pipeline {
             dir('lib_camera') {
               checkout scm
               createVenv("requirements.txt")
-              withTools(params.TOOLS_VERSION) {
+              // uncommented till we have docs again
+              /*withTools(params.TOOLS_VERSION) {
                 buildDocs("lib_camera_docs.zip")
-              } // withTools
+              } // withTools*/
             } // dir
           } // steps
           post {

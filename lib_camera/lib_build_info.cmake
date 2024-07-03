@@ -1,5 +1,5 @@
 set(LIB_NAME lib_camera)
-set(LIB_VERSION 2.0.0)
+set(LIB_VERSION 1.0.0)
 set(LIB_DEPENDENT_MODULES i2c)
 set(LIB_INCLUDES api src src/asm src/sensors)
 set(LIB_COMPILER_FLAGS -Os -Wall -g -fxscope -mcmodel=large) #-Werror)
