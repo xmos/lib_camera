@@ -67,12 +67,8 @@ pipeline {
                   withTools(params.TOOLS_VERSION) {
                     withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
                       buildApps([
-                        // uncommented till better times
-                        //"examples/take_picture_downsample",
-                        //"examples/take_picture_local",
                         "examples/capture_raw",
                         "tests/hw_tests/test_rotate_90",
-                        //"tests/hardware_tests/test_timing",
                         //"tests/unit_tests"
                       ]) // buildApps
                     } // withEnv
