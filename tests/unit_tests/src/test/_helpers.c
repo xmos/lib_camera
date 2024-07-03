@@ -5,7 +5,7 @@
 #include <assert.h>
 
 #include "_helpers.h"
-//#include "isp_yuv_rgb.h"
+#include "camera_conv.h"
 
 
 inline unsigned measure_time()
@@ -114,7 +114,7 @@ void printColorTable(color_table_t* table, uint8_t ref) {
   printf("Y: %d, U: %d, V: %d\n", table->Y, table->U, table->V);
 }
 
-/*void yuv_to_rgb_ct(color_table_t* ct_ref, color_table_t* ct_res){
+void yuv_to_rgb_ct(color_table_t* ct_ref, color_table_t* ct_res){
   ct_res -> Y = ct_ref -> Y;
   ct_res -> U = ct_ref -> U;
   ct_res -> V = ct_ref -> V;
@@ -132,7 +132,7 @@ void rgb_to_yuv_ct(color_table_t* ct_ref, color_table_t* ct_res){
   ct_res -> Y =  (uint8_t)(GET_Y(result) + CT_INT);
   ct_res -> U =  (uint8_t)(GET_U(result) + CT_INT);
   ct_res -> V =  (uint8_t)(GET_V(result) + CT_INT);
-}*/
+}
 
 void rgb_to_greyscale_float(int8_t * gs_img, int8_t * img, unsigned n_pix) {
   const float vc0 = 0.299;

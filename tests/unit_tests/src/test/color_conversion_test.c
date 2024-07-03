@@ -22,9 +22,9 @@ color_table_t ct_test_vector[num_tests];
 
 // Unity
 TEST_GROUP_RUNNER(color_conversion) {
-  //RUN_TEST_CASE(color_conversion, conversion__yuv_to_rgb);
-  //RUN_TEST_CASE(color_conversion, conversion__rgb_to_yuv);
-  //RUN_TEST_CASE(color_conversion, conversion__yuv_timming);
+  RUN_TEST_CASE(color_conversion, conversion__yuv_to_rgb);
+  RUN_TEST_CASE(color_conversion, conversion__rgb_to_yuv);
+  RUN_TEST_CASE(color_conversion, conversion__yuv_timming);
   RUN_TEST_CASE(color_conversion, conversion__rgb_to_gs);
   RUN_TEST_CASE(color_conversion, conversion__gs_timing);
 }
@@ -33,7 +33,7 @@ TEST_SETUP(color_conversion) { fflush(stdout); print_separator("color_conversion
 TEST_TEAR_DOWN(color_conversion) {}
 
 // Tests
-/*TEST(color_conversion, conversion__yuv_to_rgb)
+TEST(color_conversion, conversion__yuv_to_rgb)
 {
   // initialize with random values
   fill_color_table_uint8(&ct_test_vector[0], num_tests, YUV_TO_RGB);
@@ -84,41 +84,41 @@ TEST(color_conversion, conversion__rgb_to_yuv)
 
 TEST(color_conversion, conversion__yuv_timming)
 {
-    // Define number of tests
-    const unsigned num_tests_timing = 10;
-    color_table_t ct_timing_array[num_tests_timing];
-    fill_color_table_uint8(&ct_timing_array[0], num_tests_timing, RGB_TO_YUV);
+  // Define number of tests
+  const unsigned num_tests_timing = 10;
+  color_table_t ct_timing_array[num_tests_timing];
+  fill_color_table_uint8(&ct_timing_array[0], num_tests_timing, RGB_TO_YUV);
     
-    // VPU conversion
-    unsigned start = measure_time();
-    for(size_t i = 0; i < num_tests_timing; i++)
-    {
-      rgb_to_yuv(
-        ct_timing_array[i].R, 
-        ct_timing_array[i].G, 
-        ct_timing_array[i].B);
-    }
-    unsigned vpu_conv_time = measure_time() - start;
+  // VPU conversion
+  unsigned start = measure_time();
+  for(size_t i = 0; i < num_tests_timing; i++)
+  {
+    rgb_to_yuv(
+      ct_timing_array[i].R, 
+      ct_timing_array[i].G, 
+      ct_timing_array[i].B);
+  }
+  unsigned vpu_conv_time = measure_time() - start;
 
-    // Non VPU conversion
-    start = measure_time();
-    for (size_t i = 0; i < num_tests_timing; i++)
-    {
-      rgbToYuv(
-        ct_timing_array[i].R, 
-        ct_timing_array[i].G, 
-        ct_timing_array[i].B);
-    }
-    unsigned non_vpu_conv_time = measure_time() - start;
+  // Non VPU conversion
+  start = measure_time();
+  for (size_t i = 0; i < num_tests_timing; i++)
+  {
+    rgbToYuv(
+      ct_timing_array[i].R, 
+      ct_timing_array[i].G, 
+      ct_timing_array[i].B);
+  }
+  unsigned non_vpu_conv_time = measure_time() - start;
 
-    // Compare the time
-    printf("\tnumber of conversions: %d\n", num_tests_timing);
-    static const char func_name[] = "YUV color conversion VPU";
-    PRINT_NAME_TIME(func_name, vpu_conv_time);
+  // Compare the time
+  printf("\tnumber of conversions: %d\n", num_tests_timing);
+  static const char func_name[] = "YUV color conversion VPU";
+  PRINT_NAME_TIME(func_name, vpu_conv_time);
 
-    static const char func_name2[] = "YUV color conversion non VPU";
-    PRINT_NAME_TIME(func_name2, non_vpu_conv_time);
-}*/
+  static const char func_name2[] = "YUV color conversion non VPU";
+  PRINT_NAME_TIME(func_name2, non_vpu_conv_time);
+}
 
 TEST(color_conversion, conversion__rgb_to_gs)
 {
