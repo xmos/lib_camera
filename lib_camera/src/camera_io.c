@@ -131,7 +131,7 @@ void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t hei
   printf("Image dimentions: %d x %d\n", width, height);
 }
 
-void write_bmp_gs(char * filename, uint8_t * image, const size_t height, const size_t width)
+void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, const size_t width)
 {
   const size_t file_header_len = 14;
   const size_t info_header_len = 40;

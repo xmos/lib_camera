@@ -102,8 +102,8 @@ int camera_rgb_to_yuv(
  * @param length    Length of the input and output arrays
  */
 void camera_int8_to_uint8(
-    uint8_t output[],
-    int8_t input[],
+    uint8_t * output,
+    int8_t * input,
     const unsigned length);
 
 // -------------------- Spatial -----------------------

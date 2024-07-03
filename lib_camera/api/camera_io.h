@@ -83,6 +83,6 @@ void camera_io_write_bmp_file(
  * @note Image has to be in [height][width] format
  * @note The application has to end with xscope_close_all_files()
  */
-void write_bmp_gs(char * filename, uint8_t * image, const size_t height, const size_t width);
+void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, const size_t width);
 
 C_API_END
