@@ -118,7 +118,7 @@ void yuv_to_rgb_ct(color_table_t* ct_ref, color_table_t* ct_res){
   ct_res -> Y = ct_ref -> Y;
   ct_res -> U = ct_ref -> U;
   ct_res -> V = ct_ref -> V;
-  uint32_t result = yuv_to_rgb(ct_ref->Y - CT_INT, ct_ref->U - CT_INT, ct_ref->V - CT_INT);
+  uint32_t result = camera_yuv_to_rgb(ct_ref->Y - CT_INT, ct_ref->U - CT_INT, ct_ref->V - CT_INT);
   ct_res -> R =  (uint8_t)(GET_R(result) + CT_INT);
   ct_res -> G =  (uint8_t)(GET_G(result) + CT_INT);
   ct_res -> B =  (uint8_t)(GET_B(result) + CT_INT);
@@ -128,7 +128,7 @@ void rgb_to_yuv_ct(color_table_t* ct_ref, color_table_t* ct_res){
   ct_res -> R = ct_ref -> R;
   ct_res -> G = ct_ref -> G;
   ct_res -> B = ct_ref -> B;
-  uint32_t result = rgb_to_yuv(ct_ref->R - CT_INT, ct_ref->G - CT_INT, ct_ref->B - CT_INT);
+  uint32_t result = camera_rgb_to_yuv(ct_ref->R - CT_INT, ct_ref->G - CT_INT, ct_ref->B - CT_INT);
   ct_res -> Y =  (uint8_t)(GET_Y(result) + CT_INT);
   ct_res -> U =  (uint8_t)(GET_U(result) + CT_INT);
   ct_res -> V =  (uint8_t)(GET_V(result) + CT_INT);

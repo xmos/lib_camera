@@ -5,17 +5,17 @@
 Converts signed yuv (-127..127, -127..127, -127..127) into signed rgb. 
 Returns an int with 3 x int8_t
 
-  int yuv_to_rgb(
+  int camera_yuv_to_rgb(
       int y, 
       int u, 
       int v);
 */
 
-.cc_top yuv_to_rgb.func, yuv_to_rgb
+.cc_top camera_yuv_to_rgb.func, camera_yuv_to_rgb
 .align 4
-.globl yuv_to_rgb
-.globl yuv_to_rgb.nstackwords
-.linkset yuv_to_rgb.nstackwords, 4
+.globl camera_yuv_to_rgb
+.globl camera_yuv_to_rgb.nstackwords
+.linkset camera_yuv_to_rgb.nstackwords, 4
 .issue_mode dual
 
 
@@ -25,7 +25,7 @@ Returns an int with 3 x int8_t
 #define _22 r3
 #define nstackwords 8
 
-yuv_to_rgb:
+camera_yuv_to_rgb:
 
 // r4 - r10 are not used here
 
@@ -65,4 +65,4 @@ bluConv: .word  256,  520,    0, 0, 0, 0, 0, 0
 grnConv: .word  256, -101, -149, 0, 0, 0, 0, 0
 redConv: .word  256,    0,  292, 0, 0, 0, 0, 0
 
-.cc_bottom yuv_to_rgb.func
+.cc_bottom camera_yuv_to_rgb.func

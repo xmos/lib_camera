@@ -93,7 +93,7 @@ TEST(color_conversion, conversion__yuv_timming)
   unsigned start = measure_time();
   for(size_t i = 0; i < num_tests_timing; i++)
   {
-    rgb_to_yuv(
+    camera_rgb_to_yuv(
       ct_timing_array[i].R, 
       ct_timing_array[i].G, 
       ct_timing_array[i].B);
@@ -132,8 +132,8 @@ TEST(color_conversion, conversion__rgb_to_gs)
   fill_array_rand_int8((int8_t *)img, num_tests * num_pix * 3);
 
   for(unsigned i = 0; i < num_tests; i++) {
-    isp_rgb_to_greyscale4(gs_img4, &img[i][0], num_pix);
-    isp_rgb_to_greyscale16(gs_img16, &img[i][0], num_pix);
+    camera_rgb_to_greyscale4(gs_img4, &img[i][0], num_pix);
+    camera_rgb_to_greyscale16(gs_img16, &img[i][0], num_pix);
     rgb_to_greyscale_float(gs_img_ref, &img[i][0], num_pix);
 
     for(unsigned j = 0; j < num_pix; j++) {
@@ -151,11 +151,11 @@ TEST(color_conversion, conversion__gs_timing)
   int8_t gs_img[num_pix];
 
   unsigned start = measure_time();
-  isp_rgb_to_greyscale4(gs_img, img, num_pix);
+  camera_rgb_to_greyscale4(gs_img, img, num_pix);
   unsigned vpu4_time = measure_time() - start;
 
   start = measure_time();
-  isp_rgb_to_greyscale16(gs_img, img, num_pix);
+  camera_rgb_to_greyscale16(gs_img, img, num_pix);
   unsigned vpu16_time = measure_time() - start;
 
   start = measure_time();

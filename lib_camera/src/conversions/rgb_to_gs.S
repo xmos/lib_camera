@@ -2,7 +2,7 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 /*
-void isp_rgb_to_greyscale16(int8_t * out_img, int8_t * img, size_t img_size)
+void camera_rgb_to_greyscale16(int8_t * out_img, int8_t * img, size_t img_size)
 */
 /*
 The conversion formula is gs_pixel = 0.299 * R + 0.587 * G + 0.114 * B
@@ -32,21 +32,21 @@ P.S. On vx4a VPU will not require word-alignment, so can use even less memory.
 .gs_coeffs0: .byte  38, 75, 14, 0,   0, 0, 0, 0,     0, 0, 0, 0,      0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0
 .gs_sat:     .short 7, 7, 7, 7,      7, 7, 7, 7,     7, 7, 7, 7,      7, 7, 7, 7
 
-#define FUNC_NAME       isp_rgb_to_greyscale16
 #define NSTACKWORDS     4
 
-.cc_top FUNC_NAME.func, FUNC_NAME
+.cc_top camera_rgb_to_greyscale16.func, camera_rgb_to_greyscale16
 .align 4
 
 #define gs_img          r0
 #define img             r1
 #define n_pix           r2
 #define msk             r3
+
 #define _24             r4
 #define _16             r5
 #define _72             r6
 
-FUNC_NAME:
+camera_rgb_to_greyscale16:
 { add r3, n_pix, 0            ; dualentsp NSTACKWORDS       }
   std r4, r5, sp[0]
 { ldc _24, 24                 ; stw r6, sp[2]               }
@@ -58,7 +58,7 @@ FUNC_NAME:
 { add img, img, _24           ; zext r3, 4                  }
 { mkmsk msk, 16               ; ecallt r3                   }
 
-.l_top:
+.l16_top:
 
   { sub img, img, _24           ; vldc img[0]                 }
   { ldap r11, .gs_coeffs7       ; vclrdr                      }
@@ -85,17 +85,72 @@ FUNC_NAME:
 
     vstrpv gs_img[0], msk
 
-  { add gs_img, gs_img, _16     ; bt n_pix, .l_top            }
+  { add gs_img, gs_img, _16     ; bt n_pix, .l16_top          }
 
 
 {                             ; ldw r6, sp[2]               }
   ldd r4, r5, sp[0]
 {                             ; retsp NSTACKWORDS           }
 
-.size FUNC_NAME, .-FUNC_NAME
-.cc_bottom FUNC_NAME.func
+.cc_bottom camera_rgb_to_greyscale16.func
 
-.globl FUNC_NAME
-.type FUNC_NAME, @function
-.set FUNC_NAME.nstackwords, NSTACKWORDS
-.globl FUNC_NAME.nstackwords
+.size camera_rgb_to_greyscale16, .-camera_rgb_to_greyscale16
+.globl camera_rgb_to_greyscale16
+.type camera_rgb_to_greyscale16, @function
+.set camera_rgb_to_greyscale16.nstackwords, NSTACKWORDS
+.globl camera_rgb_to_greyscale16.nstackwords
+
+#undef _24
+#undef _16
+#undef _72
+#undef NSTACKWORDS
+
+#define NSTACKWORDS     2
+
+.cc_top camera_rgb_to_greyscale4.func, camera_rgb_to_greyscale4
+.align 4
+
+//      gs_img          r0
+//      img             r1
+//      n_pix           r2
+//      msk             r3
+
+#define _12             r4
+
+camera_rgb_to_greyscale4:
+{ add r3, n_pix, 0            ; dualentsp NSTACKWORDS       }
+  std r4, r5, sp[0]
+
+  ldc r11, 0x200
+{                             ; vsetc r11                   }
+  // n_pix must be a multiple of 4
+{ ldc _12, 12                 ; zext r3, 2                  }
+{ ecallt r3                   ; mkmsk msk, 4                }
+
+.l4_top:
+
+  { add img, img, _12           ; vldc img[0]                 }
+  { ldap r11, .gs_coeffs3       ; vclrdr                      }
+
+  { ldap r11, .gs_coeffs2       ; vlmaccr r11[0]              }
+  { ldap r11, .gs_coeffs1       ; vlmaccr r11[0]              }
+  { ldap r11, .gs_coeffs0       ; vlmaccr r11[0]              }
+  { ldap r11, .gs_sat           ; vlmaccr r11[0]              }
+  { sub n_pix, n_pix, 4         ; vlsat r11[0]                }
+
+    vstrpv gs_img[0], msk
+
+  { add gs_img, gs_img, 4       ; bt n_pix, .l4_top           }
+
+  ldd r4, r5, sp[0]
+{                             ; retsp NSTACKWORDS           }
+
+.cc_bottom camera_rgb_to_greyscale4.func
+
+
+.size camera_rgb_to_greyscale4, .-camera_rgb_to_greyscale4
+.globl camera_rgb_to_greyscale4
+.type camera_rgb_to_greyscale4, @function
+.set camera_rgb_to_greyscale4.nstackwords, NSTACKWORDS
+.globl camera_rgb_to_greyscale4.nstackwords
+
