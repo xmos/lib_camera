@@ -39,7 +39,7 @@ void app() {
 
     printstrln("Rotating image");
     unsigned t0 = get_reference_time();
-    camera_conv_rotate90_uint8(img_out, img_in, in_height, in_width, in_channels);
+    camera_rotate90_uint8(img_out, img_in, in_height, in_width, in_channels);
     unsigned t1 = get_reference_time();
     printf("Time: %d\n", t1 - t0);
 

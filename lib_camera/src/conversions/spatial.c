@@ -15,7 +15,7 @@ void dot_product(const int16_t T[3][4], int16_t x, int16_t y, int16_t z, int16_t
     //out[2] = T[2][0] * x + T[2][1] * y + T[2][2] * z; // not needed
 }
 
-void camera_conv_swap_dims(uint8_t* image_in, uint8_t* image_out, const unsigned height, const unsigned width, const unsigned channels) {
+void camera_swap_dims(uint8_t* image_in, uint8_t* image_out, const unsigned height, const unsigned width, const unsigned channels) {
     printstrln("Swapping image dimensions...");
     for (unsigned k = 0; k < height; k++) {
         for (unsigned j = 0; j < width; j++) {
@@ -29,7 +29,7 @@ void camera_conv_swap_dims(uint8_t* image_in, uint8_t* image_out, const unsigned
     printstrln("Done.");
 }
 
-void camera_conv_rotate90_uint8(uint8_t* dst_img, uint8_t* src_img, const int16_t h, const int16_t w, const int16_t ch) {
+void camera_rotate90_uint8(uint8_t* dst_img, uint8_t* src_img, const int16_t h, const int16_t w, const int16_t ch) {
     xassert((w > 0) && (h > 0) && (ch > 0) && "Width, height and channels must be positive");
     xassert((w % 2 == 0) && (h % 2 == 0) && "Width and height must be even");
 
@@ -61,7 +61,7 @@ void camera_conv_rotate90_uint8(uint8_t* dst_img, uint8_t* src_img, const int16_
     }
 }
 
-void camera_conv_rotate90_int8(int8_t* dst_img, int8_t* src_img, const int16_t h, const int16_t w, const int16_t ch) {
+void camera_rotate90_int8(int8_t* dst_img, int8_t* src_img, const int16_t h, const int16_t w, const int16_t ch) {
     xassert((w > 0) && (h > 0) && (ch > 0) && "Width, height and channels must be positive");
     xassert((w % 2 == 0) && (h % 2 == 0) && "Width and height must be even");
 

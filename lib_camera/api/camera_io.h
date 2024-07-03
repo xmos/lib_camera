@@ -73,4 +73,16 @@ void camera_io_write_bmp_file(
     const size_t width, 
     const size_t channels);
 
+/**
+ * @brief Writes greyscale bmp image file
+ * 
+ * @param filename  Name of the image
+ * @param image     Pointer to the image data
+ * @param height    Image height
+ * @param width     Image width
+ * @note Image has to be in [height][width] format
+ * @note The application has to end with xscope_close_all_files()
+ */
+void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, const size_t width);
+
 C_API_END
