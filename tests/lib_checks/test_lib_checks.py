@@ -35,24 +35,3 @@ def test_changelog_check():
     """
     ret = run(f"xmos_changelog_check check {REPO_ROOT}".split())
     assert 0 == ret.returncode
-
-@pytest.mark.skip(reason = "not sure if needed")
-def test_version_matches():
-    """
-    check the YML version matches the changelog
-    """
-    with open('../../settings.yml', 'r') as f:
-        yml_version = yaml.safe_load(f)["version"]
-    
-    with open('../../CHANGELOG.rst', 'r') as f:
-        changelog = f.readlines()
-        rm = r'(\d+\.\d+\.\d+)'
-        changelog_version = None
-        for line in changelog:
-            match = re.match(rm, line)
-            if match:
-                changelog_version = match.group(0)
-                break
-        assert changelog_version is not None, "Version not found in changelog"
-
-    assert changelog_version == yml_version, f"Versions do not match - changelog {changelog_version}, json {yml_version}"

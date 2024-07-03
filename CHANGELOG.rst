@@ -1,8 +1,8 @@
 lib_camera change log
 =====================
 
-2.0.0
------
+HEAD
+----
 
   * CHANGED: camera capture mode from streaming to single capture.
   * CHANGED: packet handler and sensor control thread are embded in ISP thread.
