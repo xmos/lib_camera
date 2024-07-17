@@ -84,7 +84,7 @@ build/
 *.bmp
 *.raw
 *.png
-!tests/hw_tests/imgs/*.bin
+!tests/hw_tests/imgs/orig.png
 
 # Documentation
 !doc/**/images/*.png
