@@ -42,10 +42,12 @@ if __name__ == "__main__":
     imgs = [
         imgs_path / "input_rgb_uint8_64_64.bin",
         imgs_path / "output_rgb_uint8_64_64.bin",
+        imgs_path / "input_rgb_uint8_64_64.bin",
+        imgs_path / "output_rgb_uint8_64_64.bin",
     ]
 
-    sizes = [(64, 64), (64, 64)]
-    titles = ["Original", "Rotated"]
+    sizes = [(64, 64), (64, 64), (64, 64), (64, 64)]
+    titles = ["Original - uint8", "Rotated - uint8", "Original - int8", "Rotated - int8"]
 
     # Decode the images
     imgs_decoded = map(
