@@ -12,6 +12,7 @@ list(APPEND APP_C_SRCS
     src/main.c
     src/test/_helpers.c
     src/test/color_conversion_test.c
+    src/test/timings_test.c
     #src/test/gamma_timing_test.c
     #src/test/pixel_hfilter_test.c
     #src/test/pixel_vfilter_test.c
