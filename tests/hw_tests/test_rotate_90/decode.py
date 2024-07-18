@@ -39,6 +39,8 @@ def decode_downsampled_image(
 
 
 if __name__ == "__main__":
+    # The list of images to decode
+    # All the images are listed as couples of input and output images
     imgs = [
         imgs_path / "input_rgb_uint8_64_64.bin",
         imgs_path / "output_rgb_uint8_64_64.bin",
@@ -57,7 +59,8 @@ if __name__ == "__main__":
     # plot image sside by side
     plt.figure()
     for i, img in enumerate(imgs_decoded):
-        plt.subplot(1, len(imgs), i + 1)
+        # Plot one couple of input and output images per row
+        plt.subplot(len(imgs) // 2, 2, i + 1)
         plt.title(titles[i])
         plt.imshow(img, cmap="gray")
     plt.savefig(str(imgs_path / "test_rotate_out.png"))
