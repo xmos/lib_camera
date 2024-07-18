@@ -50,8 +50,7 @@ void app() {
         char * file_in = file_list[i];
         char * file_out = file_list[file_list_size / 2 + i];
 
-        printstrln("Reading image from file:");
-        printstrln(file_in);
+        printf("Reading image from file: %s\n", file_in);
         camera_io_fopen(file_in);
         camera_io_fill_array_from_file(img_in, img_size);
 
@@ -61,8 +60,7 @@ void app() {
         unsigned t1 = get_reference_time();
         printf("Time: %d\n", t1 - t0);
 
-        printstrln("Writing image to file");
-        printstrln(file_out);
+        printf("Writing image to file: %s\n", file_out);
 
         camera_io_write_image_file(file_out, img_out, out_height, out_width, out_channels);
 
