@@ -67,7 +67,7 @@ inline void camera_rgb_to_greyscale(
 
 /**
  * @brief Converts a YUV pixel to RGB.
- * 
+ *
  * @param y         Y component
  * @param u         U component
  * @param v         V component
@@ -80,7 +80,7 @@ int camera_yuv_to_rgb(
 
 /**
  * @brief Converts a RGB pixel to YUV.
- * 
+ *
  * @param r         red component
  * @param g         green component
  * @param b         blue component
@@ -119,50 +119,32 @@ void camera_int8_to_uint8(
  * @param channels  Number of channels
  */
 void camera_swap_dims(
-    uint8_t* image_in, 
-    uint8_t* image_out, 
-    const unsigned height, 
-    const unsigned width, 
+    uint8_t* image_in,
+    uint8_t* image_out,
+    const unsigned height,
+    const unsigned width,
     const unsigned channels);
 
 /**
- * @brief Rotates an RGB image 90 degrees clockwise 
- * assumes both src and dst images are previously allocated
- * Input image dimensions are [height][width][channel]
- * and output image dimensions are [width][height][channel]
- * Input image pointer can't be reused for the output image
- * 
+ * @brief Rotates an RGB image 90 degrees clockwise,
+ * assumes both src and dst images are previously allocated,
+ * and input image pointer can't be reused for the output image.
+ * Input image dimensions are [height][width][channel],
+ * and only int8 or uint8 types are supported.
+ * Output image dimensions are [width][height][channel],
+ * and they are of the same type as the input image.
+ *
  * @param dst_img   Destination image
- * @param src_img   Source image
+ * @param src_img   Source image (only uint8 or int8 types are supported)
  * @param h         Image height
  * @param w         Image width
  * @param ch        Number of channels
  */
-void camera_rotate90_uint8(
-    uint8_t* dst_img, 
-    uint8_t* src_img, 
-    const int16_t h, 
-    const int16_t w, 
-    const int16_t ch);
-
-/**
- * @brief Rotates an RGB image 90 degrees clockwise 
- * assumes both src and dst images are previously allocated
- * Input image dimensions are [height][width][channel]
- * and output image dimensions are [width][height][channel]
- * Input image pointer can't be reused for the output image
- * 
- * @param dst_img   Destination image
- * @param src_img   Source image
- * @param h         Image height
- * @param w         Image width
- * @param ch        Number of channels
- */
-void camera_rotate90_int8(
-    int8_t* dst_img, 
-    int8_t* src_img, 
-    const int16_t h, 
-    const int16_t w, 
+void camera_rotate90(
+    void* dst_img,
+    void* src_img,
+    const int16_t h,
+    const int16_t w,
     const int16_t ch);
 
 C_API_END

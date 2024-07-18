@@ -10,6 +10,8 @@ HEAD
   * CHANGED: lib_camera repository structure
   * CHANGED: camera init xc code from examples moved to lib_camera.c
   * DELETED: sensor.h file
+  * CHANGED: merged API functions camera_rotate90_uint8() and
+    camera_rotate90_int8() into camera_rotate90()
 
 1.0.0
 -----
