@@ -55,7 +55,7 @@ void handle_no_expected_lines() {
 static
 void handle_end_of_frame(
   image_cfg_t* image,
-  chanend_t c_isp_user)  
+  chanend_t c_isp_user)
 {
   printstrln("EOF");
   camera_sensor_stop();
@@ -138,7 +138,7 @@ void camera_isp_packet_handler(
   const mipi_packet_t* pkt,
   image_cfg_t* image_cfg,
   chanend_t c_isp_to_user) {
-  
+
   // Definitions
   const mipi_header_t header = pkt->header;
   const mipi_data_type_t data_type = MIPI_GET_DATA_TYPE(header);
@@ -153,7 +153,7 @@ void camera_isp_packet_handler(
 
   // Data pointers calculation
   int8_t* data_in = (int8_t*)(&pkt->payload[0]);
-  
+
 
   // Handle packets depending on their type
   switch (data_type) {
@@ -190,9 +190,9 @@ void camera_isp_packet_handler(
 
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
-  streaming_chanend_t c_ctrl,
+  chanend_t c_ctrl,
   chanend_t c_cam[N_CH_USER_ISP]) {
-  
+
   mipi_packet_t ALIGNED_8 packet_buffer[MIPI_PKT_BUFFER_COUNT];
   mipi_packet_t* pkt;
   unsigned pkt_idx = 0;
@@ -209,7 +209,7 @@ void camera_isp_thread(
   camera_sensor_init();
 
   // Wait for the sensor to start
-  delay_milliseconds_cpp(1200); 
+  delay_milliseconds_cpp(1200);
 
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);

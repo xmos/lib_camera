@@ -7,11 +7,13 @@ HEAD
   * CHANGED: camera capture mode from streaming to single capture.
   * CHANGED: packet handler and sensor control thread are embded in ISP thread.
   * ADDED: vertical flip support.
-  * CHANGED: lib_camera repository structure
-  * CHANGED: camera init xc code from examples moved to lib_camera.c
-  * DELETED: sensor.h file
+  * CHANGED: lib_camera repository structure.
+  * CHANGED: camera init xc code from examples moved to lib_camera.c.
+  * DELETED: sensor.h file.
   * CHANGED: merged API functions camera_rotate90_uint8() and
-    camera_rotate90_int8() into camera_rotate90()
+    camera_rotate90_int8() into camera_rotate90().
+  * CHANGED: declaration of c_ctrl from a streaming channel endpoint to a
+    standard channel endpoint
 
 1.0.0
 -----
