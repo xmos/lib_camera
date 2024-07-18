@@ -50,9 +50,9 @@ struct name {                                \
 } 
 
 // Print macros
-#define PRINT_TIME(a,b) printf("%d\n", b - a);
-#define PRINT_NAME_TIME(name,time) \
-    printf("\t%s: %u ticks, %.3fms\n", name, time, (float)time * 0.00001);
+// whatever name, number of cycles measured, number of pixels processed, number of bytes in pixel
+#define PRINT_TIME(name, cycles, n_pix, bpp) \
+printf("|    %5.3f\t  |   %6.3f\t     | %s\n", (float)cycles / n_pix / bpp, (float)cycles / n_pix, name);
 
 /**
  * Measure the cpu ticks

@@ -23,6 +23,7 @@ int main(
   //RUN_TEST_GROUP(stats_test);
   //RUN_TEST_GROUP(resize_group);
   //RUN_TEST_GROUP(crop_group);
+  RUN_TEST_GROUP(timings);
   
   return UNITY_END();
 }
