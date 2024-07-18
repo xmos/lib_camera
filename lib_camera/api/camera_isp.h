@@ -20,11 +20,11 @@ typedef struct
   float offset_x;
   float offset_y;
   // Scale: [1,4] scale
-  float sx;        
-  float sy;        
+  float sx;
+  float sy;
   // Shear: [0,1] shear ratio
-  float shx;       
-  float shy;      
+  float shx;
+  float shy;
   // Rotation: [-90,90] degrees
   float angle;
   // Transform: 3x3 matrix
@@ -55,28 +55,28 @@ typedef struct {
 
 /**
  * @brief compute MIPI coordinates, from user request to sensor dimensions.
- * 
- * @param image_cfg 
+ *
+ * @param image_cfg
  */
 void camera_isp_coordinates_compute(image_cfg_t* image_cfg);
 
 /**
  * @brief prints the coordinates of the image_cfg
- * 
- * @param image_cfg 
+ *
+ * @param image_cfg
  */
 void camera_isp_coordinates_print(image_cfg_t* image_cfg);
 
 /**
  * @brief This function will be the main thread for the ISP
- * 
+ *
  * @param c_pkt channel to receive mipi packets
  * @param c_ctrl channel to receive control messages from or to mipi
  * @param c_cam  channel array between user and isp
  */
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
-  streaming_chanend_t c_ctrl,
+  chanend_t c_ctrl,
   chanend_t c_cam[N_CH_USER_ISP]);
 
 

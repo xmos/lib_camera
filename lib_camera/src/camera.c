@@ -2,7 +2,7 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <stdint.h>
 
 #include <xs1.h>
@@ -24,13 +24,13 @@ extern void camera_mipi_rx(
     in_buffered_port_32_t p_mipi_rxd,
     port_t p_mipi_rxa,
     streaming_chanend_t c_pkt,
-    streaming_chanend_t c_ctrl);
+    chanend_t c_ctrl);
 
 void camera_main(chanend_t c_cam[N_CH_USER_ISP]){
 
     // Channels
     streaming_channel_t c_pkt = s_chan_alloc();
-    streaming_channel_t c_ctrl = s_chan_alloc();
+    channel_t c_ctrl = s_chan_alloc();
 
     // Camera Init
     camera_mipi_ctx_t ctx = {
