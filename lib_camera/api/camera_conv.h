@@ -126,14 +126,16 @@ void camera_swap_dims(
     const unsigned channels);
 
 /**
- * @brief Rotates an RGB image 90 degrees clockwise
- * assumes both src and dst images are previously allocated
- * Input image dimensions are [height][width][channel]
- * and output image dimensions are [width][height][channel]
- * Input image pointer can't be reused for the output image
+ * @brief Rotates an RGB image 90 degrees clockwise,
+ * assumes both src and dst images are previously allocated,
+ * and input image pointer can't be reused for the output image.
+ * Input image dimensions are [height][width][channel],
+ * and only int8 or uint8 types are supported.
+ * Output image dimensions are [width][height][channel],
+ * and they are of the same type as the input image.
  *
  * @param dst_img   Destination image
- * @param src_img   Source image
+ * @param src_img   Source image (only uint8 or int8 types are supported)
  * @param h         Image height
  * @param w         Image width
  * @param ch        Number of channels
