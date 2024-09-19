@@ -19,8 +19,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image  # just to avoid color BGR issues when writting
-from dotenv import load_dotenv
-load_dotenv()  # take environment variables from .env.
 
 from utils import (
     normalize,

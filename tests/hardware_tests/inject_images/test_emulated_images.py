@@ -14,10 +14,6 @@ import shutil
 from matplotlib import pyplot as plt
 from PIL import Image
 
-# load dotenv
-from dotenv import load_dotenv
-load_dotenv()
-
 # path definitions
 top_level = Path(__file__).parents[3].absolute()
 examples = top_level / "examples"
