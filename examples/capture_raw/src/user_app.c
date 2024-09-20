@@ -38,7 +38,7 @@ void save_image(image_cfg_t* image, char* filename) {
 void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     // channel unpack
     chanend_t c_user_to_isp = c_cam[CH_USER_ISP];
-    chanend_t c_isp_to_user = c_cam[CH_ISP_USER];
+    // chanend_t c_isp_to_user = c_cam[CH_ISP_USER];
 
     // Create a Configuration
     camera_configure_t config = {
@@ -73,7 +73,7 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     camera_isp_coordinates_print(&image);
     chan_out_buf_byte(c_user_to_isp, (uint8_t*)&image, sizeof(image_cfg_t));
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
-    chan_in_byte(c_isp_to_user); // wait for the image
+    chan_in_byte(c_user_to_isp); // wait for the image
     save_image(&image, "capture1.raw");
 
     // change coordinates
@@ -83,7 +83,7 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     camera_isp_coordinates_print(&image);
     chan_out_buf_byte(c_user_to_isp, (uint8_t*)&image, sizeof(image_cfg_t));
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
-    chan_in_byte(c_isp_to_user); // wait for the image
+    chan_in_byte(c_user_to_isp); // wait for the image
     save_image(&image, "capture2.raw");
 
     // (Optional) try somthing makes no sense

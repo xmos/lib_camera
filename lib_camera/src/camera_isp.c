@@ -28,11 +28,13 @@ static struct {
   unsigned frame_number;
   unsigned in_line_number;
   unsigned out_line_number;
+  unsigned capture_finished;
 } ph_state = {
     1,  // wait_for_frame_start
     0,  // frame_number
     0,  // in_line_number
-    0   // out_line_number
+    0,   // out_line_number
+    0   // capture_finished
 };
 
 
@@ -60,7 +62,7 @@ void handle_end_of_frame(
   printstrln("EOF");
   camera_sensor_stop();
   if (image->ptr != NULL) {
-    chan_out_byte(c_isp_user, 1);
+    ph_state.capture_finished = 1;
   }
 }
 
@@ -94,7 +96,8 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
 }
 
 
-// -------- Image transformation --------
+
+// -------- Image Coordinates --------
 
 inline
 void camera_isp_coordinates_print(image_cfg_t* img_cfg){
@@ -163,6 +166,7 @@ void camera_isp_packet_handler(
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
       //ph_state.out_line_number = 0;
+      ph_state.capture_finished = 0;
       ph_state.frame_number++;
       break;
 
@@ -218,12 +222,14 @@ void camera_isp_thread(
   SELECT_RES(
     CASE_THEN(c_pkt, on_c_pkt_change),
     CASE_THEN(c_user_isp, on_c_user_isp_change)) {
-
   on_c_pkt_change: { // attending mipi_packet_rx
     pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
     pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
     s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
     camera_isp_packet_handler(pkt, &image, c_isp_user);
+    if (ph_state.capture_finished){
+      chan_out_byte(c_user_isp, 1);
+    }
     continue;
     }
   on_c_user_isp_change: { // attending user_app
@@ -234,5 +240,4 @@ void camera_isp_thread(
     continue;
     }
   }
-
 }
