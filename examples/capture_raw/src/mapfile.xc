@@ -16,14 +16,14 @@ extern "C" {
 }
 
 extern "C" {
-void user_app(chanend_t c_user_isp[N_CH_USER_ISP]);
+void user_app(chanend_t c_user_isp);
 }
 
 int main(void)
 {
   // xscope
   chan xscope_chan;
-  chan c_cam[N_CH_USER_ISP];
+  chan c_cam;
   
   // Parallel jobs
   par{

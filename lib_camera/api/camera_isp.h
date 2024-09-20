@@ -13,26 +13,22 @@
 
 C_API_START
 
+// this enum will hold the camera modes
+typedef enum{
+  MODE_RAW = 0,
+  MODE_RGB1,
+  MODE_RGB2,
+  MODE_RGB4
+} camera_mode_t;
+
 // this struct will hold the configuration for the camera
 typedef struct
 {
-  // Offsets: [0,1] range form the sensor
-  float offset_x;
-  float offset_y;
-  // Scale: [1,4] scale
-  float sx;
-  float sy;
-  // Shear: [0,1] shear ratio
-  float shx;
-  float shy;
-  // Rotation: [-90,90] degrees
-  float angle;
-  // Transform: 3x3 matrix
-  float* T;
-  // Mipi region
-  unsigned x1, y1, x2, y2;
+  float offset_x;           // [0,1] range form the sensor
+  float offset_y;           // [0,1] range form the sensor
+  camera_mode_t mode;       // RAW or RGB
+  unsigned x1, y1, x2, y2;  // Mipi region
 } camera_configure_t;
-
 
 // this will hold the image data and possible configurations
 // we could split this into two structs, but for now we will keep it simple
@@ -67,6 +63,24 @@ void camera_isp_coordinates_compute(image_cfg_t* image_cfg);
  */
 void camera_isp_coordinates_print(image_cfg_t* image_cfg);
 
+
+/**
+ * @brief send camera configuration to isp and starts capture
+ * 
+ * @param c_cam camera channel
+ * @param image image pointer and conficuration
+ */
+void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image);
+
+
+/**
+ * @brief recieves image from isp
+ * 
+ * @param c_cam camera channel
+ * @param image image pointer and conficuration
+ */
+void camera_isp_get_capture(chanend_t c_cam);
+
 /**
  * @brief This function will be the main thread for the ISP
  *
@@ -77,7 +91,7 @@ void camera_isp_coordinates_print(image_cfg_t* image_cfg);
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
   chanend_t c_ctrl,
-  chanend_t c_cam[N_CH_USER_ISP]);
+  chanend_t c_cam);
 
 
 C_API_END

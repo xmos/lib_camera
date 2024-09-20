@@ -9,17 +9,25 @@
 #include <xcore/select.h>
 #include <xcore/hwtimer.h>
 #include <xcore/assert.h>
-#include <print.h>
 
-#include "camera.h"  // in reality image def could be in isp.h
+// debug options
+// (can be enabled via: -DDEBUG_PRINT_ENABLE_CAM_ISP=1)
+#define DEBUG_UNIT CAM_ISP 
+#include <debug_print.h>
 
+#include "camera.h"
 #include "camera_isp.h"
 #include "camera_utils.h"
 #include "camera_mipi.h"
-
 #include "sensor_wrapper.h"
 
 #define ALIGNED_8 __attribute__((aligned(8)))
+
+extern
+void xmemcpy(
+  void* dst,
+  const void* src,
+  unsigned bytes);
 
 
 // -------- Globals -------------
@@ -37,6 +45,33 @@ static struct {
     0   // capture_finished
 };
 
+// -------- Image transformations --------
+static
+void camera_isp_raw8_to_raw8(image_cfg_t* image, int8_t* data_in) {
+  unsigned ln = ph_state.in_line_number;
+  unsigned img_ln = ln - image->config->y1;
+  int8_t* data_src = data_in + image->config->x1;
+  int8_t* data_dst = image->ptr + (img_ln * image->width);
+  xmemcpy(
+    data_dst,
+    data_src,
+    image->width);
+}
+
+static
+void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in) {
+  //TODO: implement
+}
+
+static
+void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in) {
+  //TODO: implement
+}
+
+static
+void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in) {
+  //TODO: implement
+}
 
 // -------- State handlers --------
 
@@ -57,26 +92,20 @@ void handle_no_expected_lines() {
 static
 void handle_end_of_frame(
   image_cfg_t* image,
-  chanend_t c_isp_user)
+  chanend_t c_cam)
 {
-  printstrln("EOF");
   camera_sensor_stop();
   if (image->ptr != NULL) {
     ph_state.capture_finished = 1;
+    chan_out_byte(c_cam, 1);
   }
 }
-
-extern
-void xmemcpy(
-  void* dst,
-  const void* src,
-  unsigned bytes);
 
 static
 void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
   unsigned ln = ph_state.in_line_number;
-  unsigned img_ln = ln - image->config->y1;
-
+  camera_mode_t mode = image->config->mode;
+  
   // Check if the image region is valid
   uint8_t c1 = image->ptr == NULL;
   uint8_t c2 = ln < image->config->y1;
@@ -84,15 +113,31 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
   if (c1 || c2 || c3) {
     return;
   }
-
-  // we are in a valid region, copy the row
-  // printuintln(img_ln);
-  int8_t* data_src = data_in + image->config->x1;
-  int8_t* data_dst = image->ptr + (img_ln * image->width);
-  xmemcpy(
-    data_dst,
-    data_src,
-    image->width);
+  
+  // Provide the image data to the user
+  switch (mode)
+  {
+    case MODE_RAW:{
+      camera_isp_raw8_to_raw8(image, data_in);
+      break;
+    }
+    case MODE_RGB1:{
+      camera_isp_raw8_to_rgb1(image, data_in);
+      break;
+    }
+    case MODE_RGB2:{
+      camera_isp_raw8_to_rgb2(image, data_in);
+      break;
+    }
+    case MODE_RGB4:{
+      camera_isp_raw8_to_rgb4(image, data_in);
+      break;
+    }
+    default:{
+      xassert(0 && "mode not supported");
+      break;
+    }
+  }
 }
 
 
@@ -102,17 +147,25 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
 inline
 void camera_isp_coordinates_print(image_cfg_t* img_cfg){
   camera_configure_t *cfg = img_cfg->config;
-  printf("x1: %u, y1: %u, x2: %u, y2: %u\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);
+  printf("x1: %d, y1: %d, x2: %d, y2: %d\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);  
 }
 
 void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   camera_configure_t *cfg = img_cfg->config;
 
+  unsigned scale = 0;
+  if (cfg->mode == MODE_RAW) {
+    scale = 1; // if mode raw, replace by one
+  }
+  else{
+    scale = (unsigned)(cfg->mode);
+  }
+
   // Compute the coordinates of the region of interest
   cfg->x1 = cfg->offset_x * SENSOR_WIDHT;
   cfg->y1 = cfg->offset_y * SENSOR_HEIGHT;
-  cfg->x2 = cfg->x1 + img_cfg->width * cfg->sx;
-  cfg->y2 = cfg->y1 + img_cfg->height * cfg->sy;
+  cfg->x2 = cfg->x1 + img_cfg->width * scale;
+  cfg->y2 = cfg->y1 + img_cfg->height * scale;
 
   // ensure all are even and unsigned
   cfg->x1 = ((unsigned)cfg->x1) & ~1;
@@ -126,13 +179,27 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
     cfg->y2 += 1;
   }
 
+  // debug info
+  debug_printf("x1: %d, y1: %d, x2: %d, y2: %d\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);
+
   // ensure is logical
   xassert(cfg->x1 < cfg->x2 && "x1");
   xassert(cfg->y1 < cfg->y2 && "y1");
   xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
   xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
+
 }
 
+// -------- Image API -------------------
+inline 
+void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image) {
+  chan_out_buf_byte(c_cam, (uint8_t*)image, sizeof(image_cfg_t));
+}
+
+inline 
+void camera_isp_get_capture(chanend_t c_cam) {
+  chan_in_byte(c_cam);
+}
 
 // -------- Frame handling --------------
 
@@ -161,7 +228,7 @@ void camera_isp_packet_handler(
   // Handle packets depending on their type
   switch (data_type) {
     case MIPI_DT_FRAME_START:
-      printstrln("SOF");
+      debug_printf("SOF\n");
       t_init = get_reference_time();
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
@@ -177,8 +244,9 @@ void camera_isp_packet_handler(
       break;
 
     case MIPI_DT_FRAME_END:
+      debug_printf("EOF\n");
       t_end = get_reference_time();
-      printf("\nFrame time: %lu cycles\n", t_end - t_init);
+      debug_printf("Frame time: %d cycles\n", t_end - t_init);
       handle_end_of_frame(image_cfg, c_isp_to_user);
       break;
 
@@ -195,15 +263,11 @@ void camera_isp_packet_handler(
 void camera_isp_thread(
   streaming_chanend_t c_pkt,
   chanend_t c_ctrl,
-  chanend_t c_cam[N_CH_USER_ISP]) {
+  chanend_t c_cam) {
 
   mipi_packet_t ALIGNED_8 packet_buffer[MIPI_PKT_BUFFER_COUNT];
   mipi_packet_t* pkt;
   unsigned pkt_idx = 0;
-
-  // channel unpack
-  chanend_t c_user_isp = c_cam[CH_USER_ISP];
-  chanend_t c_isp_user = c_cam[CH_ISP_USER];
 
   // Image configuration
   image_cfg_t image;
@@ -221,20 +285,17 @@ void camera_isp_thread(
 
   SELECT_RES(
     CASE_THEN(c_pkt, on_c_pkt_change),
-    CASE_THEN(c_user_isp, on_c_user_isp_change)) {
+    CASE_THEN(c_cam, on_c_user_isp_change)) {
   on_c_pkt_change: { // attending mipi_packet_rx
     pkt = (mipi_packet_t*)s_chan_in_word(c_pkt);
     pkt_idx = (pkt_idx + 1) & (MIPI_PKT_BUFFER_COUNT - 1);
     s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);
-    camera_isp_packet_handler(pkt, &image, c_isp_user);
-    if (ph_state.capture_finished){
-      chan_out_byte(c_user_isp, 1);
-    }
+    camera_isp_packet_handler(pkt, &image, c_cam);
     continue;
     }
   on_c_user_isp_change: { // attending user_app
     // user petition
-    chan_in_buf_byte(c_user_isp, (uint8_t*)&image, sizeof(image_cfg_t)); // recieve info from user
+    chan_in_buf_byte(c_cam, (uint8_t*)&image, sizeof(image_cfg_t)); // recieve info from user
     // Start camera
     camera_sensor_start();
     continue;

@@ -17,8 +17,8 @@
 #define CH_ISP_USER     1 // Channel between ISP and user
 
 // High-Level Sensor Configuration
-#define SENSOR_WIDHT                640
-#define SENSOR_HEIGHT               480
+#define SENSOR_WIDHT                800
+#define SENSOR_HEIGHT               800
 
 #define CONFIG_FLIP                 FLIP_NONE
 #define CONFIG_BINNING              BINNING_ON
@@ -30,6 +30,6 @@ C_API_START
  * @brief Lib camera main function
  * @param c_user  Channel to communicate with the user
  */
-void camera_main(chanend_t c_camera[N_CH_USER_ISP]);
+void camera_main(chanend_t c_camera);
 
 C_API_END

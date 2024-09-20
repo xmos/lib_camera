@@ -14,8 +14,8 @@
 #include "camera_conv.h"
 #include "camera_io.h"
 
-#define H   300
-#define W   400
+#define H   200
+#define W   200
 #define CH    1 // RAW
 #define DELAY_MILISECONDS 100
 
@@ -35,21 +35,13 @@ void save_image(image_cfg_t* image, char* filename) {
 }
 
 
-void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
-    // channel unpack
-    chanend_t c_user_to_isp = c_cam[CH_USER_ISP];
-    // chanend_t c_isp_to_user = c_cam[CH_ISP_USER];
+void user_app(chanend_t c_cam) {
 
     // Create a Configuration
     camera_configure_t config = {
         .offset_x = 0.2,
         .offset_y = 0.1,
-        .sx = 1, // Note: in raw sx sy has to be 1
-        .sy = 1,
-        .shx = 0.0,
-        .shy = 0.0,
-        .angle = 0.0,
-        .T = NULL,
+        .mode = MODE_RAW,
     };
 
     // Create an Image Structure
@@ -70,20 +62,18 @@ void user_app(chanend_t c_cam[N_CH_USER_ISP]) {
     
     // set coords and send to ISP
     camera_isp_coordinates_compute(&image);
-    camera_isp_coordinates_print(&image);
-    chan_out_buf_byte(c_user_to_isp, (uint8_t*)&image, sizeof(image_cfg_t));
+    camera_isp_start_capture(c_cam, &image);
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
-    chan_in_byte(c_user_to_isp); // wait for the image
+    camera_isp_get_capture(c_cam);
     save_image(&image, "capture1.raw");
 
     // change coordinates
-    config.offset_x = 0.1;
-    config.offset_y = 0.3;
+    config.offset_x = 0.5;
+    config.offset_y = 0.1;
     camera_isp_coordinates_compute(&image);
-    camera_isp_coordinates_print(&image);
-    chan_out_buf_byte(c_user_to_isp, (uint8_t*)&image, sizeof(image_cfg_t));
+    camera_isp_start_capture(c_cam, &image);
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
-    chan_in_byte(c_user_to_isp); // wait for the image
+    camera_isp_get_capture(c_cam);
     save_image(&image, "capture2.raw");
 
     // (Optional) try somthing makes no sense
