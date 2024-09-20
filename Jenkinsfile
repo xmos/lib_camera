@@ -22,11 +22,11 @@ def checkSkipLink() {
 }
 
 def buildDocs(String zipFileName) {
-  withVenv {
-    sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.2.0'
-    sh "xmosdoc ${checkSkipLink()}"
-    zip zipFile: zipFileName, archive: true, dir: "doc/_build"
-  }
+    withVenv {
+        sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.5.1'
+        sh 'xmosdoc'
+        zip zipFile: zipFileName, archive: true, dir: 'doc/_build'
+    }
 }
 
 getApproval()
@@ -36,7 +36,7 @@ pipeline {
   parameters {
     string(
       name: 'TOOLS_VERSION',
-      defaultValue: '15.2.1',
+      defaultValue: '15.3.0',
       description: 'The XTC tools version'
     )
   } // parameters
@@ -57,21 +57,15 @@ pipeline {
             stage ('Build') {
               steps {
                 runningOn(env.NODE_NAME)
-
-                sh 'git clone -b develop git@github.com:xmos/xcommon_cmake'
-                sh 'git -C xcommon_cmake rev-parse HEAD'
-
                 dir('lib_camera') {
                   checkout scm
                   // build examples and tests
                   withTools(params.TOOLS_VERSION) {
-                    withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
                       buildApps([
                         "examples/capture_raw",
                         "tests/hw_tests/test_rotate_90",
                         "tests/unit_tests"
                       ]) // buildApps
-                    } // withEnv
                   } // withTools
                 } // dir
               } // steps
@@ -82,9 +76,10 @@ pipeline {
                 // Clone infrastructure repos
                 sh "git clone git@github.com:xmos/infr_apps"
                 sh "git clone git@github.com:xmos/infr_scripts_py"
+                sh "git clone git@github.com:xmos/xscope_fileio"
                 // can't use createVenv on the top level yet
                 dir('lib_camera') {
-                  createVenv('requirements.txt')
+                  createVenv(reqFile: "requirements.txt")
                   withVenv {
                     sh "pip install -e ../infr_scripts_py"
                     sh "pip install -e ../infr_apps"
