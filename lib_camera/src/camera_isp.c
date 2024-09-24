@@ -76,7 +76,7 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in) {
   int8_t* data_src = data_in + image->config->x1;
   
   // 4 rows of 200 pixels
-  static int8_t input_rows[4][MODE_RGB1_MAX_SIZE]; //TODO set #define max size
+  static int8_t input_rows[4][MODE_RGB1_MAX_SIZE];
   
   // if even
   xmemcpy(&input_rows[0][0], &input_rows[2][0], sensor_width);     // move [2][x] to [0][x]
@@ -85,8 +85,8 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in) {
 
   // if odd
   xmemcpy(&input_rows[3][0], data_src, sensor_width);              // move new data to [3][x]
-  // compute demosaic
-  // store output
+  //TODO compute demosaic
+  //TODO store output
   */
 }
 
