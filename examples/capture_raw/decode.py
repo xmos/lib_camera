@@ -71,10 +71,10 @@ def process_image(input_name, width=400, height=300, flip=False, as_shot_neutral
 
 def main():
     input_name = "capture1.raw"
-    img1 = process_image(input_name)
+    img1 = process_image(input_name, width=200, height=200)
     
     input_name = "capture2.raw"
-    img2 = process_image(input_name)
+    img2 = process_image(input_name, width=200, height=200)
 
     plt.figure(figsize=(10, 10))
     

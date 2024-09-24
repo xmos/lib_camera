@@ -15,13 +15,15 @@ list(APPEND APP_DEPENDENT_MODULES "lib_camera" "xscope_fileio(1.2.0)")
 set(APP_XSCOPE_SRCS config.xscope)
 
 # flags
-set(APP_COMPILER_FLAGS
+set(
+    APP_COMPILER_FLAGS
     -O3
     -g
     -report
     -Wall
     -Werror
     -fxscope
-    -mcmodel=large)
+    -DDEBUG_PRINT_ENABLE_CAM_ISP=1 # Enable debug prints
+)
 
 XMOS_REGISTER_APP()

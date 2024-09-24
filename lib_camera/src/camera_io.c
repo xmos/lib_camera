@@ -41,7 +41,7 @@ void camera_io_write_image_file(char * filename, uint8_t * image, const size_t h
   camera_io_write_file(filename, image, img_size);
 
   printf("Image written into file: %s\n", filename);
-  printf("Image dimentions: %d x %d\n", width, height);
+  printf("Image dimentions: %d x %d\n\n", width, height);
 }
 
 void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t height, const size_t width, const size_t channels)
