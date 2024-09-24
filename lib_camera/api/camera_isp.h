@@ -11,6 +11,13 @@
 #define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)
 
+// Sensor width maximum values
+#define MODE_RAW_MAX_SIZE           (800)
+#define MODE_RGB1_MAX_SIZE          (200)
+#define MODE_RGB2_MAX_SIZE          (400)
+#define MODE_RGB4_MAX_SIZE          (800)
+
+
 C_API_START
 
 // this enum will hold the camera modes
@@ -28,6 +35,8 @@ typedef struct
   float offset_y;           // [0,1] range form the sensor
   camera_mode_t mode;       // RAW or RGB
   unsigned x1, y1, x2, y2;  // Mipi region
+  unsigned sensor_width;    // Mipi region width
+  unsigned sensor_height;   // Mipi region height
 } camera_configure_t;
 
 // this will hold the image data and possible configurations

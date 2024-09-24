@@ -30,7 +30,7 @@ void xmemcpy(
   unsigned bytes);
 
 
-// -------- Globals -------------
+// -------- Globals & Constants -------------
 static struct {
   unsigned wait_for_frame_start;
   unsigned frame_number;
@@ -43,6 +43,13 @@ static struct {
     0,  // in_line_number
     0,   // out_line_number
     0   // capture_finished
+};
+
+const unsigned sensor_width_max_values[] = {
+  MODE_RAW_MAX_SIZE,
+  MODE_RGB1_MAX_SIZE,
+  MODE_RGB2_MAX_SIZE,
+  MODE_RGB4_MAX_SIZE
 };
 
 // -------- Image transformations --------
@@ -61,6 +68,26 @@ void camera_isp_raw8_to_raw8(image_cfg_t* image, int8_t* data_in) {
 static
 void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in) {
   //TODO: implement
+  
+  /*
+  unsigned ln = ph_state.in_line_number;
+  unsigned img_ln = ln - image->config->y1;
+  unsigned sensor_width = image->config->sensor_width;
+  int8_t* data_src = data_in + image->config->x1;
+  
+  // 4 rows of 200 pixels
+  static int8_t input_rows[4][MODE_RGB1_MAX_SIZE]; //TODO set #define max size
+  
+  // if even
+  xmemcpy(&input_rows[0][0], &input_rows[2][0], sensor_width);     // move [2][x] to [0][x]
+  xmemcpy(&input_rows[1][0], &input_rows[3][0], sensor_width);     // move [3][x] to [1][x]
+  xmemcpy(&input_rows[2][0], data_src, sensor_width);              // move new data to [2][x]
+
+  // if odd
+  xmemcpy(&input_rows[3][0], data_src, sensor_width);              // move new data to [3][x]
+  // compute demosaic
+  // store output
+  */
 }
 
 static
@@ -153,13 +180,8 @@ void camera_isp_coordinates_print(image_cfg_t* img_cfg){
 void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   camera_configure_t *cfg = img_cfg->config;
 
-  unsigned scale = 0;
-  if (cfg->mode == MODE_RAW) {
-    scale = 1; // if mode raw, replace by one
-  }
-  else{
-    scale = (unsigned)(cfg->mode);
-  }
+  // If RAW, scale = 1
+  unsigned scale = (cfg->mode == MODE_RAW) ? 1 : (unsigned)(cfg->mode);
 
   // Compute the coordinates of the region of interest
   cfg->x1 = cfg->offset_x * SENSOR_WIDHT;
@@ -179,15 +201,29 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
     cfg->y2 += 1;
   }
 
+  // compute sensor width and height
+  cfg->sensor_width = cfg->x2 - cfg->x1;
+  cfg->sensor_height = cfg->y2 - cfg->y1;
+  unsigned mode = cfg->mode;
+  unsigned max_size = sensor_width_max_values[mode];
+  
+  // if raw ensure channels are 1, else 3
+  unsigned cond_raw = (mode == MODE_RAW && img_cfg->channels == 1);
+  unsigned cond_rgb = (mode != MODE_RAW && img_cfg->channels == 3);
+  
   // debug info
-  debug_printf("x1: %d, y1: %d, x2: %d, y2: %d\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);
+  debug_printf("Coords: x1:%d, y1:%d, x2:%d, y2:%d\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);
+  debug_printf("Sensor: w:%d, h:%d\n", cfg->sensor_width, cfg->sensor_height);
+  debug_printf("Mode: %d\n", mode);
 
-  // ensure is logical
+  // ensure everything is logical
+  xassert(cond_raw || cond_rgb && "channels not valid");
+  xassert(cfg->sensor_width <= max_size && "sensor_width");
+  xassert(cfg->sensor_height <= max_size && "sensor_height");
   xassert(cfg->x1 < cfg->x2 && "x1");
   xassert(cfg->y1 < cfg->y2 && "y1");
   xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
   xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
-
 }
 
 // -------- Image API -------------------
