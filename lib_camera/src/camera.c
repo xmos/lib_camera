@@ -44,7 +44,7 @@ void camera_main(chanend_t c_cam){
 
     // Parallel Jobs
     PAR_JOBS(
-        PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)),
+        PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)), // camera_mipi_rx.S
         PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_cam))
     );
 

@@ -13,13 +13,30 @@
 
 #include "camera_mipi.h"
 
-static
-void camera_mipi_packet_init(
-  unsigned tile,
-  camera_mipi_ctx_t* ctx,
-  unsigned mipi_shim_cfg0,
-  uint32_t mipiClkDiv,
-  uint32_t cfgClkDiv) {
+void camera_mipi_init(
+  camera_mipi_ctx_t* ctx) 
+{
+  // Enable ports and clock
+  port_enable(ctx->p_mipi_clk);
+  port_enable(ctx->p_mipi_rxa);
+  port_enable(ctx->p_mipi_rxv);
+  port_start_buffered(ctx->p_mipi_rxd, 32);
+  clock_enable(ctx->clk_mipi);
+
+  // Tile ids have weird values, so we get them with this API
+  unsigned tileid = get_local_tile_id();
+  // Assign lanes and polarities
+  //write_node_config_reg(mipi_tile, XS1_SSWITCH_MIPI_DPHY_CFG3_NUM, DEFAULT_MIPI_DPHY_CFG3);
+  write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_DPHY_CFG3_NUM, DEFAULT_MIPI_DPHY_CFG3);
+
+  // Configure MIPI shim
+  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(MIPI_SHIM_DEMUX_EN,
+    MIPI_SHIM_DEMUX_DATATYPE,
+    MIPI_SHIM_DEMUX_MODE,
+    MIPI_SHIM_STUFF_ENABLE,
+    1); // enable bias
+  
+  // Initialize MIPI receiver
   // This API has been translated from XC
   // original code is kept uncommented
 
@@ -44,52 +61,20 @@ void camera_mipi_packet_init(
   // take DPHY out of reset
 
   //write_node_config_reg(tile, XS1_SSWITCH_MIPI_DPHY_CFG0_NUM, 3);
-  write_sswitch_reg(tile, XS1_SSWITCH_MIPI_DPHY_CFG0_NUM, 3);
+  write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_DPHY_CFG0_NUM, 3);
 
   // set clock dividers to create suitable frequency 
   //write_node_config_reg(tile, XS1_SSWITCH_MIPI_CLK_DIVIDER_NUM, mipiClkDiv);
-  write_sswitch_reg(tile, XS1_SSWITCH_MIPI_CLK_DIVIDER_NUM, mipiClkDiv);
+  write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_CLK_DIVIDER_NUM, MIPI_CLK_DIV);
 
   //write_node_config_reg(tile, XS1_SSWITCH_MIPI_CFG_CLK_DIVIDER_NUM, cfgClkDiv);
-  write_sswitch_reg(tile, XS1_SSWITCH_MIPI_CFG_CLK_DIVIDER_NUM, cfgClkDiv);
+  write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_CFG_CLK_DIVIDER_NUM, MIPI_CFG_CLK_DIV);
 
   // set shim config register
   //write_node_config_reg(tile, XS1_SSWITCH_MIPI_SHIM_CFG0_NUM, mipi_shim_cfg0);
-  write_sswitch_reg(tile, XS1_SSWITCH_MIPI_SHIM_CFG0_NUM, mipi_shim_cfg0);
+  write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_SHIM_CFG0_NUM, mipi_shim_cfg0);
 
   // Connect the xcore-ports to the MIPI demuxer/PHY.
   int val = getps(XS1_PS_XCORE_CTRL0);
   setps(XS1_PS_XCORE_CTRL0, val | 0x100);
-}
-
-
-void camera_mipi_init(
-  camera_mipi_ctx_t* ctx
-) {
-  // Enable ports and clock
-  port_enable(ctx->p_mipi_clk);
-  port_enable(ctx->p_mipi_rxa);
-  port_enable(ctx->p_mipi_rxv);
-  port_start_buffered(ctx->p_mipi_rxd, 32);
-  clock_enable(ctx->clk_mipi);
-
-  // Tile ids have weird values, so we get them with this API
-  unsigned tileid = get_local_tile_id();
-  // Assign lanes and polarities
-  //write_node_config_reg(mipi_tile, XS1_SSWITCH_MIPI_DPHY_CFG3_NUM, DEFAULT_MIPI_DPHY_CFG3);
-  write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_DPHY_CFG3_NUM, DEFAULT_MIPI_DPHY_CFG3);
-
-  // Configure MIPI shim
-  unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(MIPI_SHIM_DEMUX_EN,
-    MIPI_SHIM_DEMUX_DATATYPE,
-    MIPI_SHIM_DEMUX_MODE,
-    MIPI_SHIM_STUFF_ENABLE,
-    1); // enable bias
-  
-  // Initialize MIPI receiver
-  camera_mipi_packet_init(tileid,
-    ctx,
-    mipi_shim_cfg0,
-    MIPI_CLK_DIV,
-    MIPI_CFG_CLK_DIV);
 }
