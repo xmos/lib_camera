@@ -23,7 +23,7 @@ set(
     -Wall
     -Werror
     -fxscope
-    -DDEBUG_PRINT_ENABLE_CAM_ISP=0 # Enable debug prints
+    -DDEBUG_PRINT_ENABLE_CAM_ISP=1 # Enable debug prints
 )
 
 XMOS_REGISTER_APP()

@@ -84,6 +84,7 @@ build/
 *.bmp
 *.raw
 *.png
+*.rgb
 !tests/hw_tests/imgs/orig.png
 
 # Documentation
