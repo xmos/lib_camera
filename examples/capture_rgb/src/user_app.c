@@ -23,7 +23,7 @@
 
 static
 void sim_model_invoke() {
-    printf("Simulating model\n");
+    puts("Simulating model\n");
     delay_milliseconds_cpp(DELAY_MILISECONDS);
 }
 

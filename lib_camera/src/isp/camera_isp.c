@@ -211,7 +211,7 @@ void camera_isp_packet_handler(
   // Handle packets depending on their type
   switch (data_type) {
     case MIPI_DT_FRAME_START:
-      debug_printf("SOF\n");
+      //debug_printf("SOF\n");
       t_init = get_reference_time();
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
@@ -227,7 +227,7 @@ void camera_isp_packet_handler(
       break;
 
     case MIPI_DT_FRAME_END:
-      debug_printf("EOF\n");
+      //debug_printf("EOF\n");
       t_end = get_reference_time();
       debug_printf("Frame time: %d cycles\n", t_end - t_init);
       handle_end_of_frame(image_cfg, c_isp_to_user);
