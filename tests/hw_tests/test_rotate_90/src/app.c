@@ -52,7 +52,7 @@ void app() {
 
         printf("Reading image from file: %s\n", file_in);
         camera_io_fopen(file_in);
-        camera_io_fill_array_from_file(img_in, img_size);
+        camera_io_fread(img_in, img_size);
 
         printstrln("Rotating image");
         unsigned t0 = get_reference_time();

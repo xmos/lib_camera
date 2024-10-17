@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
-project(capture_raw)
+project(capture_rgb)
 
 # Sandbox configuration
 set(XMOS_SANDBOX_DIR ${CMAKE_SOURCE_DIR}/../../..)
@@ -23,7 +23,7 @@ set(
     -Wall
     -Werror
     -fxscope
-    -DDEBUG_PRINT_ENABLE_CAM_ISP=1 # Enable debug prints
+    -DDEBUG_PRINT_ENABLE_CAM_ISP=0 # Enable debug prints
 )
 
 XMOS_REGISTER_APP()

@@ -16,7 +16,7 @@
 
 #define H   200
 #define W   200
-#define CH    1 // RAW
+#define CH    3 // RGB
 #define DELAY_MILISECONDS 100
 
 #define OUTPUT_INT8 1
@@ -39,16 +39,15 @@ void save_image(image_cfg_t* image, char* filename) {
 
 void user_app(chanend_t c_cam) {
 
-    // Create a Configuration
-    camera_cfg_t config = {
-        .offset_x = 0.2,
-        .offset_y = 0.1,
-        .mode = MODE_RAW,
-    };
-
-    // Create an Image Structure
+    // Image and configuration
     int8_t image_buffer[H][W][CH] = {{{0}}};
     int8_t* image_ptr = &image_buffer[0][0][0];
+
+    camera_cfg_t config = {
+        .offset_x = 0,
+        .offset_y = 0,
+        .mode = MODE_RGB1,
+    };
     image_cfg_t image = {
         .height = H,
         .width = W,
@@ -68,9 +67,10 @@ void user_app(chanend_t c_cam) {
     camera_isp_start_capture(c_cam, &image);
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     camera_isp_get_capture(c_cam);
-    save_image(&image, "capture1.raw");
+    save_image(&image, "capture1.rgb");
 
     // change coordinates
+    /*
     config.offset_x = 0.5;
     config.offset_y = 0.1;
     camera_isp_coordinates_compute(&image);
@@ -78,6 +78,7 @@ void user_app(chanend_t c_cam) {
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     camera_isp_get_capture(c_cam);
     save_image(&image, "capture2.raw");
+    */
 
     // (Optional) try somthing makes no sense
     /*

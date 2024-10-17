@@ -6,9 +6,15 @@
 #include <stdint.h>
 
 #include "api.h"
-#include "xscope_io_device.h"
 
 C_API_START
+
+/**
+ * @brief CALLS xscope_io_init
+ * when using single tile application in C that can be used to start xscope
+ * 
+ */
+void camera_io_start_single_tile();
 
 /**
  * @brief Opens a file
@@ -24,7 +30,19 @@ void camera_io_fopen(const char* filename);
  * @param data Pointer to the data to be filled
  * @param size Size of the data
  */
-void camera_io_fill_array_from_file(uint8_t* data, const size_t size);
+void camera_io_fread(uint8_t* data, const size_t size);
+
+/**
+ * @brief Closes a file opened with camera_io_fopen()
+ * 
+ */
+void camera_io_fclose();
+
+/**
+ * @brief exit the camera io, calls xscope_close_all_files()
+ * 
+ */
+void camera_io_exit();
 
 /**
  * @brief Rewinds a file opened with camera_io_fopen() (seek 0)

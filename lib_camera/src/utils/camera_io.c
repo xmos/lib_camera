@@ -6,19 +6,38 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <xscope_io_device.h>
+
 #include "camera_io.h"
+#include "xcore_compat.h"
 
 // -------------------- I/O -----------------------
 xscope_file_t file_read;
+
+void camera_io_start_single_tile()
+{
+  chanend_t chan_xscope = chanend_alloc();
+  xscope_io_init(chan_xscope);
+}
 
 void camera_io_fopen(const char *filename)
 {
   file_read = xscope_open_file(filename, "rb");
 }
 
-void camera_io_fill_array_from_file(uint8_t *data, const size_t size)
+void camera_io_fread(uint8_t *data, const size_t size)
 {
   xscope_fread(&file_read, data, size);
+}
+
+void camera_io_fclose()
+{
+  xscope_fclose(&file_read);
+}
+
+void camera_io_exit()
+{
+  xscope_close_all_files();
 }
 
 void camera_io_rewind_file()
