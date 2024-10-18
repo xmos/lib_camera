@@ -28,7 +28,7 @@
 
 void test_isp() {
     
-    camera_io_start_single_tile();
+    camera_io_start_single_tile(); // just to enable xscope
     printf("Main\n");
 
     // Create a Configuration
@@ -56,7 +56,7 @@ void test_isp() {
     int8_t img_row[W] = {0};
     for (int i = 0; i < image.height; i++) {
         camera_io_fread((uint8_t*)&img_row[0], image.width);
-        TIMEIT(camera_isp_raw8_to_rgb1, &image, img_row, i);
+        camera_isp_raw8_to_rgb1(&image, img_row, i);
     }
     camera_io_fclose();
 

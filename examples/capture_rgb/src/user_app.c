@@ -42,8 +42,8 @@ void user_app(chanend_t c_cam) {
     const unsigned h = 200;
     const unsigned w = 200;
     const unsigned ch = 3;
-    int8_t image_buffer[h][w][ch] = {{{0}}};
-    int8_t* image_ptr = &image_buffer[0][0][0];
+    const unsigned img_size = h * w * ch;
+    int8_t image_buffer[img_size] = { 0 };
 
     camera_cfg_t config = {
         .offset_x = 0,
@@ -55,7 +55,7 @@ void user_app(chanend_t c_cam) {
         .width = w,
         .channels = ch,
         .size = h*w*ch,
-        .ptr = image_ptr,
+        .ptr = &image_buffer[0],
         .config = &config
     };
 
@@ -80,10 +80,10 @@ void user_app(chanend_t c_cam) {
     camera_isp_get_capture(c_cam);
     save_image(&image, FILE2_NAME);
 
-    // (Optional) try somthing makes no sense
+    // (Optional) try something makes no sense
     /*
-    config.offset_x = 0.5; // 640*0.5 + 400 (width) = 720 > 640 !!
-    config.offset_y = 0.5; // 480*0.5 + 300 (height) = 540 > 480 !!
+    config.offset_x = 1.8; 
+    config.offset_y = 1.8; 
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
     */
