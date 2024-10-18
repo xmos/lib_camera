@@ -40,8 +40,7 @@ def raw_to_rgb_xcore(raw_file: Path):
 
 
 def raw_to_rgb_python(raw_file: Path):
-    # takes raw image and convert it to rgb and rgb to 
-    # png
+    # takes raw image and convert it to rgb and rgb to png
     dec = ImageDecoder(mode="raw8")
     out = raw_file.with_name(raw_file.stem + "_python").with_suffix(".png")
     return dec.decode_raw8(raw_file, out)
