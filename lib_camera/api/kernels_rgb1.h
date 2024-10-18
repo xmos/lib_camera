@@ -12,6 +12,7 @@ const int16_t kernel_shifts[16] __attribute__((aligned(4))) = {
 };
 
 // info 
+// kernel order is: 3,2,1,0
 // 0-7 first column
 // 8-15 second column
 

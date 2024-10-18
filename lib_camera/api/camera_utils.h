@@ -12,6 +12,7 @@
 
 #define TO_MS(ticks) ((float)(ticks) / XS1_TIMER_KHZ)
 #define PRINT_STR_MSG ">> ticks: "
+#define PRINT_STR_MSG_MS ">> elapsed (ms): "
 
 C_API_START
 
@@ -29,7 +30,7 @@ C_API_START
         unsigned start_time = get_reference_time(); \
         func(__VA_ARGS__); \
         unsigned end_time = get_reference_time(); \
-        printstr(PRINT_STR_MSG); \
+        printstr(PRINT_STR_MSG_MS); \
         printuintln(((end_time - start_time)/XS1_TIMER_KHZ)); \
     }
 

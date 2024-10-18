@@ -35,13 +35,16 @@ def raw_to_rgb_xcore(raw_file: Path):
     subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
     # decode rgb to png image
     dec = ImageDecoder(mode="rgb")
-    return dec.decode_rgb(out_path)
+    out = raw_file.with_name(raw_file.stem + "_xcore").with_suffix(".png")
+    return dec.decode_rgb(out_path, out)
 
 
 def raw_to_rgb_python(raw_file: Path):
-    # takes raw image and convert it to rgb png
+    # takes raw image and convert it to rgb and rgb to 
+    # png
     dec = ImageDecoder(mode="raw8")
-    return dec.decode_raw8(raw_file)
+    out = raw_file.with_name(raw_file.stem + "_python").with_suffix(".png")
+    return dec.decode_raw8(raw_file, out)
 
 
 @pytest.mark.parametrize("file_in", test_files)

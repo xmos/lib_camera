@@ -7,10 +7,11 @@
 #include "camera_isp.h"
 #include "camera_utils.h"
 
-#include "kernels.h"
+#include "kernels_rgb1.h"
 
 #define IMG_PTR(img, h, w, ch, width, channels) \
-    (img + ((h) * (width) * (channels)) + ((w) * (channels)) + (ch))
+    ((img) + ((h) * (width) + (w)) * (channels) + (ch))
+
 
 // ---------------------- VPU ASM ----------------------
 // TODO if in the future is reused, move to a common file
@@ -25,11 +26,6 @@ inline void vldc(const int8_t* ptr){
 inline void vlmaccr(const int8_t* ptr){
     asm volatile("vlmaccr %0[0]" :: "r" (ptr));
 }
-/*
-inline void vlmaccr2(const int8_t* ptr1, const int8_t* ptr2){
-    asm volatile("vlmaccr %0[0]; vlmaccr %1[0]" :: "r" (ptr1), "r" (ptr2));
-}
-*/
 inline void vlsat16(const int16_t* shift){
     asm volatile("vlsat %0[0]" :: "r" (shift));
 }
@@ -48,13 +44,21 @@ inline void load_doubleword(int64_t *dst_ptr, int8_t *src_ptr) {
 // ---------------------- Demosaic ----------------------
 
 /**
- * @brief Demosaics a RAW block into RGB without downsample
- * the input is a 4x8 block, reshaped to 1x32
- * the output is a 2x24 block, reshaped to 1x48
+ * @brief Demosaics a 4x8x1 RAW block into a 2x24x3 RGB block without downsampling.
  * 
- * @param output1 pointer to the first output row
- * @param output2 pointer to the second output row
- * @param block_ptr pointer to the input block
+ * This function processes a 4x8x1 RAW input block, reshaped as 1x32, and outputs
+ * two rows of RGB data. (4x8x1 RAW => 2x24x3 RGB)    
+ * 
+ * The process involves splitting the input into 4 blocks of 
+ * 12 operations each (total 48 ops). While it could be done in 3 blocks of 16 ops 
+ * (VPU max), that approach would mix data from different rows.
+ *
+ * Output data is in RGB format, but the order can be modified by changing the kernel
+ * pointer arrangement.
+ * 
+ * @param output1 Pointer to the first output row (RGB format).
+ * @param output2 Pointer to the second output row (RGB format).
+ * @param block_ptr Pointer to the input RAW block [32].
  */
 static
 void demosaic(
@@ -81,7 +85,7 @@ void demosaic(
 
 void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln) {
 
-    unsigned x1 = image->config->x1;
+    unsigned x1 = image->config->x1; //TODO create a logic to check only if needed
     unsigned y1 = image->config->y1;
     unsigned x2 = image->config->x2;
     // unsigned y2 = image->config->y2;
@@ -89,6 +93,8 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
     unsigned img_ln = sensor_ln - y1;
     unsigned img_width = (x2 - x1);
     int8_t* data_src = data_in + x1;
+    unsigned row_offset = image->width * image->channels;
+
 
     // 4 rows of 200 pixels
     static int8_t input_rows[4][MODE_RGB1_MAX_SIZE] ALIGNED_8 = { {0} };
@@ -112,7 +118,7 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
             load_doubleword((int64_t*)&block[24], &input_rows[3][xpos]);
             // demosaic, we assume red start
             int8_t *output1 = IMG_PTR(image->ptr, img_ln - 1, xpos, 0, image->width, image->channels);
-            int8_t *output2 = IMG_PTR(image->ptr, img_ln + 0, xpos, 0, image->width, image->channels);
+            int8_t *output2 = output1 + row_offset; // Just move down one row
             demosaic(output1, output2, block);
         }
     }
