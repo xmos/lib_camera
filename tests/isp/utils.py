@@ -15,8 +15,8 @@ folder_out = path_imgs
 assert folder_in.exists(), f"Folder {folder_in} does not exist"
 
 
-# TODO this classes will be part of the library at some point and will replace all small
-# and independent python functions
+# TODO this classes will eventually be part of the library at some point
+# and will replace all small and independent python functions in "/python" folder
 class ImageDecoder(object):
     def __init__(self, height=200, width=200, channels=None, dtype=np.int8, mode=None):
         self.height = height
@@ -81,7 +81,6 @@ class ImageMetrics(object):
         self.prec = 2  # precision for scores
         self.ssim_tol = 0.90
         self.psnr_tol = 20.0
-        self.metrics = []
 
     def ssim(self, img_ref, img):
         img_ref = np.array(img_ref.convert("L"))
@@ -96,29 +95,23 @@ class ImageMetrics(object):
         score = peak_signal_noise_ratio(img_ref, img)
         return np.round(score, self.prec)
 
-    def get_metric(self, img_ref, img, idx=None, assert_metric=False):
+    def get_metric(self, img_ref, img, idx=None, check=False, mprint=False):
         ssim = self.ssim(img_ref, img)
         psnr = self.psnr(img_ref, img)
         d = {"name": idx, "ssim": ssim, "psnr": psnr}
-        if assert_metric:
+        if check:
             self.assert_metric(d)
+        if mprint:
+            print(d)
         return d
-
-    def append_metrics(self, img_ref, img, idx, assert_metric=False):
-        d = self.get_metric(img_ref, img, idx, assert_metric)
-        self.metrics.append(d)
-
-    def print_metrics(self):
-        for m in self.metrics:
-            print(m)
-        return self.metrics
 
     def assert_metric(self, m):
         err_txt = f"{m}:\n \
             ssim_tol:{self.ssim_tol}, psnr_tol:{self.psnr_tol}"
         assert m["ssim"] > self.ssim_tol, err_txt
         assert m["psnr"] > self.psnr_tol, err_txt
-        
+
+
 if __name__ == "__main__":
     rgb_in = folder_in / "capture0_int8.rgb"
     raw_in = folder_in / "capture0_int8.raw"
@@ -129,7 +122,4 @@ if __name__ == "__main__":
 
     dec1.decode_raw8(raw_in)
     dec0.decode_rgb(rgb_in)
-
-    met.append_metrics(dec0.last_img, dec1.last_img, "test")
-    met.append_metrics(dec0.last_img, dec1.last_img, "test")
-    met.print_metrics()
+    met.get_metric(dec0.last_img, dec1.last_img, "test", mprint=True)

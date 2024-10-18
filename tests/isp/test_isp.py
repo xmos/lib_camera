@@ -1,3 +1,4 @@
+import pytest
 import matplotlib.pyplot as plt
 import numpy as np
 import subprocess
@@ -5,17 +6,18 @@ from pathlib import Path
 from PIL import Image  # To avoid color BGR issues when writing
 
 from string import Template
-from test_utils import ImageDecoder, ImageMetrics
+from utils import ImageDecoder, ImageMetrics
 
 met = ImageMetrics()
 cwd = Path(__file__).parent.absolute()
 imgs = cwd / "src" / "imgs"
+test_files = imgs.glob("*.raw")
 
 cmake_template = Template(
     'cmake \
         -D FILE_IN_NAME="$file_in" \
         -D FILE_OUT_NAME="$file_out" \
-        -G Ninja -B build --fresh'
+        -G Ninja -B build --fresh --log-level=ERROR'
 )
 
 build_cmd = "ninja -C build"
@@ -37,22 +39,19 @@ def raw_to_rgb_xcore(raw_file: Path):
 
 
 def raw_to_rgb_python(raw_file: Path):
+    # takes raw image and convert it to rgb png
     dec = ImageDecoder(mode="raw8")
     return dec.decode_raw8(raw_file)
 
 
-def test_isp():
-    for file_in in imgs.glob("*.raw"):
-        # cmake, build, run
-        print("\n===================================")
-        print("Testing file:", file_in)
-        img_xcore = raw_to_rgb_xcore(file_in)
-        img_python = raw_to_rgb_python(file_in)
-        met.append_metrics(img_xcore, img_python, file_in.stem, assert_metric=True)
-
-    # print and test metrics
-    met.print_metrics()
+@pytest.mark.parametrize("file_in", test_files)
+def test_isp(file_in):
+    print("\n===================================")
+    print("Testing file:", file_in)
+    img_xcore = raw_to_rgb_xcore(file_in)
+    img_python = raw_to_rgb_python(file_in)
+    met.get_metric(img_xcore, img_python, idx=file_in.stem, check=True, mprint=True)
 
 
 if __name__ == "__main__":
-    test_isp()
+    pytest.main()
