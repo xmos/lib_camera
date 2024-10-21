@@ -37,15 +37,15 @@ inline void vpu_vclrdr(){
 }
 inline void load_doubleword(int64_t *dst_ptr, int8_t *src_ptr) {
     uint32_t res[2];
-    asm("ldd %0, %1, %2[%3]" : "=r"(res[1]), "=r"(res[0]) : "r"(src_ptr), "r"(0));
+    asm volatile("ldd %0, %1, %2[%3]" : "=r"(res[1]), "=r"(res[0]) : "r"(src_ptr), "r"(0));
     *dst_ptr = *((int64_t*)res);
 }
 inline void load_block(int8_t dst[32], int8_t* src, unsigned incr) {
     uint32_t *res = (uint32_t*)dst;
-    asm("ldd %0, %1, %2[0]" : "=r"(res[1]), "=r"(res[0]) : "r"(src)); src += incr;
-    asm("ldd %0, %1, %2[0]" : "=r"(res[3]), "=r"(res[2]) : "r"(src)); src += incr;
-    asm("ldd %0, %1, %2[0]" : "=r"(res[5]), "=r"(res[4]) : "r"(src)); src += incr;
-    asm("ldd %0, %1, %2[0]" : "=r"(res[7]), "=r"(res[6]) : "r"(src)); src += incr;
+    asm volatile("ldd %0, %1, %2[0]" : "=r"(res[1]), "=r"(res[0]) : "r"(src)); src += incr;
+    asm volatile("ldd %0, %1, %2[0]" : "=r"(res[3]), "=r"(res[2]) : "r"(src)); src += incr;
+    asm volatile("ldd %0, %1, %2[0]" : "=r"(res[5]), "=r"(res[4]) : "r"(src)); src += incr;
+    asm volatile("ldd %0, %1, %2[0]" : "=r"(res[7]), "=r"(res[6]) : "r"(src)); src += incr;
 }
 // ---------------------- Demosaic ----------------------
 

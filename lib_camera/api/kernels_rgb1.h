@@ -4,7 +4,7 @@
 #define KERNEL_MASK 0x1FFF
 
 // divide by 4 always
-const int16_t kernel_shifts[16] __attribute__((aligned(4))) = {
+const int16_t kernel_shifts[16] __attribute__((aligned(8))) = {
     2,2,2,2,
     2,2,2,2,
     2,2,2,2,
