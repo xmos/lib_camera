@@ -66,7 +66,6 @@ void app() {
 
         printstrln("Done");
     }
-    xscope_close_all_files();
-
+    camera_io_exit();
     exit(0);
 }
