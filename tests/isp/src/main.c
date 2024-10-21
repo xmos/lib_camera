@@ -54,21 +54,25 @@ void test_isp() {
     // send row by row
     camera_io_fopen(FILE_IN_NAME);
     int8_t img_row[W] = {0};
+    unsigned ta = 0, tb = 0; 
     for (int i = 0; i < image.height; i++) {
         camera_io_fread((uint8_t*)&img_row[0], image.width);
+        ta = get_reference_time();
         camera_isp_raw8_to_rgb1(&image, img_row, i);
+        tb += get_reference_time() - ta;
     }
+    printf("Average time per row (ms): %f\n", TO_MS(tb / image.height));
+    printf("Total time (ms): %f\n", TO_MS(tb));
     camera_io_fclose();
 
     // Write the image to file
     uint8_t *img_ptr = (uint8_t*)image.ptr;
     camera_io_write_file(FILE_OUT_NAME, img_ptr, image.size);
     camera_io_exit();
-    printf("Main time (ms):\n");
 }
 
 int main(){
-    TIMEIT_MS(test_isp);
+    test_isp();
     return 0;
 }
 

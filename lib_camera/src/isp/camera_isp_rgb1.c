@@ -40,7 +40,13 @@ inline void load_doubleword(int64_t *dst_ptr, int8_t *src_ptr) {
     asm("ldd %0, %1, %2[%3]" : "=r"(res[1]), "=r"(res[0]) : "r"(src_ptr), "r"(0));
     *dst_ptr = *((int64_t*)res);
 }
-
+inline void load_block(int8_t dst[32], int8_t* src, unsigned incr) {
+    uint32_t *res = (uint32_t*)dst;
+    asm("ldd %0, %1, %2[0]" : "=r"(res[1]), "=r"(res[0]) : "r"(src)); src += incr;
+    asm("ldd %0, %1, %2[0]" : "=r"(res[3]), "=r"(res[2]) : "r"(src)); src += incr;
+    asm("ldd %0, %1, %2[0]" : "=r"(res[5]), "=r"(res[4]) : "r"(src)); src += incr;
+    asm("ldd %0, %1, %2[0]" : "=r"(res[7]), "=r"(res[6]) : "r"(src)); src += incr;
+}
 // ---------------------- Demosaic ----------------------
 
 /**
@@ -84,21 +90,17 @@ void demosaic(
 }
 
 void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln) {
-
     unsigned x1 = image->config->x1; //TODO create a logic to check only if needed
     unsigned y1 = image->config->y1;
-    unsigned x2 = image->config->x2;
-    // unsigned y2 = image->config->y2;
-
+    unsigned img_width = image->width;
+    unsigned img_channels = image->channels;
     unsigned img_ln = sensor_ln - y1;
-    unsigned img_width = (x2 - x1);
+    unsigned row_offset = img_width * img_channels;
+    int8_t *img_ptr = image->ptr;
     int8_t* data_src = data_in + x1;
-    unsigned row_offset = image->width * image->channels;
-
 
     // 4 rows of 200 pixels
     static int8_t input_rows[4][MODE_RGB1_MAX_SIZE] ALIGNED_8 = { {0} };
-    static int8_t block[32] ALIGNED_8 = {0};
 
     // if even, move data, if odd compute
     unsigned ln_is_even = (sensor_ln % 2 == 0);
@@ -109,15 +111,13 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
     }
     else{ // if odd
         xmemcpy(&input_rows[3][0], data_src, img_width);              // move new data to [3][x]
+        int8_t block[32] = {0};
         // for loop 8 by 8
         for (unsigned xpos = 0; xpos <= (img_width - 8); xpos += 8) {
             // construct the blocks 4x8 = 32 (to further fill vpu)
-            load_doubleword((int64_t*)&block[0], &input_rows[0][xpos]);
-            load_doubleword((int64_t*)&block[8], &input_rows[1][xpos]);
-            load_doubleword((int64_t*)&block[16], &input_rows[2][xpos]);
-            load_doubleword((int64_t*)&block[24], &input_rows[3][xpos]);
+            load_block(&block[0], &input_rows[0][xpos], MODE_RGB1_MAX_SIZE);
             // demosaic, we assume red start
-            int8_t *output1 = IMG_PTR(image->ptr, img_ln - 1, xpos, 0, image->width, image->channels);
+            int8_t *output1 = IMG_PTR(img_ptr, img_ln - 1, xpos, 0, img_width, img_channels);
             int8_t *output2 = output1 + row_offset; // Just move down one row
             demosaic(output1, output2, block);
         }

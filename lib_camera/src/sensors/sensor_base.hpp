@@ -11,7 +11,7 @@
 #ifdef __cplusplus
 
 extern "C" {
-# include "i2c.h"
+#include "i2c.h"
 }
 
 namespace sensor {
