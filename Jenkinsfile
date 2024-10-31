@@ -74,9 +74,8 @@ pipeline {
             stage('Create Python enviroment') {
               steps {
                 // Clone infrastructure repos
-                sh "git clone git@github.com:xmos/infr_apps"
                 sh "git clone git@github.com:xmos/infr_scripts_py"
-                sh "git clone git@github.com:xmos/xscope_fileio"
+                sh "git clone git@github.com:xmos/infr_apps"
                 // can't use createVenv on the top level yet
                 dir('lib_camera') {
                   createVenv(reqFile: "requirements.txt")
