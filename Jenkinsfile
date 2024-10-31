@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.34.0')
+@Library('xmos_jenkins_shared_library@v0.32.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -79,7 +79,7 @@ pipeline {
                 // can't use createVenv on the top level yet
                 dir('lib_camera') {
                   withTools(params.TOOLS_VERSION) {
-                    createVenv(reqFile: "requirements.txt")
+                    createVenv("requirements.txt")
                     withVenv {
                       sh "pip install -e ../infr_scripts_py"
                       sh "pip install -e ../infr_apps"
