@@ -78,10 +78,12 @@ pipeline {
                 sh "git clone git@github.com:xmos/infr_apps"
                 // can't use createVenv on the top level yet
                 dir('lib_camera') {
-                  createVenv(reqFile: "requirements.txt")
-                  withVenv {
-                    sh "pip install -e ../infr_scripts_py"
-                    sh "pip install -e ../infr_apps"
+                  withTools(params.TOOLS_VERSION) {
+                    createVenv(reqFile: "requirements.txt")
+                    withVenv {
+                      sh "pip install -e ../infr_scripts_py"
+                      sh "pip install -e ../infr_apps"
+                    }
                   }
                 }
               }
