@@ -87,6 +87,5 @@ void user_app(chanend_t c_cam) {
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
     */
-    camera_io_exit();
     exit(0);
 }
