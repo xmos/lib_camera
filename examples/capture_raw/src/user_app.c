@@ -19,8 +19,6 @@
 #define CH    1 // RAW
 #define DELAY_MILISECONDS 100
 
-#define OUTPUT_INT8 0
-
 static
 void sim_model_invoke() {
     printf("Simulating model\n");
@@ -30,12 +28,8 @@ void sim_model_invoke() {
 static
 void save_image(image_cfg_t* image, char* filename) {
     uint8_t * img_ptr = (uint8_t*)image->ptr;
-    #if (OUTPUT_INT8 == 0)
-        camera_int8_to_uint8(img_ptr, image->ptr, image->size);
-    #endif
     camera_io_write_image_file(filename, img_ptr, H, W, CH); // this will close the file as well
 }
-
 
 void user_app(chanend_t c_cam) {
 
