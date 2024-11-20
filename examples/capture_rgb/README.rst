@@ -22,6 +22,6 @@ Run the following command from the current folder:
     cmake -G "Ninja" -B build
     ninja -C build
     # Run 
-    python ../../python/run_xscope_bin.py bin/capture_rgb.xe
+    xrun --xscope bin/capture_raw.xe
     # Decode Image
     python decode.py

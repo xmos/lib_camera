@@ -18,8 +18,6 @@
 #define FILE1_NAME "capture1.rgb"
 #define FILE2_NAME "capture2.rgb"
 
-#define OUTPUT_INT8 1
-
 static
 void sim_model_invoke() {
     puts("Simulating model\n");
@@ -29,12 +27,8 @@ void sim_model_invoke() {
 static
 void save_image(image_cfg_t* image, char* filename) {
     uint8_t * img_ptr = (uint8_t*)image->ptr;
-    #if (OUTPUT_INT8 == 0)
-        camera_int8_to_uint8(img_ptr, image->ptr, image->size);
-    #endif
     camera_io_write_image_file(filename, img_ptr, image->height, image->width, image->channels); // this will close the file as well
 }
-
 
 void user_app(chanend_t c_cam) {
 
@@ -87,6 +81,5 @@ void user_app(chanend_t c_cam) {
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
     */
-    camera_io_exit();
     exit(0);
 }
