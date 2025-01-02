@@ -21,14 +21,6 @@ def checkSkipLink() {
     return skip_linkcheck
 }
 
-def buildDocs(String zipFileName) {
-    withVenv {
-        sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.5.1'
-        sh 'xmosdoc'
-        zip zipFile: zipFileName, archive: true, dir: 'doc/_build'
-    }
-}
-
 getApproval()
 pipeline {
   agent none
@@ -131,7 +123,7 @@ pipeline {
               createVenv("requirements.txt")
               // uncommented till we have docs again
               /*withTools(params.TOOLS_VERSION) {
-                buildDocs("lib_camera_docs.zip")
+                buildDocs(archiveZipOnly: true)
               } // withTools*/
             } // dir
           } // steps
