@@ -1,7 +1,7 @@
 set(LIB_NAME lib_camera)
 set(LIB_VERSION 2.0.0)
 set(LIB_DEPENDENT_MODULES i2c "lib_logging(3.2.0)")
-set(LIB_INCLUDES api src src/sensors)
+set(LIB_INCLUDES api src src/sensors src/isp)
 set(LIB_COMPILER_FLAGS -Os -Wall -g -fxscope -mcmodel=large -Werror)
 
 # I2C
