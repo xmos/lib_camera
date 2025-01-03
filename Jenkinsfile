@@ -85,13 +85,15 @@ pipeline {
               steps {
                 dir('lib_camera') {
                   versionChecks()
-                  withVenv {
+                  withVenv() {
                     dir('tests/lib_checks') {
-                      sh "pytest -s"
+                      withEnv(["XMOS_ROOT=../../.."]) {
+                        sh "pytest -s"
+                      }
                     }
-                  }
-                }
-              }
+                  } // Venv
+                } // dir
+              } // steps
             } // Source check
 
             stage('Unit tests') {
