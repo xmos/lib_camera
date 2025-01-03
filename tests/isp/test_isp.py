@@ -16,15 +16,15 @@ cwd = Path(__file__).parent.absolute()
 imgs = cwd / "src" / "imgs"
 test_files = imgs.glob("*.raw")
 
-cmake_template = Template(
+# cmake, make, run commands
+cmake_tmpl = Template(
     'cmake \
         -D FILE_IN_NAME="$file_in" \
         -D FILE_OUT_NAME="$file_out" \
         -G Ninja -B build --fresh --log-level=ERROR'
 )
-
-build_cmd = "ninja -C build"
-run_cmd = "python ../../python/run_xscope_bin.py bin/test_isp_rgb1.xe"
+build_cmd = 'ninja -C build'
+run_cmd = 'xsim --xscope "-offline trace.xmt" bin/test_isp_rgb1.xe'
 
 
 def raw_to_rgb_xcore(raw_file: Path):
@@ -32,7 +32,7 @@ def raw_to_rgb_xcore(raw_file: Path):
     in_cmake = str(raw_file.relative_to(cwd)).replace("\\", "/")
     out_cmake = in_cmake.replace(".raw", ".rgb")
     out_path = raw_file.with_suffix(".rgb")
-    cmake_cmd = cmake_template.substitute(file_in=in_cmake, file_out=out_cmake)
+    cmake_cmd = cmake_tmpl.substitute(file_in=in_cmake, file_out=out_cmake)
     subprocess.run(cmake_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(build_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)

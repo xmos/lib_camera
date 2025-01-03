@@ -101,6 +101,11 @@ pipeline {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
+                dir('lib_camera/tests/isp') {
+                  withTools(params.TOOLS_VERSION) {
+                    sh 'pytest'
+                  }
+                }
               }
             } // Unit tests
 
