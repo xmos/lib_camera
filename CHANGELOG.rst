@@ -1,8 +1,8 @@
 lib_camera change log
 =====================
 
-HEAD
-----
+2.0.0
+-----
 
   * CHANGED: camera capture mode from streaming to single capture.
   * CHANGED: packet handler and sensor control thread are embded in ISP thread.
@@ -14,6 +14,7 @@ HEAD
     camera_rotate90_int8() into camera_rotate90().
   * CHANGED: declaration of c_ctrl from a streaming channel endpoint to a
     standard channel endpoint
+  * ADDED: : lib_logging v3.3.1 dependency
 
 1.0.0
 -----
@@ -60,4 +61,3 @@ HEAD
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
-

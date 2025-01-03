@@ -1,4 +1,4 @@
-// Copyright 2024 XMOS LIMITED.
+// Copyright 2024-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
@@ -33,6 +33,14 @@
     "../imgs/output_rgb_uint8_64_64.bin", \
     "../imgs/output_rgb_int8_64_64.bin"
 
+static void camera_read_image(uint8_t * img, const char * file, unsigned img_size) {
+    FILE * f = fopen(file, "rb");
+    assert(f != NULL);
+    size_t read = fread(img, 1, img_size, f);
+    assert(read == img_size);
+    fclose(f);
+}
+
 void app() {
 
     // allocate space for the image
@@ -51,8 +59,7 @@ void app() {
         char * file_out = file_list[file_list_size / 2 + i];
 
         printf("Reading image from file: %s\n", file_in);
-        camera_io_fopen(file_in);
-        camera_io_fread(img_in, img_size);
+        camera_read_image(img_in, file_in, img_size);
 
         printstrln("Rotating image");
         unsigned t0 = get_reference_time();
@@ -66,6 +73,5 @@ void app() {
 
         printstrln("Done");
     }
-    camera_io_exit();
     exit(0);
 }

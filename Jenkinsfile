@@ -21,14 +21,6 @@ def checkSkipLink() {
     return skip_linkcheck
 }
 
-def buildDocs(String zipFileName) {
-    withVenv {
-        sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.5.1'
-        sh 'xmosdoc'
-        zip zipFile: zipFileName, archive: true, dir: 'doc/_build'
-    }
-}
-
 getApproval()
 pipeline {
   agent none
@@ -95,11 +87,13 @@ pipeline {
                   versionChecks()
                   withVenv {
                     dir('tests/lib_checks') {
-                      sh "pytest -s"
+                      withEnv(["XMOS_ROOT=${WORKSPACE}"]) {
+                        sh "pytest -s"
+                      }
                     }
-                  }
-                }
-              }
+                  } // Venv
+                } // dir
+              } // steps
             } // Source check
 
             stage('Unit tests') {
@@ -109,7 +103,18 @@ pipeline {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
-              }
+              } // steps
+            } // Unit tests
+
+            stage('ISP tests') {
+              steps {
+                dir('lib_camera/tests/isp') {
+                  withVenv {
+                  withTools(params.TOOLS_VERSION) {
+                    sh 'pytest'
+                  }} // Venv and tools
+                } // dir
+              } // steps
             } // Unit tests
 
           } // stages
@@ -131,7 +136,7 @@ pipeline {
               createVenv("requirements.txt")
               // uncommented till we have docs again
               /*withTools(params.TOOLS_VERSION) {
-                buildDocs("lib_camera_docs.zip")
+                buildDocs(archiveZipOnly: true)
               } // withTools*/
             } // dir
           } // steps

@@ -1,4 +1,4 @@
-// Copyright 2024 XMOS LIMITED.
+// Copyright 2024-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdint.h>
@@ -17,6 +17,8 @@
 #include "camera_io.h"
 #include "camera_conv.h"
 
+#define TO_MS(ticks) ((float)(ticks) / XS1_TIMER_KHZ)
+
 #define H   200
 #define W   200
 #define CH  3
@@ -29,10 +31,8 @@
 #define FILE_OUT_NAME "src/imgs/capture0_int8_out.rgb"
 #endif
 
-void test_isp() {
-    
-    camera_io_start_single_tile(); // just to enable xscope
-    printf("Main\n");
+void test_isp() {    
+    printf("[test_isp]\n");
 
     // Create a Configuration
     int8_t image_buffer[H][W][CH] ALIGNED_8 = { {{0}} };
@@ -55,23 +55,25 @@ void test_isp() {
 
     // Read the raw image from file
     // send row by row
-    camera_io_fopen(FILE_IN_NAME);
+    FILE *fp = fopen(FILE_IN_NAME, "rb");
     int8_t img_row[W] = {0};
     unsigned ta = 0, tb = 0; 
     for (int i = 0; i < image.height; i++) {
-        camera_io_fread((uint8_t*)&img_row[0], image.width);
+        fread((uint8_t*)&img_row[0], 1, image.width, fp);
         ta = get_reference_time();
         camera_isp_raw8_to_rgb1(&image, img_row, i);
         tb += get_reference_time() - ta;
     }
+    float ops_per_pixel = (float)tb / (image.height * image.width * image.channels);
     printf("Average time per row (ms): %f\n", TO_MS(tb / image.height));
     printf("Total time (ms): %f\n", TO_MS(tb));
-    camera_io_fclose();
+    printf("Ops per pixel: %.2f\n", ops_per_pixel);
+    fclose(fp);
 
     // Write the image to file
+    printf("Writing image to file\n");
     uint8_t *img_ptr = (uint8_t*)image.ptr;
     camera_io_write_file(FILE_OUT_NAME, img_ptr, image.size);
-    camera_io_exit();
 }
 
 int main(){
