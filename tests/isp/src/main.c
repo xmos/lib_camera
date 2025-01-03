@@ -57,7 +57,6 @@ void test_isp() {
     int8_t img_row[W] = {0};
     unsigned ta = 0, tb = 0; 
     for (int i = 0; i < image.height; i++) {
-        //camera_io_fread((uint8_t*)&img_row[0], image.width);
         fread((uint8_t*)&img_row[0], 1, image.width, fp);
         ta = get_reference_time();
         camera_isp_raw8_to_rgb1(&image, img_row, i);

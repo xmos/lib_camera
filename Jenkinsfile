@@ -96,6 +96,7 @@ pipeline {
 
             stage('Unit tests') {
               steps {
+                withVenv {
                 dir('lib_camera/tests/unit_tests') {
                   withTools(params.TOOLS_VERSION) {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
@@ -106,7 +107,8 @@ pipeline {
                     sh 'pytest'
                   }
                 }
-              }
+                } // venv
+              } // steps
             } // Unit tests
 
           } // stages

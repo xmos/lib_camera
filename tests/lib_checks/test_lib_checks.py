@@ -13,7 +13,6 @@ import re
 import pytest
 
 REPO_ROOT = (Path(__file__).parents[2]).resolve()
-os.environ['XMOS_ROOT'] = str(REPO_ROOT.parent) # sandbox directory
 
 def test_source_check():
     """
