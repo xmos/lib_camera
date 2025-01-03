@@ -1,5 +1,5 @@
-Example: take picture downsample
-================================
+Example: Capture Raw
+====================
 
 This example runs intermetly a sequence of start-capture-stop. 
 It prints in the console every time it recieves a:

@@ -10,9 +10,6 @@
 
 #include "api.h"
 
-#define TO_MS(ticks) ((float)(ticks) / XS1_TIMER_KHZ)
-#define PRINT_STR_MSG ">> ticks: "
-#define PRINT_STR_MSG_MS ">> elapsed (ms): "
 
 C_API_START
 

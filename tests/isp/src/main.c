@@ -17,6 +17,8 @@
 #include "camera_io.h"
 #include "camera_conv.h"
 
+#define TO_MS(ticks) ((float)(ticks) / XS1_TIMER_KHZ)
+
 #define H   200
 #define W   200
 #define CH  3

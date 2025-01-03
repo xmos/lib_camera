@@ -87,7 +87,7 @@ pipeline {
                   versionChecks()
                   withVenv {
                     dir('tests/lib_checks') {
-                      withEnv(["XMOS_ROOT=../../.."]) {
+                      withEnv(["XMOS_ROOT=${WORKSPACE}"]) {
                         sh "pytest -s"
                       }
                     }

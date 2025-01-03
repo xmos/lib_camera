@@ -14,10 +14,7 @@ lib_camera change log
     camera_rotate90_int8() into camera_rotate90().
   * CHANGED: declaration of c_ctrl from a streaming channel endpoint to a
     standard channel endpoint
-
-  * Changes to dependencies:
-
-    - lib_logging: Added dependency 3.3.1
+  * ADDED: : lib_logging v3.3.1 dependency
 
 1.0.0
 -----
@@ -64,4 +61,3 @@ lib_camera change log
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
-

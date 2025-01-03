@@ -38,11 +38,6 @@ inline void vstrpv(int8_t* ptr, unsigned mask){
 inline void vpu_vclrdr(){
     asm volatile("vclrdr");
 }
-inline void load_doubleword(int64_t *dst_ptr, int8_t *src_ptr) {
-    uint32_t res[2];
-    asm volatile("ldd %0, %1, %2[%3]" : "=r"(res[1]), "=r"(res[0]) : "r"(src_ptr), "r"(0));
-    *dst_ptr = *((int64_t*)res);
-}
 inline void load_block(int8_t dst[32], int8_t* src, unsigned incr) {
     uint32_t *res = (uint32_t*)dst;
     asm volatile("ldd %0, %1, %2[0]" : "=r"(res[1]), "=r"(res[0]) : "r"(src)); src += incr;
