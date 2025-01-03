@@ -98,25 +98,22 @@ pipeline {
 
             stage('Unit tests') {
               steps {
-                withVenv {
                 dir('lib_camera/tests/unit_tests') {
                   withTools(params.TOOLS_VERSION) {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
-                } // venv
               } // steps
             } // Unit tests
 
             stage('ISP tests') {
               steps {
-                withVenv {
                 dir('lib_camera/tests/isp') {
+                  withVenv {
                   withTools(params.TOOLS_VERSION) {
                     sh 'pytest'
-                  }
-                }
-                } // venv
+                  }} // Venv and tools
+                } // dir
               } // steps
             } // Unit tests
 
