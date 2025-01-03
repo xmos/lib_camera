@@ -17,7 +17,7 @@ lib_camera change log
 
   * Changes to dependencies:
 
-    - lib_logging: Added dependency 3.2.0
+    - lib_logging: Added dependency 3.3.1
 
 1.0.0
 -----
@@ -64,4 +64,3 @@ lib_camera change log
   * ADDED: cropping / scaling : image scalling, cropping.
   * ADDED: Image statistics: histogram, mean, variance, skewness.
   * ADDED: sensor control, start, stop functons.
-
