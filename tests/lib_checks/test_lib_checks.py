@@ -7,11 +7,13 @@ Tests that check the contents of the files meet our standards
 
 from subprocess import run
 from pathlib import Path
+import os
 import yaml
 import re
 import pytest
 
-REPO_ROOT = (Path(__file__).parent/"../..").resolve()
+REPO_ROOT = (Path(__file__).parents[2]).resolve()
+os.environ['XMOS_ROOT'] = str(REPO_ROOT.parent) # sandbox directory
 
 def test_source_check():
     """
@@ -33,6 +35,5 @@ def test_changelog_check():
     """
     checks changelog conforms with the standards
     """
-    #ret = run(f"xmos_changelog_check check {REPO_ROOT}".split())
-    #assert 0 == ret.returncode
-    #TODO solve issues with changelog check
+    ret = run(f"xmos_changelog_check check {REPO_ROOT}".split())
+    assert 0 == ret.returncode
