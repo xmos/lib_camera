@@ -85,7 +85,7 @@ pipeline {
               steps {
                 dir('lib_camera') {
                   versionChecks()
-                  withVenv() {
+                  withVenv {
                     dir('tests/lib_checks') {
                       withEnv(["XMOS_ROOT=../../.."]) {
                         sh "pytest -s"
@@ -104,6 +104,13 @@ pipeline {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
+                } // venv
+              } // steps
+            } // Unit tests
+
+            stage('ISP tests') {
+              steps {
+                withVenv {
                 dir('lib_camera/tests/isp') {
                   withTools(params.TOOLS_VERSION) {
                     sh 'pytest'
