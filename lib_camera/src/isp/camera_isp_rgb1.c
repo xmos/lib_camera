@@ -119,7 +119,7 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
             int8_t *output1 = IMG_PTR(img_ptr, img_ln, xpos, 0, img_width, img_channels);
             // output1 = (img_ptr) + ((img_ln * img_width) + xpos) * (img_channels)
             // output1 = (img_ptr) + (img_ln * img_width * img_channels) + (xpos * img_channels)
-            // precalc   |                                             | + (8 * img_channels)
+            // output1 += 24
             int8_t *output2 = output1 + row_len; // Just move down one row
             demosaic(output1, output2, block);
         }

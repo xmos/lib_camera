@@ -18,6 +18,7 @@ const int16_t kernel_shifts[16] __attribute__((aligned(4))) = {
 // 0-7 first column
 // 8-15 second column
 
+// Due to VPU shifting, kernels are in BGR order so they will produce RGB pixels
 const int8_t kernels12[] __attribute__((aligned(4))) = {
 // kernel_blue3[32]
     0, 0, 0, 0, 0, 0, 0, 0,
