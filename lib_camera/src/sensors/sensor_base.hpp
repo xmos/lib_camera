@@ -1,4 +1,4 @@
-// Copyright 2023-2024 XMOS LIMITED.
+// Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #pragma once
@@ -11,7 +11,7 @@
 #ifdef __cplusplus
 
 extern "C" {
-# include "i2c.h"
+#include "i2c.h"
 }
 
 namespace sensor {

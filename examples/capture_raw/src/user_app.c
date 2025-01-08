@@ -1,4 +1,4 @@
-// Copyright 2023-2024 XMOS LIMITED.
+// Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
@@ -28,17 +28,13 @@ void sim_model_invoke() {
 static
 void save_image(image_cfg_t* image, char* filename) {
     uint8_t * img_ptr = (uint8_t*)image->ptr;
-    unsigned size = image->height * image->width * image->channels;
-
-    camera_int8_to_uint8(img_ptr, image->ptr, size);
     camera_io_write_image_file(filename, img_ptr, H, W, CH); // this will close the file as well
 }
-
 
 void user_app(chanend_t c_cam) {
 
     // Create a Configuration
-    camera_configure_t config = {
+    camera_cfg_t config = {
         .offset_x = 0.2,
         .offset_y = 0.1,
         .mode = MODE_RAW,
@@ -51,6 +47,7 @@ void user_app(chanend_t c_cam) {
         .height = H,
         .width = W,
         .channels = CH,
+        .size = H * W * CH,
         .ptr = image_ptr,
         .config = &config
     };
@@ -83,7 +80,5 @@ void user_app(chanend_t c_cam) {
     camera_isp_coordinates_compute(&image);
     camera_isp_coordinates_print(&image);
     */
-
-    xscope_close_all_files();
     exit(0);
 }

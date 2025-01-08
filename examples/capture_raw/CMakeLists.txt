@@ -6,15 +6,15 @@ project(capture_raw)
 set(XMOS_SANDBOX_DIR ${CMAKE_SOURCE_DIR}/../../..)
 message("XMOS_SANDBOX_DIR: ${XMOS_SANDBOX_DIR}")
 
-# target
-set(APP_HW_TARGET XCORE-VISION-EXPLORER.xn)
+# Target, xscope
+set(APP_HW_TARGET src/XCORE-VISION-EXPLORER.xn)
+set(APP_XSCOPE_SRCS src/config.xscope)
+
+# Includes, Dependencies
 list(APPEND APP_INCLUDES src)
-list(APPEND APP_DEPENDENT_MODULES "lib_camera" "xscope_fileio(1.2.0)")
+list(APPEND APP_DEPENDENT_MODULES "lib_camera")
 
-# xscope
-set(APP_XSCOPE_SRCS config.xscope)
-
-# flags
+# Flags
 set(
     APP_COMPILER_FLAGS
     -O3

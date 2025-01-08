@@ -1,4 +1,4 @@
-// Copyright 2023-2024 XMOS LIMITED.
+// Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
@@ -7,38 +7,30 @@
 #include <string.h>
 
 #include "camera_io.h"
+#include "camera_utils.h"
 
 // -------------------- I/O -----------------------
-xscope_file_t file_read;
-
-void camera_io_fopen(const char *filename)
-{
-  file_read = xscope_open_file(filename, "rb");
-}
-
-void camera_io_fill_array_from_file(uint8_t *data, const size_t size)
-{
-  xscope_fread(&file_read, data, size);
-}
-
-void camera_io_rewind_file()
-{
-  xscope_fseek(&file_read, 0, SEEK_SET);
-}
 
 void camera_io_write_file(char * filename, uint8_t * data, const size_t size)
 {
-  xscope_file_t fp = xscope_open_file(filename, "wb");
-  xscope_fwrite(&fp, data, size);
-  xscope_fclose(&fp);
+  FILE * fp = fopen(filename, "wb");
+  fwrite(data, sizeof(uint8_t), size, fp);
+  fclose(fp);
 }
 
 void camera_io_write_image_file(char * filename, uint8_t * image, const size_t height, const size_t width, const size_t channels)
 {
   printf("Writing image...\n");
 
-  const size_t img_size = height * width * channels * sizeof(uint8_t);
-  camera_io_write_file(filename, image, img_size);
+  unsigned line_len = width * channels;
+  FILE * fp = fopen(filename, "wb");
+
+  for (unsigned line = 0; line < height; line++) {
+    fwrite(image, sizeof(uint8_t), line_len, fp);
+    image += line_len;
+    delay_milliseconds_cpp(1);
+  }
+  fclose(fp);
 
   printf("Image written into file: %s\n", filename);
   printf("Image dimentions: %d x %d\n\n", width, height);
@@ -101,10 +93,10 @@ void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t hei
 
   printf("Writing bmp image...\n");
 
-  xscope_file_t fp = xscope_open_file(filename, "wb");
+  FILE * fp = fopen(filename, "wb");
 
-  xscope_fwrite(&fp, bmpFileHeader, file_header_len * sizeof(unsigned char));
-  xscope_fwrite(&fp, bmpInfoHeader, info_header_len * sizeof(unsigned char));
+  fwrite(bmpFileHeader, sizeof(unsigned char), file_header_len, fp);
+  fwrite(bmpInfoHeader, sizeof(unsigned char), info_header_len, fp);
 
   for(int64_t i = height - 1; i >= 0; i--)
   {
@@ -112,21 +104,21 @@ void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t hei
     {
       // Write the pixel data (assuming RGB order)
       size_t offset = i * (channels * width) + j * channels;
-      xscope_fwrite(&fp, &image[offset + 2], 1 * sizeof(uint8_t)); // Blue
-      xscope_fwrite(&fp, &image[offset + 1], 1 * sizeof(uint8_t)); // Green
-      xscope_fwrite(&fp, &image[offset + 0], 1 * sizeof(uint8_t)); // Red
+      fwrite(&image[offset + 2], sizeof(uint8_t), 1, fp); // Blue
+      fwrite(&image[offset + 1], sizeof(uint8_t), 1, fp); // Green
+      fwrite(&image[offset + 0], sizeof(uint8_t), 1, fp); // Red
       // For 4-channel images, you can write the alpha channel here
       // not sure about the comemnt below
-      //xscope_fwrite(&fp, &image[offset + 3], 1 * sizeof(uint8_t)); // Alpha
+      //fwrite(, &image[offset + 3], sizeof(uint8_t), 1, fp); // Alpha
     }
     if(paddingSize)
     {
       unsigned char padding_array[paddingSize];
       memset(padding_array, (int)'\0', paddingSize);
-      xscope_fwrite(&fp, padding_array, paddingSize * sizeof(unsigned char));
+      fwrite(padding_array, sizeof(unsigned char), paddingSize, fp);
     }
   }
-  xscope_fclose(&fp);
+  fclose(fp);
   printf("Image written into file: %s\n", filename);
   printf("Image dimentions: %d x %d\n", width, height);
 }
@@ -188,28 +180,28 @@ void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, 
 
   printf("Writing bmp image...\n");
 
-  xscope_file_t fp = xscope_open_file(filename, "wb");
+  FILE * fp = fopen(filename, "wb");
 
-  xscope_fwrite(&fp, bmpFileHeader, file_header_len * sizeof(unsigned char));
-  xscope_fwrite(&fp, bmpInfoHeader, info_header_len * sizeof(unsigned char));
+  fwrite(bmpFileHeader, sizeof(unsigned char), file_header_len, fp);
+  fwrite(bmpInfoHeader, sizeof(unsigned char), info_header_len, fp);
 
   for(int64_t i = height - 1; i >= 0; i--)
   {
     for(size_t j = 0; j < width; j++)
     {
       size_t offset = i * width + j;
-      xscope_fwrite(&fp, &image[offset], 1 * sizeof(uint8_t)); // Blue
-      xscope_fwrite(&fp, &image[offset], 1 * sizeof(uint8_t)); // Green
-      xscope_fwrite(&fp, &image[offset], 1 * sizeof(uint8_t)); // Red
+      fwrite(&image[offset], sizeof(uint8_t), 1, fp); // Blue
+      fwrite(&image[offset], sizeof(uint8_t), 1, fp); // Green
+      fwrite(&image[offset], sizeof(uint8_t), 1, fp); // Red
     }
     if(paddingSize)
     {
       unsigned char padding_array[paddingSize];
       memset(padding_array, (int)'\0', paddingSize);
-      xscope_fwrite(&fp, padding_array, paddingSize * sizeof(unsigned char));
+      fwrite(padding_array, sizeof(unsigned char), paddingSize, fp);
     }
   }
-  
+  fclose(fp);
   printf("Image written into file: %s\n", filename);
   printf("Image dimentions: %d x %d\n", width, height);
 }

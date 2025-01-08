@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.32.0')
+@Library('xmos_jenkins_shared_library@v0.34.0')
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -19,14 +19,6 @@ def checkSkipLink() {
         skip_linkcheck = "clean html pdf"
     }
     return skip_linkcheck
-}
-
-def buildDocs(String zipFileName) {
-    withVenv {
-        sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.5.1'
-        sh 'xmosdoc'
-        zip zipFile: zipFileName, archive: true, dir: 'doc/_build'
-    }
 }
 
 getApproval()
@@ -74,15 +66,16 @@ pipeline {
             stage('Create Python enviroment') {
               steps {
                 // Clone infrastructure repos
-                sh "git clone git@github.com:xmos/infr_apps"
                 sh "git clone git@github.com:xmos/infr_scripts_py"
-                sh "git clone git@github.com:xmos/xscope_fileio"
+                sh "git clone git@github.com:xmos/infr_apps"
                 // can't use createVenv on the top level yet
                 dir('lib_camera') {
-                  createVenv(reqFile: "requirements.txt")
-                  withVenv {
-                    sh "pip install -e ../infr_scripts_py"
-                    sh "pip install -e ../infr_apps"
+                  withTools(params.TOOLS_VERSION) {
+                    createVenv(reqFile: "requirements.txt")
+                    withVenv {
+                      sh "pip install -e ../infr_scripts_py"
+                      sh "pip install -e ../infr_apps"
+                    }
                   }
                 }
               }
@@ -94,11 +87,13 @@ pipeline {
                   versionChecks()
                   withVenv {
                     dir('tests/lib_checks') {
-                      sh "pytest -s"
+                      withEnv(["XMOS_ROOT=${WORKSPACE}"]) {
+                        sh "pytest -s"
+                      }
                     }
-                  }
-                }
-              }
+                  } // Venv
+                } // dir
+              } // steps
             } // Source check
 
             stage('Unit tests') {
@@ -108,7 +103,18 @@ pipeline {
                     sh 'xrun --id 0 --xscope bin/test_camera.xe'
                   }
                 }
-              }
+              } // steps
+            } // Unit tests
+
+            stage('ISP tests') {
+              steps {
+                dir('lib_camera/tests/isp') {
+                  withVenv {
+                  withTools(params.TOOLS_VERSION) {
+                    sh 'pytest'
+                  }} // Venv and tools
+                } // dir
+              } // steps
             } // Unit tests
 
           } // stages
@@ -130,7 +136,7 @@ pipeline {
               createVenv("requirements.txt")
               // uncommented till we have docs again
               /*withTools(params.TOOLS_VERSION) {
-                buildDocs("lib_camera_docs.zip")
+                buildDocs(archiveZipOnly: true)
               } // withTools*/
             } // dir
           } // steps

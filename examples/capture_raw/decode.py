@@ -1,4 +1,4 @@
-# Copyright 2024 XMOS LIMITED.
+# Copyright 2024-2025 XMOS LIMITED.
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 import os
@@ -38,8 +38,9 @@ def process_image(input_name, width=400, height=300, flip=False, as_shot_neutral
     with open(input_name, "rb") as f:
         data = f.read()
 
-    buffer = np.frombuffer(data, dtype=np.uint8)
-
+    buffer = np.frombuffer(data, dtype=np.int8)
+    buffer = buffer.astype(np.int16) + 128
+    buffer = buffer.astype(np.uint8)
     img = buffer.reshape(height, width, 1)
     print("unpacked_data")
 

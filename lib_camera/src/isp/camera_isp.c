@@ -1,4 +1,4 @@
-// Copyright 2023-2024 XMOS LIMITED.
+// Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
@@ -20,14 +20,6 @@
 #include "camera_utils.h"
 #include "camera_mipi.h"
 #include "sensor_wrapper.h"
-
-#define ALIGNED_8 __attribute__((aligned(8)))
-
-extern
-void xmemcpy(
-  void* dst,
-  const void* src,
-  unsigned bytes);
 
 
 // -------- Globals & Constants -------------
@@ -53,52 +45,7 @@ const unsigned sensor_width_max_values[] = {
 };
 
 // -------- Image transformations --------
-static
-void camera_isp_raw8_to_raw8(image_cfg_t* image, int8_t* data_in) {
-  unsigned ln = ph_state.in_line_number;
-  unsigned img_ln = ln - image->config->y1;
-  int8_t* data_src = data_in + image->config->x1;
-  int8_t* data_dst = image->ptr + (img_ln * image->width);
-  xmemcpy(
-    data_dst,
-    data_src,
-    image->width);
-}
 
-static
-void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in) {
-  //TODO: implement
-  
-  /*
-  unsigned ln = ph_state.in_line_number;
-  unsigned img_ln = ln - image->config->y1;
-  unsigned sensor_width = image->config->sensor_width;
-  int8_t* data_src = data_in + image->config->x1;
-  
-  // 4 rows of 200 pixels
-  static int8_t input_rows[4][MODE_RGB1_MAX_SIZE];
-  
-  // if even
-  xmemcpy(&input_rows[0][0], &input_rows[2][0], sensor_width);     // move [2][x] to [0][x]
-  xmemcpy(&input_rows[1][0], &input_rows[3][0], sensor_width);     // move [3][x] to [1][x]
-  xmemcpy(&input_rows[2][0], data_src, sensor_width);              // move new data to [2][x]
-
-  // if odd
-  xmemcpy(&input_rows[3][0], data_src, sensor_width);              // move new data to [3][x]
-  //TODO compute demosaic
-  //TODO store output
-  */
-}
-
-static
-void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in) {
-  //TODO: implement
-}
-
-static
-void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in) {
-  //TODO: implement
-}
 
 // -------- State handlers --------
 
@@ -145,19 +92,19 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
   switch (mode)
   {
     case MODE_RAW:{
-      camera_isp_raw8_to_raw8(image, data_in);
+      camera_isp_raw8_to_raw8(image, data_in, ln);
       break;
     }
     case MODE_RGB1:{
-      camera_isp_raw8_to_rgb1(image, data_in);
+      camera_isp_raw8_to_rgb1(image, data_in, ln);
       break;
     }
     case MODE_RGB2:{
-      camera_isp_raw8_to_rgb2(image, data_in);
+      camera_isp_raw8_to_rgb2(image, data_in, ln);
       break;
     }
     case MODE_RGB4:{
-      camera_isp_raw8_to_rgb4(image, data_in);
+      camera_isp_raw8_to_rgb4(image, data_in, ln);
       break;
     }
     default:{
@@ -173,12 +120,12 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
 
 inline
 void camera_isp_coordinates_print(image_cfg_t* img_cfg){
-  camera_configure_t *cfg = img_cfg->config;
+  camera_cfg_t *cfg = img_cfg->config;
   printf("x1: %d, y1: %d, x2: %d, y2: %d\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);  
 }
 
 void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
-  camera_configure_t *cfg = img_cfg->config;
+  camera_cfg_t *cfg = img_cfg->config;
 
   // If RAW, scale = 1
   unsigned scale = (cfg->mode == MODE_RAW) ? 1 : (unsigned)(cfg->mode);
@@ -264,7 +211,7 @@ void camera_isp_packet_handler(
   // Handle packets depending on their type
   switch (data_type) {
     case MIPI_DT_FRAME_START:
-      debug_printf("SOF\n");
+      //debug_printf("SOF\n");
       t_init = get_reference_time();
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
@@ -280,7 +227,7 @@ void camera_isp_packet_handler(
       break;
 
     case MIPI_DT_FRAME_END:
-      debug_printf("EOF\n");
+      //debug_printf("EOF\n");
       t_end = get_reference_time();
       debug_printf("Frame time: %d cycles\n", t_end - t_init);
       handle_end_of_frame(image_cfg, c_isp_to_user);

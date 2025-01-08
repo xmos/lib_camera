@@ -1,4 +1,4 @@
-// Copyright 2023-2024 XMOS LIMITED.
+// Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #pragma once
@@ -8,6 +8,9 @@
 #include "api.h"
 #include "camera.h" // packet size
 
+#define ALIGNED_8 __attribute__((aligned(8)))
+
+// MIPI packet size
 #define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)
 
@@ -37,7 +40,7 @@ typedef struct
   unsigned x1, y1, x2, y2;  // Mipi region
   unsigned sensor_width;    // Mipi region width
   unsigned sensor_height;   // Mipi region height
-} camera_configure_t;
+} camera_cfg_t;
 
 // this will hold the image data and possible configurations
 // we could split this into two structs, but for now we will keep it simple
@@ -46,8 +49,9 @@ typedef struct {
   unsigned height;
   unsigned width;
   unsigned channels;
+  unsigned size;
   int8_t* ptr;
-  camera_configure_t* config;
+  camera_cfg_t* config;
 } image_cfg_t;
 
 // this struct will hold the mipi header and data
@@ -102,5 +106,11 @@ void camera_isp_thread(
   chanend_t c_ctrl,
   chanend_t c_cam);
 
+
+// -------- RAW to RGB -------------------
+void camera_isp_raw8_to_raw8(image_cfg_t* image, int8_t* data_in, unsigned ln);
+void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned ln);
+void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in, unsigned ln);
+void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
 
 C_API_END

@@ -1,5 +1,5 @@
-Example: take picture downsample
-================================
+Example: Capture Raw
+====================
 
 This example runs intermetly a sequence of start-capture-stop. 
 It prints in the console every time it recieves a:
@@ -22,6 +22,6 @@ Run the following command from the current folder:
     cmake -G "Ninja" -B build
     ninja -C build
     # Run 
-    python ../../python/run_xscope_bin.py bin/capture_raw.xe
+    xrun --xscope bin/capture_raw.xe
     # Decode Image
     python decode.py

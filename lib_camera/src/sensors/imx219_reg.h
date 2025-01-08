@@ -1,4 +1,4 @@
-// Copyright 2023-2024 XMOS LIMITED.
+// Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #pragma once
@@ -27,7 +27,7 @@
 #define REG_ORIENTATION   0x0172
 
 // PLL settings
-#define PLL_VT_MPY          0x0040 // pll1 - pix clk
+#define PLL_VT_MPY          0x0024 // pll1 - pix clk
 #define PLL_OP_MPY          0x0040 // pll2 - mipi clk
 
 // if PLL1 < PLL2 data always correct
@@ -56,13 +56,13 @@ static i2c_line_t imx219_common_regs[] = {
 
   /* PLL Clock Table */
   { 0x812A, 0x1800 }, /* EXCK_FREQ          24.00, for 24 Mhz */
-  { 0x0304, 0x03 }, /* PREPLLCK_VT_DIV      2, for pre divide by 2 */
-  { 0x0305, 0x03 }, /* PREPLLCK_OP_DIV      2, for pre divide by 2 */
+  { 0x0304, 0x02 }, /* PREPLLCK_VT_DIV      2, for pre divide by 2 */
+  { 0x0305, 0x02 }, /* PREPLLCK_OP_DIV      2, for pre divide by 2 */
   { 0x8306, PLL_VT_MPY}, /* PLL_VT_MPY      0x27, for multiply by 39, pixclk=187.2 MHz */
   { 0x830C, PLL_OP_MPY}, /* PLL_OP_MPY      0x40, for multiply by 64, MIPI clk=768 MHz */
-  { 0x0301, 0x05 }, /* VTPXCK_DIV           5, ? */
+  { 0x0301, 0x0A }, /* VTPXCK_DIV           5, ? */
   { 0x0303, 0x01 }, /* VTSYCK_DIV           1, ? */
-  { 0x0309, 0x08 }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
+  { 0x0309, 0x0A }, /* OPPXCK_DIV           8, has to match RAW8 if you have raw8*/
   { 0x030B, 0x01 }, /* OPSYCK_DIV           1, has to be 1? */
   
   // pck clock
