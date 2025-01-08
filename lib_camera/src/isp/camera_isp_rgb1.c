@@ -5,12 +5,13 @@
 #include <stdio.h>
 
 #include <debug_print.h>
+#include <xcore/assert.h>
 
 #include "camera.h"
 #include "camera_isp.h"
 #include "camera_utils.h"
 
-#include "kernels_rgb1.h"
+#include "kernels_rgb.h"
 
 #define IMG_PTR(img, h, w, ch, width, channels) \
     ((img) + ((h) * (width) + (w)) * (channels) + (ch))
@@ -92,8 +93,8 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
     unsigned y1 = image->config->y1;
     unsigned img_width = image->width;
     unsigned img_channels = image->channels;
-    unsigned img_ln = sensor_ln - y1;
-    unsigned row_offset = img_width * img_channels;
+    unsigned img_ln = sensor_ln - y1 - 1;
+    unsigned row_len = img_width * img_channels;
     int8_t *img_ptr = image->ptr;
     int8_t* data_src = data_in + x1;
 
@@ -115,9 +116,44 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
             // construct the blocks 4x8 = 32 (to further fill vpu)
             load_block(&block[0], &input_rows[0][xpos], MODE_RGB1_MAX_SIZE);
             // demosaic, we assume red start
-            int8_t *output1 = IMG_PTR(img_ptr, img_ln - 1, xpos, 0, img_width, img_channels);
-            int8_t *output2 = output1 + row_offset; // Just move down one row
+            int8_t *output1 = IMG_PTR(img_ptr, img_ln, xpos, 0, img_width, img_channels);
+            // output1 = (img_ptr) + ((img_ln * img_width) + xpos) * (img_channels)
+            // output1 = (img_ptr) + (img_ln * img_width * img_channels) + (xpos * img_channels)
+            // output1 += 24
+            int8_t *output2 = output1 + row_len; // Just move down one row
             demosaic(output1, output2, block);
         }
+    }
+}
+
+extern void demosaic_4raw_2rgb(int8_t * img_ptr, int8_t * tmp_buff, 
+unsigned img_ln, unsigned img_width, unsigned tmp_width);
+
+void camera_isp_raw8_to_rgb1_but_better(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln) {
+    unsigned x1 = image->config->x1; //TODO create a logic to check only if needed
+    unsigned y1 = image->config->y1;
+    unsigned img_width = image->width;
+    unsigned img_channels = image->channels;
+    xassert(img_channels == 3);
+    int8_t* data_src = data_in + x1;
+
+    // 4 rows of 200 pixels
+    static int8_t input_rows[4][MODE_RGB1_MAX_SIZE] ALIGNED_8 = { {0} };
+
+    // if even, move data, if odd compute
+    unsigned ln_is_even = (sensor_ln % 2 == 0);
+    if (ln_is_even) {
+        xmemcpy(&input_rows[0][0], &input_rows[2][0], img_width);     // move [2][x] to [0][x]
+        xmemcpy(&input_rows[1][0], &input_rows[3][0], img_width);     // move [3][x] to [1][x]
+        xmemcpy(&input_rows[2][0], data_src, img_width);              // move new data to [2][x]
+    }
+    else{ // if odd
+        unsigned img_ln = sensor_ln - y1 - 1;        
+        int8_t *img_ptr = image->ptr;
+
+        xmemcpy(&input_rows[3][0], data_src, img_width);              // move new data to [3][x]
+
+        // img_ptr, buff, img_ln, img_width, tmp_width
+        demosaic_4raw_2rgb(img_ptr, &input_rows[0][0], img_ln, img_width, MODE_RGB1_MAX_SIZE);
     }
 }
