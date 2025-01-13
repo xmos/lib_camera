@@ -31,6 +31,16 @@
 #define FILE_OUT_NAME "src/imgs/capture0_int8_out.rgb"
 #endif
 
+#ifndef USE_OPTIMISED
+#define USE_OPTIMISED 0
+#endif
+
+#if USE_OPTIMISED == 0
+#define CAMERA_ISP_RAW8_RGB1 camera_isp_raw8_to_rgb1_baseline
+#elif USE_OPTIMISED == 1
+#define CAMERA_ISP_RAW8_RGB1 camera_isp_raw8_to_rgb1
+#endif
+
 void test_isp() {    
     printf("[test_isp]\n");
 
@@ -61,7 +71,7 @@ void test_isp() {
     for (int i = 0; i < image.height; i++) {
         fread((uint8_t*)&img_row[0], 1, image.width, fp);
         ta = get_reference_time();
-        camera_isp_raw8_to_rgb1(&image, img_row, i);
+        CAMERA_ISP_RAW8_RGB1(&image, img_row, i);
         tb += get_reference_time() - ta;
     }
     float ops_per_pixel = (float)tb / (image.height * image.width * image.channels);

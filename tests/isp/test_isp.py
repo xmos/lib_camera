@@ -13,32 +13,38 @@ from utils import ImageDecoder, ImageMetrics
 
 met = ImageMetrics()
 cwd = Path(__file__).parent.absolute()
+
+# Define test files
 imgs = cwd / "src" / "imgs"
 test_files = imgs.glob("*.raw")
+test_results = []
 
 # cmake, make, run commands
 cmake_tmpl = Template(
     'cmake \
         -D FILE_IN_NAME="$file_in" \
         -D FILE_OUT_NAME="$file_out" \
+        -D USE_OPTIMISED=$opt \
         -G Ninja -B build --fresh --log-level=ERROR'
 )
-build_cmd = 'ninja -C build'
+build_cmd = "ninja -C build"
 run_cmd = 'xsim --xscope "-offline trace.xmt" bin/test_isp_rgb1.xe'
 
 
-def raw_to_rgb_xcore(raw_file: Path):
+def raw_to_rgb_xcore(raw_file: Path, optimised=0):
     # give cmake a input and output file and runs the isp test
     in_cmake = str(raw_file.relative_to(cwd)).replace("\\", "/")
     out_cmake = in_cmake.replace(".raw", ".rgb")
     out_path = raw_file.with_suffix(".rgb")
-    cmake_cmd = cmake_tmpl.substitute(file_in=in_cmake, file_out=out_cmake)
+    cmake_cmd = cmake_tmpl.substitute(
+        file_in=in_cmake, file_out=out_cmake, opt=optimised
+    )
     subprocess.run(cmake_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(build_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
     # decode rgb to png image
     dec = ImageDecoder(mode="rgb")
-    out = raw_file.with_name(raw_file.stem + "_xcore").with_suffix(".png")
+    out = raw_file.with_name(raw_file.stem + "_xcore" + f"opt_{optimised}").with_suffix(".png")
     return dec.decode_rgb(out_path, out)
 
 
@@ -48,15 +54,24 @@ def raw_to_rgb_python(raw_file: Path):
     out = raw_file.with_name(raw_file.stem + "_python").with_suffix(".png")
     return dec.decode_raw8(raw_file, out)
 
-
+@pytest.fixture
+def print_report():
+    yield
+    print("\n=============== Test results ====================")
+    for res in test_results: print(res)
+    print("===================================================")
+    
+@pytest.mark.usefixtures("print_report")
 @pytest.mark.parametrize("file_in", test_files)
 def test_isp(file_in):
     print("\n===================================")
     print("Testing file:", file_in)
-    img_xcore = raw_to_rgb_xcore(file_in)
+    img_xcore_inline = raw_to_rgb_xcore(file_in, 0)
+    img_xcore = raw_to_rgb_xcore(file_in, 1)
     img_python = raw_to_rgb_python(file_in)
-    met.get_metric(img_xcore, img_python, idx=file_in.stem, check=True, mprint=True)
-
-
+    result_base = met.get_metric(img_xcore_inline, img_python, idx=file_in.stem, check=True, mprint=True)
+    result_opt = met.get_metric(img_xcore, img_python, idx=file_in.stem, check=True, mprint=True)
+    test_results.append(f"{file_in.name}: non-opt:{result_base} opt:{result_opt}")
+    
 if __name__ == "__main__":
     pytest.main()

@@ -17,6 +17,7 @@ set(APP_HW_TARGET src/XCORE-VISION-EXPLORER.xn)
 # options
 option(FILE_IN_NAME "Pass FILE_IN_NAME value" OFF)
 option(FILE_OUT_NAME "Pass FILE_OUT_NAME value" OFF)
+option(USE_OPTIMISED "Use optimised version of the code" OFF)
 
 # flags
 set(
@@ -36,5 +37,8 @@ if (FILE_OUT_NAME)
 list(APPEND APP_COMPILER_FLAGS -DFILE_OUT_NAME="${FILE_OUT_NAME}")
 endif()
 
+if (USE_OPTIMISED)
+list(APPEND APP_COMPILER_FLAGS -DUSE_OPTIMISED=1)
+endif()
 
 XMOS_REGISTER_APP()

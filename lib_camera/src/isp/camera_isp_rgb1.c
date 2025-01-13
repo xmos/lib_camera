@@ -88,7 +88,7 @@ void demosaic(
     }
 }
 
-void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln) {
+void camera_isp_raw8_to_rgb1_baseline(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln) {
     unsigned x1 = image->config->x1; //TODO create a logic to check only if needed
     unsigned y1 = image->config->y1;
     unsigned img_width = image->width;
@@ -126,10 +126,11 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
     }
 }
 
-extern void demosaic_4raw_2rgb(int8_t * img_ptr, int8_t * tmp_buff, 
-unsigned img_ln, unsigned img_width, unsigned tmp_width);
+extern void demosaic_4raw_2rgb(
+    int8_t * img_ptr, int8_t * tmp_buff, 
+    unsigned img_ln, unsigned img_width, unsigned tmp_width);
 
-void camera_isp_raw8_to_rgb1_but_better(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln) {
+void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln) {
     unsigned x1 = image->config->x1; //TODO create a logic to check only if needed
     unsigned y1 = image->config->y1;
     unsigned img_width = image->width;
