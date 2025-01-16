@@ -1,13 +1,7 @@
+# Copyright 2025 XMOS LIMITED.
+# This Software is subject to the terms of the XMOS Public Licence: Version 1.
 import numpy as np
 
-"""
-green0 = [
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-]
-"""
 # 0
 red0 = [
     1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -165,8 +159,3 @@ kernel_array_rgb2 = np.array([
     red0, green0, blue0,    red1, green1, blue1,    red2, green2, blue2,    red3, green3, blue3,
     red4, green4, blue4,    red5, green5, blue5,    red6, green6, blue6,    red7, green7, blue7,
 ])
-
-def check_kernels(kernel_arr):
-    for kernel in kernel_arr:
-        assert kernel.sum() == 1.0, "Kernel does not sum to 1.0"
-    print("All kernels are valid")

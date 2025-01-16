@@ -93,6 +93,11 @@ class ImageDecoder(object):
     def _load_block_4x8(self, img, j, i):
         return img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
 
+    def check_kernels(self, kernel_arr):
+        for kernel in kernel_arr:
+            assert kernel.sum() == 1.0, "Kernel does not sum to 1.0"
+        print("All kernels are valid")
+        
     def raw8_to_rgb2_xcore(self, input_name: Path = None, output_name: Path = None):
         """This function mimics an xcore approach to convert from a raw8 image to rgb2.
         Kernels and Operations are all in float for simplicity.
@@ -110,6 +115,7 @@ class ImageDecoder(object):
         """
 
         kernels = kernel_array_rgb2
+        self.check_kernels(kernels)
         VR = np.zeros(32, dtype=np.float32)
         VC = np.zeros(32, dtype=np.float32)
 
