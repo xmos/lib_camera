@@ -10,6 +10,8 @@ from PIL import Image  # To avoid color BGR issues when writing
 from skimage.metrics import peak_signal_noise_ratio
 from skimage.metrics import structural_similarity
 
+from kernels import kernel_array_rgb2
+
 cwd = Path(__file__).parent.absolute()
 path_imgs = cwd / "src" / "imgs"
 
@@ -28,7 +30,7 @@ class ImageDecoder(object):
         self.dtype = dtype
         self.last_img = None
         self.modes = ["raw8", "rgb"]
-
+        
         if mode is not None:
             self.set_mode(mode)
 
@@ -42,15 +44,10 @@ class ImageDecoder(object):
 
         img = buffer.reshape(self.height, self.width, self.channels).astype(np.uint8)
         return img
-
-    def set_mode(self, mode):
-        assert mode in self.modes
-        self.channels = 1 if mode == "raw8" else 3 if mode == "rgb" else None
-
-    def decode_raw8(self, input_name=None, output_name=None):
-        assert self.channels == 1, "This method is only for raw images"
-        img = self._imgread(input_name)
-        img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB)  # we assum RG GB .. pattern
+    
+    def _imgsave(self, img: np.ndarray, input_name, output_name):
+        assert isinstance(img, np.ndarray), "Image must be a numpy array"    
+        img = np.clip(img, 0, 255).astype(np.uint8)
         img_pil = Image.fromarray(img)
         if output_name is None:
             output_name = Path(input_name).with_suffix(".png")
@@ -58,6 +55,61 @@ class ImageDecoder(object):
         print("Image saved in:", output_name)
         self.last_img = img_pil
         return img_pil
+
+    def set_mode(self, mode):
+        assert mode in self.modes
+        self.channels = 1 if mode == "raw8" else 3 if mode == "rgb" else None
+
+    def raw8_to_rgbx(self, input_name=None, output_name=None, k_factor=2):
+        img = self._imgread(input_name)
+        img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB)
+        img_pil = Image.fromarray(img)
+        if k_factor > 1:
+            img_pil = img_pil.resize((self.width // k_factor, self.height // k_factor))
+        if output_name is None:
+            output_name = Path(input_name).with_suffix(".png")
+        img_pil.save(output_name)
+        print("Image saved in:", output_name)
+        self.last_img = img_pil
+        return img_pil
+
+    def raw8_read(self, input_name):
+        img = self._imgread(input_name)
+        return img
+
+    def raw8_to_rgb1(self, input_name=None, output_name=None):
+        return self.raw8_to_rgbx(input_name, output_name, 1)
+
+    def raw8_to_rgb2(self, input_name=None, output_name=None):
+        return self.raw8_to_rgbx(input_name, output_name, 2)
+
+    def raw8_to_rgb2_xcore(self, input_name=None, output_name=None):
+        kernels = kernel_array_rgb2
+        img = self._imgread(input_name)
+        out_size = (self.height // 2, self.width // 2, 3)
+        img_out = np.zeros(out_size, dtype=np.float32).flatten()
+        row_len = (self.width // 2) * 3 # ptr len to next row in rgb
+        for j in range(0, self.height, 4):
+            rgb_ypos = (j // 2) * row_len # this is ptr_out height location
+            for i in range(0, self.width, 8):
+                # grab block of 4x8 pixels
+                VC_block = img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
+                rgb_xpos = (i // 2) * 3                     # this is ptr_out width location
+                for x in range(0, 12):                      # first group of vlmaccrs
+                    VR = np.dot(VC_block, kernels[x])
+                    count_row = rgb_ypos + rgb_xpos + x
+                    img_out[count_row] = VR
+                for x in range(12, 24):                 # start in 0, next row
+                    VR = np.dot(VC_block, kernels[x])
+                    count_row = rgb_ypos + rgb_xpos + (x - 12) + row_len
+                    img_out[count_row] = VR
+        img_out = img_out.reshape(out_size)
+        img_out_pil = self._imgsave(img_out, input_name, output_name)
+        return img_out_pil
+        
+    
+    def raw8_to_rgb4(self, input_name=None, output_name=None):
+        return self.raw8_to_rgbx(input_name, output_name, 4)
 
     def decode_rgb(self, input_name=None, output_name=None):
         assert self.channels == 3, "This method is only for RGB images"
@@ -77,6 +129,29 @@ class ImageDecoder(object):
         plt.axis("off")  # Optional: to turn off axis labels
         plt.title(title)
         plt.show()
+        
+    def generate_pure_raw(self, color="green", out_filename=None):
+        raw_img = np.zeros((self.height, self.width, 1), dtype=np.int8)
+        if color == "red":
+            raw_img[0::2, 0::2] = np.iinfo(np.int8).max
+            raw_img[0::2, 1::2] = np.iinfo(np.int8).min
+            raw_img[1::2, 0::2] = np.iinfo(np.int8).min
+            raw_img[1::2, 1::2] = np.iinfo(np.int8).min
+        elif color == "green":
+            raw_img[0::2, 0::2] = np.iinfo(np.int8).min
+            raw_img[0::2, 1::2] = np.iinfo(np.int8).max
+            raw_img[1::2, 0::2] = np.iinfo(np.int8).max
+            raw_img[1::2, 1::2] = np.iinfo(np.int8).min
+        elif color == "blue":
+            raw_img[0::2, 0::2] = np.iinfo(np.int8).min
+            raw_img[0::2, 1::2] = np.iinfo(np.int8).min
+            raw_img[1::2, 0::2] = np.iinfo(np.int8).min
+            raw_img[1::2, 1::2] = np.iinfo(np.int8).max
+        else:
+            raise ValueError("Invalid color choice")
+        with open(out_filename, "wb") as img:
+            img.write(raw_img)
+        return raw_img
 
 
 class ImageMetrics(object):
@@ -123,6 +198,6 @@ if __name__ == "__main__":
     dec1 = ImageDecoder(mode="raw8")
     met = ImageMetrics()
 
-    dec1.decode_raw8(raw_in)
+    dec1.raw8_to_rgb1(raw_in)
     dec0.decode_rgb(rgb_in)
     met.get_metric(dec0.last_img, dec1.last_img, "test", mprint=True)

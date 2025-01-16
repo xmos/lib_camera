@@ -31,7 +31,7 @@ build_cmd = "ninja -C build"
 run_cmd = 'xsim --xscope "-offline trace.xmt" bin/test_isp_rgb1.xe'
 
 
-def raw_to_rgb_xcore(raw_file: Path, optimised=0):
+def run_raw_to_rgb1_xcore(raw_file: Path, optimised=0):
     # give cmake a input and output file and runs the isp test
     in_cmake = str(raw_file.relative_to(cwd)).replace("\\", "/")
     out_cmake = in_cmake.replace(".raw", ".rgb")
@@ -48,11 +48,11 @@ def raw_to_rgb_xcore(raw_file: Path, optimised=0):
     return dec.decode_rgb(out_path, out)
 
 
-def raw_to_rgb_python(raw_file: Path):
+def run_raw_to_rgb_python(raw_file: Path):
     # takes raw image and convert it to rgb and rgb to png
     dec = ImageDecoder(mode="raw8")
     out = raw_file.with_name(raw_file.stem + "_python").with_suffix(".png")
-    return dec.decode_raw8(raw_file, out)
+    return dec.raw8_to_rgb1(raw_file, out)
 
 @pytest.fixture
 def print_report():
@@ -63,12 +63,12 @@ def print_report():
     
 @pytest.mark.usefixtures("print_report")
 @pytest.mark.parametrize("file_in", test_files)
-def test_isp(file_in):
+def test_rgb1(file_in):
     print("\n===================================")
     print("Testing file:", file_in)
-    img_xcore_inline = raw_to_rgb_xcore(file_in, 0)
-    img_xcore = raw_to_rgb_xcore(file_in, 1)
-    img_python = raw_to_rgb_python(file_in)
+    img_xcore_inline = run_raw_to_rgb1_xcore(file_in, 0)
+    img_xcore = run_raw_to_rgb1_xcore(file_in, 1)
+    img_python = run_raw_to_rgb_python(file_in)
     result_base = met.get_metric(img_xcore_inline, img_python, idx=file_in.stem, check=True, mprint=True)
     result_opt = met.get_metric(img_xcore, img_python, idx=file_in.stem, check=True, mprint=True)
     test_results.append(f"{file_in.name}: non-opt:{result_base} opt:{result_opt}")
