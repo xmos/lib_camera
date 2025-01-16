@@ -19,13 +19,16 @@ imgs = cwd / "src" / "imgs"
 test_files = imgs.glob("*.raw")
 test_results = []
 
+
 @pytest.fixture
 def print_report():
     yield
     print("\n\n")
     print("=============== Test results =========================")
-    for res in test_results: print(res)
+    for res in test_results:
+        print(res)
     print("======================================================")
+
 
 @pytest.mark.usefixtures("print_report")
 @pytest.mark.parametrize("file_in", test_files)
@@ -48,4 +51,4 @@ def test_rgb2(file_in):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    pytest.main(["-s", __file__])

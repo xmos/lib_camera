@@ -30,7 +30,7 @@ class ImageDecoder(object):
         self.dtype = dtype
         self.last_img = None
         self.modes = ["raw8", "rgb"]
-        
+
         if mode is not None:
             self.set_mode(mode)
 
@@ -44,9 +44,9 @@ class ImageDecoder(object):
 
         img = buffer.reshape(self.height, self.width, self.channels).astype(np.uint8)
         return img
-    
+
     def _imgsave(self, img: np.ndarray, input_name, output_name):
-        assert isinstance(img, np.ndarray), "Image must be a numpy array"    
+        assert isinstance(img, np.ndarray), "Image must be a numpy array"
         img = np.clip(img, 0, 255).astype(np.uint8)
         img_pil = Image.fromarray(img)
         if output_name is None:
@@ -83,31 +83,59 @@ class ImageDecoder(object):
     def raw8_to_rgb2(self, input_name=None, output_name=None):
         return self.raw8_to_rgbx(input_name, output_name, 2)
 
-    def raw8_to_rgb2_xcore(self, input_name=None, output_name=None):
+    def _vlmaccr_12times(self, VR, VC, MEM, MEM_ST=0):
+        for x in range(0, 12):  # first group of vlmaccrs
+            VR[x] = np.dot(VC, MEM[x + MEM_ST])
+
+    def _vstrpv(self, MEM, VR, MEM_ST=0, MEM_END=16):
+        MEM[MEM_ST : MEM_ST + MEM_END] = VR[:MEM_END]
+
+    def _load_block_4x8(self, img, j, i):
+        return img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
+
+    def raw8_to_rgb2_xcore(self, input_name: Path = None, output_name: Path = None):
+        """This function mimics an xcore approach to convert from a raw8 image to rgb2.
+        Kernels and Operations are all in float for simplicity.
+        In xcore all vpu logic is in int8, and kernel weights and saturations needs to be adjusted accordingly.
+        
+        The algorith is basically a channel split, with a 4x8 block processing. 
+        To avoid artifacts, further kernel logic could be implemented. for instance malvar kernels. 
+
+        Args:
+            input_name (Path, optional): input file name. Defaults to None.
+            output_name (Path, optional): output file name. Defaults to None.
+
+        Returns:
+            Pillow Image: returns demosaiced image.
+        """
+
         kernels = kernel_array_rgb2
+        VR = np.zeros(32, dtype=np.float32)
+        VC = np.zeros(32, dtype=np.float32)
+
         img = self._imgread(input_name)
         out_size = (self.height // 2, self.width // 2, 3)
         img_out = np.zeros(out_size, dtype=np.float32).flatten()
-        row_len = (self.width // 2) * 3 # ptr len to next row in rgb
+        row_len = (self.width // 2) * 3  # row length in rgb
         for j in range(0, self.height, 4):
-            rgb_ypos = (j // 2) * row_len # this is ptr_out height location
+            rgb_ypos = (j // 2) * row_len  # this is ptr_out height location
             for i in range(0, self.width, 8):
-                # grab block of 4x8 pixels
-                VC_block = img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
-                rgb_xpos = (i // 2) * 3                     # this is ptr_out width location
-                for x in range(0, 12):                      # first group of vlmaccrs
-                    VR = np.dot(VC_block, kernels[x])
-                    count_row = rgb_ypos + rgb_xpos + x
-                    img_out[count_row] = VR
-                for x in range(12, 24):                 # start in 0, next row
-                    VR = np.dot(VC_block, kernels[x])
-                    count_row = rgb_ypos + rgb_xpos + (x - 12) + row_len
-                    img_out[count_row] = VR
+                rgb_xpos = (i // 2) * 3  # this is ptr_out width location
+                rgb_pos1 = rgb_ypos + rgb_xpos  # this is ptr_out position for first row
+                rgb_pos2 = rgb_pos1 + row_len  # this is ptr_out position for second row
+
+                VC = self._load_block_4x8(img, j, i)  # load 4x8 block in memory
+
+                self._vlmaccr_12times(VR, VC, kernels, 0)  # first group of vlmaccrs
+                self._vstrpv(img_out, VR, rgb_pos1, 12)  # store first row
+
+                self._vlmaccr_12times(VR, VC, kernels, 12)  # second group of vlmaccrs
+                self._vstrpv(img_out, VR, rgb_pos2, 12)  # store second row
+
         img_out = img_out.reshape(out_size)
         img_out_pil = self._imgsave(img_out, input_name, output_name)
         return img_out_pil
-        
-    
+
     def raw8_to_rgb4(self, input_name=None, output_name=None):
         return self.raw8_to_rgbx(input_name, output_name, 4)
 
@@ -129,7 +157,7 @@ class ImageDecoder(object):
         plt.axis("off")  # Optional: to turn off axis labels
         plt.title(title)
         plt.show()
-        
+
     def generate_pure_raw(self, color="green", out_filename=None):
         raw_img = np.zeros((self.height, self.width, 1), dtype=np.int8)
         if color == "red":
