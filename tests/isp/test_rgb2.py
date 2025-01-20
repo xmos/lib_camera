@@ -2,11 +2,9 @@
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 import pytest
-import matplotlib.pyplot as plt
 import numpy as np
 import subprocess
 from pathlib import Path
-from PIL import Image  # To avoid color BGR issues when writing
 
 from string import Template
 from utils import ImageDecoder, ImageMetrics
@@ -19,36 +17,51 @@ imgs = cwd / "src" / "imgs"
 test_files = imgs.glob("*.raw")
 test_results = []
 
-
-@pytest.fixture
-def print_report():
-    yield
-    print("\n\n")
-    print("=============== Test results =========================")
-    for res in test_results:
-        print(res)
-    print("======================================================")
+def run_raw8_to_rgb2_xcore(raw_file: Path, outfile: Path):
+    # TODO implement xcore
+    pass
 
 
-@pytest.mark.usefixtures("print_report")
 @pytest.mark.parametrize("file_in", test_files)
 def test_rgb2(file_in):
     print("\n===================================")
     print("Testing file:", file_in)
     h, w = 200, 200
     dec = ImageDecoder(height=h, width=w, channels=1, dtype=np.int8)
-    # run opencv
-    outfile = file_in.with_name(file_in.stem + "_opencv").with_suffix(".png")
-    img2 = dec.raw8_to_rgb2(file_in, outfile)
-    # run xcore (Python)
-    outfile = file_in.with_name(file_in.stem + "_python_xcore").with_suffix(".png")
-    img1 = dec.raw8_to_rgb2_xcore(file_in, outfile)
-    # run xcore (xcore)
-    # TODO
-    # metrics
-    result_opt = met.get_metric(img1, img2, idx=file_in.stem, check=True, mprint=True)
-    test_results.append(result_opt)
+    
+    # ------- run opencv
+    ref_name = file_in.stem + "_rgb2_opencv"
+    ref_out = file_in.with_name(ref_name).with_suffix(".png")
+    ref_img = dec.raw8_to_rgb2(file_in, ref_out)
+    
+    # ------- run xcore (Python)
+    py_name = file_in.stem + "_rgb2_python"
+    py_out = file_in.with_name(py_name).with_suffix(".png")
+    py_img = dec.raw8_to_rgb2_xcore(file_in, py_out)
+    
+    # ------- run xcore (xcore)
+    xc_name = file_in.stem + "_rgb2_xcore"
+    xc_out = file_in.with_name(xc_name).with_suffix(".png")
+    xc_img = None  # TODO implement xcore
 
+    # ------- Results (opencv vs python)
+    results = met.get_metric(ref_name, ref_img, py_name, py_img)
+    test_results.append(results)
 
+    # ------- Results (python vs xcore) 
+    # TODO implement xcore
+    # results = met.get_metric(py_name, img_py, xc_name, xc_img)
+    # test_results.append(results)
+
+@pytest.fixture(scope="session", autouse=True)
+def print_results_at_end(request):
+    """Fixture to print results at the end of the test session."""
+    def print_results():
+        print("\n\nFinal Test Results:")
+        for result in test_results:
+            print(result)
+    request.addfinalizer(print_results)
+
+        
 if __name__ == "__main__":
     pytest.main(["-s", __file__])

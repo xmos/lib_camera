@@ -83,28 +83,18 @@ class ImageDecoder(object):
     def raw8_to_rgb2(self, input_name=None, output_name=None):
         return self.raw8_to_rgbx(input_name, output_name, 2)
 
-    def _vlmaccr_12times(self, VR, VC, MEM, MEM_ST=0):
-        for x in range(0, 12):  # first group of vlmaccrs
-            VR[x] = np.dot(VC, MEM[x + MEM_ST])
-
-    def _vstrpv(self, MEM, VR, MEM_ST=0, MEM_END=16):
-        MEM[MEM_ST : MEM_ST + MEM_END] = VR[:MEM_END]
-
-    def _load_block_4x8(self, img, j, i):
-        return img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
-
     def check_kernels(self, kernel_arr):
         for kernel in kernel_arr:
             assert kernel.sum() == 1.0, "Kernel does not sum to 1.0"
         print("All kernels are valid")
-        
+
     def raw8_to_rgb2_xcore(self, input_name: Path = None, output_name: Path = None):
         """This function mimics an xcore approach to convert from a raw8 image to rgb2.
         Kernels and Operations are all in float for simplicity.
-        In xcore all vpu logic is in int8, and kernel weights and saturations needs to be adjusted accordingly.
-        
-        The algorith is basically a channel split, with a 4x8 block processing. 
-        To avoid artifacts, further kernel logic could be implemented. for instance malvar kernels. 
+        Kernel weights and saturations needs to be adjusted accordingly if implemented in fix point.
+
+        The algorith is basically a channel split, with a 4x8 block processing.
+        To avoid artifacts, further kernel logic could be implemented.
 
         Args:
             input_name (Path, optional): input file name. Defaults to None.
@@ -113,12 +103,8 @@ class ImageDecoder(object):
         Returns:
             Pillow Image: returns demosaiced image.
         """
-
         kernels = kernel_array_rgb2
         self.check_kernels(kernels)
-        VR = np.zeros(32, dtype=np.float32)
-        VC = np.zeros(32, dtype=np.float32)
-
         img = self._imgread(input_name)
         out_size = (self.height // 2, self.width // 2, 3)
         img_out = np.zeros(out_size, dtype=np.float32).flatten()
@@ -128,15 +114,10 @@ class ImageDecoder(object):
             for i in range(0, self.width, 8):
                 rgb_xpos = (i // 2) * 3  # this is ptr_out width location
                 rgb_pos1 = rgb_ypos + rgb_xpos  # this is ptr_out position for first row
-                rgb_pos2 = rgb_pos1 + row_len  # this is ptr_out position for second row
-
-                VC = self._load_block_4x8(img, j, i)  # load 4x8 block in memory
-
-                self._vlmaccr_12times(VR, VC, kernels, 0)  # first group of vlmaccrs
-                self._vstrpv(img_out, VR, rgb_pos1, 12)  # store first row
-
-                self._vlmaccr_12times(VR, VC, kernels, 12)  # second group of vlmaccrs
-                self._vstrpv(img_out, VR, rgb_pos2, 12)  # store second row
+                block_4x8 = img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
+                for x in range(0, 24):
+                    row_start = rgb_pos1 if x < 12 else (rgb_pos1 + row_len - 12)
+                    img_out[row_start + x] = np.dot(block_4x8, kernels[x])
 
         img_out = img_out.reshape(out_size)
         img_out_pil = self._imgsave(img_out, input_name, output_name)
@@ -207,10 +188,18 @@ class ImageMetrics(object):
         score = peak_signal_noise_ratio(img_ref, img)
         return np.round(score, self.prec)
 
-    def get_metric(self, img_ref, img, idx=None, check=False, mprint=False):
-        ssim = self.ssim(img_ref, img)
-        psnr = self.psnr(img_ref, img)
-        d = {"name": idx, "ssim": ssim, "psnr": psnr}
+    def get_metric(
+        self,
+        ref_name: str,
+        ref: Image,
+        img_name: str,
+        img: Image,
+        check=True,
+        mprint=False,
+    ):
+        ssim = self.ssim(ref, img)
+        psnr = self.psnr(ref, img)
+        d = {"ref": ref_name, "img": img_name, "ssim": ssim, "psnr": psnr}
         if check:
             self.assert_metric(d)
         if mprint:
