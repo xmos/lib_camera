@@ -31,8 +31,8 @@
 #define FILE_OUT_NAME "src/imgs/capture0_int8_out.rgb"
 #endif
 
-void test_isp() {    
-    printf("[test_isp]\n");
+void test_isp_rgb1() {    
+    printf("[test_isp_rgb1]\n");
 
     // Create a Configuration
     int8_t image_buffer[H][W][CH] ALIGNED_8 = { {{0}} };
@@ -77,7 +77,7 @@ void test_isp() {
 }
 
 int main(){
-    test_isp();
+    test_isp_rgb1();
     return 0;
 }
 

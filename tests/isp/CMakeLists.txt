@@ -10,8 +10,7 @@ message("XMOS_SANDBOX_DIR: ${XMOS_SANDBOX_DIR}")
 list(APPEND APP_INCLUDES src)
 list(APPEND APP_DEPENDENT_MODULES "lib_camera")
 
-# Target, Xscope
-set(APP_XSCOPE_SRCS src/config.xscope)
+# Target
 set(APP_HW_TARGET src/XCORE-VISION-EXPLORER.xn)
 
 # options
@@ -35,6 +34,5 @@ endif()
 if (FILE_OUT_NAME)
 list(APPEND APP_COMPILER_FLAGS -DFILE_OUT_NAME="${FILE_OUT_NAME}")
 endif()
-
 
 XMOS_REGISTER_APP()
