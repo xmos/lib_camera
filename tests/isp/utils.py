@@ -10,7 +10,7 @@ from PIL import Image  # To avoid color BGR issues when writing
 from skimage.metrics import peak_signal_noise_ratio
 from skimage.metrics import structural_similarity
 
-from kernels import kernel_array_rgb2
+from kernels import kernel_array_rgb2, kernel_array_rgb1
 
 cwd = Path(__file__).parent.absolute()
 path_imgs = cwd / "src" / "imgs"
@@ -85,8 +85,40 @@ class ImageDecoder(object):
 
     def check_kernels(self, kernel_arr):
         for kernel in kernel_arr:
-            assert kernel.sum() == 1.0, "Kernel does not sum to 1.0"
+            assert kernel.sum() == 1.0, f"Kernel does not sum 1.0"
         print("All kernels are valid")
+
+    def raw8_to_rgb1_xcore(self, input_name: Path = None, output_name: Path = None):
+        """This function mimics an xcore approach to convert from a raw8 image to rgb1.
+        In RGB1 conversion each raw8 pixel is converted to 1RGB pixels.
+
+        Args:
+            input_name (Path, optional): input path to the raw image. Defaults to None.
+            output_name (Path, optional): output path to the output rgb image. Defaults to None.
+
+        Returns:
+            Image: rgb image in Pillow format.
+        """
+        kernels = kernel_array_rgb1
+        kernels = kernels / 4.0
+        self.check_kernels(kernels)
+        img = self._imgread(input_name)
+        out_size = (self.height, self.width, 3)
+        img_out = np.zeros(out_size, dtype=np.float32)
+        for j in range(0, self.height - 2, 2):
+            for i in range(0, self.width, 8):
+                block_4x8 = img[j : j + 4, i : i + 8].flatten()
+                block_output = np.zeros((48), dtype=np.float32)
+                for x, kernel in enumerate(kernels):
+                    block_output[x] = np.dot(block_4x8, kernel.flatten())
+                block_output = block_output.reshape((2, 8, 3))
+                img_out[j + 1 : j + 3, i : i + 8, 0] = block_output[:, :, 0]
+                img_out[j + 1 : j + 3, i : i + 8, 1] = block_output[:, :, 1]
+                img_out[j + 1 : j + 3, i : i + 8, 2] = block_output[:, :, 2]
+
+        img_out = img_out.reshape(out_size)
+        img_out_pil = self._imgsave(img_out, input_name, output_name)
+        return img_out_pil
 
     def raw8_to_rgb2_xcore(self, input_name: Path = None, output_name: Path = None):
         """This function mimics an xcore approach to convert from a raw8 image to rgb2.
@@ -117,7 +149,7 @@ class ImageDecoder(object):
                 block_4x8 = img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
                 for x in range(0, 24):
                     row_start = rgb_pos1 if x < 12 else (rgb_pos1 + row_len - 12)
-                    img_out[row_start + x] = np.dot(block_4x8, kernels[x])
+                    img_out[row_start + x] = np.dot(block_4x8, kernels[x].flatten())
 
         img_out = img_out.reshape(out_size)
         img_out_pil = self._imgsave(img_out, input_name, output_name)
@@ -214,13 +246,6 @@ class ImageMetrics(object):
 
 
 if __name__ == "__main__":
-    rgb_in = folder_in / "capture0_int8.rgb"
     raw_in = folder_in / "capture0_int8.raw"
-
-    dec0 = ImageDecoder(mode="rgb")
-    dec1 = ImageDecoder(mode="raw8")
-    met = ImageMetrics()
-
-    dec1.raw8_to_rgb1(raw_in)
-    dec0.decode_rgb(rgb_in)
-    met.get_metric(dec0.last_img, dec1.last_img, "test", mprint=True)
+    dec0 = ImageDecoder(mode="raw8")
+    dec0.raw8_to_rgb1_xcore(raw_in)

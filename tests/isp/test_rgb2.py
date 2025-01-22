@@ -57,7 +57,7 @@ def test_rgb2(file_in):
 def print_results_at_end(request):
     """Fixture to print results at the end of the test session."""
     def print_results():
-        print("\n\nFinal Test Results:")
+        print("\n\nFinal Test Results [RGB2]:")
         for result in test_results:
             print(result)
     request.addfinalizer(print_results)

@@ -56,7 +56,7 @@ def test_rgb1(file_in):
     # ------- run xcore (Python)
     py_name = file_in.stem + "_rgb1_python"
     py_out = file_in.with_name(py_name).with_suffix(".png")
-    py_img = None  # TODO implement RGB2 py xcore
+    py_img = dec.raw8_to_rgb1_xcore(file_in, py_out)
 
     # ------- run xcore (xcore)
     xc_name = file_in.stem + "_rgb1_xcore"
@@ -64,9 +64,8 @@ def test_rgb1(file_in):
     xc_img = run_raw8_to_rgb1_xcore(file_in, xc_out)
 
     # ------- Results (opencv vs python)
-    # TODO implement py_xcore
-    # results = met.get_metric(ref_name, ref_img, py_name, py_img)
-    # test_results.append(results)
+    results = met.get_metric(ref_name, ref_img, py_name, py_img)
+    test_results.append(results)
     
     # ------- Results (opencv vs xcore)
     results = met.get_metric(ref_name, ref_img, xc_name, xc_img)
@@ -78,7 +77,7 @@ def print_results_at_end(request):
     """Fixture to print results at the end of the test session."""
 
     def print_results():
-        print("\n\nFinal Test Results:")
+        print("\n\nFinal Test Results [RGB1]:")
         for result in test_results:
             print(result)
 
