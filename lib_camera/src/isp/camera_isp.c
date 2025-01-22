@@ -153,7 +153,8 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   cfg->sensor_height = cfg->y2 - cfg->y1;
   unsigned mode = cfg->mode;
   unsigned max_size = sensor_width_max_values[mode];
-  
+  unsigned div_factors[4] = {2, 4, 8, 16};
+
   // if raw ensure channels are 1, else 3
   unsigned cond_raw = (mode == MODE_RAW && img_cfg->channels == 1);
   unsigned cond_rgb = (mode != MODE_RAW && img_cfg->channels == 3);
@@ -171,6 +172,8 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   xassert(cfg->y1 < cfg->y2 && "y1");
   xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
   xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
+  xassert((img_cfg->width % div_factors[mode]) == 0 && "width not divisible by div_factors[mode]");
+  xassert((img_cfg->height % div_factors[mode]) == 0 && "height not divisible by div_factors[mode]");
 }
 
 // -------- Image API -------------------
