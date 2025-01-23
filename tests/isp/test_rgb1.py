@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 from string import Template
-from utils import ImageDecoder, ImageMetrics
+from utils import ImageDecoder, ImageMetrics, InputSize
 
 met = ImageMetrics()
 cwd = Path(__file__).parent.absolute()
@@ -37,16 +37,17 @@ def run_raw8_to_rgb1_xcore(raw_file: Path, outfile: Path):
     subprocess.run(cmake_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(build_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
-    dec = ImageDecoder(mode="rgb")  # decode rgb to png image
-    return dec.decode_rgb(out_path, outfile)
+    input_size = InputSize(height=200, width=200, channels=3, dtype=np.int8)
+    dec = ImageDecoder(input_size)
+    return dec.rgb_to_png(out_path, outfile)
 
 
 @pytest.mark.parametrize("file_in", test_files)
 def test_rgb1(file_in):
     print("\n===================================")
     print("Testing file:", file_in)
-    h, w = 200, 200
-    dec = ImageDecoder(height=h, width=w, channels=1, dtype=np.int8)
+    input_size = InputSize(height=200, width=200, channels=1, dtype=np.int8)
+    dec = ImageDecoder(input_size)
 
     # ------- run opencv
     ref_name = file_in.stem + "_rgb1_opencv"
@@ -56,7 +57,7 @@ def test_rgb1(file_in):
     # ------- run xcore (Python)
     py_name = file_in.stem + "_rgb1_python"
     py_out = file_in.with_name(py_name).with_suffix(".png")
-    py_img = None  # TODO implement RGB2 py xcore
+    py_img = dec.raw8_to_rgb1_xcore(file_in, py_out)
 
     # ------- run xcore (xcore)
     xc_name = file_in.stem + "_rgb1_xcore"
@@ -64,9 +65,8 @@ def test_rgb1(file_in):
     xc_img = run_raw8_to_rgb1_xcore(file_in, xc_out)
 
     # ------- Results (opencv vs python)
-    # TODO implement py_xcore
-    # results = met.get_metric(ref_name, ref_img, py_name, py_img)
-    # test_results.append(results)
+    results = met.get_metric(ref_name, ref_img, py_name, py_img)
+    test_results.append(results)
     
     # ------- Results (opencv vs xcore)
     results = met.get_metric(ref_name, ref_img, xc_name, xc_img)
@@ -78,7 +78,7 @@ def print_results_at_end(request):
     """Fixture to print results at the end of the test session."""
 
     def print_results():
-        print("\n\nFinal Test Results:")
+        print("\n\nFinal Test Results [RGB1]:")
         for result in test_results:
             print(result)
 

@@ -25,10 +25,10 @@ C_API_START
 
 // this enum will hold the camera modes
 typedef enum{
-  MODE_RAW = 0,
-  MODE_RGB1,
-  MODE_RGB2,
-  MODE_RGB4
+  MODE_RAW  = 0,
+  MODE_RGB1 = 1,
+  MODE_RGB2 = 2,
+  MODE_RGB4 = 4
 } camera_mode_t;
 
 // this struct will hold the configuration for the camera
