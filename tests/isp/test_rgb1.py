@@ -37,8 +37,9 @@ def run_raw8_to_rgb1_xcore(raw_file: Path, outfile: Path):
     subprocess.run(cmake_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(build_cmd, shell=True, cwd=cwd, check=True)
     subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
-    dec = ImageDecoder(mode="rgb")  # decode rgb to png image
-    return dec.decode_rgb(out_path, outfile)
+    input_size = InputSize(height=200, width=200, channels=3, dtype=np.int8)
+    dec = ImageDecoder(input_size)
+    return dec.rgb_to_png(out_path, outfile)
 
 
 @pytest.mark.parametrize("file_in", test_files)

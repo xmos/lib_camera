@@ -63,6 +63,8 @@ class ImageDecoder(object):
         self.last_img = img_pil
         return img_pil
 
+    # ------------------ RAW8 ------------------
+    
     def raw8_to_rgbx(self, input_name=None, output_name=None, k_factor=2):
         img = self._imgread(input_name)
         img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB)
@@ -157,6 +159,19 @@ class ImageDecoder(object):
         img_out_pil = self._imgsave(img_out, input_name, output_name)
         return img_out_pil
 
+    # ------------------ RGB ------------------
+    def rgb_to_png(self, input_name=None, output_name=None):
+        assert self.channels == 3, "This method is only for RGB images"
+        img = self._imgread(input_name)
+        img_pil = Image.fromarray(img)
+        if output_name is None:
+            output_name = Path(input_name).with_suffix(".png")
+        img_pil.save(output_name)
+        print("Image saved in:", output_name)
+        self.last_img = img_pil
+        return img_pil
+    
+    # ------------------ PLOT ------------------
     def plot(self, title=""):
         assert self.last_img is not None, "No image to plot"
         plt.figure()
