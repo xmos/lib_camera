@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 from string import Template
-from utils import ImageDecoder, ImageMetrics
+from utils import ImageDecoder, ImageMetrics, InputSize
 
 met = ImageMetrics()
 cwd = Path(__file__).parent.absolute()
@@ -45,8 +45,8 @@ def run_raw8_to_rgb1_xcore(raw_file: Path, outfile: Path):
 def test_rgb1(file_in):
     print("\n===================================")
     print("Testing file:", file_in)
-    h, w = 200, 200
-    dec = ImageDecoder(height=h, width=w, channels=1, dtype=np.int8)
+    input_size = InputSize(height=200, width=200, channels=1, dtype=np.int8)
+    dec = ImageDecoder(input_size)
 
     # ------- run opencv
     ref_name = file_in.stem + "_rgb1_opencv"
