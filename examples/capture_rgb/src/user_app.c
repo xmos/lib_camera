@@ -33,8 +33,8 @@ void save_image(image_cfg_t* image, char* filename) {
 void user_app(chanend_t c_cam) {
 
     // Image and configuration
-    const unsigned h = 196;
-    const unsigned w = 196;
+    const unsigned h = 200;
+    const unsigned w = 200;
     const unsigned ch = 3;
     const unsigned img_size = h * w * ch;
     int8_t image_buffer[img_size] = { 0 };
@@ -42,7 +42,7 @@ void user_app(chanend_t c_cam) {
     camera_cfg_t config = {
         .offset_x = 0,
         .offset_y = 0,
-        .mode = MODE_RGB2,
+        .mode = MODE_RGB1,
     };
     image_cfg_t image = {
         .height = h,
