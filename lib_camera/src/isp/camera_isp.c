@@ -128,7 +128,10 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   camera_cfg_t *cfg = img_cfg->config;
 
   // If RAW, scale = 1
-  unsigned scale = (cfg->mode == MODE_RAW) ? 1 : (unsigned)(cfg->mode);
+  unsigned mode = cfg->mode;
+  unsigned max_size = sensor_width_max_values[mode];
+  unsigned div_factor = (mode == MODE_RAW) ? 1 : (unsigned)(mode << 1);
+  unsigned scale = (mode == MODE_RAW) ? 1 : (unsigned)(mode);
 
   // Compute the coordinates of the region of interest
   cfg->x1 = cfg->offset_x * SENSOR_WIDHT;
@@ -151,10 +154,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   // compute sensor width and height
   cfg->sensor_width = cfg->x2 - cfg->x1;
   cfg->sensor_height = cfg->y2 - cfg->y1;
-  unsigned mode = cfg->mode;
-  unsigned max_size = sensor_width_max_values[mode];
-  unsigned div_factors[4] = {2, 4, 8, 16};
-
+  
   // if raw ensure channels are 1, else 3
   unsigned cond_raw = (mode == MODE_RAW && img_cfg->channels == 1);
   unsigned cond_rgb = (mode != MODE_RAW && img_cfg->channels == 3);
@@ -172,8 +172,8 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   xassert(cfg->y1 < cfg->y2 && "y1");
   xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
   xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
-  xassert((img_cfg->width % div_factors[mode]) == 0 && "width not divisible by div_factors[mode]");
-  xassert((img_cfg->height % div_factors[mode]) == 0 && "height not divisible by div_factors[mode]");
+  xassert((img_cfg->width % div_factor) == 0 && "width not divisible by div_factor");
+  xassert((img_cfg->height % div_factor) == 0 && "height not divisible by div_factor");
 }
 
 // -------- Image API -------------------
