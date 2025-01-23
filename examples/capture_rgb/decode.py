@@ -14,8 +14,8 @@ folder_out = path_imgs
 assert folder_in.exists(), f"Folder {folder_in} does not exist"
 
 def decode(input_name=None, output_name=None, plot=False):
-    height = 200
-    width = 200
+    height = 196
+    width = 196
     with open(input_name, "rb") as f:
         data = f.read()
 
@@ -36,6 +36,6 @@ def decode(input_name=None, output_name=None, plot=False):
 
 
 if __name__ == "__main__":
-    input_name = folder_in / "capture2.rgb"
+    input_name = folder_in / "capture1.rgb"
     output_name = folder_out / "capture1.png"
     decode(input_name=input_name, output_name=output_name, plot=True)
