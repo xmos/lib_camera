@@ -66,13 +66,13 @@ void user_app(chanend_t c_cam) {
     save_image(&image, FILE1_NAME);
 
     // change coordinates
-    /*config.offset_x = 0.5;
+    config.offset_x = 0.5;
     config.offset_y = 0.1;
     camera_isp_coordinates_compute(&image);
     camera_isp_start_capture(c_cam, &image);
     sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     camera_isp_get_capture(c_cam);
-    save_image(&image, FILE2_NAME);*/
+    save_image(&image, FILE2_NAME);
 
     // (Optional) try something makes no sense
     /*
