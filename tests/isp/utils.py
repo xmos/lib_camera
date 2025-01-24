@@ -23,8 +23,12 @@ folder_in = path_imgs
 folder_out = path_imgs
 assert folder_in.exists(), f"Folder {folder_in} does not exist"
 
+# this is the equivalent of the sensor size
+# is the max raw size, can be changed later
+SENSOR_HEIGHT = 200
+SENSOR_WIDTH = 200
 
-class InputSize(BaseModel):
+class ImgSize(BaseModel):
     height: int = 200
     width: int = 200
     channels: Literal[1, 3]
@@ -34,13 +38,15 @@ class InputSize(BaseModel):
 # TODO this classes will eventually be part of the library at some point
 # and will replace all small and independent python functions in "/python" folder
 class ImageDecoder(object):
-    def __init__(self, input_size: InputSize):
+    def __init__(self, input_size: ImgSize):
         self.height = input_size.height
         self.width = input_size.width
         self.channels = input_size.channels
         self.dtype = input_size.dtype
         self.last_img = None
         self.in_mode = "raw8" if self.channels == 1 else "rgb"
+        self.sns_height = SENSOR_HEIGHT
+        self.sns_width = SENSOR_WIDTH
 
     def _imgread(self, input_name):
         with open(input_name, "rb") as f:
@@ -50,6 +56,12 @@ class ImageDecoder(object):
         if self.dtype == np.int8:
             buffer = buffer.astype(np.int16) + 128
 
+        if self.channels == 1: # raw8
+            buffer = buffer.reshape(self.sns_height, self.sns_width, 1)
+            if self.sns_height != self.height or self.sns_width != self.width:
+                print("Cropping image")
+                buffer = buffer[:self.height, :self.width]
+            
         img = buffer.reshape(self.height, self.width, self.channels).astype(np.uint8)
         return img
 
@@ -67,11 +79,12 @@ class ImageDecoder(object):
     # ------------------ RAW8 ------------------
     
     def raw8_to_rgbx(self, input_name=None, output_name=None, k_factor=2):
+        filter = Image.Resampling.LANCZOS
         img = self._imgread(input_name)
         img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB)
         img_pil = Image.fromarray(img)
         if k_factor > 1:
-            img_pil = img_pil.resize((self.width // k_factor, self.height // k_factor))
+            img_pil = img_pil.resize((self.width // k_factor, self.height // k_factor), filter)
         if output_name is None:
             output_name = Path(input_name).with_suffix(".png")
         img_pil.save(output_name)
@@ -265,31 +278,25 @@ class ImageMetrics(object):
 
 
 
-def build_run_xcore(
+def xsim_xcore(
     infile: Path,
     outfile: Path,
     tmp_in: Path,
     tmp_out: Path,
     binary: Path,
+    out_size: ImgSize,
 ):
-    cmake_cmd = "cmake -G Ninja -B build"
-    build_cmd = "ninja -C build"
-    run_cmd = f'xsim --xscope "-offline trace.xmt" {binary}'
-
     # take input file to a temp binary file
     shutil.copy(infile, tmp_in)
 
     # cmake, make, run commands
-    subprocess.run(cmake_cmd, shell=True, cwd=cwd, check=True)
-    subprocess.run(build_cmd, shell=True, cwd=cwd, check=True)
+    run_cmd = f'xsim --xscope "-offline trace.xmt" {binary}'
     subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
-    input_size = InputSize(height=200, width=200, channels=3, dtype=np.int8)
-    dec = ImageDecoder(input_size)
-    return dec.rgb_to_png(tmp_out, outfile)
+    return ImageDecoder(out_size).rgb_to_png(tmp_out, outfile)
 
 if __name__ == "__main__":
     raw_in = folder_in / "capture0_int8.raw"
-    input_size = InputSize(height=200, width=200, channels=1, dtype=np.int8)
+    input_size = ImgSize(height=200, width=200, channels=1, dtype=np.int8)
     img_decoder = ImageDecoder(input_size)
     img_decoder.raw8_to_rgb1(raw_in)
     img_decoder.plot()

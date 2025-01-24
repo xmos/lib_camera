@@ -29,8 +29,8 @@
 #define in_size in_h * in_w * in_ch
 
 // Output image configuration
-#define out_h 64
-#define out_w 64
+#define out_h  96
+#define out_w  96
 #define out_ch 3
 #define out_size out_h * out_w * out_ch
 

@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 from string import Template
-from utils import ImageDecoder, ImageMetrics, InputSize, build_run_xcore
+from utils import ImageDecoder, ImageMetrics, ImgSize, xsim_xcore
 
 met = ImageMetrics()
 cwd = Path(__file__).parent.absolute()
@@ -30,7 +30,7 @@ binary = bin_path / "test_isp_rgb4.xe"
 def test_rgb4(file_in):
     print("\n===================================")
     print("Testing file:", file_in)
-    input_size = InputSize(height=200, width=200, channels=1, dtype=np.int8)
+    input_size = ImgSize(height=200, width=200, channels=1, dtype=np.int8)
     dec = ImageDecoder(input_size)
 
     # ------- run opencv
@@ -46,7 +46,7 @@ def test_rgb4(file_in):
     # ------- run xcore (xcore)
     xc_name = file_in.stem + "_rgb4_xcore"
     xc_out = file_in.with_name(xc_name).with_suffix(".png")
-    # xc_img = build_run_xcore(file_in, xc_out, tmp_in, tmp_out, binary)
+    # xc_img = xsim_xcore(file_in, xc_out, tmp_in, tmp_out, binary)
 
     # ------- Results (opencv vs python)
     results = met.get_metric(ref_name, ref_img, py_name, py_img)
