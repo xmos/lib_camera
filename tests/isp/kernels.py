@@ -495,6 +495,53 @@ kernel_rgb1_blue15 = [
     0, 0, 0, 0, 0, 0, 0, 2
 ]
 
+# -------------------- RGB4 --------------------
+# in : 4x8x1
+# out: 1x2x3
+
+qtr = 1/4
+qqr = 1/8
+
+kernel_rgb4_red0 = [
+    qtr, 0.0, qtr, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    qtr, 0.0, qtr, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+]
+kernel_rgb4_green0 = [
+    0.0, qqr, 0.0, qqr, 0.0, 0.0, 0.0, 0.0,
+    qqr, 0.0, qqr, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, qqr, 0.0, qqr, 0.0, 0.0, 0.0, 0.0,
+    qqr, 0.0, qqr, 0.0, 0.0, 0.0, 0.0, 0.0,
+]
+kernel_rgb4_blue0 = [
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, qtr, 0.0, qtr, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, qtr, 0.0, qtr, 0.0, 0.0, 0.0, 0.0,
+]
+
+kernel_rgb4_red1 = [
+    0.0, 0.0, 0.0, 0.0, qtr, 0.0, qtr, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, qtr, 0.0, qtr, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+]
+kernel_rgb4_green1 = [
+    0.0, 0.0, 0.0, 0.0, 0.0, qqr, 0.0, qqr,
+    0.0, 0.0, 0.0, 0.0, qqr, 0.0, qqr, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, qqr, 0.0, qqr,
+    0.0, 0.0, 0.0, 0.0, qqr, 0.0, qqr, 0.0,
+]
+kernel_rgb4_blue1 = [
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, qtr, 0.0, qtr,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, qtr, 0.0, qtr,
+]
+
+# ----------------------------------------------
+
 kernel_array_rgb1 = np.array([
     kernel_rgb1_red0, kernel_rgb1_green0, kernel_rgb1_blue0,
     kernel_rgb1_red1, kernel_rgb1_green1, kernel_rgb1_blue1,
@@ -523,4 +570,13 @@ kernel_array_rgb2 = np.array([
     kernel_rgb2_red5, kernel_rgb2_green5, kernel_rgb2_blue5,    
     kernel_rgb2_red6, kernel_rgb2_green6, kernel_rgb2_blue6,    
     kernel_rgb2_red7, kernel_rgb2_green7, kernel_rgb2_blue7,
+])
+
+kernel_array_rgb4 = np.array([
+    kernel_rgb4_red0,
+    kernel_rgb4_green0,
+    kernel_rgb4_blue0,
+    kernel_rgb4_red1,
+    kernel_rgb4_green1,
+    kernel_rgb4_blue1,
 ])
