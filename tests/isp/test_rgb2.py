@@ -37,19 +37,23 @@ def test_rgb2(file_in):
     print("Testing file:", file_in)
     dec = ImageDecoder(in_size_raw)
 
+    # out folder
+    out_folder = imgs / file_in.stem
+    out_folder.mkdir(exist_ok=True)
+    
     # ------- run opencv
-    ref_name = file_in.stem + "_rgb2_opencv"
-    ref_out = file_in.with_name(ref_name).with_suffix(".png")
+    ref_name = file_in.stem + "_rgb2_opencv.png"
+    ref_out = out_folder / ref_name
     ref_img = dec.raw8_to_rgb2(file_in, ref_out)
 
     # ------- run xcore (Python)
-    py_name = file_in.stem + "_rgb2_python"
-    py_out = file_in.with_name(py_name).with_suffix(".png")
+    py_name = file_in.stem + "_rgb2_python.png"
+    py_out = out_folder / py_name
     py_img = dec.raw8_to_rgb2_xcore(file_in, py_out)
 
     # ------- run xcore (xcore)
-    xc_name = file_in.stem + "_rgb2_xcore"
-    xc_out = file_in.with_name(xc_name).with_suffix(".png")
+    xc_name = file_in.stem + "_rgb2_xcore.png"
+    xc_out = out_folder / xc_name
     # xc_img = xsim_xcore(file_in, xc_out, tmp_in, tmp_out, binary, out_size_rgb)
 
     # ------- Results (opencv vs python)
