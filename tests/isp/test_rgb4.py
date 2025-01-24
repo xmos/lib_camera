@@ -25,13 +25,17 @@ tmp_in = imgs / "in_rgb4.bin"
 tmp_out = imgs / "out_rgb4.rgb"
 binary = bin_path / "test_isp_rgb4.xe"
 
+# Input image configuration
+in_size_raw = ImgSize(height=192, width=192, channels=1, dtype=np.int8)
+
+# Output image configuration
+out_size_rgb = ImgSize(height=192//4, width=192//4, channels=3, dtype=np.int8)
 
 @pytest.mark.parametrize("file_in", test_files)
 def test_rgb4(file_in):
     print("\n===================================")
     print("Testing file:", file_in)
-    input_size = ImgSize(height=200, width=200, channels=1, dtype=np.int8)
-    dec = ImageDecoder(input_size)
+    dec = ImageDecoder(in_size_raw)
 
     # ------- run opencv
     ref_name = file_in.stem + "_rgb4_opencv"
@@ -46,7 +50,7 @@ def test_rgb4(file_in):
     # ------- run xcore (xcore)
     xc_name = file_in.stem + "_rgb4_xcore"
     xc_out = file_in.with_name(xc_name).with_suffix(".png")
-    # xc_img = xsim_xcore(file_in, xc_out, tmp_in, tmp_out, binary)
+    # xc_img = xsim_xcore(file_in, xc_out, tmp_in, tmp_out, binary, out_size_rgb)
 
     # ------- Results (opencv vs python)
     results = met.get_metric(ref_name, ref_img, py_name, py_img)
