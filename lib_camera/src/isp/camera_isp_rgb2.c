@@ -11,7 +11,7 @@
 #include "camera_isp.h"
 #include "camera_utils.h"
 
-extern void demosaic_2ln_raw8_to_rgb(
+extern void split_chans_4ln_raw8_to_rgb(
     int8_t * img_ptr, int8_t * tmp_buff, 
     unsigned img_ln, unsigned img_width, unsigned tmp_width);
 
@@ -34,6 +34,6 @@ void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in, unsigned senso
         unsigned img_ln = sensor_ln - y1 - 3;
         int8_t *img_ptr = image->ptr;
 
-        demosaic_2ln_raw8_to_rgb(img_ptr, &input_rows[0][0], img_ln, img_width, MODE_RGB2_MAX_SIZE);
+        split_chans_4ln_raw8_to_rgb(img_ptr, &input_rows[0][0], img_ln, img_width, MODE_RGB2_MAX_SIZE);
     }
 }
