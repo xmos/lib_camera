@@ -2,14 +2,14 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 /*
-void demosaic_4raw_2rgb(int8_t * img_ptr, int8_t * tmp_buff, 
+void demosaic_2ln_raw8_to_rgb(int8_t * img_ptr, int8_t * tmp_buff, 
 unsigned img_ln, unsigned img_width, unsigned tmp_width);
 */
 
 .text
 .issue_mode dual
 
-#define FUNCTION_NAME   demosaic_4raw_2rgb
+#define FUNCTION_NAME   demosaic_2ln_raw8_to_rgb
 #define NSTACKWORDS     16
 
 #define STACK_TMP_WIDTH (NSTACKWORDS + 1)
@@ -81,10 +81,10 @@ mul r2, r2, r4
   ldd r8, r11, r4[0]
   std r8, r11, sp[STACK_TMP_VEC3>>1]
 
-  ldaw r11, cp[kernels12] // keep long
+  ldaw r11, cp[kernels_rgb1] // keep long
   { mov r4, r11               ; vldc r5[0]                }
   
-  ldaw r11, cp[kernel_shifts] // keep long
+  ldaw r11, cp[kernel_rgb1_shifts] // keep long
 
   .four_l_top:
 

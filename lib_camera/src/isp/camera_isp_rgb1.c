@@ -14,7 +14,7 @@
 #include "kernels_rgb.h"
 
 
-extern void demosaic_4raw_2rgb(
+extern void demosaic_2ln_raw8_to_rgb(
     int8_t * img_ptr, int8_t * tmp_buff, 
     unsigned img_ln, unsigned img_width, unsigned tmp_width);
 
@@ -43,6 +43,6 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
         xmemcpy(&input_rows[3][0], data_src, img_width);              // move new data to [3][x]
 
         // img_ptr, buff, img_ln, img_width, tmp_width
-        demosaic_4raw_2rgb(img_ptr, &input_rows[0][0], img_ln, img_width, MODE_RGB1_MAX_SIZE);
+        demosaic_2ln_raw8_to_rgb(img_ptr, &input_rows[0][0], img_ln, img_width, MODE_RGB1_MAX_SIZE);
     }
 }

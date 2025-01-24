@@ -36,6 +36,6 @@ def decode(input_name=None, output_name=None, plot=False):
 
 
 if __name__ == "__main__":
-    input_name = folder_in / "capture2.rgb"
+    input_name = folder_in / "capture1.rgb"
     output_name = folder_out / "capture1.png"
     decode(input_name=input_name, output_name=output_name, plot=True)
