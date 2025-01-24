@@ -162,7 +162,8 @@ class ImageDecoder(object):
         return img_out_pil
 
     def raw8_to_rgb4_xcore(self, input_name: Path = None, output_name: Path = None):
-        """This function mimics an xcore approach to convert from a raw8 image to rgb2.
+        """This function mimics an xcore approach to convert from a raw8 image to rgb4.
+        It produces a bilinear interpolation of 2x2 pixels from raw8 to rgb space.
         Kernels and Operations are all in float for simplicity.
         Kernel weights and saturations needs to be adjusted accordingly if implemented in fix point.
 
