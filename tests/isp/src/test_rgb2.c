@@ -19,8 +19,8 @@
 
 #define TO_MS(ticks) ((float)(ticks) / XS1_TIMER_KHZ)
 
-#define INPUT_FILE  "imgs/in_rgb1.bin" 
-#define OUTPUT_FILE "imgs/out_rgb1.rgb" 
+#define INPUT_FILE  "imgs/in_rgb2.bin" 
+#define OUTPUT_FILE "imgs/out_rgb2.rgb" 
 
 // Input image configuration
 #define in_h 200
@@ -34,7 +34,7 @@
 #define out_ch 3
 #define out_size out_h * out_w * out_ch
 
-void test_isp_rgb1() {    
+void test_isp_rgb2() {    
     // Time variables
     unsigned ta = 0, tb = 0;  
     
@@ -79,7 +79,7 @@ void test_isp_rgb1() {
 }
 
 int main(){
-    printf("[test_isp_rgb1]\n");
-    test_isp_rgb1();
+    printf("[test_isp_rgb2]\n");
+    test_isp_rgb2();
     return 0;
 }
