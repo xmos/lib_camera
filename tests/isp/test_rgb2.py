@@ -26,10 +26,10 @@ tmp_out = imgs / "out_rgb2.rgb"
 binary = bin_path / "test_isp_rgb2.xe"
 
 # Input image configuration
-in_size_raw = ImgSize(height=192, width=192, channels=1, dtype=np.int8)
+in_size_raw = ImgSize(height=200, width=200, channels=1, dtype=np.int8)
 
 # Output image configuration
-out_size_rgb = ImgSize(height=96, width=96, channels=3, dtype=np.int8)
+out_size_rgb = ImgSize(height=100, width=100, channels=3, dtype=np.int8)
 
 @pytest.mark.parametrize("file_in", test_files)
 def test_rgb2(file_in):
@@ -54,15 +54,15 @@ def test_rgb2(file_in):
     # ------- run xcore (xcore)
     xc_name = file_in.stem + "_rgb2_xcore.png"
     xc_out = out_folder / xc_name
-    # xc_img = xsim_xcore(file_in, xc_out, tmp_in, tmp_out, binary, out_size_rgb)
+    xc_img = xsim_xcore(file_in, xc_out, tmp_in, tmp_out, binary, out_size_rgb)
 
     # ------- Results (opencv vs python)
     results = met.get_metric(ref_name, ref_img, py_name, py_img)
     test_results.append(results)
 
     # ------- Results (opencv vs xcore)
-    # results = met.get_metric(ref_name, ref_img, xc_name, xc_img)
-    # test_results.append(results)
+    results = met.get_metric(ref_name, ref_img, xc_name, xc_img)
+    test_results.append(results)
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -35,42 +35,41 @@ std r6, r7, sp[1]
 std r8, r9, sp[2]
 
 // scale x and y down, keep original img_width
-shr r2, r2, 1
 mul r4, img_width, r11
 ldc r11, 0x200
-{ ldc _12, 12               ; vsetc r11                 }
+{ shr r2, r2, 1             ; vsetc r11                 }
 
 // offset the image pointer, get rid of img_ln
 // (img_ptr) + (img_ln * img_width * 3)
 mul r2, r2, r4
 { shr r3, img_width, 2      ; add img_ptr, img_ptr, r2  }
 
-{ mov r7, r4           ; ldw tmp_width, sp[STACK_TMP_WIDTH]}
+{ ldc _12, 12               ; ldw tmp_width, sp[STACK_TMP_WIDTH]}
 
 .width_loop_top:
 
   // construct the blocks 4x8
   // get samples from tmp_buff an put in the stack
   // accumulate tmp_buff ptr by 8
-  { mov r4, tmp_buff          ; add tmp_buff, tmp_buff, 8 }
+  { mov r7, tmp_buff          ; add tmp_buff, tmp_buff, 8 }
 
-  ldd r8, r11, r4[0]
+  ldd r8, r11, r7[0]
   std r8, r11, sp[STACK_TMP_VEC>>1]
-  { add r4, r4, tmp_width     ; ldaw r5, sp[STACK_TMP_VEC]}
+  { add r7, r7, tmp_width     ; ldaw r5, sp[STACK_TMP_VEC]}
 
-  ldd r8, r11, r4[0]
+  ldd r8, r11, r7[0]
   std r8, r11, sp[STACK_TMP_VEC1>>1]
-  { add r4, r4, tmp_width     ; sub r3, r3, 1             }
+  { add r7, r7, tmp_width     ; sub r3, r3, 1             }
 
-  ldd r8, r11, r4[0]
+  ldd r8, r11, r7[0]
   std r8, r11, sp[STACK_TMP_VEC2>>1]
-  { add r4, r4, tmp_width     ; ldc r6, 2                 }
+  { add r7, r7, tmp_width     ; ldc r6, 2                 }
 
-  ldd r8, r11, r4[0]
+  ldd r8, r11, r7[0]
   std r8, r11, sp[STACK_TMP_VEC3>>1]
 
   ldaw r11, cp[kernels_rgb2] // keep long
-  { mov r4, r11               ; vldc r5[0]                }
+  { mov r7, r11               ; vldc r5[0]                }
   
   ldaw r11, cp[kernel_rgb2_shifts] // keep long
 
@@ -81,18 +80,18 @@ mul r2, r2, r4
 
     .twelve_l_top:
 
-      { sub r5, r5, 1             ; vlmaccr r4[0]             }
-      { add r4, r4, r8            ; bt r5, .twelve_l_top      }
+      { sub r5, r5, 1             ; vlmaccr r7[0]             }
+      { add r7, r7, r8            ; bt r5, .twelve_l_top      }
 
     // 12 bytes -> 4 rgb pixels
     { mkmsk r8, _12             ; vlsat r11[0]              }
 
     vstrpv img_ptr[0], r8
 
-    { sub r8, r7, _12           ; bf r6, .end_loop          }
+    { sub r8, r4, _12           ; bf r6, .end_loop          }
 
     // + row len
-    { add img_ptr, img_ptr, r7  ; bu .two_l_top             }
+    { add img_ptr, img_ptr, r4  ; bu .two_l_top             }
 
   .end_loop:
 

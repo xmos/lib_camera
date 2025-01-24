@@ -5,8 +5,7 @@
 
 #include <kernels_rgb.h>
 
-// divide by 4 always
-const int16_t kernel_shifts[16] __attribute__((aligned(4))) = {
+const int16_t kernel_rgb1_shifts[16] __attribute__((aligned(4))) = {
     2,2,2,2,
     2,2,2,2,
     2,2,2,2,
@@ -19,7 +18,7 @@ const int16_t kernel_shifts[16] __attribute__((aligned(4))) = {
 // 8-15 second column
 
 // Due to VPU shifting, kernels are in BGR order so they will produce RGB pixels
-const int8_t kernels12[] __attribute__((aligned(4))) = {
+const int8_t kernels_rgb1[] __attribute__((aligned(4))) = {
 // kernel_blue3[32]
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 4, 0, 0, 0, 0,

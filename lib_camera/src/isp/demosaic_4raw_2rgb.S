@@ -81,10 +81,10 @@ mul r2, r2, r4
   ldd r8, r11, r4[0]
   std r8, r11, sp[STACK_TMP_VEC3>>1]
 
-  ldaw r11, cp[kernels12] // keep long
+  ldaw r11, cp[kernels_rgb1] // keep long
   { mov r4, r11               ; vldc r5[0]                }
   
-  ldaw r11, cp[kernel_shifts] // keep long
+  ldaw r11, cp[kernel_rgb1_shifts] // keep long
 
   .four_l_top:
 
