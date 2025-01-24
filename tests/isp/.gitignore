@@ -1,2 +1,3 @@
-!src/imgs/*.raw
-src/imgs/*.rgb
+!imgs/*.raw
+imgs/*.rgb
+imgs/*.bin
