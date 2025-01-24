@@ -2,7 +2,8 @@
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 import cv2
-
+import shutil
+import subprocess
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
@@ -13,10 +14,10 @@ from skimage.metrics import structural_similarity
 from typing import Optional, Literal
 from pydantic import BaseModel
 
-from kernels import kernel_array_rgb2, kernel_array_rgb1
+from kernels import kernel_array_rgb2, kernel_array_rgb1, kernel_array_rgb4
 
 cwd = Path(__file__).parent.absolute()
-path_imgs = cwd / "src" / "imgs"
+path_imgs = cwd / "imgs"
 
 folder_in = path_imgs
 folder_out = path_imgs
@@ -89,6 +90,7 @@ class ImageDecoder(object):
 
     def check_kernels(self, kernel_arr):
         for kernel in kernel_arr:
+            assert kernel.shape == (32,), f"Kernel shape is not 32"
             assert kernel.sum() == 1.0, f"Kernel does not sum 1.0"
         print("All kernels are valid")
 
@@ -159,6 +161,40 @@ class ImageDecoder(object):
         img_out_pil = self._imgsave(img_out, input_name, output_name)
         return img_out_pil
 
+    def raw8_to_rgb4_xcore(self, input_name: Path = None, output_name: Path = None):
+        """This function mimics an xcore approach to convert from a raw8 image to rgb2.
+        Kernels and Operations are all in float for simplicity.
+        Kernel weights and saturations needs to be adjusted accordingly if implemented in fix point.
+
+        The algorith is basically a channel split, with a 4x8 block processing.
+        To avoid artifacts, further kernel logic could be implemented.
+
+        Args:
+            input_name (Path, optional): input file name. Defaults to None.
+            output_name (Path, optional): output file name. Defaults to None.
+
+        Returns:
+            Pillow Image: returns demosaiced image.
+        """
+        kernels = kernel_array_rgb4
+        self.check_kernels(kernels)
+        img = self._imgread(input_name)
+        out_size = (self.height // 4, self.width // 4, 3)
+        img_out = np.zeros(out_size, dtype=np.float32).flatten()
+        row_len = (self.width // 4) * 3  # row length in rgb
+        for j in range(0, self.height, 4):
+            rgb_ypos = (j // 4) * row_len  # this is ptr_out height location
+            for i in range(0, self.width, 8):
+                rgb_xpos = (i // 4) * 3  # this is ptr_out width location
+                rgb_pos1 = rgb_ypos + rgb_xpos  # this is ptr_out position for first row
+                block_4x8 = img[j : j + 4, i : i + 8, 0].astype(np.float32).flatten()
+                for x in range(0, 6):
+                    img_out[rgb_pos1 + x] = np.dot(block_4x8, kernels[x].flatten())
+
+        img_out = img_out.reshape(out_size)
+        img_out_pil = self._imgsave(img_out, input_name, output_name)
+        return img_out_pil
+    
     # ------------------ RGB ------------------
     def rgb_to_png(self, input_name=None, output_name=None):
         assert self.channels == 3, "This method is only for RGB images"
@@ -226,6 +262,29 @@ class ImageMetrics(object):
         assert m["ssim"] > self.ssim_tol, err_txt
         assert m["psnr"] > self.psnr_tol, err_txt
 
+
+
+def build_run_xcore(
+    infile: Path,
+    outfile: Path,
+    tmp_in: Path,
+    tmp_out: Path,
+    binary: Path,
+):
+    cmake_cmd = "cmake -G Ninja -B build"
+    build_cmd = "ninja -C build"
+    run_cmd = f'xsim --xscope "-offline trace.xmt" {binary}'
+
+    # take input file to a temp binary file
+    shutil.copy(infile, tmp_in)
+
+    # cmake, make, run commands
+    subprocess.run(cmake_cmd, shell=True, cwd=cwd, check=True)
+    subprocess.run(build_cmd, shell=True, cwd=cwd, check=True)
+    subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
+    input_size = InputSize(height=200, width=200, channels=3, dtype=np.int8)
+    dec = ImageDecoder(input_size)
+    return dec.rgb_to_png(tmp_out, outfile)
 
 if __name__ == "__main__":
     raw_in = folder_in / "capture0_int8.raw"

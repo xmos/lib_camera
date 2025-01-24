@@ -1,21 +1,13 @@
+# ----- Common configuration -----
+
+# Cmake and Sandbox
 cmake_minimum_required(VERSION 3.21)
 include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
-project(test_isp_rgb1)
-
-# Sandbox configuration
 set(XMOS_SANDBOX_DIR ${CMAKE_SOURCE_DIR}/../../..)
 message("XMOS_SANDBOX_DIR: ${XMOS_SANDBOX_DIR}")
 
-# Includes and dependancies
-list(APPEND APP_INCLUDES src)
-list(APPEND APP_DEPENDENT_MODULES "lib_camera")
-
 # Target
 set(APP_HW_TARGET src/XCORE-VISION-EXPLORER.xn)
-
-# options
-option(FILE_IN_NAME "Pass FILE_IN_NAME value" OFF)
-option(FILE_OUT_NAME "Pass FILE_OUT_NAME value" OFF)
 
 # flags
 set(
@@ -25,14 +17,19 @@ set(
     -report
     -Wall
     -fxscope
+    -DDEBUG_PRINT_ENABLE_CAM_ISP=1
 )
 
-if (FILE_IN_NAME)
-list(APPEND APP_COMPILER_FLAGS -DFILE_IN_NAME="${FILE_IN_NAME}")
-endif()
+# ----- RGB1 -----
+project(test_isp_rgb1)
+set(APP_INCLUDES src)
+set(APP_C_SRCS src/test_rgb1.c)
+set(APP_DEPENDENT_MODULES "lib_camera")
+XMOS_REGISTER_APP()
 
-if (FILE_OUT_NAME)
-list(APPEND APP_COMPILER_FLAGS -DFILE_OUT_NAME="${FILE_OUT_NAME}")
-endif()
-
+# ----- RGB2 -----
+project(test_isp_rgb2)
+set(APP_INCLUDES src)
+set(APP_C_SRCS src/test_rgb2.c)
+set(APP_DEPENDENT_MODULES "lib_camera")
 XMOS_REGISTER_APP()
