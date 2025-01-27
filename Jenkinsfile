@@ -56,7 +56,8 @@ pipeline {
                       buildApps([
                         "examples/capture_raw",
                         "tests/hw_tests/test_rotate_90",
-                        "tests/unit_tests"
+                        "tests/unit_tests",
+                        "tests/isp"
                       ]) // buildApps
                   } // withTools
                 } // dir
