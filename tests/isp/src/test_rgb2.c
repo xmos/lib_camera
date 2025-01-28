@@ -23,14 +23,14 @@
 #define OUTPUT_FILE "imgs/out_rgb2.rgb" 
 
 // Input image configuration
-#define in_h 200
-#define in_w 200
+#define in_h 192
+#define in_w 192
 #define in_ch 1
 #define in_size in_h * in_w * in_ch
 
 // Output image configuration
-#define out_h  100
-#define out_w  100
+#define out_h  (in_h >> 1)
+#define out_w  (in_w >> 1)
 #define out_ch 3
 #define out_size out_h * out_w * out_ch
 

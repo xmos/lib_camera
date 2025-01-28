@@ -28,6 +28,7 @@ assert folder_in.exists(), f"Folder {folder_in} does not exist"
 SENSOR_HEIGHT = 200
 SENSOR_WIDTH = 200
 
+
 class ImgSize(BaseModel):
     height: int = 200
     width: int = 200
@@ -56,12 +57,12 @@ class ImageDecoder(object):
         if self.dtype == np.int8:
             buffer = buffer.astype(np.int16) + 128
 
-        if self.channels == 1: # raw8
+        if self.channels == 1:  # raw8
             buffer = buffer.reshape(self.sns_height, self.sns_width, 1)
             if self.sns_height != self.height or self.sns_width != self.width:
                 print("Cropping image")
-                buffer = buffer[:self.height, :self.width]
-            
+                buffer = buffer[: self.height, : self.width]
+
         img = buffer.reshape(self.height, self.width, self.channels).astype(np.uint8)
         return img
 
@@ -77,14 +78,30 @@ class ImageDecoder(object):
         return img_pil
 
     # ------------------ RAW8 ------------------
-    
+    def raw8_resize(self, in_path: Path, out_path: Path, out_size: ImgSize):
+        with open(in_path, "rb") as f:
+            data = f.read()
+
+        buffer = np.frombuffer(data, dtype=self.dtype)
+        buffer = buffer.reshape(self.sns_height, self.sns_width, 1)
+        buffer = buffer[: out_size.height, : out_size.width, :]
+        buffer = buffer.flatten()
+
+        with open(out_path, "wb") as f:
+            f.write(buffer)
+
+        print("Image saved in:", out_path)
+        return buffer
+
     def raw8_to_rgbx(self, input_name=None, output_name=None, k_factor=2):
-        filter = Image.Resampling.LANCZOS
+        dem_filter = Image.Resampling.LANCZOS
         img = self._imgread(input_name)
         img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB)
         img_pil = Image.fromarray(img)
         if k_factor > 1:
-            img_pil = img_pil.resize((self.width // k_factor, self.height // k_factor), filter)
+            img_pil = img_pil.resize(
+                (self.width // k_factor, self.height // k_factor), dem_filter
+            )
         if output_name is None:
             output_name = Path(input_name).with_suffix(".png")
         img_pil.save(output_name)
@@ -103,8 +120,8 @@ class ImageDecoder(object):
 
     def check_kernels(self, kernel_arr):
         for kernel in kernel_arr:
-            assert kernel.shape == (32,), f"Kernel shape is not 32"
-            assert kernel.sum() == 1.0, f"Kernel does not sum 1.0"
+            assert kernel.shape == (32,), "Kernel shape is not 32"
+            assert kernel.sum() == 1.0, "Kernel does not sum 1.0"
         print("All kernels are valid")
 
     def raw8_to_rgb1_xcore(self, input_name: Path = None, output_name: Path = None):
@@ -208,7 +225,7 @@ class ImageDecoder(object):
         img_out = img_out.reshape(out_size)
         img_out_pil = self._imgsave(img_out, input_name, output_name)
         return img_out_pil
-    
+
     # ------------------ RGB ------------------
     def rgb_to_png(self, input_name=None, output_name=None):
         assert self.channels == 3, "This method is only for RGB images"
@@ -220,7 +237,7 @@ class ImageDecoder(object):
         print("Image saved in:", output_name)
         self.last_img = img_pil
         return img_pil
-    
+
     # ------------------ PLOT ------------------
     def plot(self, title=""):
         assert self.last_img is not None, "No image to plot"
@@ -277,22 +294,28 @@ class ImageMetrics(object):
         assert m["psnr"] > self.psnr_tol, err_txt
 
 
-
 def xsim_xcore(
     infile: Path,
     outfile: Path,
     tmp_in: Path,
     tmp_out: Path,
     binary: Path,
+    in_size: ImgSize,
     out_size: ImgSize,
 ):
-    # take input file to a temp binary file
-    shutil.copy(infile, tmp_in)
+    # read and resize an input file to a temp binary file
+    dec = ImageDecoder(in_size)
+    dec.raw8_resize(infile, tmp_in, in_size)
 
-    # cmake, make, run commands
+    # run firmware with xsim
     run_cmd = f'xsim --xscope "-offline trace.xmt" {binary}'
     subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
-    return ImageDecoder(out_size).rgb_to_png(tmp_out, outfile)
+
+    # decode the output temp image to desired output
+    dec = ImageDecoder(out_size)
+    img = dec.rgb_to_png(tmp_out, outfile)
+    return img
+
 
 if __name__ == "__main__":
     raw_in = folder_in / "capture0_int8.raw"
