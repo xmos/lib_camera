@@ -294,29 +294,6 @@ class ImageMetrics(object):
         assert m["psnr"] > self.psnr_tol, err_txt
 
 
-def xsim_xcore(
-    infile: Path,
-    outfile: Path,
-    tmp_in: Path,
-    tmp_out: Path,
-    binary: Path,
-    in_size: ImgSize,
-    out_size: ImgSize,
-):
-    # read and resize an input file to a temp binary file
-    dec = ImageDecoder(in_size)
-    dec.raw8_resize(infile, tmp_in, in_size)
-
-    # run firmware with xsim
-    run_cmd = f'xsim --xscope "-offline trace.xmt" {binary}'
-    subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
-
-    # decode the output temp image to desired output
-    dec = ImageDecoder(out_size)
-    img = dec.rgb_to_png(tmp_out, outfile)
-    return img
-
-
 if __name__ == "__main__":
     raw_in = folder_in / "capture0_int8.raw"
     input_size = ImgSize(height=200, width=200, channels=1, dtype=np.int8)
