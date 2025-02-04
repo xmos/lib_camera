@@ -35,7 +35,6 @@ def run_xcore(file_in, file_out, rgb_format):
   dec.raw8_resize(file_in, tmp_in, in_size_raw)
 
   # cmake, make, run commands
-  print(binary)
   run_cmd = f'xsim --xscope "-offline trace.xmt" {binary}'
   subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
   
