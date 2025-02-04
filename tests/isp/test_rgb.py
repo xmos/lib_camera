@@ -35,6 +35,7 @@ def run_xcore(file_in, file_out, rgb_format):
   dec.raw8_resize(file_in, tmp_in, in_size_raw)
 
   # cmake, make, run commands
+  print(binary)
   run_cmd = f'xsim --xscope "-offline trace.xmt" {binary}'
   subprocess.run(run_cmd, shell=True, cwd=cwd, check=True)
   
@@ -82,3 +83,19 @@ def test_rgb(file_in, rgb_format):
   # ------- Results (opencv vs xcore)
   results = met.get_metric(ref_name, ref_img, xc_name, xc_img)
   test_results.append(results)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def print_results_at_end(request):
+  """Fixture to print results at the end of the test session."""
+
+  def print_results():
+    print("\n\nAll Tests Results:")
+    for result in test_results:
+      print(result)
+
+  request.addfinalizer(print_results)
+
+if __name__ == "__main__":
+  img_in = imgs / "capture0_int8.raw"
+  test_rgb(img_in, "rgb4")
