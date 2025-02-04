@@ -70,10 +70,6 @@ def test_rgb(file_in, rgb_format):
   results = met.get_metric(ref_name, ref_img, py_name, py_img)
   test_results.append(results)
 
-  # rgb4 is not implemented in C yet
-  if rgb_format == "rgb4":
-    return
-
   # ------- run xcore (xcore)
   xc_name = f"{file_in.stem}_{rgb_format}_xcore.png"
   xc_out = out_folder / xc_name
