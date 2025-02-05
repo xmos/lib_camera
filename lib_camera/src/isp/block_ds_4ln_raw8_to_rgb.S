@@ -22,7 +22,6 @@ unsigned img_ln, unsigned img_width, unsigned tmp_width);
 #define tmp_buff        r1
 #define tmp_width       r2
 #define img_width       r3
-#define _32             r4
 #define _12             r9
 
 .cc_top FUNCTION_NAME.func, FUNCTION_NAME
@@ -45,12 +44,11 @@ ldc r11, 0x200
 mul r2, r2, r4
 { shr r3, img_width, 2      ; add img_ptr, img_ptr, r2  }
 
-{ ldc _12, 12               ; ldw tmp_width, sp[STACK_TMP_WIDTH]}
-
-{ add tmp_buff, tmp_buff, 8 ; ldc _32, 32               }
+{ ldc _12, 12               ; add tmp_buff, tmp_buff, 8 }
 
 .width_loop_top:
   { ldc r6, 2                 ; vclrdr                    }
+  ldaw r11, cp[kernels_rgb4] // keep long
 
   // In rgb4, one 4x8 block will result in only 2 rgb pixels.
   // However, we can't just write 6 bytes from the vpu,
@@ -65,35 +63,34 @@ mul r2, r2, r4
 
     // construct the blocks 4x8
     // get samples from tmp_buff an put in the stack
-    { mov r7, tmp_buff          ; sub tmp_buff, tmp_buff, 8 }
+    { mov r7, tmp_buff          ; ldw tmp_width, sp[STACK_TMP_WIDTH]}
 
-    ldd r8, r11, r7[0]
-    std r8, r11, sp[STACK_TMP_VEC>>1]
+    ldd r8, r4, r7[0]
+    std r8, r4, sp[STACK_TMP_VEC>>1]
     { add r7, r7, tmp_width     ; ldaw r5, sp[STACK_TMP_VEC]}
 
-    ldd r8, r11, r7[0]
-    std r8, r11, sp[STACK_TMP_VEC1>>1]
-    { add r7, r7, tmp_width     ;  sub r6, r6, 1            }
+    ldd r8, r4, r7[0]
+    std r8, r4, sp[STACK_TMP_VEC1>>1]
+    { add r7, r7, tmp_width     ; sub r6, r6, 1             }
 
-    ldd r8, r11, r7[0]
-    std r8, r11, sp[STACK_TMP_VEC2>>1]
-    { add r7, r7, tmp_width     ; nop                       }
+    ldd r8, r4, r7[0]
+    std r8, r4, sp[STACK_TMP_VEC2>>1]
+    { add r7, r7, tmp_width     ; ldc r2, 32                }
 
-    ldd r8, r11, r7[0]
-    std r8, r11, sp[STACK_TMP_VEC3>>1]
+    ldd r8, r4, r7[0]
+    std r8, r4, sp[STACK_TMP_VEC3>>1]
 
-    ldaw r11, cp[kernels_rgb4] // keep long
     { mov r7, r11               ; vldc r5[0]                }
 
     // six vlmaccrs -> 2 rgb pixels
-    { add r7, r7, _32           ; vlmaccr r7[0]             }
-    { add r7, r7, _32           ; vlmaccr r7[0]             }
-    { add r7, r7, _32           ; vlmaccr r7[0]             }
-    { add r7, r7, _32           ; vlmaccr r7[0]             }
-    { add r7, r7, _32           ; vlmaccr r7[0]             }
-    { add r7, r7, _32           ; vlmaccr r7[0]             }
+    { add r7, r7, r2            ; vlmaccr r7[0]             }
+    { add r7, r7, r2            ; vlmaccr r7[0]             }
+    { add r7, r7, r2            ; vlmaccr r7[0]             }
+    { add r7, r7, r2            ; vlmaccr r7[0]             }
+    { add r7, r7, r2            ; vlmaccr r7[0]             }
+    {                           ; vlmaccr r7[0]             }
 
-    { bt r6, .two_l_top         ; nop                       }
+    { sub tmp_buff, tmp_buff, 8 ; bt r6, .two_l_top         }
 
   ldaw r11, cp[kernel_rgb4_shifts] // keep long
   // 12 bytes -> 4 rgb pixels
@@ -101,7 +98,7 @@ mul r2, r2, r4
 
   vstrpv img_ptr[0], r8
 
-  { sub r3, r3, 1             ; add tmp_buff, tmp_buff, _32}
+  { sub r3, r3, 1             ; add tmp_buff, tmp_buff, r2}
   { add img_ptr, img_ptr, _12 ; bt r3, .width_loop_top    }
 
 ldd r4, r5, sp[0]

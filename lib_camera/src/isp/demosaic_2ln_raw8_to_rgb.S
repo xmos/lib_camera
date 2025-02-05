@@ -88,13 +88,22 @@ mul r2, r2, r4
 
   .four_l_top:
 
-    { mov r5, _12               ; ldc r8, 32                }
+    { ldc r8, 32                ;                           }
     { sub r6, r6, 1             ; vclrdr                    }
 
-    .twelve_l_top:
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
 
-      { sub r5, r5, 1             ; vlmaccr r4[0]             }
-      { add r4, r4, r8            ; bt r5, .twelve_l_top      }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
+    { add r4, r4, r8            ; vlmaccr r4[0]             }
 
     // 12 bytes -> 4 rgb pixels
     { mkmsk r8, _12             ; vlsat r11[0]              }
