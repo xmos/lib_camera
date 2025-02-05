@@ -112,7 +112,7 @@ pipeline {
                 dir('lib_camera/tests/isp') {
                   withVenv {
                   withTools(params.TOOLS_VERSION) {
-                    sh 'pytest'
+                    sh 'pytest -n auto'
                   }} // Venv and tools
                 } // dir
               } // steps
