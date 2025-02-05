@@ -21,7 +21,7 @@ assert binary.exists(), f"Binary {binary} does not exist"
 
 # Test Parameters
 test_files = imgs.glob("*.raw")
-test_rgb_map = {"rgb1": 1, "rgb2": 2}  # TODO add "rgb4": 4 when is done
+test_rgb_map = {"rgb1": 1, "rgb2": 2, "rgb4": 4}
 test_input_sizes = [128, 192, 200]
 
 
