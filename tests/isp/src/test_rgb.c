@@ -97,7 +97,7 @@ void test_isp(
 	printf("Ops per <in> pixel:\t%.3f\n", ops_in_per_pixel);
 	printf("Ops per <out> pixel:\t%.3f\n", ops_out_per_pixel);
 	printf("Avg Time per row (ms):\t%.3f\n", TO_MS(tb / image.height));
-	printf("Total Time per img (ms):\t%.3f\n", TO_MS(tb));
+	printf("Tot Time per img (ms):\t%.3f\n", TO_MS(tb));
 	fclose(fp);
 	free(img_row);
 	// Write the image to file
