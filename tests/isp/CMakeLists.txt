@@ -32,3 +32,10 @@ set(APP_INCLUDES src)
 set(APP_C_SRCS src/test_rgb2.c)
 set(APP_DEPENDENT_MODULES "lib_camera")
 XMOS_REGISTER_APP()
+
+# ----- RGB4 -----
+project(test_isp_rgb4)
+set(APP_INCLUDES src)
+set(APP_C_SRCS src/test_rgb4.c)
+set(APP_DEPENDENT_MODULES "lib_camera")
+XMOS_REGISTER_APP()

@@ -72,21 +72,30 @@ mul r2, r2, r4
   { mov r7, r11               ; vldc r5[0]                }
   
   ldaw r11, cp[kernel_rgb2_shifts] // keep long
+  { mkmsk r5, _12             ;                           }
 
   .two_l_top:
 
-    { mov r5, _12               ; ldc r8, 32                }
-    { sub r6, r6, 1             ; vclrdr                    }
+    { ldc r8, 32                ; vclrdr                    }
 
-    .twelve_l_top:
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
 
-      { sub r5, r5, 1             ; vlmaccr r7[0]             }
-      { add r7, r7, r8            ; bt r5, .twelve_l_top      }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
+    { add r7, r7, r8            ; vlmaccr r7[0]             }
 
     // 12 bytes -> 4 rgb pixels
-    { mkmsk r8, _12             ; vlsat r11[0]              }
+    { sub r6, r6, 1             ; vlsat r11[0]              }
 
-    vstrpv img_ptr[0], r8
+    vstrpv img_ptr[0], r5
 
     { sub r8, r4, _12           ; bf r6, .end_loop          }
 
