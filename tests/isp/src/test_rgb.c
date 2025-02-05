@@ -54,15 +54,11 @@ void test_isp(
 	const char* output_file)
 {
 	camera_mode_t mode = (camera_mode_t)ds_factor;
-	unsigned out_h = in_height >> (ds_factor - 1);
-	unsigned out_w = in_width >> (ds_factor - 1);
+	unsigned out_h = in_height >> (ds_factor >> 1);
+	unsigned out_w = in_width >> (ds_factor >> 1);
 	unsigned out_ch = 3;
 	unsigned out_size = out_h * out_w * out_ch;
-
-	void(*isp_fp)(image_cfg_t*, int8_t*, unsigned);
-	isp_fp = camera_isp_raw8_to_rgb1;
-
-	// Time variables
+	unsigned in_size = in_height * in_width * 1;
 	unsigned ta = 0, tb = 0;
 
 	// Create a Configuration
@@ -96,10 +92,12 @@ void test_isp(
 		camera_isp_to_rgbx(&image, img_row, i, mode);
 		tb += get_reference_time() - ta;
 	}
-	float ops_per_pixel = (float)tb / image.size;
-	printf("Average time per row (ms): %f\n", TO_MS(tb / image.height));
-	printf("Total time (ms): %f\n", TO_MS(tb));
-	printf("Ops per pixel: %.2f\n", ops_per_pixel);
+	float ops_out_per_pixel = (float)tb / out_size;
+	float ops_in_per_pixel = (float)tb / in_size;
+	printf("Ops per <in> pixel:\t%.3f\n", ops_in_per_pixel);
+	printf("Ops per <out> pixel:\t%.3f\n", ops_out_per_pixel);
+	printf("Avg Time per row (ms):\t%.3f\n", TO_MS(tb / image.height));
+	printf("Total Time per img (ms):\t%.3f\n", TO_MS(tb));
 	fclose(fp);
 	free(img_row);
 	// Write the image to file

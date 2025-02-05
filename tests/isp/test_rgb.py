@@ -112,6 +112,6 @@ def test_rgb(file_in, rgb_format, in_size, request):
 
 if __name__ == "__main__":
     file_in = list(test_files)[0]
-    rgb_format = "rgb2"
+    rgb_format = "rgb4"
     in_size = 192
     test_rgb(file_in, rgb_format, in_size, None)
