@@ -97,14 +97,21 @@ def test_rgb(file_in, rgb_format, in_size, request):
     res_py = met.get_metric(ref_name, ref_img, py_name, py_img, check=True)
     res_xc = met.get_metric(ref_name, ref_img, xc_name, xc_img, check=True)
     met.get_cross_metrics(res_py, res_xc, check=True)
-    
+
     # Store results in pytest session
-    request.session.results.append(res_py)
-    request.session.results.append(res_xc)
-    
+    if request is not None:
+        request.session.results.append(res_py)
+        request.session.results.append(res_xc)
+    else:
+        print(res_py)
+        print(res_xc)
+
     # remove tmp_in file
     tmp_in.unlink()
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    file_in = list(test_files)[0]
+    rgb_format = "rgb2"
+    in_size = 192
+    test_rgb(file_in, rgb_format, in_size, None)

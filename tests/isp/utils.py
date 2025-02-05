@@ -253,7 +253,7 @@ class ImageMetrics(object):
         self.prec = 2  # precision for scores
         self.ssim_tol = 0.90
         self.psnr_tol = 20.0
-        self.perc_error_tol = 30.0
+        self.perc_error_tol = 25.0
         self.ratio_tol = 0.8
 
     def ssim(self, img_ref, img):
@@ -312,6 +312,8 @@ class ImageMetrics(object):
         return np.round(ratio_ssim, 2), np.round(ratio_psnr, 2)
 
     def get_cross_metrics(self, metrics1, metrics2, check=True):
+        """gets cross metrics between two metrics
+        if check is True, it will assert the results based on the tolerances"""
         pe_ssim, pe_psnr = self.get_perc_errors(metrics1, metrics2)
         ratio_ssim, ratio_psnr = self.get_ratios(metrics1, metrics2)
         if check:        
