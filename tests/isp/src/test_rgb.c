@@ -67,7 +67,6 @@ void test_isp(
 
 	// Create a Configuration
 	int8_t image_buffer[MAX_BUFF_SIZE] ALIGNED_8 = { 0 };
-
 	camera_cfg_t config = {
 		.offset_x = 0,
 		.offset_y = 0,
@@ -81,13 +80,14 @@ void test_isp(
 		.ptr = &image_buffer[0],
 		.config = &config
 	};
+
+	// Compute the coordinates
 	camera_isp_coordinates_compute(&image);
 
 	// Read the raw image from file
 	// send it row by row
 	FILE* fp = fopen(input_file, "rb");
 	assert(fp != NULL);
-	// allocate with malloc
 	int8_t* img_row = (int8_t*)malloc(in_width);
 	memset(img_row, 0, in_width);
 	for (int i = 0; i < in_height; i++) {
@@ -119,4 +119,5 @@ int main(int argc, char* argv[])
 	printf("Image size: %dx%d\n", width, height);
 	printf("Downsampling factor: %d\n", ds_factor);
 	test_isp(height, width, ds_factor, input_file, output_file);
+	return 0;
 }

@@ -11,22 +11,19 @@ from utils import ImageDecoder, ImageMetrics, ImgSize
 met = ImageMetrics()
 cwd = Path(__file__).parent.absolute()
 
-# rgb format map
-# rgb_formats_map = {"rgb1": 1, "rgb2": 2, "rgb4": 4} #TODO add rgb4 when is done
-rgb_formats_map = {"rgb1": 1, "rgb2": 2}
-
-# Define test files
+# Define Paths
 imgs = cwd / "imgs"
 bin_path = cwd / "bin"
-binary = bin_path / f"test_isp_rgb.xe"
-test_files = imgs.glob("*.raw")
-test_results = []
+binary = bin_path / "test_isp_rgb.xe"
 
 assert imgs.exists(), f"Folder {imgs} does not exist"
 assert binary.exists(), f"Binary {binary} does not exist"
 
-# Input image configuration
-in_size_raw = ImgSize(height=192, width=192, channels=1, dtype=np.int8)
+# Test Parameters
+test_files = imgs.glob("*.raw")
+test_rgb_map = {"rgb1": 1, "rgb2": 2}  # TODO add "rgb4": 4 when is done
+test_input_sizes = [128, 192, 200]
+
 
 def run_xcore(file_in: Path, file_out: Path, ds_factor: int, in_size: ImgSize):
     # run command
@@ -57,59 +54,56 @@ def get_rgb_decoder(ds_factor: int, in_size: ImgSize):
 
 
 @pytest.mark.parametrize("file_in", test_files)
-@pytest.mark.parametrize("rgb_format", rgb_formats_map.keys())
-def test_rgb(file_in, rgb_format):
+@pytest.mark.parametrize("rgb_format", test_rgb_map.keys())
+@pytest.mark.parametrize("in_size", test_input_sizes)
+def test_rgb(file_in, rgb_format, in_size, request):
     print("\n===================================")
     print("Testing file:", file_in, rgb_format)
-    ds_factor = rgb_formats_map.get(rgb_format)
+    ds_factor = test_rgb_map.get(rgb_format)
+    in_size_raw = ImgSize(height=in_size, width=in_size, channels=1, dtype=np.int8)
+
+    # decoders in and out
     dec = ImageDecoder(in_size_raw)
     dec_out = get_rgb_decoder(ds_factor, in_size_raw)
 
     # prepare xcore input
-    tmp_in = imgs / f"in_{rgb_format}.bin"
+    tmp_in = file_in.with_suffix(f".{rgb_format}.{in_size}.tmp.bin")
     dec.raw8_resize(file_in, tmp_in, in_size_raw)
 
-    # prepare out folder
+    # prepare out folder and name
     out_folder = imgs / file_in.stem
     out_folder.mkdir(exist_ok=True)
+    out_name = f"{file_in.stem}_{rgb_format}_{in_size}"
 
     # ------- run opencv
-    ref_name = f"{file_in.stem}_{rgb_format}_opencv.png"
+    ref_name = f"{out_name}_opencv.png"
     ref_out = out_folder / ref_name
     filter_handle = getattr(dec, f"raw8_to_{rgb_format}")
     ref_img = filter_handle(file_in, ref_out)
 
     # ------- run Python
-    py_name = f"{file_in.stem}_{rgb_format}_python.png"
+    py_name = f"{out_name}_python.png"
     py_out = out_folder / py_name
     filter_handle = getattr(dec, f"raw8_to_{rgb_format}_xcore")
     py_img = filter_handle(file_in, py_out)
 
     # ------- run xcore (xcore)
-    xc_name = f"{file_in.stem}_{rgb_format}_xcore.png"
+    xc_name = f"{out_name}_xcore.png"
     xc_out = out_folder / xc_name
     run_xcore(tmp_in, xc_out, ds_factor, in_size_raw)
     xc_img = dec_out.rgb_to_png(xc_out, xc_out)
 
-    # -------> Results (opencv vs python)
-    results = met.get_metric(ref_name, ref_img, py_name, py_img)
-    test_results.append(results)
-
-    # -------> Results (opencv vs xcore)
-    results = met.get_metric(ref_name, ref_img, xc_name, xc_img)
-    test_results.append(results)
-
-
-@pytest.fixture(scope="session", autouse=True)
-def print_results_at_end(request):
-    """Fixture to print results at the end of the test session."""
-
-    def print_results():
-        print("\n\nAll Tests Results:")
-        for result in test_results:
-            print(result)
-
-    request.addfinalizer(print_results)
+    # -------> Results
+    res_py = met.get_metric(ref_name, ref_img, py_name, py_img, check=True)
+    res_xc = met.get_metric(ref_name, ref_img, xc_name, xc_img, check=True)
+    met.get_cross_metrics(res_py, res_xc, check=True)
+    
+    # Store results in pytest session
+    request.session.results.append(res_py)
+    request.session.results.append(res_xc)
+    
+    # remove tmp_in file
+    tmp_in.unlink()
 
 
 if __name__ == "__main__":
