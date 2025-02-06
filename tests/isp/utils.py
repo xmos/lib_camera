@@ -253,6 +253,8 @@ class ImageMetrics(object):
         self.prec = 2  # precision for scores
         self.ssim_tol = 0.90
         self.psnr_tol = 20.0
+        self.perc_error_tol = 25.0
+        self.ratio_tol = 0.8
 
     def ssim(self, img_ref, img):
         img_ref = np.array(img_ref.convert("L"))
@@ -265,7 +267,7 @@ class ImageMetrics(object):
         img_ref = np.array(img_ref)
         img = np.array(img)
         if np.array_equal(img_ref, img):
-            return 100.0
+            return 50.0
         score = peak_signal_noise_ratio(img_ref, img)
         return np.round(score, self.prec)
 
@@ -292,6 +294,33 @@ class ImageMetrics(object):
             ssim_tol:{self.ssim_tol}, psnr_tol:{self.psnr_tol}"
         assert m["ssim"] > self.ssim_tol, err_txt
         assert m["psnr"] > self.psnr_tol, err_txt
+
+    def get_perc_errors(self, metrics1, metrics2):
+        """gets percentage errors between two metrics"""
+        ssim1, ssim2 = metrics1["ssim"], metrics2["ssim"]
+        psnr1, psnr2 = metrics1["psnr"], metrics2["psnr"]
+        pe_ssim = (np.abs(ssim1 - ssim2) / ssim1) * 100
+        pe_psnr = (np.abs(psnr1 - psnr2) / psnr1) * 100
+        return pe_ssim, pe_psnr
+
+    def get_ratios(self, metrics1, metrics2):
+        """gets ratios between two metrics"""
+        ssim1, ssim2 = metrics1["ssim"], metrics2["ssim"]
+        psnr1, psnr2 = metrics1["psnr"], metrics2["psnr"]
+        ratio_ssim = ssim2 / (ssim1 + 1e-6)
+        ratio_psnr = psnr2 / (psnr1 + 1e-6)
+        return np.round(ratio_ssim, 2), np.round(ratio_psnr, 2)
+
+    def get_cross_metrics(self, metrics1, metrics2, check=True):
+        """gets cross metrics between two metrics
+        if check is True, it will assert the results based on the tolerances"""
+        pe_ssim, pe_psnr = self.get_perc_errors(metrics1, metrics2)
+        ratio_ssim, ratio_psnr = self.get_ratios(metrics1, metrics2)
+        if check:        
+            assert pe_ssim < self.perc_error_tol, f"SSIM perc error is {pe_ssim}"
+            assert pe_psnr < self.perc_error_tol, f"PSNR perc error is {pe_psnr}"
+            assert ratio_ssim > self.ratio_tol, f"SSIM ratio is {ratio_ssim}"
+            assert ratio_psnr > self.ratio_tol, f"PSNR ratio is {ratio_psnr}"
 
 
 if __name__ == "__main__":

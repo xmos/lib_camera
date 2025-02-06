@@ -1,5 +1,3 @@
-# ----- Common configuration -----
-
 # Cmake and Sandbox
 cmake_minimum_required(VERSION 3.21)
 include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
@@ -17,25 +15,12 @@ set(
     -Wall
     -fxscope
     -DDEBUG_PRINT_ENABLE_CAM_ISP=1
+    -fcmdline-buffer-bytes=1024
 )
 
-# ----- RGB1 -----
-project(test_isp_rgb1)
+# ----- RGBX -----
+project(test_isp_rgb)
 set(APP_INCLUDES src)
-set(APP_C_SRCS src/test_rgb1.c)
-set(APP_DEPENDENT_MODULES "lib_camera")
-XMOS_REGISTER_APP()
-
-# ----- RGB2 -----
-project(test_isp_rgb2)
-set(APP_INCLUDES src)
-set(APP_C_SRCS src/test_rgb2.c)
-set(APP_DEPENDENT_MODULES "lib_camera")
-XMOS_REGISTER_APP()
-
-# ----- RGB4 -----
-project(test_isp_rgb4)
-set(APP_INCLUDES src)
-set(APP_C_SRCS src/test_rgb4.c)
+set(APP_C_SRCS src/test_rgb.c)
 set(APP_DEPENDENT_MODULES "lib_camera")
 XMOS_REGISTER_APP()
