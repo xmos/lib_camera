@@ -36,10 +36,24 @@ typedef enum {
   FLIP_VERTICAL = (0 | (1 << 1))
 } orientation_t;
 
+typedef enum{
+  PATTERN_NONE = 0,
+  PATTERN_SOLID_COLOR,
+  PATTERN_COLOR_BARS,
+  PATTERN_FADE_TO_GREY,
+  PATTERN_PN_9,
+  PATTERN_16_SPLIT,
+  PATTERN_16_SPLIT_INV,
+  PATTERN_COLUMN_COUNTER,
+  PATTERN_INV_COL_COUNTER,
+  PATTERN_PN_31,
+} camera_patterns_t;
+
 C_API_START
 
 void camera_sensor_init();
 void camera_sensor_start();
 void camera_sensor_stop();
+void camera_sensor_set_tp(camera_patterns_t pattern);
 
 C_API_END

@@ -205,3 +205,21 @@ void IMX219::control(chanend_t c_control) {
   // as there is no dynamic control
   // this function is empty  
 }
+
+int IMX219::set_test_pattern(camera_patterns_t pattern) {
+  i2c_line_t test_pattern_regs[] = {
+        {REG_TEST_PATTERN_MSB, 0x00},    /* mode select streaming on */
+        {REG_TEST_PATTERN_LSB, (uint16_t)pattern}, /* mode select streaming on */
+        {REG_TP_X_OFFSET_MSB, 0x00},     // tp offset x 0
+        {REG_TP_X_OFFSET_LSB, 0x00},
+        {REG_TP_Y_OFFSET_MSB, 0x00}, // tp offset y 0
+        {REG_TP_Y_OFFSET_LSB, 0x00},
+        {REG_TP_WIDTH_MSB, 0x02}, // TP width 1920(0x780) 1280(0x500) 640(0x280)
+        {REG_TP_WIDTH_LSB, 0x80},
+        {REG_TP_HEIGHT_MSB, 0x01}, // TP height 1080(0x438) 960(0x3C0) 480(0x1E0)
+        {REG_TP_HEIGHT_LSB, 0xE0},
+  };
+  i2c_table_t test_table = {test_pattern_regs, 10};
+  int ret = this->i2c_write_table(test_table);
+  return ret;
+}

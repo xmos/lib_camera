@@ -1,6 +1,7 @@
 // Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+#include <stdint.h>
 #include <xcore/assert.h>
 #include "print.h"
 
@@ -63,4 +64,9 @@ void camera_sensor_start() {
 void camera_sensor_stop() {
   int ret = camera_sensor_ptr->stream_stop();
   xassert((ret == 0) && "Could not stop camera");
+}
+
+void camera_sensor_set_tp(camera_patterns_t pattern){
+  int ret = camera_sensor_ptr->set_test_pattern(pattern);
+  xassert((ret == 0) && "Could not set test pattern");
 }
