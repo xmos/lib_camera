@@ -208,8 +208,8 @@ void IMX219::control(chanend_t c_control) {
 
 int IMX219::set_test_pattern(camera_patterns_t pattern) {
   i2c_line_t test_pattern_regs[] = {
-        {REG_TEST_PATTERN_MSB, 0x00},    /* mode select streaming on */
-        {REG_TEST_PATTERN_LSB, (uint16_t)pattern}, /* mode select streaming on */
+        {REG_TEST_PATTERN_MSB, 0x00},
+        {REG_TEST_PATTERN_LSB, (uint16_t)pattern},
         {REG_TP_X_OFFSET_MSB, 0x00},     // tp offset x 0
         {REG_TP_X_OFFSET_LSB, 0x00},
         {REG_TP_Y_OFFSET_MSB, 0x00}, // tp offset y 0
