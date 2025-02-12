@@ -154,7 +154,7 @@ class IMX219 : public SensorBase {
      *
      * @param pattern     Test pattern to set
      */
-    int set_test_pattern(camera_patterns_t pattern);
+    int set_test_pattern(uint16_t pattern);
 
 }; // IMX219
 

@@ -206,10 +206,10 @@ void IMX219::control(chanend_t c_control) {
   // this function is empty  
 }
 
-int IMX219::set_test_pattern(camera_patterns_t pattern) {
+int IMX219::set_test_pattern(uint16_t pattern) {
   i2c_line_t test_pattern_regs[] = {
         {REG_TEST_PATTERN_MSB, 0x00},
-        {REG_TEST_PATTERN_LSB, (uint16_t)pattern},
+        {REG_TEST_PATTERN_LSB, pattern},
         {REG_TP_X_OFFSET_MSB, 0x00},     // tp offset x 0
         {REG_TP_X_OFFSET_LSB, 0x00},
         {REG_TP_Y_OFFSET_MSB, 0x00}, // tp offset y 0

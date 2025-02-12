@@ -66,7 +66,7 @@ void camera_sensor_stop() {
   xassert((ret == 0) && "Could not stop camera");
 }
 
-void camera_sensor_set_tp(camera_patterns_t pattern){
+void camera_sensor_set_tp(uint16_t pattern){
   int ret = camera_sensor_ptr->set_test_pattern(pattern);
   xassert((ret == 0) && "Could not set test pattern");
 }

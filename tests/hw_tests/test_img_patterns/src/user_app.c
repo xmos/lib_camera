@@ -25,7 +25,6 @@ void save_image(image_cfg_t* image, char* filename) {
         image->channels);
 }
 
-
 void user_app(chanend_t c_cam) {
     // Image and configuration
     const unsigned h = 480;
@@ -52,12 +51,16 @@ void user_app(chanend_t c_cam) {
         
     // set coords and send to ISP
     char filename[32];
-    for (camera_patterns_t tp = 0; tp <= PATTERN_PN_31; tp++) {
-        camera_sensor_set_tp(tp);
+    uint16_t test_patterns[] = {
+        0x0000, 0x0001, 0x0002, 0x0003, 0x0004,
+        0x0005, 0x0006, 0x0007, 0x0008, 0x0009
+    };
+    for (uint16_t i = 0; i < 10; i++) {
+        camera_sensor_set_tp(test_patterns[i]);
         camera_isp_coordinates_compute(&image);
         camera_isp_start_capture(c_cam, &image);
         camera_isp_get_capture(c_cam);
-        sprintf(filename, "capture_tp_%d.raw", tp);
+        sprintf(filename, "capture_tp_%d.raw", test_patterns[i]);
         save_image(&image, filename);
         puts("capture done\n");
     }

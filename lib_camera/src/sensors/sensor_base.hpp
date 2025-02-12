@@ -106,7 +106,6 @@ class SensorBase {
      * @brief Initialize sensor
      *
      * @note This is a virtual function, and will have to be implemented in the derived class
-     * @note Can't make it a pure virtual method as it adds 18 kB of memory in the current (15.2.1) XTC version
      */
     virtual int initialize();
 
@@ -114,7 +113,6 @@ class SensorBase {
      * @brief Start data stream
      *
      * @note This is a virtual function, and will have to be implemented in the derived class
-     * @note Can't make it a pure virtual method as it adds 18 kB of memory in the current (15.2.1) XTC version
      */
     virtual int stream_start();
 
@@ -122,7 +120,6 @@ class SensorBase {
      * @brief Stop data stream
      *
      * @note This is a virtual function, and will have to be implemented in the derived class
-     * @note Can't make it a pure virtual method as it adds 18 kB of memory in the current (15.2.1) XTC version
      */
     virtual int stream_stop();
 
@@ -131,7 +128,6 @@ class SensorBase {
      *
      * @param dBGain      Exposure gain in dB, can enable different types of camera gain
      * @note This is a virtual function, and will have to be implemented in the derived class
-     * @note Can't make it a pure virtual method as it adds 18 kB of memory in the current (15.2.1) XTC version
      */
     virtual int set_exposure(uint32_t dBGain);
 
@@ -139,7 +135,6 @@ class SensorBase {
      * @brief Set sensor resolution, binning mode, and RAW format
      *
      * @note This is a virtual function, and will have to be implemented in the derived class
-     * @note Can't make it a pure virtual method as it adds 18 kB of memory in the current (15.2.1) XTC version
      */
     virtual int configure();
 
@@ -148,9 +143,16 @@ class SensorBase {
      *
      * @param c_control   Control channel
      * @note This is a virtual function, and will have to be implemented in the derived class
-     * @note Can't make it a pure virtual method as it adds 18 kB of memory in the current (15.2.1) XTC version
      */
     virtual void control(chanend_t c_control);
+
+    /**
+     * @brief Set test pattern
+     *
+     * @param pattern     Test pattern to set
+     * @note This is a virtual function, and will have to be implemented in the derived class
+     */
+    virtual int set_test_pattern(uint16_t pattern);
 
 }; // SensorBase
 
