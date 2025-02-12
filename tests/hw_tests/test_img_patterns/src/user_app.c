@@ -51,12 +51,12 @@ void user_app(chanend_t c_cam) {
     delay_seconds_cpp(3);
         
     // set coords and send to ISP
+    char filename[32];
     for (camera_patterns_t tp = 0; tp <= PATTERN_PN_31; tp++) {
         camera_sensor_set_tp(tp);
         camera_isp_coordinates_compute(&image);
         camera_isp_start_capture(c_cam, &image);
         camera_isp_get_capture(c_cam);
-        char filename[50];
         sprintf(filename, "capture_tp_%d.raw", tp);
         save_image(&image, filename);
         puts("capture done\n");
