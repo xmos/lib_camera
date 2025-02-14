@@ -38,6 +38,17 @@
 #define GAIN_DEFAULT_DB     40
 #define GAIN_MAX_DB         84
 
+// Test pattern registers
+#define REG_TEST_PATTERN_MSB 0x0600
+#define REG_TEST_PATTERN_LSB 0x0601
+#define REG_TP_X_OFFSET_MSB  0x0620
+#define REG_TP_X_OFFSET_LSB  0x0621
+#define REG_TP_Y_OFFSET_MSB  0x0622
+#define REG_TP_Y_OFFSET_LSB  0x0623
+#define REG_TP_WIDTH_MSB     0x0624
+#define REG_TP_WIDTH_LSB     0x0625
+#define REG_TP_HEIGHT_MSB    0x0626
+#define REG_TP_HEIGHT_LSB    0x0627
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static i2c_line_t imx219_common_regs[] = {

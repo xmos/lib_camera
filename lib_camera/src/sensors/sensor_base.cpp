@@ -122,3 +122,8 @@ void SensorBase::control(chanend_t c_control) {
   (void)c_control;
   xassert(0 && "Sensor Exception: Make sure your control() method is implemented and called from the derived class");
 }
+
+int SensorBase::set_test_pattern(uint16_t pattern) {
+  xassert(0 && "Sensor Exception: Make sure your set_test_pattern() method is implemented and called from the derived class");
+  return -1;
+}

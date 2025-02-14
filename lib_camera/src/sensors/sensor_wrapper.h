@@ -41,5 +41,6 @@ C_API_START
 void camera_sensor_init();
 void camera_sensor_start();
 void camera_sensor_stop();
+void camera_sensor_set_tp(uint16_t pattern);
 
 C_API_END

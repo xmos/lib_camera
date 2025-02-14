@@ -149,6 +149,13 @@ class IMX219 : public SensorBase {
      */
     int set_orientation(orientation_t orientation);
 
+    /**
+     * @brief Set sensor test pattern
+     *
+     * @param pattern     Test pattern to set
+     */
+    int set_test_pattern(uint16_t pattern);
+
 }; // IMX219
 
 } // sensor
