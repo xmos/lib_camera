@@ -46,9 +46,9 @@ void user_app(chanend_t c_cam) {
         .config = &config
     };
 
-    // wait a few seconds and ask something
+    camera_isp_coordinates_compute(&image);
     delay_seconds_cpp(3);
-        
+    
     // set coords and send to ISP
     char filename[32];
     uint16_t test_patterns[] = {
@@ -57,10 +57,9 @@ void user_app(chanend_t c_cam) {
     };
     for (uint16_t i = 0; i < 10; i++) {
         camera_sensor_set_tp(test_patterns[i]);
-        camera_isp_coordinates_compute(&image);
         camera_isp_start_capture(c_cam, &image);
         camera_isp_get_capture(c_cam);
-        sprintf(filename, "capture_tp_%d.raw", test_patterns[i]);
+        snprintf(filename, sizeof(filename), "capture_tp_%d.raw", test_patterns[i]);
         save_image(&image, filename);
         puts("capture done\n");
     }
