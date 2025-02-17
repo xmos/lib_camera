@@ -22,5 +22,5 @@ set(
 project(test_isp_rgb)
 set(APP_INCLUDES src)
 set(APP_C_SRCS src/test_rgb.c)
-set(APP_DEPENDENT_MODULES "lib_camera")
+set(APP_DEPENDENT_MODULES "lib_camera" "xscope_fileio")
 XMOS_REGISTER_APP()
