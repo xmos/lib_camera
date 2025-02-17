@@ -14,7 +14,7 @@ Run the following command from the current folder:
 
 .. code-block:: console
 
-    python test_isp.py
+    python test_rgb.py
     
 To compile and run only the C version manually:
 
