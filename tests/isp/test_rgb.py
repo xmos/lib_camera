@@ -2,8 +2,11 @@
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 import pytest
+import errno
 import numpy as np
+import os
 import subprocess
+import zipfile2
 from pathlib import Path
 
 from utils import ImageDecoder, ImageMetrics, ImgSize
@@ -18,6 +21,15 @@ binary = bin_path / "test_isp_rgb.xe"
 
 assert imgs.exists(), f"Folder {imgs} does not exist"
 assert binary.exists(), f"Binary {binary} does not exist"
+
+# Prepare Image Zip File
+zip_out = imgs / "images.zip"
+
+try:
+    os.remove(zip_out)
+except OSError as e:
+    if e.errno != errno.ENOENT: # errno.ENOENT means no such file or directory
+        raise # re-raise exception if a different error occurred
 
 # Test Parameters
 test_files = imgs.glob("*.raw")
@@ -110,6 +122,12 @@ def test_rgb(file_in, rgb_format, in_size, request):
     else:
         print(res_py)
         print(res_xc)
+
+    # Zip the images
+    with zipfile2.ZipFile(zip_out, 'a') as zip:
+        zip.write(ref_out)
+        zip.write(py_out)
+        zip.write(xc_out)
 
     # remove tmp_in file
     tmp_in.unlink()
