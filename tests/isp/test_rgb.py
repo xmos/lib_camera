@@ -5,6 +5,7 @@ import pytest
 import errno
 import numpy as np
 import os
+import pandas as pd
 import subprocess
 import zipfile2
 from pathlib import Path
@@ -122,6 +123,11 @@ def test_rgb(file_in, rgb_format, in_size, request):
     else:
         print(res_py)
         print(res_xc)
+
+    # Store the results in a CSV file
+    test_results = pd.DataFrame([res_py])
+    test_results.loc[len(test_results.index)] = list(res_xc.values())
+    test_results.index = ['py','xc']
 
     # Zip the images
     with zipfile2.ZipFile(zip_out, 'a') as zip:
