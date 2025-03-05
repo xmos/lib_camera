@@ -25,21 +25,11 @@ assert binary.exists(), f"Binary {binary} does not exist"
 
 # Prepare Results CSV File
 results_out = cwd / "test_results.csv"
-
-try:
-    os.remove(results_out)
-except OSError as e:
-    if e.errno != errno.ENOENT: # errno.ENOENT means no such file or directory
-        raise # re-raise exception if a different error occurred
+results_out.unlink(missing_ok=True)
 
 # Prepare Image Zip File
 zip_out = imgs / "images.zip"
-
-try:
-    os.remove(zip_out)
-except OSError as e:
-    if e.errno != errno.ENOENT: # errno.ENOENT means no such file or directory
-        raise # re-raise exception if a different error occurred
+zip_out.unlink(missing_ok=True)
 
 # Test Parameters
 test_files = imgs.glob("*.raw")
