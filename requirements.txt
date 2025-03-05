@@ -15,6 +15,3 @@ PyYAML==6.0.2
 scikit-image==0.24.0
 scipy==1.14.1
 zipfile2==0.0.12
-
-# Custom requirements
--e ../xscope_fileio
