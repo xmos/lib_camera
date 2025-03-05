@@ -126,7 +126,7 @@ def test_rgb(file_in, rgb_format, in_size, request):
     test_results = pd.DataFrame([res_py])
     test_results.loc[len(test_results.index)] = list(res_xc.values())
     test_results.index = ['py','xc']
-    test_results.to_csv(results_out)
+    test_results.to_csv(path_or_buf=results_out,mode='a')
 
     # Zip the images
     with zipfile2.ZipFile(zip_out, 'a') as zip:
