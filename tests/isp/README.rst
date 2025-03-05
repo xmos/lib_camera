@@ -12,14 +12,7 @@ Build and Run example
 
 Use the current folder for all commands.
 
-To build on Windows:
-
-.. code-block:: console
-
-    cmake -G Ninja -B build
-    ninja -C build
-
-To build on Linux:
+To build on Linux or Windows:
 
 .. code-block:: console
 
