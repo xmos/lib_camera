@@ -112,12 +112,15 @@ pipeline {
               steps {
                 dir('lib_camera/tests/isp') {
                   withVenv {
-                  withTools(params.TOOLS_VERSION) {
-                    sh 'pytest -n auto'
-                  }} // Venv and tools
+                    withTools(params.TOOLS_VERSION) {
+                      sh 'pytest -n auto'
+                    } // withTools
+                    archiveArtifacts artifacts: "test_results.csv"
+                    archiveArtifacts artifacts: "imgs/images.zip"
+                  } // withVenv
                 } // dir
               } // steps
-            } // Unit tests
+            } // ISP tests
 
           } // stages
           post {

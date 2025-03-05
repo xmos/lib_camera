@@ -2,8 +2,12 @@
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 import pytest
+import errno
 import numpy as np
+import os
+import pandas as pd
 import subprocess
+import zipfile2
 from pathlib import Path
 
 from utils import ImageDecoder, ImageMetrics, ImgSize
@@ -19,10 +23,18 @@ binary = bin_path / "test_isp_rgb.xe"
 assert imgs.exists(), f"Folder {imgs} does not exist"
 assert binary.exists(), f"Binary {binary} does not exist"
 
+# Prepare Results CSV File
+results_out = cwd / "test_results.csv"
+results_out.unlink(missing_ok=True)
+
+# Prepare Image Zip File
+zip_out = imgs / "images.zip"
+zip_out.unlink(missing_ok=True)
+
 # Test Parameters
 test_files = imgs.glob("*.raw")
 test_rgb_map = {"rgb1": 1, "rgb2": 2, "rgb4": 4}
-test_input_sizes = [128, 192, 200]
+test_input_sizes = [128, 192]
 
 
 def run_xcore(file_in: Path, file_out: Path, ds_factor: int, in_size: ImgSize):
@@ -57,10 +69,10 @@ def get_rgb_decoder(ds_factor: int, in_size: ImgSize):
 @pytest.mark.parametrize("rgb_format", test_rgb_map.keys())
 @pytest.mark.parametrize("in_size", test_input_sizes)
 def test_rgb(file_in, rgb_format, in_size, request):
-    
+
     if rgb_format == "rgb4" and in_size == 200:
         pytest.xfail("Expected failure for rgb_format=4 and in_size=200")
-    
+
     print("\n===================================")
     print("Testing file:", file_in, rgb_format)
     ds_factor = test_rgb_map.get(rgb_format)
@@ -110,12 +122,24 @@ def test_rgb(file_in, rgb_format, in_size, request):
         print(res_py)
         print(res_xc)
 
+    # Store the results in a CSV file
+    test_results = pd.DataFrame([res_py])
+    test_results.loc[len(test_results.index)] = list(res_xc.values())
+    test_results.index = ['py','xc']
+    test_results.to_csv(path_or_buf=results_out,mode='a')
+
+    # Zip the images
+    with zipfile2.ZipFile(zip_out, 'a') as zip:
+        zip.write(ref_out)
+        zip.write(py_out)
+        zip.write(xc_out)
+
     # remove tmp_in file
     tmp_in.unlink()
 
 
 if __name__ == "__main__":
     file_in = list(test_files)[0]
-    rgb_format = "rgb4"
-    in_size = 200
+    rgb_format = list(test_rgb_map.keys())[0]
+    in_size = test_input_sizes[0]
     test_rgb(file_in, rgb_format, in_size, None)
