@@ -73,6 +73,14 @@ def test_rgb(file_in, rgb_format, in_size, request):
     if rgb_format == "rgb4" and in_size == 200:
         pytest.xfail("Expected failure for rgb_format=4 and in_size=200")
 
+    in_size_check_factors = {"rgb1": 1, "rgb2": 4, "rgb4": 16}
+    in_size_check = in_size % in_size_check_factors[rgb_format]
+
+    if in_size_check != 0:
+        pytest.xfail(f"""The input size {in_size} 
+                     is not a multiple of {in_size_check_factors[rgb_format]} 
+                     as required by the RGB format {rgb_format}""")
+
     print("\n===================================")
     print("Testing file:", file_in, rgb_format)
     ds_factor = test_rgb_map.get(rgb_format)
