@@ -77,7 +77,7 @@ def test_rgb(file_in, rgb_format, in_size, request):
     in_size_check = in_size % in_size_check_factors[rgb_format]
 
     if in_size_check != 0:
-        pytest.xfail(f"""The input size {in_size} 
+        pytest.fail(f"""The input size {in_size} 
                      is not a multiple of {in_size_check_factors[rgb_format]} 
                      as required by the RGB format {rgb_format}""")
 
