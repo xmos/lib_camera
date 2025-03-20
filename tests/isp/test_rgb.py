@@ -73,7 +73,8 @@ def test_rgb(file_in, rgb_format, in_size, request):
     if rgb_format == "rgb4" and in_size == 200:
         pytest.xfail("Expected failure for rgb_format=4 and in_size=200")
 
-    in_size_check_factors = {"rgb1": 1, "rgb2": 4, "rgb4": 16}
+    # In general, for rgbn the input size must be evenly divisible by 4*n
+    in_size_check_factors = {"rgb1": 4, "rgb2": 8, "rgb4": 16}
     in_size_check = in_size % in_size_check_factors[rgb_format]
 
     if in_size_check != 0:
