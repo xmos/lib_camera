@@ -19,6 +19,15 @@ C_API_START
 void camera_io_write_file(char* filename, uint8_t* data, const size_t size);
 
 /**
+ * @brief Reads data into an array
+ * 
+ * @param filename Name of the file
+ * @param data     Data to read to
+ * @param size     Size of the file
+ */
+void camera_io_read_file(char * filename, uint8_t * data, const size_t size);
+
+/**
  * @brief Writes binary image file
  *
  * @param filename  Name of the image

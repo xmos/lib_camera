@@ -64,6 +64,18 @@ void handle_no_expected_lines() {
 }
 
 static
+void handle_post_process(image_cfg_t* image) {
+  // Image pointer could be NULL if EOF is reached before asking a picture
+  if (image->ptr == NULL) {
+    return;
+  }
+  // AWB
+  camera_isp_white_balance(image);
+  // AE
+  //TODO
+}
+
+static
 void handle_end_of_frame(
   image_cfg_t* image,
   chanend_t c_cam)
@@ -215,11 +227,9 @@ void camera_isp_packet_handler(
   // Handle packets depending on their type
   switch (data_type) {
     case MIPI_DT_FRAME_START:
-      //debug_printf("SOF\n");
       t_init = get_reference_time();
       ph_state.wait_for_frame_start = 0;
       ph_state.in_line_number = 0;
-      //ph_state.out_line_number = 0;
       ph_state.capture_finished = 0;
       ph_state.frame_number++;
       break;
@@ -231,9 +241,9 @@ void camera_isp_packet_handler(
       break;
 
     case MIPI_DT_FRAME_END:
-      //debug_printf("EOF\n");
       t_end = get_reference_time();
       debug_printf("Frame time: %d cycles\n", t_end - t_init);
+      handle_post_process(image_cfg);
       handle_end_of_frame(image_cfg, c_isp_to_user);
       break;
 
@@ -264,7 +274,7 @@ void camera_isp_thread(
   camera_sensor_init();
 
   // Wait for the sensor to start
-  delay_milliseconds_cpp(1200);
+  delay_milliseconds_cpp(600);
 
   // Give the MIPI packet receiver a first buffer
   s_chan_out_word(c_pkt, (unsigned)&packet_buffer[pkt_idx]);

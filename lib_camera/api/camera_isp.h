@@ -8,8 +8,6 @@
 #include "api.h"
 #include "camera.h" // packet size
 
-#define ALIGNED_8 __attribute__((aligned(8)))
-
 // MIPI packet size
 #define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)
@@ -112,5 +110,8 @@ void camera_isp_raw8_to_raw8(image_cfg_t* image, int8_t* data_in, unsigned ln);
 void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned ln);
 void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in, unsigned ln);
 void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
+
+// -------- White Balancing -------------------
+void camera_isp_white_balance(image_cfg_t* image);
 
 C_API_END

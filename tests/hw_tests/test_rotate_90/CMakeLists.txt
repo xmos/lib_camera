@@ -7,7 +7,7 @@ set(XMOS_SANDBOX_DIR ${CMAKE_SOURCE_DIR}/../../../..)
 message("XMOS_SANDBOX_DIR: ${XMOS_SANDBOX_DIR}")
 
 # target
-set(APP_HW_TARGET XCORE-VISION-EXPLORER.xn)
+set(APP_HW_TARGET src/XK-EVK-XU316-AIV.xn)
 list(APPEND APP_INCLUDES src)
 list(APPEND APP_DEPENDENT_MODULES "lib_camera" "xscope_fileio(1.2.0)")
 

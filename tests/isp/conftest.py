@@ -27,6 +27,6 @@ def pytest_sessionstart(session):
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionfinish(session, exitstatus):
-    if not hasattr(session.config, 'workerinput'):
+    if not hasattr(session.config, "workerinput"):
         remove_tmp_bin_files()
         postprocess_results(session)

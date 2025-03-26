@@ -7,7 +7,7 @@ set(XMOS_SANDBOX_DIR ${CMAKE_SOURCE_DIR}/../../..)
 message("XMOS_SANDBOX_DIR: ${XMOS_SANDBOX_DIR}")
 
 # Target, xscope
-set(APP_HW_TARGET src/XCORE-VISION-EXPLORER.xn)
+set(APP_HW_TARGET src/XK-EVK-XU316-AIV.xn)
 set(APP_XSCOPE_SRCS src/config.xscope)
 
 # Includes, Dependencies
@@ -23,7 +23,8 @@ set(
     -Wall
     -Werror
     -fxscope
-    -DDEBUG_PRINT_ENABLE_CAM_ISP=1 # Enable debug prints
+    -DDEBUG_PRINT_ENABLE_CAM_ISP=1  # ISP debug prints
+    -DDEBUG_PRINT_ENABLE_CAM_MIPI=1 # MIPI debug prints
 )
 
 XMOS_REGISTER_APP()
