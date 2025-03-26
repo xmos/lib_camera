@@ -42,7 +42,7 @@ void user_app(chanend_t c_cam) {
     camera_cfg_t config = {
         .offset_x = 0,
         .offset_y = 0,
-        .mode = MODE_RGB1,
+        .mode = MODE_RGB2,
     };
     image_cfg_t image = {
         .height = h,
@@ -68,10 +68,12 @@ void user_app(chanend_t c_cam) {
     // change coordinates
     config.offset_x = 0.5;
     config.offset_y = 0.1;
+    unsigned t0 = get_reference_time();
     camera_isp_coordinates_compute(&image);
     camera_isp_start_capture(c_cam, &image);
-    sim_model_invoke(); // this is just some big delay to show that it is non-blocking
     camera_isp_get_capture(c_cam);
+    unsigned t1 = get_reference_time();
+    printf("Capture time:\t%f [ms]\n", (t1 - t0) * 1e-5);
     save_image(&image, FILE2_NAME);
 
     // (Optional) try something makes no sense

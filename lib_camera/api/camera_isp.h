@@ -9,6 +9,7 @@
 #include "camera.h" // packet size
 
 #define ALIGNED_8 __attribute__((aligned(8)))
+#define ALIGNED_4 __attribute__((aligned(4)))
 
 // MIPI packet size
 #define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
