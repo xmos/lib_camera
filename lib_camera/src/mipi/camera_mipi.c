@@ -31,9 +31,9 @@ void debug_mipi_info(
   debug_printf("mipi_phy_freq = %d MHz\n", mipi_phy_freq);
   debug_printf("mipi_shim_freq = %d MHz\n", mipi_shim_freq);
   debug_printf("mipi_shim_cfg0 = 0x%08X\n", mipi_shim_cfg0);
-  assert(mipi_phy_freq < 300 && "MIPI PHY frequency too high");
+  assert(mipi_phy_freq < 200 && "MIPI PHY frequency too high");
   assert(mipi_shim_freq < 200 && "MIPI shim frequency too high");
-  assert(mipi_phy_freq > mipi_shim_freq && "PHY has to be faster than shim");
+  assert(mipi_shim_freq > mipi_phy_freq && "PHY has to be faster than shim");
   #endif
 }
 
