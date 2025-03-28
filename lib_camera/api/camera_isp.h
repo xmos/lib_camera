@@ -12,10 +12,6 @@
 #define ALIGNED_8 __attribute__((aligned(8)))
 #endif
 
-#ifndef ALIGNED_4
-#define ALIGNED_4 __attribute__((aligned(4)))
-#endif
-
 // MIPI packet size
 #define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)

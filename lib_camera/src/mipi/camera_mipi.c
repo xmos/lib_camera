@@ -24,7 +24,6 @@ void debug_mipi_info(
   unsigned mipi_clk_cfg_divider,
   unsigned mipi_shim_cfg0)
 {
-  #ifdef DEBUG_PRINT_ENABLE_CAM_MIPI
   // debug MIPI info
   int mipi_phy_freq = 600 / (2 * (mipi_clk_cfg_divider + 1));
   int mipi_shim_freq = 600 / (2 * (mipi_clk_divider + 1));
@@ -34,7 +33,6 @@ void debug_mipi_info(
   assert(mipi_phy_freq < 200 && "MIPI PHY frequency too high");
   assert(mipi_shim_freq < 200 && "MIPI shim frequency too high");
   assert(mipi_shim_freq > mipi_phy_freq && "PHY has to be faster than shim");
-  #endif
 }
 
 static
@@ -82,7 +80,7 @@ void camera_mipi_init(
   clock_set_source_port(ctx->clk_mipi, ctx->p_mipi_clk);
 
   // Sample on falling edge - shim outputting on rising (only if secondary pll)
-  // set_clock_rise_delay(clk_mipi, 0);
+  // __xcore_resource_setc(ctx->clk_mipi, XS1_SETC_VALUE_SET(0x9007, 1));
 
   // set pad delay rise edge
   set_pad_delay(ctx->p_mipi_rxa, 1);
@@ -93,9 +91,6 @@ void camera_mipi_init(
   // ---------------- Tile configuration ----------------
   unsigned tileid = get_local_tile_id();
   int ret = 0;
-
-  // set Always-on-power for the DPHY
-  ret |= write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_DPHY_CFG0_NUM, 0b10);
 
   // clock mipi shim (<200 MHz)
   ret |= write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_CLK_DIVIDER_NUM, mipi_clk_divider);
@@ -109,7 +104,7 @@ void camera_mipi_init(
   // Configure MIPI shim
   ret |= write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_SHIM_CFG0_NUM, mipi_shim_cfg0);
 
-  // take phy out of reset
+  // Set Always-on-power and take PHY out of reset
   ret |= write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_DPHY_CFG0_NUM, 0b11);
 
   assert(ret && "Error configuring MIPI D-PHY tile");
