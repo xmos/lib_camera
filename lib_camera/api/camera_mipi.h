@@ -16,6 +16,7 @@
 #define MIPI_SHIM_DEMUX_MODE        0 // (see xMIPI_DemuxMode_t), Unused if MIPI_SHIM_DEMUX_EN = 0 
 #define MIPI_SHIM_DEMUX_DATATYPE    0 // CSI-2 packet type to demux, Unused if MIPI_SHIM_DEMUX_EN = 0
 #define MIPI_SHIM_DEMUX_EN          0 // MIPI shim 0 = disabled, 1 = enabled
+#define MIPI_SHIM_BIAS_ENABLE       1 // enable mipi uint8-int8 conversion
 
 // Mipi shim clock settings
 #define MIPI_CLK_DIV      1     // CLK DIVIDER
