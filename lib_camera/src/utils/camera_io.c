@@ -20,8 +20,6 @@ void camera_io_write_file(char * filename, uint8_t * data, const size_t size)
 
 void camera_io_write_image_file(char * filename, uint8_t * image, const size_t height, const size_t width, const size_t channels)
 {
-  printf("Writing image...\n");
-
   unsigned line_len = width * channels;
   FILE * fp = fopen(filename, "wb");
 
@@ -31,9 +29,6 @@ void camera_io_write_image_file(char * filename, uint8_t * image, const size_t h
     delay_milliseconds_cpp(1);
   }
   fclose(fp);
-
-  printf("Image written into file: %s\n", filename);
-  printf("Image dimentions: %d x %d\n\n", width, height);
 }
 
 void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t height, const size_t width, const size_t channels)
@@ -91,8 +86,6 @@ void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t hei
   bmpInfoHeader[10] = (unsigned char)(height >> 16);
   bmpInfoHeader[11] = (unsigned char)(height >> 24);
 
-  printf("Writing bmp image...\n");
-
   FILE * fp = fopen(filename, "wb");
 
   fwrite(bmpFileHeader, sizeof(unsigned char), file_header_len, fp);
@@ -119,8 +112,6 @@ void camera_io_write_bmp_file(char * filename, uint8_t * image, const size_t hei
     }
   }
   fclose(fp);
-  printf("Image written into file: %s\n", filename);
-  printf("Image dimentions: %d x %d\n", width, height);
 }
 
 void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, const size_t width)
@@ -178,8 +169,6 @@ void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, 
   bmpInfoHeader[10] = (unsigned char)(height >> 16);
   bmpInfoHeader[11] = (unsigned char)(height >> 24);
 
-  printf("Writing bmp image...\n");
-
   FILE * fp = fopen(filename, "wb");
 
   fwrite(bmpFileHeader, sizeof(unsigned char), file_header_len, fp);
@@ -202,6 +191,4 @@ void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, 
     }
   }
   fclose(fp);
-  printf("Image written into file: %s\n", filename);
-  printf("Image dimentions: %d x %d\n", width, height);
 }
