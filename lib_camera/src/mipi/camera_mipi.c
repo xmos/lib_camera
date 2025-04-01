@@ -19,7 +19,7 @@
 #include <debug_print.h>
 
 static
-void debug_mipi_info(
+void check_mipi_freq(
   unsigned mipi_clk_divider,
   unsigned mipi_clk_cfg_divider,
   unsigned mipi_shim_cfg0)
@@ -58,7 +58,7 @@ void camera_mipi_init(
     MIPI_SHIM_STUFF_ENABLE,
     MIPI_SHIM_BIAS_ENABLE
   );
-  debug_mipi_info(
+  check_mipi_freq(
     mipi_clk_divider,
     mipi_clk_cfg_divider,
     mipi_shim_cfg0
