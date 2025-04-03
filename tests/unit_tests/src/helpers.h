@@ -91,6 +91,7 @@ typedef struct
 // -----------------------------------------------------
 void fill_array_rand_int8(int8_t *image, size_t size);
 void fill_array_rand_uint8(uint8_t *image, size_t size);
+void print_array(int8_t* result, size_t size);
 
 void fill_color_table_uint8(color_table_t table[], const size_t size, color_conversion_t conversion);
 void printColorTable(color_table_t *table, uint8_t ref);

@@ -23,6 +23,7 @@ imgs = cwd / "imgs"
 bin_path = cwd / "bin"
 binary = bin_path / "test_isp_wb.xe"
 test_files = imgs.glob("*.raw")
+test_input_sizes = [64, 32, 58]
 
 assert imgs.exists(), f"Folder {imgs} does not exist"
 assert binary.exists(), f"Binary {binary} does not exist"
@@ -45,11 +46,9 @@ def run_xcore(file_in: Path, file_out: Path, channels: int, in_size: ImgSize):
     subprocess.run(run_cmd, cwd=cwd, check=True)
     return
 
-
-if __name__ == "__main__":
-    file_in = list(test_files)[2]
-    in_size = 64
-
+@pytest.mark.parametrize("file_in", test_files)
+@pytest.mark.parametrize("in_size", test_input_sizes)
+def test_swb(file_in, in_size):
     print("\n===================================")
     print("Testing file:", file_in)
 
@@ -85,3 +84,11 @@ if __name__ == "__main__":
     rmse = met.rmse(arr_py, arr_xc)
     assert rmse < met.rmse_tol, f"RMSE is too high: {rmse}"
     print(f"rmse: {rmse}")
+    
+    
+if __name__ == "__main__":
+    file_in = list(test_files)[2]
+    in_size = 58
+    test_swb(file_in, in_size)
+
+   

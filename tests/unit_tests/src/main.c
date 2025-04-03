@@ -14,16 +14,18 @@ int main(
   UnityGetCommandLineOptions(argc, argv);
   UnityBegin(argv[0]);
 
-  printf("\n");
+  printf("lib_camera Unit Tests\n");
 
+  RUN_TEST_GROUP(color_conversion);
+  RUN_TEST_GROUP(white_balance);
+  RUN_TEST_GROUP(timings);
   //RUN_TEST_GROUP(pixel_hfilter);
   //RUN_TEST_GROUP(pixel_vfilter);
-  RUN_TEST_GROUP(color_conversion);
   //RUN_TEST_GROUP(gamma_timing);
   //RUN_TEST_GROUP(stats_test);
   //RUN_TEST_GROUP(resize_group);
   //RUN_TEST_GROUP(crop_group);
-  RUN_TEST_GROUP(timings);
+  
   
   return UNITY_END();
 }
