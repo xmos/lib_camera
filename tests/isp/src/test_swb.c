@@ -55,10 +55,16 @@ void test_wb(
     camera_io_read_file((char*)input_file, (uint8_t*)image.ptr, image.size);
     
     // Do the white balance
+	unsigned t0 = get_reference_time();
     camera_isp_white_balance(&image);
+	unsigned t1 = get_reference_time() - t0;
+	float ops_per_px = (t1) / (float)image.size;
 
     // Write the image to file
     camera_io_write_file((char*)output_file, (uint8_t*)image.ptr, image.size);
+
+	printf("Ops per pixel: %.2f \n", ops_per_px);
+	printf("Time taken for white balance: %u \n", t1);
 }
 
 int main(int argc, char* argv[])

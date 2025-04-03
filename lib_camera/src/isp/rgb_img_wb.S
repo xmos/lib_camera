@@ -1,7 +1,6 @@
 /* *****************************************************
 void wb_scale_image(
-    int8_t *img,
-    unsigned img_size,
+    image_cfg_t* image,
     const int8_t vk[32], 
     const int8_t vc[32],
     const int16_t vsat[16]
@@ -27,61 +26,64 @@ Where:
     - vk = (128 - 128/factor) (uint16_t)
     - vc = factor << sat (uint16_t)
     - factor = scaling factor for the white balance correction (float32) [1-2]
+    - Default values are [1.538, 1.0, 1.587] for RGB
 
 ********************************************************/
 
 #define FUNCTION_NAME   wb_scale_image
 #define NSTACKWORDS     (4)            
-#define STACK_VSAT      (NSTACKWORDS + 1)
 
 #define img             r0
-#define img_size        r1
-#define vk              r2
-#define vc              r3
+#define vk              r1
+#define rem             r2
+#define vsat            r3
 
-#define vsat            r4
-#define _12             r5      
-#define _32             r6
-#define cnt             r7
+#define _12             r4    
+#define loops           r5
 
 #define msk             r11
 
 .text
-.issue_mode single
+.issue_mode dual
 .align 4
 .globl FUNCTION_NAME
 .type FUNCTION_NAME, @function
 .cc_top FUNCTION_NAME.func, FUNCTION_NAME
 
 FUNCTION_NAME:
-    ENTSP_lu6   NSTACKWORDS
+    dualentsp   NSTACKWORDS
     std r4, r5, sp[0]
-    std r6, r7, sp[1]
-    ldw vsat, sp[STACK_VSAT]
+    vldc    r2[0]
+    ldw r4, r0[0]
+    ldw r5, r0[1]
+    ldw img, r0[4]
+    mul loops, r4, r5
+    {shr loops, r5, 2; zext rem, 2}
+
 // Set Vpu
     vclrdr
     ldc     r11, 0x200
     vsetc   r11
 // Constants
-    ldc     _32, 32
     ldc     _12, 12
     mkmsk   msk, _12
-    sub img_size, img_size, _32
-    divu cnt, img_size, _12
-    vldc    vc[0]
 .do_wb_loop:
+    {vlmacc  img[0]; sub loops, loops, 1}
+     vlmacc  vk[0]
+     vlsat   vsat[0]   
+     vstrpv  img[0], msk
+    {vclrdr; add img, img, _12} 
+    bt loops, .do_wb_loop
+// tail
+    {mkmsk r2, rem; bf rem, .end}
     vlmacc  img[0]
     vlmacc  vk[0]
     vlsat   vsat[0]   
-    vstrpv  img[0], msk
-    vclrdr
-    add img, img, _12
-    sub cnt, cnt, 1
-    bt cnt, .do_wb_loop
+    vstrpv  img[0], r2
+.end:
 // Restore regs
     ldd   r4, r5, sp[0]
-    ldd   r6, r7, sp[1]
-    retsp   NSTACKWORDS     
+    retsp   NSTACKWORDS
 
 .cc_bottom FUNCTION_NAME.func
 .set    FUNCTION_NAME.nstackwords, NSTACKWORDS; .globl  FUNCTION_NAME.nstackwords
@@ -89,3 +91,4 @@ FUNCTION_NAME:
 .set	FUNCTION_NAME.maxtimers,0; .globl FUNCTION_NAME.maxtimers
 .set	FUNCTION_NAME.maxchanends,0; .globl	FUNCTION_NAME.maxchanends
 .size FUNCTION_NAME, .-FUNCTION_NAME
+    

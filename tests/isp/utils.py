@@ -261,7 +261,7 @@ class ImageDecoder(object):
 
 class ImageMetrics(object):
     def __init__(self):
-        self.prec = 2  # precision for scores
+        self.prec = 3  # precision for scores
         self.ssim_tol = 0.90
         self.psnr_tol = 20.0
         self.perc_error_tol = 25.0
@@ -287,12 +287,14 @@ class ImageMetrics(object):
         """Mean Squared Error"""
         assert arr1.shape == arr2.shape, "Arrays must have the same shape"
         mse = np.mean((arr1 - arr2) ** 2)
+        mse = np.round(mse, self.prec)
         return mse
     
     def rmse(self, arr1, arr2):
         """Root Mean Squared Error"""
         assert arr1.shape == arr2.shape, "Arrays must have the same shape"
         rmse = np.sqrt(np.mean((arr1 - arr2) ** 2))
+        rmse = np.round(rmse, self.prec)
         return rmse
 
     def get_metric(
