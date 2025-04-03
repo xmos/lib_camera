@@ -86,10 +86,8 @@ class ImageDecoder(object):
         buffer = buffer.reshape(self.sns_height, self.sns_width, 1)
         buffer = buffer[: out_size.height, : out_size.width, :]
         buffer = buffer.flatten()
-
-        with open(out_path, "wb") as f:
-            f.write(buffer)
-
+        assert len(buffer) > 0, "Buffer is empty after resizing"
+        buffer.tofile(out_path, "wb")
         print("Image saved in:", out_path)
         return buffer
 
@@ -237,7 +235,20 @@ class ImageDecoder(object):
         print("Image saved in:", output_name)
         self.last_img = img_pil
         return img_pil
-
+    
+    def rgb_apply_static_wb(self, _img: np.ndarray):
+        assert(_img.dtype == np.int8), "Image must be int8"
+        img = _img.copy().flatten()
+        wb = np.array([1.538, 1.0, 1.587])
+        pos = 0
+        for i, px in enumerate(img):
+            tmp = (wb[pos] * (px + 128)) - 127
+            tmp = tmp.clip(-128, 127)
+            tmp = tmp.astype(np.int8)
+            img[i] = tmp
+            pos = (pos + 1) % 3
+        return img
+    
     # ------------------ PLOT ------------------
     def plot(self, title=""):
         assert self.last_img is not None, "No image to plot"
@@ -255,6 +266,7 @@ class ImageMetrics(object):
         self.psnr_tol = 20.0
         self.perc_error_tol = 25.0
         self.ratio_tol = 0.8
+        self.rmse_tol = 4.0
 
     def ssim(self, img_ref, img):
         img_ref = np.array(img_ref.convert("L"))
@@ -270,6 +282,18 @@ class ImageMetrics(object):
             return 50.0
         score = peak_signal_noise_ratio(img_ref, img)
         return np.round(score, self.prec)
+    
+    def mse(self, arr1, arr2):
+        """Mean Squared Error"""
+        assert arr1.shape == arr2.shape, "Arrays must have the same shape"
+        mse = np.mean((arr1 - arr2) ** 2)
+        return mse
+    
+    def rmse(self, arr1, arr2):
+        """Root Mean Squared Error"""
+        assert arr1.shape == arr2.shape, "Arrays must have the same shape"
+        rmse = np.sqrt(np.mean((arr1 - arr2) ** 2))
+        return rmse
 
     def get_metric(
         self,
@@ -316,7 +340,7 @@ class ImageMetrics(object):
         if check is True, it will assert the results based on the tolerances"""
         pe_ssim, pe_psnr = self.get_perc_errors(metrics1, metrics2)
         ratio_ssim, ratio_psnr = self.get_ratios(metrics1, metrics2)
-        if check:        
+        if check:
             assert pe_ssim < self.perc_error_tol, f"SSIM perc error is {pe_ssim}"
             assert pe_psnr < self.perc_error_tol, f"PSNR perc error is {pe_psnr}"
             assert ratio_ssim > self.ratio_tol, f"SSIM ratio is {ratio_ssim}"

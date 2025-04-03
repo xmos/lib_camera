@@ -69,18 +69,16 @@ def get_rgb_decoder(ds_factor: int, in_size: ImgSize):
 @pytest.mark.parametrize("rgb_format", test_rgb_map.keys())
 @pytest.mark.parametrize("in_size", test_input_sizes)
 def test_rgb(file_in, rgb_format, in_size, request):
-
-    if rgb_format == "rgb4" and in_size == 200:
-        pytest.xfail("Expected failure for rgb_format=4 and in_size=200")
-
     # In general, for rgbn the input size must be evenly divisible by 4*n
     in_size_check_factors = {"rgb1": 4, "rgb2": 8, "rgb4": 16}
     in_size_check = in_size % in_size_check_factors[rgb_format]
 
     if in_size_check != 0:
-        pytest.fail(f"""The input size {in_size} 
+        pytest.fail(
+            f"""The input size {in_size} 
                      is not a multiple of {in_size_check_factors[rgb_format]} 
-                     as required by the RGB format {rgb_format}""")
+                     as required by the RGB format {rgb_format}"""
+        )
 
     print("\n===================================")
     print("Testing file:", file_in, rgb_format)
@@ -134,11 +132,11 @@ def test_rgb(file_in, rgb_format, in_size, request):
     # Store the results in a CSV file
     test_results = pd.DataFrame([res_py])
     test_results.loc[len(test_results.index)] = list(res_xc.values())
-    test_results.index = ['py','xc']
-    test_results.to_csv(path_or_buf=results_out,mode='a')
+    test_results.index = ["py", "xc"]
+    test_results.to_csv(path_or_buf=results_out, mode="a")
 
     # Zip the images
-    with zipfile2.ZipFile(zip_out, 'a') as zip:
+    with zipfile2.ZipFile(zip_out, "a") as zip:
         zip.write(ref_out)
         zip.write(py_out)
         zip.write(xc_out)

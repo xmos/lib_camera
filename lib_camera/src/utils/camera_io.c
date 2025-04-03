@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+#include <assert.h>
 
 #include "camera_io.h"
 #include "camera_utils.h"
@@ -14,7 +15,18 @@
 void camera_io_write_file(char * filename, uint8_t * data, const size_t size)
 {
   FILE * fp = fopen(filename, "wb");
+  assert(fp != NULL);
   fwrite(data, sizeof(uint8_t), size, fp);
+  fclose(fp);
+}
+
+void camera_io_read_file(char * filename, uint8_t * data, const size_t size)
+{
+  size_t read_size;
+  FILE * fp = fopen(filename, "rb");
+  assert(fp != NULL);
+  read_size = fread(data, sizeof(uint8_t), size, fp);
+  assert(read_size == size);
   fclose(fp);
 }
 
