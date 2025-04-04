@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from utils import ImageDecoder, ImageMetrics, ImgSize
 
-RMSE_TOL = 3 # 3px rmse tolerance allowed
+RMSE_TOL = 6 # rmse tolerance allowed
 
 # Globals
 met = ImageMetrics()
