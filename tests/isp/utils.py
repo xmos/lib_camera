@@ -87,7 +87,8 @@ class ImageDecoder(object):
         buffer = buffer[: out_size.height, : out_size.width, :]
         buffer = buffer.flatten()
         assert len(buffer) > 0, "Buffer is empty after resizing"
-        buffer.tofile(out_path, "wb")
+        with open(out_path, "wb") as f:
+            f.write(buffer)
         print("Image saved in:", out_path)
         return buffer
 
@@ -223,6 +224,8 @@ class ImageDecoder(object):
         img_out = img_out.reshape(out_size)
         img_out_pil = self._imgsave(img_out, input_name, output_name)
         return img_out_pil
+    
+
 
     # ------------------ RGB ------------------
     def rgb_to_png(self, input_name=None, output_name=None):
