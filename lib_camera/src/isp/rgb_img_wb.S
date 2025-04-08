@@ -57,18 +57,18 @@ FUNCTION_NAME:
     dualentsp   NSTACKWORDS
     std r4, r5, sp[0]
     vldc    r2[0]
-    ldw r4, r0[0] // height
-    ldw r5, r0[1] // width
-    ldw img, r0[4]
-    mul loops, r4, r5
-    {shr loops, r5, 2; zext rem, 2}
+    ldw r5, r0[0]   // height
+    ldw r2, r0[1]   // width 
+    ldw img, r0[4]  // img_ptr
+    mul r2, r2, r5
+    {shr loops, r2, 2; zext rem, 2}
 // Set Vpu
     vclrdr
     ldc     r11, 0x200
     vsetc   r11
-// Constants
-    ldc     _12, 12
-    mkmsk   msk, _12
+// Create mask (M) and rem x3 (R)
+    {ldc     _12, 12; shl r11, rem, 1}
+    {mkmsk   msk, _12; add  rem, rem, r11}
 .do_wb_loop:
     {vlmacc  img[0]; sub loops, loops, 1}
      vlmacc  vk[0]
