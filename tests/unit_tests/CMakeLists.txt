@@ -6,8 +6,8 @@ project(unit_tests)
 set(XMOS_SANDBOX_DIR ${CMAKE_SOURCE_DIR}/../../..)
 
 # target
-set(APP_HW_TARGET src/XK-EVK-XU316-AIV.xn)
-# set(APP_HW_TARGET XK-EVK-XU316)
+# set(APP_HW_TARGET src/XK-EVK-XU316-AIV.xn)
+set(APP_HW_TARGET XK-EVK-XU316)
 
 # sources
 list(APPEND APP_INCLUDES src src/test)
