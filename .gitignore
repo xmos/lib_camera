@@ -89,4 +89,4 @@ build/
 
 # Documentation
 !doc/**/images/*.png
-tests/unit_tests/cmds.txt
+cmds.txt
