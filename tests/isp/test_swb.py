@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from utils import ImageDecoder, ImageMetrics, ImgSize
 
-RMSE_TOL = 6 # rmse tolerance allowed
+RMSE_TOL = 3 # pixel rmse tolerance allowed
 
 # Globals
 met = ImageMetrics()
@@ -23,7 +23,7 @@ imgs = cwd / "imgs"
 bin_path = cwd / "bin"
 binary = bin_path / "test_isp_wb.xe"
 test_files = imgs.glob("*.raw")
-test_input_sizes = [64, 32, 58]
+test_input_sizes = [64, 32, 16, 68]
 
 assert imgs.exists(), f"Folder {imgs} does not exist"
 assert binary.exists(), f"Binary {binary} does not exist"
@@ -88,7 +88,7 @@ def test_swb(file_in, in_size):
     
 if __name__ == "__main__":
     file_in = list(test_files)[2]
-    in_size = 58
+    in_size = 16
     test_swb(file_in, in_size)
 
    

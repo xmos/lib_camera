@@ -83,8 +83,8 @@ TEST(white_balance, white_balance__simple) // ensure we dont write zeros after t
 
 TEST(white_balance, white_balance__odd) // non multiple of 4 size
 {
-    const unsigned height = 1;
-    const unsigned width = 5;
+    const unsigned height = 18;
+    const unsigned width = 18;
     const unsigned channels = 3;
     const unsigned size = height * width * channels;
     int8_t buff[size] ALIGNED_4 = { 0 };
@@ -97,11 +97,7 @@ TEST(white_balance, white_balance__odd) // non multiple of 4 size
 		.ptr = buff,
 		.config = NULL
 	};
-    //fill_array_rand_int8(buff, size);
-    for (unsigned i = 0; i < size; i++) {
-        buff[i] = i;
-    }
-    
+    fill_array_rand_int8(buff, size);
     memcpy(buff2, buff, size * sizeof(int8_t));
 
     // do both wb

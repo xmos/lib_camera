@@ -16,6 +16,7 @@ set(
     -fxscope
     -DDEBUG_PRINT_ENABLE_CAM_ISP=1
     -fcmdline-buffer-bytes=1024
+    -DLIBXCORE_XASSERT_IS_ASSERT 
 )
 
 # ----- RGBX -----

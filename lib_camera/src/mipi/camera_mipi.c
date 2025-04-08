@@ -3,12 +3,13 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <assert.h>
+
 
 #include <xs1.h>
 #include <platform.h>
 #include <xs3a_defines.h>
 #include <xcore/port_protocol.h>
+#include <xcore/assert.h>
 #include <xcore/clock.h>
 
 #include "camera_mipi.h"
@@ -30,9 +31,9 @@ void check_mipi_freq(
   debug_printf("mipi_phy_freq = %d MHz\n", mipi_phy_freq);
   debug_printf("mipi_shim_freq = %d MHz\n", mipi_shim_freq);
   debug_printf("mipi_shim_cfg0 = 0x%08X\n", mipi_shim_cfg0);
-  assert(mipi_phy_freq < 200 && "MIPI PHY frequency too high");
-  assert(mipi_shim_freq < 200 && "MIPI shim frequency too high");
-  assert(mipi_shim_freq > mipi_phy_freq && "PHY has to be faster than shim");
+  xassert(mipi_phy_freq < 200 && "MIPI PHY frequency too high");
+  xassert(mipi_shim_freq < 200 && "MIPI shim frequency too high");
+  xassert(mipi_shim_freq > mipi_phy_freq && "PHY has to be faster than shim");
 }
 
 static
@@ -107,7 +108,7 @@ void camera_mipi_init(
   // Set Always-on-power and take PHY out of reset
   ret |= write_sswitch_reg(tileid, XS1_SSWITCH_MIPI_DPHY_CFG0_NUM, 0b11);
 
-  assert(ret && "Error configuring MIPI D-PHY tile");
+  xassert(ret && "Error configuring MIPI D-PHY tile");
 
   // Connect the xcore-ports to the MIPI demuxer/PHY.
   int val = getps(XS1_PS_XCORE_CTRL0);

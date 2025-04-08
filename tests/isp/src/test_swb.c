@@ -40,7 +40,7 @@ void test_wb(
 	image_cfg_t image = {
 		.height = in_height,
 		.width = in_width,
-		.channels = 3,
+		.channels = channels,
 		.size = size,
 		.ptr = &image_buffer[0],
 		.config = &config

@@ -3,8 +3,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 #include <stdlib.h>
+
+#include <xcore/assert.h>
 
 #include <print.h>
 #include "camera_isp.h"
@@ -62,7 +63,7 @@ extern void wb_scale_image(
 
 void camera_isp_white_balance(image_cfg_t* image)
 {
-    assert(image->ptr != NULL && "image pointer is NULL");
-    assert(image->size > 12 && "image size should be > 12 bytes");
+    xassert(image->ptr != NULL && "image pointer is NULL");
+    xassert(image->size > 12 && "image size should be > 12 bytes");
     wb_scale_image(image, vk_rgb, vc_rgb, vsat);
 }
