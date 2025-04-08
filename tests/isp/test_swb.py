@@ -57,22 +57,22 @@ def test_swb(file_in, in_size):
     InDec = ImageDecoder(InSize)
 
     # prepare folders
-    filename = Path(file_in.name)
+    out_filename = Path(file_in.stem + f"_{in_size}")
     out_folder = imgs / file_in.stem
     out_folder.mkdir(exist_ok=True)
-    tmp_in_bin = out_folder / filename.with_suffix(f".python.bin")
-    tmp_in_xc = out_folder / filename.with_suffix(f".xcore.bin")
+    tmp_in_bin = out_folder / out_filename.with_suffix(f".python.bin")
+    tmp_in_xc = out_folder / out_filename.with_suffix(f".xcore.bin")
+    tmp_in_png = out_folder / out_filename.with_suffix(".png")
 
-    # convert to rgb, do white abalnce
-    img = InDec.raw8_to_rgb1(file_in)
+    # convert raw to rgb
+    img = InDec.raw8_to_rgb1(file_in, tmp_in_png)
     img = np.array(img, dtype=np.int8)
     img.tofile(tmp_in_bin)
-
+    
     # run white balance - firmware
     run_xcore(tmp_in_bin, tmp_in_xc, 3, OutSize)
     
     # run white balance python
-    # (has to go after firmware)
     img_wb = InDec.rgb_apply_static_wb(img)
     img_wb.tofile(tmp_in_bin)
     
