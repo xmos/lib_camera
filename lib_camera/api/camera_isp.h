@@ -105,13 +105,57 @@ void camera_isp_thread(
   chanend_t c_cam);
 
 
-// -------- RAW to RGB -------------------
+// ---------------------------- RAW to RGB -------------------------------
+
+/**
+ * @brief Converts RAW8 lines from the sensor into an RAW8 image. 
+ * Conversion: HxWx1 (RAW8) -> HxWx1 (RAW8) 
+ * 
+ * @param image structure containing image configuration and output pointer.
+ * @param data_in pointer to the input RAW8 line data.
+ * @param ln current sensor line number.
+ */
 void camera_isp_raw8_to_raw8(image_cfg_t* image, int8_t* data_in, unsigned ln);
+
+/**
+ * @brief Converts RAW8 lines into an RGB1 image. (image demosaicing)
+ * Conversion: HxWx1 (RAW8) -> HxWx3 (RGB) 
+ * 
+ * @param image structure containing image configuration and output RGB pointer.
+ * @param data_in pointer to the input RAW8 data.
+ * @param ln current sensor line number.
+ */
 void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned ln);
+
+/**
+ * @brief Converts RAW8 lines into an RGB2 image. (downsampled by 2) 
+ * Conversion: HxWx1 (RAW8) -> (H/2)x(W/2)x3 (RGB) 
+ * 
+ * @param image structure containing image configuration and output RGB pointer.
+ * @param data_in pointer to the input RAW8 data.
+ * @param ln current sensor line number.
+ */
 void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in, unsigned ln);
+
+/**
+ * @brief Converts RAW8 lines into an RGB4 image. (downsampled by 4) 
+ * Conversion: HxWx1 (RAW8) -> (H/4)x(W/4)x3 (RGB) 
+ * 
+ * @param image structure containing image configuration and output RGB pointer.
+ * @param data_in pointer to the input RAW8 data.
+ * @param ln current sensor line number.
+ */
 void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
 
-// -------- White Balancing -------------------
+
+// ---------------------------- White Balancing -------------------------------
+
+/**
+ * @brief Applies Static White Balancing to the image.
+ * This applies a gain to the R, G and B channels of the image.
+ * Image must be in RGB format. Image pointer is updated with the new image.
+ * @param image structure containing image configuration and output RGB pointer.
+ */
 void camera_isp_white_balance(image_cfg_t* image);
 
 C_API_END

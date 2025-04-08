@@ -38,13 +38,13 @@ Where:
 
 #define img             r0
 #define vk              r1
-#define rem             r2
+#define loops           r2
 #define vsat            r3
 
-#define _12             r4    
-#define loops           r5
+#define rem             r4    
+#define msk             r5
 
-#define msk             r11
+#define _12             r11
 
 .text
 .issue_mode dual
@@ -56,19 +56,15 @@ Where:
 FUNCTION_NAME:
     dualentsp   NSTACKWORDS
     std r4, r5, sp[0]
-    vldc    r2[0]
-    ldw r5, r0[0]   // height
-    ldw r2, r0[1]   // width 
-    ldw img, r0[4]  // img_ptr
-    mul r2, r2, r5
-    {shr loops, r2, 2; zext rem, 2}
-// Set Vpu
-    vclrdr
+    ldw r5, r0[0]                   // height
+    ldw r4, r0[1]                   // width 
+    mul r4, r4, r5                  // size
+    {shr loops, r4, 2; vldc r2[0]}     
+    {zext r4, 2; ldw img, r0[4]}    // img_ptr
     ldc     r11, 0x200
-    vsetc   r11
-// Create mask (M) and rem x3 (R)
-    {ldc     _12, 12; shl r11, rem, 1}
-    {mkmsk   msk, _12; add  rem, rem, r11}
+    {shl r5, r4, 1; vclrdr}
+    {ldc r11, 12; vsetc   r11}
+    {mkmsk   msk, r11; add  r4, r4, r5}
 .do_wb_loop:
     {vlmacc  img[0]; sub loops, loops, 1}
      vlmacc  vk[0]
