@@ -89,3 +89,4 @@ build/
 
 # Documentation
 !doc/**/images/*.png
+cmds.txt

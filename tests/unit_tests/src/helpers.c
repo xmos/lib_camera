@@ -4,7 +4,7 @@
 #include <time.h>
 #include <assert.h>
 
-#include "_helpers.h"
+#include "helpers.h"
 #include "camera_conv.h"
 
 
@@ -34,6 +34,14 @@ void fill_array_rand_int8(int8_t *image, const size_t size){
   for(size_t idx = 0; idx < size; idx++){
     image[idx] = generate_rand_int8();
   }
+}
+
+void print_array(int8_t* result, size_t size) {
+  printf("Array\n");
+  for (unsigned i = 0; i < size; i++) {
+      printf("%d,", result[i]);
+  }
+  printf("\n");
 }
 
 

@@ -6,6 +6,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <xcore/assert.h>
+
 #include "camera_io.h"
 #include "camera_utils.h"
 
@@ -14,7 +16,18 @@
 void camera_io_write_file(char * filename, uint8_t * data, const size_t size)
 {
   FILE * fp = fopen(filename, "wb");
+  xassert(fp != NULL);
   fwrite(data, sizeof(uint8_t), size, fp);
+  fclose(fp);
+}
+
+void camera_io_read_file(char * filename, uint8_t * data, const size_t size)
+{
+  size_t read_size;
+  FILE * fp = fopen(filename, "rb");
+  xassert(fp != NULL);
+  read_size = fread(data, sizeof(uint8_t), size, fp);
+  xassert(read_size == size);
   fclose(fp);
 }
 
@@ -22,7 +35,7 @@ void camera_io_write_image_file(char * filename, uint8_t * image, const size_t h
 {
   unsigned line_len = width * channels;
   FILE * fp = fopen(filename, "wb");
-
+  xassert(fp != NULL);
   for (unsigned line = 0; line < height; line++) {
     fwrite(image, sizeof(uint8_t), line_len, fp);
     image += line_len;
