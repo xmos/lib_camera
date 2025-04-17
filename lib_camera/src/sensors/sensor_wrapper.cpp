@@ -70,3 +70,8 @@ void camera_sensor_set_tp(uint16_t pattern){
   int ret = camera_sensor_ptr->set_test_pattern(pattern);
   xassert((ret == 0) && "Could not set test pattern");
 }
+
+void camera_sensor_set_exposure(uint32_t dBGain){
+  int ret = camera_sensor_ptr->set_exposure(dBGain);
+  xassert((ret == 0) && "Could not set exposure");
+}

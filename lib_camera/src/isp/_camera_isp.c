@@ -64,15 +64,23 @@ void handle_no_expected_lines() {
 }
 
 static
-void handle_post_process(image_cfg_t* image) {
+void handle_post_process(image_cfg_t* image)
+{
   // Image pointer could be NULL if EOF is reached before asking a picture
   if (image->ptr == NULL) {
     return;
   }
-  // AWB
+
+#if (CONFIG_APPLY_AWB)
   camera_isp_white_balance(image);
-  // AE
-  //TODO
+#endif
+
+#if (CONFIG_APPLY_AE)
+  uint8_t ae_val = camera_isp_auto_exposure(image);
+  if (ae_val) {
+    camera_sensor_set_exposure(ae_val);
+  }
+#endif
 }
 
 static

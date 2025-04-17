@@ -158,4 +158,14 @@ void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
  */
 void camera_isp_white_balance(image_cfg_t* image);
 
+/**
+ * @brief Computes camera gain to apply for a new auto exposure step given an image. 
+ * Computes the histograms and statistics of the image and computes the new exposure value.
+ * It is based on false position method of histogram skewness.
+ * It works well in unimodal distributions, but it is not very robust in multimodal distributions.  
+ * @param image structure containing image configuration and output RGB pointer.
+ * @return uint8_t new exposure value in [1, 80] or AE_DONE if the exposure is already adjusted.
+ */
+uint8_t camera_isp_auto_exposure(image_cfg_t* image);
+
 C_API_END
