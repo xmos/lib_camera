@@ -60,6 +60,53 @@ typedef struct {
 } mipi_packet_t;
 
 
+// ---------------------------- Capture API -------------------------------
+
+/**
+ * @brief Captures frames until the AE is done or max_steps is reached.
+ * This function can be called before `camera_isp_start_capture` to ensure the image is well-exposed.
+ * It is optional and can be skipped if the user does not require auto-exposure 
+ * or is willing to accept initial frames with incorrect exposure.
+ * Has to be called after `camera_isp_coordinates_compute`.
+ * @param c_cam camera channel
+ * @param image image pointer and conficuration
+ */
+void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image);
+
+/**
+ * @brief Sends the camera configuration to the ISP thread and starts capture process.
+ * 
+ * @param c_cam camera channel
+ * @param image image pointer and conficuration
+ */
+void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image);
+
+/**
+ * @brief Receives an image from the ISP thread and sends it to the user.
+ * 
+ * @param c_cam camera channel
+ * @param image image pointer and conficuration
+ */
+void camera_isp_get_capture(chanend_t c_cam);
+
+/**
+ * @brief Main thread function for the ISP.
+ * This function handles the interaction between the MIPI packet channel, 
+ * control channel, and the camera channel. It processes incoming data 
+ * and manages the ISP pipeline for image processing.
+ *
+ * @param c_pkt channel to receive mipi packets
+ * @param c_ctrl channel to receive control messages from or to mipi
+ * @param c_cam  channel array between user and isp
+ */
+void camera_isp_thread(
+  streaming_chanend_t c_pkt,
+  chanend_t c_ctrl,
+  chanend_t c_cam);
+
+
+// ---------------------------- Coordinates -------------------------------
+
 /**
  * @brief compute MIPI coordinates, from user request to sensor dimensions.
  *
@@ -73,36 +120,6 @@ void camera_isp_coordinates_compute(image_cfg_t* image_cfg);
  * @param image_cfg
  */
 void camera_isp_coordinates_print(image_cfg_t* image_cfg);
-
-
-/**
- * @brief send camera configuration to isp and starts capture
- * 
- * @param c_cam camera channel
- * @param image image pointer and conficuration
- */
-void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image);
-
-
-/**
- * @brief recieves image from isp
- * 
- * @param c_cam camera channel
- * @param image image pointer and conficuration
- */
-void camera_isp_get_capture(chanend_t c_cam);
-
-/**
- * @brief This function will be the main thread for the ISP
- *
- * @param c_pkt channel to receive mipi packets
- * @param c_ctrl channel to receive control messages from or to mipi
- * @param c_cam  channel array between user and isp
- */
-void camera_isp_thread(
-  streaming_chanend_t c_pkt,
-  chanend_t c_ctrl,
-  chanend_t c_cam);
 
 
 // ---------------------------- RAW to RGB -------------------------------
@@ -148,7 +165,7 @@ void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in, unsigned ln);
 void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
 
 
-// ---------------------------- White Balancing -------------------------------
+// ---------------------------- White Balancing / Auto Exposure  -------------------------------
 
 /**
  * @brief Applies Static White Balancing to the image.

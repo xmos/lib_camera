@@ -50,13 +50,7 @@ void user_app(chanend_t c_cam) {
     
     // set coords and send to ISP
     camera_isp_coordinates_compute(&image);
-
-    // Compute n frames
-    unsigned n_frames = 30;
-    for (int i = 0; i < n_frames; i++) {
-        camera_isp_start_capture(c_cam, &image);
-        camera_isp_get_capture(c_cam);
-    }
+    camera_isp_prepare_capture(c_cam, &image);
     save_image(&image, FILE1_NAME);
     exit(0);
 }
