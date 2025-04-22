@@ -13,9 +13,9 @@
 #define HIST_BIN_COUNT      (64)
 #define HIST_QUANT_BITS     (2)
 
-#define AE_MARGIN 0.1               // default marging for the auto exposure error
-#define AE_INITIAL_EXPOSURE 35      // initial exposure value
-#define AE_DONE 0
+#define AE_MARGIN           (0.1)     // default marging for the auto exposure error
+#define AE_INIT_EXPOSURE    (35)      // initial exposure value
+#define AE_DONE             (0)       // done flag for auto exposure
 
 typedef enum {
     CHANNEL_RED = 0,
@@ -28,12 +28,6 @@ typedef struct {
 } channel_histogram_t;
 
 typedef struct {
-    channel_histogram_t histogram_red;
-    channel_histogram_t histogram_green;
-    channel_histogram_t histogram_blue;
-} histograms_t;
-
-typedef struct {
     uint8_t min;
     uint8_t max;
     uint8_t percentile;
@@ -43,6 +37,12 @@ typedef struct {
     uint32_t min_count;
     uint32_t per_count;
 } channel_stats_t;
+
+typedef struct {
+    channel_histogram_t histogram_red;
+    channel_histogram_t histogram_green;
+    channel_histogram_t histogram_blue;
+} histograms_t;
 
 typedef struct {
     channel_stats_t stats_red;
@@ -185,7 +185,7 @@ uint8_t AE_compute_exposure(
     statistics_t* global_stats)
 {
     // Initial exposure
-    static uint8_t new_exp = AE_INITIAL_EXPOSURE;
+    static uint8_t new_exp = AE_INIT_EXPOSURE;
     static uint8_t skip_ae_control = 0; // if too dark for a ceertain frames, skip AE control
 
     // Compute skewness
