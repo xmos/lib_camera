@@ -57,6 +57,7 @@ pipeline {
                         "examples/capture_raw",
                         "tests/hw_tests/test_rotate_90",
                         "tests/hw_tests/test_img_patterns",
+                        "tests/hw_tests/test_auto_exposure",
                         "tests/unit_tests",
                         "tests/isp"
                       ]) // buildApps
