@@ -96,7 +96,7 @@ void stats_skewness(
       -0.237231, -0.202574, -0.171468, -0.143721, -0.119142, -0.097538,
       -0.078717, -0.062488, -0.048659, -0.037037, -0.027431, -0.019648,
       -0.013497, -0.008786, -0.005323, -0.002915, -0.001372, -0.000005,
-      -0.000108,    -4e-06,     4e-06,  0.000108,    0.0005,  0.001372,
+      -0.000108,    -4e-06,     4e-06,  0.000108,  0.000005,  0.001372,
        0.002915,  0.005323,  0.008786,  0.013497,  0.019648,  0.027431,
        0.037037,  0.048659,  0.062488,  0.078717,  0.097538,  0.119142,
        0.143721,  0.171468,  0.202574,  0.237231,  0.275632,  0.317968,
@@ -147,10 +147,10 @@ int8_t csign(float x)
 static
 uint8_t AE_compute_new_exposure(float exposure, float skewness)
 {
-    static float a = 1;     // minimum value for exposure
-    static float fa = -1;   // minimimum skewness
-    static float b = 80;    // maximum value for exposure
-    static float fb = 1;    // minimum skewness
+    static float a = 1.0;     // minimum value for exposure
+    static float fa = -1.0;   // minimimum skewness
+    static float b = 80.0;    // maximum value for exposure
+    static float fb = 1.0;    // minimum skewness
     static int count = 0;
     float c = exposure;
     float fc = skewness;
@@ -186,7 +186,7 @@ uint8_t AE_compute_exposure(
 {
     // Initial exposure
     static uint8_t new_exp = AE_INIT_EXPOSURE;
-    static uint8_t skip_ae_control = 0; // if too dark for a ceertain frames, skip AE control
+    static uint8_t skip_ae_control = 0; // if too dark for a certain frames, skip AE control
 
     // Compute skewness
     float sk = stats_compute_mean_skewness(global_stats);

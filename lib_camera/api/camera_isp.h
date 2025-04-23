@@ -32,8 +32,8 @@ typedef enum{
 // this struct will hold the configuration for the camera
 typedef struct
 {
-  float offset_x;           // [0,1] range form the sensor
-  float offset_y;           // [0,1] range form the sensor
+  float offset_x;           // [0,1] range from the sensor
+  float offset_y;           // [0,1] range from the sensor
   camera_mode_t mode;       // RAW or RGB
   unsigned x1, y1, x2, y2;  // Mipi region
   unsigned sensor_width;    // Mipi region width
@@ -68,24 +68,30 @@ typedef struct {
  * It is optional and can be skipped if the user does not require auto-exposure 
  * or is willing to accept initial frames with incorrect exposure.
  * Has to be called after `camera_isp_coordinates_compute`.
+ * 
  * @param c_cam camera channel
- * @param image image pointer and conficuration
+ * @param image image pointer and configuration
  */
 void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image);
 
 /**
  * @brief Sends the camera configuration to the ISP thread and starts capture process.
+ * Capture process starts asynchronously, and the function returns immediately.
+ * This function should be called after `camera_isp_coordinates_compute`.
+ * To capture the image, the user should call `camera_isp_get_capture`.
  * 
  * @param c_cam camera channel
- * @param image image pointer and conficuration
+ * @param image image pointer and configuration
  */
 void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image);
 
 /**
- * @brief Receives an image from the ISP thread and sends it to the user.
+ * @brief Reiceves an image from the ISP thread.
+ * This function blocks until the image is ready. 
+ * This function should be called after `camera_isp_start_capture`.
+ * Image will be returned in the image structure passed to `camera_isp_start_capture`.
  * 
  * @param c_cam camera channel
- * @param image image pointer and conficuration
  */
 void camera_isp_get_capture(chanend_t c_cam);
 
@@ -181,7 +187,7 @@ void camera_isp_white_balance(image_cfg_t* image);
  * It is based on false position method of histogram skewness.
  * It works well in unimodal distributions, but it is not very robust in multimodal distributions.  
  * @param image structure containing image configuration and output RGB pointer.
- * @return uint8_t new exposure value in [1, 80] or AE_DONE if the exposure is already adjusted.
+ * @return uint8_t new exposure value in [1, 80] or 0 if the exposure is already adjusted.
  */
 uint8_t camera_isp_auto_exposure(image_cfg_t* image);
 
