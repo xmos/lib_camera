@@ -1,6 +1,14 @@
 # Copyright 2024-2025 XMOS LIMITED.
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+"""
+This test is intended to be run on the XK-EVK-XU316-AIV board with the camera module.
+This test has to be run manually. 
+The test will run the AE and AWB algorithms in different configurations and display the results.
+It expects the user to have the camera module connected to the board and the board powered on.
+It expects previous compilation of the test binaries.
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
