@@ -139,9 +139,11 @@ float stats_compute_mean_skewness(statistics_t* stats)
 }
 
 static inline
-int8_t csign(float x)
+int32_t csign(float x)
 {
-    return (x > 0) - (x < 0);
+    int32_t s, e; // sign, exp
+    asm volatile("fsexp %0, %1, %2" : "=r"(s),  "=r"(e) : "r"(x));
+    return s;
 }
 
 static

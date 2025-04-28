@@ -48,7 +48,6 @@ const unsigned sensor_width_max_values[] = {
 
 
 // -------- Image API -------------------
-inline
 void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image)
 {
   const unsigned max_steps = 20;
@@ -60,17 +59,14 @@ void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image)
     }
   }
 }
-
-inline 
+ 
 void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image) {
   chan_out_buf_byte(c_cam, (uint8_t*)image, sizeof(image_cfg_t));
 }
-
-inline 
+ 
 void camera_isp_get_capture(chanend_t c_cam) {
   chan_in_byte(c_cam);
 }
-
 
 
 // -------- State handlers --------
