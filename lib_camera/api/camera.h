@@ -11,11 +11,6 @@
 #include "xcore_compat.h"    // chanend_t safe use from XC
 #include "sensor_wrapper.h"  // sensor configuration
 
-// Channels between user and ISP
-#define N_CH_USER_ISP   2 // Number of channels between user and ISP
-#define CH_USER_ISP     0 // Channel between user and ISP
-#define CH_ISP_USER     1 // Channel between ISP and user
-
 // High-Level Sensor Configuration
 #define SENSOR_WIDHT                800
 #define SENSOR_HEIGHT               800
@@ -23,6 +18,15 @@
 #define CONFIG_FLIP                 FLIP_NONE
 #define CONFIG_BINNING              BINNING_ON
 #define CONFIG_CENTRALISE           CENTRALISE_ON
+
+#ifndef CONFIG_APPLY_AWB
+#define CONFIG_APPLY_AWB            (1)
+#endif
+
+#ifndef CONFIG_APPLY_AE
+#define CONFIG_APPLY_AE             (1)
+#endif
+
 
 C_API_START
 

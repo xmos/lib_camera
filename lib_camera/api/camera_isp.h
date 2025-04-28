@@ -32,8 +32,8 @@ typedef enum{
 // this struct will hold the configuration for the camera
 typedef struct
 {
-  float offset_x;           // [0,1] range form the sensor
-  float offset_y;           // [0,1] range form the sensor
+  float offset_x;           // [0,1] range from the sensor
+  float offset_y;           // [0,1] range from the sensor
   camera_mode_t mode;       // RAW or RGB
   unsigned x1, y1, x2, y2;  // Mipi region
   unsigned sensor_width;    // Mipi region width
@@ -60,6 +60,59 @@ typedef struct {
 } mipi_packet_t;
 
 
+// ---------------------------- Capture API -------------------------------
+
+/**
+ * @brief Captures frames until the AE is done or max_steps is reached.
+ * This function can be called before `camera_isp_start_capture` to ensure the image is well-exposed.
+ * It is optional and can be skipped if the user does not require auto-exposure 
+ * or is willing to accept initial frames with incorrect exposure.
+ * Has to be called after `camera_isp_coordinates_compute`.
+ * 
+ * @param c_cam camera channel
+ * @param image image pointer and configuration
+ */
+void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image);
+
+/**
+ * @brief Sends the camera configuration to the ISP thread and starts capture process.
+ * Capture process starts asynchronously, and the function returns immediately.
+ * This function should be called after `camera_isp_coordinates_compute`.
+ * To capture the image, the user should call `camera_isp_get_capture`.
+ * 
+ * @param c_cam camera channel
+ * @param image image pointer and configuration
+ */
+void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image);
+
+/**
+ * @brief Reiceves an image from the ISP thread.
+ * This function blocks until the image is ready. 
+ * This function should be called after `camera_isp_start_capture`.
+ * Image will be returned in the image structure passed to `camera_isp_start_capture`.
+ * 
+ * @param c_cam camera channel
+ */
+void camera_isp_get_capture(chanend_t c_cam);
+
+/**
+ * @brief Main thread function for the ISP.
+ * This function handles the interaction between the MIPI packet channel, 
+ * control channel, and the camera channel. It processes incoming data 
+ * and manages the ISP pipeline for image processing.
+ *
+ * @param c_pkt channel to receive mipi packets
+ * @param c_ctrl channel to receive control messages from or to mipi
+ * @param c_cam  channel array between user and isp
+ */
+void camera_isp_thread(
+  streaming_chanend_t c_pkt,
+  chanend_t c_ctrl,
+  chanend_t c_cam);
+
+
+// ---------------------------- Coordinates -------------------------------
+
 /**
  * @brief compute MIPI coordinates, from user request to sensor dimensions.
  *
@@ -73,36 +126,6 @@ void camera_isp_coordinates_compute(image_cfg_t* image_cfg);
  * @param image_cfg
  */
 void camera_isp_coordinates_print(image_cfg_t* image_cfg);
-
-
-/**
- * @brief send camera configuration to isp and starts capture
- * 
- * @param c_cam camera channel
- * @param image image pointer and conficuration
- */
-void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image);
-
-
-/**
- * @brief recieves image from isp
- * 
- * @param c_cam camera channel
- * @param image image pointer and conficuration
- */
-void camera_isp_get_capture(chanend_t c_cam);
-
-/**
- * @brief This function will be the main thread for the ISP
- *
- * @param c_pkt channel to receive mipi packets
- * @param c_ctrl channel to receive control messages from or to mipi
- * @param c_cam  channel array between user and isp
- */
-void camera_isp_thread(
-  streaming_chanend_t c_pkt,
-  chanend_t c_ctrl,
-  chanend_t c_cam);
 
 
 // ---------------------------- RAW to RGB -------------------------------
@@ -148,7 +171,7 @@ void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in, unsigned ln);
 void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
 
 
-// ---------------------------- White Balancing -------------------------------
+// ---------------------------- White Balancing / Auto Exposure  -------------------------------
 
 /**
  * @brief Applies Static White Balancing to the image.
@@ -157,5 +180,15 @@ void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
  * @param image structure containing image configuration and output RGB pointer.
  */
 void camera_isp_white_balance(image_cfg_t* image);
+
+/**
+ * @brief Computes camera gain to apply for a new auto exposure step given an image. 
+ * Computes the histograms and statistics of the image and computes the new exposure value.
+ * It is based on false position method of histogram skewness.
+ * It works well in unimodal distributions, but it is not very robust in multimodal distributions.  
+ * @param image structure containing image configuration and output RGB pointer.
+ * @return uint8_t new exposure value in [1, 80] or 0 if the exposure is already adjusted.
+ */
+uint8_t camera_isp_auto_exposure(image_cfg_t* image);
 
 C_API_END

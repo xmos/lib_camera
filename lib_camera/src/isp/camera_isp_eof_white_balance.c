@@ -11,16 +11,17 @@
 #include "camera_isp.h"
 
 // ------ kernels ------
-#define WB_KR 45   
-#define WB_KG 0
-#define WB_KB 47
+static const int8_t WB_KR = 45;
+static const int8_t WB_KG = 0;
+static const int8_t WB_KB = 47;
 
-#define WB_CR 12
-#define WB_CG 8
-#define WB_CB 13
-#define WB_SAT 3
+static const int8_t WB_CR = 12;
+static const int8_t WB_CG = 8;
+static const int8_t WB_CB = 13;
 
+static const int8_t WB_SAT = 3;
 
+static
 const int8_t vk_rgb[32] ALIGNED_4 = {
     WB_KR, WB_KG, WB_KB, 
     WB_KR, WB_KG, WB_KB, 
@@ -33,6 +34,7 @@ const int8_t vk_rgb[32] ALIGNED_4 = {
     0, 0, 0, 0, // 32
 };
 
+static
 const int8_t vc_rgb[32] ALIGNED_4 = {
     WB_CR, WB_CG, WB_CB,
     WB_CR, WB_CG, WB_CB,
@@ -45,6 +47,7 @@ const int8_t vc_rgb[32] ALIGNED_4 = {
     0, 0, 0, 0, // 32
 };
 
+static
 const int16_t vsat[16] ALIGNED_4 = {
     WB_SAT,WB_SAT,WB_SAT,WB_SAT,
     WB_SAT,WB_SAT,WB_SAT,WB_SAT,
@@ -52,6 +55,7 @@ const int16_t vsat[16] ALIGNED_4 = {
     WB_SAT,WB_SAT,WB_SAT,WB_SAT
 };
 
+// ------------ Defined in rgb_img_wb.S ------------------
 extern void wb_scale_image(
     image_cfg_t* image,
     const int8_t vk[32], 
@@ -59,8 +63,7 @@ extern void wb_scale_image(
     const int16_t vsat[16]
 );
 
-// ------------------------------------
-
+// ----------------- High Level API ---------------------
 void camera_isp_white_balance(image_cfg_t* image)
 {
     xassert(image->ptr != NULL && "image pointer is NULL");

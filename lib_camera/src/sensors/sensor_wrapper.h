@@ -42,5 +42,6 @@ void camera_sensor_init();
 void camera_sensor_start();
 void camera_sensor_stop();
 void camera_sensor_set_tp(uint16_t pattern);
+void camera_sensor_set_exposure(uint32_t dBGain);
 
 C_API_END

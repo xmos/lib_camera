@@ -29,12 +29,14 @@ static struct {
   unsigned in_line_number;
   unsigned out_line_number;
   unsigned capture_finished;
+  unsigned ae_value;
 } ph_state = {
     1,  // wait_for_frame_start
     0,  // frame_number
     0,  // in_line_number
-    0,   // out_line_number
-    0   // capture_finished
+    0,  // out_line_number
+    0,  // capture_finished
+    1,  // ae_value
 };
 
 const unsigned sensor_width_max_values[] = {
@@ -44,7 +46,27 @@ const unsigned sensor_width_max_values[] = {
   MODE_RGB4_MAX_SIZE
 };
 
-// -------- Image transformations --------
+
+// -------- Image API -------------------
+void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image)
+{
+  const unsigned max_steps = 20;
+  for (unsigned i = 0; i < max_steps; i++) {
+    camera_isp_start_capture(c_cam, image);
+    camera_isp_get_capture(c_cam);
+    if (!ph_state.ae_value) {
+      break;
+    }
+  }
+}
+ 
+void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image) {
+  chan_out_buf_byte(c_cam, (uint8_t*)image, sizeof(image_cfg_t));
+}
+ 
+void camera_isp_get_capture(chanend_t c_cam) {
+  chan_in_byte(c_cam);
+}
 
 
 // -------- State handlers --------
@@ -64,15 +86,23 @@ void handle_no_expected_lines() {
 }
 
 static
-void handle_post_process(image_cfg_t* image) {
+void handle_post_process(image_cfg_t* image)
+{
   // Image pointer could be NULL if EOF is reached before asking a picture
   if (image->ptr == NULL) {
     return;
   }
-  // AWB
+
+#if (CONFIG_APPLY_AWB)
   camera_isp_white_balance(image);
-  // AE
-  //TODO
+#endif
+
+#if (CONFIG_APPLY_AE)
+  ph_state.ae_value = camera_isp_auto_exposure(image);
+  if (ph_state.ae_value) {
+    camera_sensor_set_exposure(ph_state.ae_value);
+  }
+#endif
 }
 
 static
@@ -189,16 +219,6 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   xassert((img_cfg->height % 4) == 0 && "height has to be divisible by 4");
 }
 
-// -------- Image API -------------------
-inline 
-void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image) {
-  chan_out_buf_byte(c_cam, (uint8_t*)image, sizeof(image_cfg_t));
-}
-
-inline 
-void camera_isp_get_capture(chanend_t c_cam) {
-  chan_in_byte(c_cam);
-}
 
 // -------- Frame handling --------------
 
