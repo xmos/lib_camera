@@ -5,37 +5,27 @@ def runningOn(machine) {
   println machine
 }
 
-def buildApps(appList) {
-  appList.each { app ->
-    sh "cmake -G 'Unix Makefiles' -S ${app} -B ${app}/build"
-    sh "xmake -C ${app}/build -j\$(nproc)"
-  }
-}
-
-def checkSkipLink() {
-    def skip_linkcheck = ""
-    if (env.GH_LABEL_ALL.contains("skip_linkcheck")) {
-        println "skip_linkcheck set, skipping link check..."
-        skip_linkcheck = "clean html pdf"
-    }
-    return skip_linkcheck
-}
 
 getApproval()
 pipeline {
   agent none
 
   parameters {
-      string(
-          name: 'TOOLS_VERSION',
-          defaultValue: '15.3.1',
-          description: 'XTC tools version'
-      )
-      string(
-          name: 'XMOSDOC_VERSION',
-          defaultValue: 'v6.3.1',
-          description: 'xmosdoc version'
-      )
+    string(
+      name: 'TOOLS_VERSION',
+      defaultValue: '15.3.1',
+      description: 'The XTC tools version'
+    )
+    string(
+      name: 'XMOSDOC_VERSION',
+      defaultValue: 'v7.0.0',
+      description: 'The xmosdoc version')
+
+    string(
+      name: 'INFR_APPS_VERSION',
+      defaultValue: 'develop',
+      description: 'The infr_apps version'
+    )
   }
 
   options {
@@ -47,6 +37,7 @@ pipeline {
   stages {
     stage('Checkout') {
       agent {label 'xcore.ai'}
+      steps {
       runningOn(env.NODE_NAME)
       script {
         def (server, user, repo) = extractFromScmUrl()
@@ -57,6 +48,7 @@ pipeline {
         checkoutScmShallow()
         createVenv(reqFile: "requirements.txt")
       }
+      } // steps
     } // Checkout
 
     stage('Examples build') {
