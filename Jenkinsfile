@@ -8,7 +8,7 @@ def runningOn(machine) {
 
 getApproval()
 pipeline {
-  agent none
+  agent {label 'xcore.ai'}
 
   parameters {
     string(
@@ -36,7 +36,6 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      agent {label 'xcore.ai'}
       steps {
       runningOn(env.NODE_NAME)
       script {
