@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.34.0')
+@Library('xmos_jenkins_shared_library@v0.38.0') _
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -26,12 +26,18 @@ pipeline {
   agent none
 
   parameters {
-    string(
-      name: 'TOOLS_VERSION',
-      defaultValue: '15.3.0',
-      description: 'The XTC tools version'
-    )
-  } // parameters
+      string(
+          name: 'TOOLS_VERSION',
+          defaultValue: '15.3.1',
+          description: 'XTC tools version'
+      )
+      string(
+          name: 'XMOSDOC_VERSION',
+          defaultValue: 'v6.3.1',
+          description: 'xmosdoc version'
+      )
+  }
+
   options {
     skipDefaultCheckout()
     timestamps()
@@ -39,7 +45,45 @@ pipeline {
   } // options
 
   stages {
-    stage('Builds') {
+    stage('Checkout') {
+      agent {label 'xcore.ai'}
+      runningOn(env.NODE_NAME)
+      script {
+        def (server, user, repo) = extractFromScmUrl()
+        env.REPO_NAME = repo
+      } // script
+      dir(REPO_NAME)
+      {
+        checkoutScmShallow()
+        createVenv(reqFile: "requirements.txt")
+      }
+    } // Checkout
+
+    stage('Examples build') {
+      steps{
+         dir("${REPO_NAME}/examples") {
+          withVenv { // this repo has Python requirements
+            xcoreBuild()
+          }
+        }
+      }
+    } // Examples build
+
+    stage('Tests build') {
+      steps{
+         dir("${REPO_NAME}/tests") {
+          withVenv { // this repo has Python requirements
+            xcoreBuild()
+          }
+        }
+      }
+    } // Tests build
+
+
+  } // Stages
+
+
+      /*
       parallel {
         stage ('Build and Unit test') {
           agent {
@@ -141,9 +185,9 @@ pipeline {
               checkout scm
               createVenv("requirements.txt")
               // uncommented till we have docs again
-              /*withTools(params.TOOLS_VERSION) {
+              withTools(params.TOOLS_VERSION) {
                 buildDocs(archiveZipOnly: true)
-              } // withTools*/
+              } // withTools
             } // dir
           } // steps
           post {
