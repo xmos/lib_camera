@@ -8,8 +8,7 @@ def runningOn(machine) {
 
 getApproval()
 pipeline {
-  agent none
-
+  agent {label 'xcore.ai'}
   environment {
     REPO = 'lib_camera'
     REPO_NAME = "lib_camera"
