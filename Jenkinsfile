@@ -26,7 +26,7 @@ pipeline {
 
     string(
       name: 'INFR_APPS_VERSION',
-      defaultValue: 'develop',
+      defaultValue: 'feature/xcommon_cmake_deps_check', //TODO update to develop
       description: 'The infr_apps version'
     )
   } // parameters
