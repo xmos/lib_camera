@@ -105,6 +105,7 @@ pipeline {
     } // ISP tests
 
     stage('Documentation') {
+      agent {label 'documentation'}
       steps{
           dir("${REPO}") {
           withVenv {
