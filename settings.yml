@@ -1,18 +1,26 @@
----
-project: lib_camera
-title: XCORE Camera Library
+# This file relates to internal XMOS infrastructure and should be ignored by external users
+
+lib_name: lib_camera
+project: '{{lib_name}}'
+title: '{{lib_name}}: XCORE Camera Library'
 version: 2.0.0
 
 documentation:
   exclude_patterns_path: doc/exclude_patterns.inc
   substitutions_path: doc/substitutions.inc
+  root_doc: doc/rst/lib_camera.rst
+  linkcheck_ignore_regex: ['.*']
+  cognidox_part_number: XXXX-XXXX
   doxygen_projects:
     lib_camera:
       doxyfile_path: doc/Doxyfile.inc
   pdfs:
-    doc/quick_start_guide/index:
-      pdf_title: "{{title}} - Quick Start Guide"
-      pdf_filename: "{{project}}_quick_start_guide_v{{version}}"
-    doc/programming_guide/index:
-      pdf_title: "{{title}} - Programming Guide"
-      pdf_filename: "{{project}}_programming_guide_v{{version}}"
+    doc/rst/lib_camera.rst:
+      pdf_title: '{{title}}'
+      pdf_filename: '{{lib_name}}_v{{version}}'
+    README.rst:
+      pdf_title: '{{title}} (README)'
+      pdf_filename: '{{lib_name}}_v{{version}}_readme'
+      pdf_short: yes
+software:
+  cognidox_part_number: XXXX-XXXX
