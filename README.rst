@@ -23,23 +23,23 @@ Features
 ********
 
 - Camera Interface:
- - MIPI-CSI2 interface for camera connection
- - I2C interface for camera control
+  - MIPI-CSI2 interface for camera connection
+  - I2C interface for camera control
 
 - Sensor Supported:
   - Sony IMX219 (Raspberry Pi Camera V2)
 
 - Capture and ISP:
- - RAW8 capture.
- - RGB888 capture. 
- - Asynchronous Streaming Mode.
- - Dynamic Region of interest (ROI) selection.
- - Support the following downsample factors: x1, x2, x4. 
- - Auto White Balance (AWB) control.
- - Auto Exposure (AE) control.
- - Sw Image rotation (90 degrees).
- - Sensor Image rotation (180 degrees).
- - Sensor Image Flip (horizontal and vertical).
+  - RAW8 capture.
+  - RGB888 capture. 
+  - Asynchronous Streaming Mode.
+  - Dynamic Region of interest (ROI) selection.
+  - Support the following downsample factors: x1, x2, x4. 
+  - Auto White Balance (AWB) control.
+  - Auto Exposure (AE) control.
+  - Sw Image rotation (90 degrees).
+  - Sensor Image rotation (180 degrees).
+  - Sensor Image Flip (horizontal and vertical).
 
 ************
 Known issues
