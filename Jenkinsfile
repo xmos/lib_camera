@@ -11,7 +11,8 @@ pipeline {
   agent none
 
   environment {
-    REPO_NAME  = 'lib_camera'
+    REPO = 'lib_camera'
+    REPO_NAME = "lib_camera"
   } // environment
   parameters {
     string(
@@ -42,18 +43,18 @@ pipeline {
       agent {label 'xcore.ai'}
       steps {
         runningOn(env.NODE_NAME)
-        dir(REPO_NAME)
+        dir(REPO)
         {
           checkoutScmShallow()
           createVenv(reqFile: "requirements.txt")
-          runLibraryChecks("${WORKSPACE}/${REPO_NAME}", "${params.INFR_APPS_VERSION}")
+          runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
         }
       } // steps
     } // Checkout
 
     stage('Examples build') {
       steps{
-         dir("${REPO_NAME}/examples") {
+         dir("${REPO}/examples") {
           withVenv {
             xcoreBuild()
           }
@@ -63,7 +64,7 @@ pipeline {
 
     stage('Tests build') {
       steps{
-         dir("${REPO_NAME}/tests") {
+         dir("${REPO}/tests") {
           withVenv {
             xcoreBuild()
           }
@@ -73,7 +74,7 @@ pipeline {
 
     stage('Unit tests') {
       steps {
-        dir("${REPO_NAME}/tests/unit_tests") {
+        dir("${REPO}/tests/unit_tests") {
           withTools(params.TOOLS_VERSION) {
             sh 'xrun --id 0 --xscope bin/unit_tests.xe'
           }
@@ -97,7 +98,7 @@ pipeline {
 
     stage('Documentation') {
       steps{
-          dir("${REPO_NAME}") {
+          dir("${REPO}") {
           withVenv {
             buildDocs()
           }
