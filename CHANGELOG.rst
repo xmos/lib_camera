@@ -18,7 +18,7 @@ lib_camera change log
 
   * Changes to dependencies:
 
-    - lib_logging: Added dependency 3.2.0
+    - lib_logging: Added dependency 3.3.1
 
 1.0.0
 -----

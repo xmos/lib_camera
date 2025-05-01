@@ -38,7 +38,7 @@ pipeline {
 
 
   stages {
-    stage('Checkout') {
+    stage('Checkout and Library Checks') {
       agent {label 'xcore.ai'}
       steps {
         runningOn(env.NODE_NAME)
