@@ -8,8 +8,11 @@ def runningOn(machine) {
 
 getApproval()
 pipeline {
-  agent {label 'xcore.ai'}
+  agent none
 
+  environment {
+    REPO_NAME  = 'lib_camera'
+  } // environment
   parameters {
     string(
       name: 'TOOLS_VERSION',
@@ -26,34 +29,32 @@ pipeline {
       defaultValue: 'develop',
       description: 'The infr_apps version'
     )
-  }
-
+  } // parameters
   options {
     skipDefaultCheckout()
     timestamps()
     buildDiscarder(xmosDiscardBuildSettings(onlyArtifacts=false))
   } // options
 
+
   stages {
     stage('Checkout') {
+      agent {label 'xcore.ai'}
       steps {
-      runningOn(env.NODE_NAME)
-      script {
-        def (server, user, repo) = extractFromScmUrl()
-        env.REPO_NAME = repo
-      } // script
-      dir(REPO_NAME)
-      {
-        checkoutScmShallow()
-        createVenv(reqFile: "requirements.txt")
-      }
+        runningOn(env.NODE_NAME)
+        dir(REPO_NAME)
+        {
+          checkoutScmShallow()
+          createVenv(reqFile: "requirements.txt")
+          runLibraryChecks("${WORKSPACE}/${REPO_NAME}", "${params.INFR_APPS_VERSION}")
+        }
       } // steps
     } // Checkout
 
     stage('Examples build') {
       steps{
          dir("${REPO_NAME}/examples") {
-          withVenv { // this repo has Python requirements
+          withVenv {
             xcoreBuild()
           }
         }
@@ -63,13 +64,43 @@ pipeline {
     stage('Tests build') {
       steps{
          dir("${REPO_NAME}/tests") {
-          withVenv { // this repo has Python requirements
+          withVenv {
             xcoreBuild()
           }
         }
       }
     } // Tests build
 
+    stage('Unit tests') {
+      steps {
+        dir("${REPO_NAME}/tests/unit_tests") {
+          withTools(params.TOOLS_VERSION) {
+            sh 'xrun --id 0 --xscope bin/unit_tests.xe'
+          }
+        }
+      }
+    } // Unit tests
+
+    stage('ISP tests') {
+      steps {
+        dir('lib_camera/tests/isp') {
+          withVenv {
+            withTools(params.TOOLS_VERSION) {
+              sh 'pytest -n auto'
+            } // withTools
+            archiveArtifacts artifacts: "test_results.csv"
+            archiveArtifacts artifacts: "imgs/images.zip"
+          }
+        }
+      }
+    } // ISP tests
 
   } // Stages
+
+  post {
+    cleanup {
+      cleanWs()
+    }
+  } // post
+
 } // pipeline
