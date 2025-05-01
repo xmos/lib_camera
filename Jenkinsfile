@@ -95,6 +95,16 @@ pipeline {
       }
     } // ISP tests
 
+    stage('Documentation') {
+      steps{
+          dir("${REPO_NAME}") {
+          withVenv {
+            buildDocs()
+          }
+        }
+      }
+    } // Documentation
+
   } // Stages
 
   post {
