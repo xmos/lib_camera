@@ -69,11 +69,10 @@ pipeline {
       }
     } // Tests build
 
-    stage("lib check"){
+    stage("lib check"){ // Needs to be placed after build stage for dependancies to be built
       steps {
         dir("${REPO}") {
           withVenv {
-            xcoreBuild()
             runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
           }
         }
