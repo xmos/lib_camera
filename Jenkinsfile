@@ -39,7 +39,6 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      agent {label 'xcore.ai'}
       steps {
         runningOn(env.NODE_NAME)
         dir(REPO)
