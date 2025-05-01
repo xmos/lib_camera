@@ -1,10 +1,10 @@
 # This file provides overrides to the Doxyfile configuration
 PROJECT_NAME = lib_camera
-PROJECT_BRIEF = "Camera interface for xcore AI"
+PROJECT_BRIEF = "XCORE Camera Library"
 
 # Camera module
-INPUT = ../camera
-INPUT += ../sensors
+INPUT = ../lib_camera/src
+INPUT += ../lib_camera/api
 
 PREDEFINED             = C_API= EXTERN_C= DWORD_ALIGNED=
 

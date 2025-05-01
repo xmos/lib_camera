@@ -10,7 +10,7 @@ documentation:
   substitutions_path: doc/substitutions.inc
   root_doc: doc/rst/lib_camera.rst
   linkcheck_ignore_regex: ['.*']
-  cognidox_part_number: XM-010101-AN
+  cognidox_part_number: XM-010101-UG #TODO update AN number
   doxygen_projects:
     lib_camera:
       doxyfile_path: doc/Doxyfile.inc
@@ -23,4 +23,4 @@ documentation:
       pdf_filename: '{{lib_name}}_v{{version}}_readme'
       pdf_short: yes
 software:
-  cognidox_part_number: XM-010101-SM
+  cognidox_part_number: XM-010101-SM #TODO update AN number

@@ -14,11 +14,11 @@ lib_camera change log
   * CHANGED: merged API functions camera_rotate90_uint8() and
     camera_rotate90_int8() into camera_rotate90().
   * CHANGED: declaration of c_ctrl from a streaming channel endpoint to a
-    standard channel endpoint
+    standard channel endpoint.
 
   * Changes to dependencies:
 
-    - lib_logging: Added dependency 3.3.1
+    - lib_logging: Added dependency 3.2.0
 
 1.0.0
 -----
