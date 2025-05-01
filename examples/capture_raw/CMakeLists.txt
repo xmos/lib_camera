@@ -3,7 +3,7 @@ include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
 project(capture_raw)
 
 # Sandbox configuration
-set(XMOS_SANDBOX_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../..)
+set(XMOS_SANDBOX_DIR ${CMAKE_CURRENT_LIST_DIR}/../../..)
 message("XMOS_SANDBOX_DIR: ${XMOS_SANDBOX_DIR}")
 
 # Target, xscope
