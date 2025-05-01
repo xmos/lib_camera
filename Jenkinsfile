@@ -39,7 +39,7 @@ pipeline {
 
 
   stages {
-    stage('Checkout and Library Checks') {
+    stage('Checkout') {
       agent {label 'xcore.ai'}
       steps {
         runningOn(env.NODE_NAME)
@@ -47,7 +47,6 @@ pipeline {
         {
           checkoutScmShallow()
           createVenv(reqFile: "requirements.txt")
-          runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
         }
       } // steps
     } // Checkout
@@ -71,6 +70,17 @@ pipeline {
         }
       }
     } // Tests build
+
+    stage("lib check"){
+      steps {
+        dir("${REPO}") {
+          withVenv {
+            xcoreBuild()
+            runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
+          }
+        }
+      }
+    } // lib check
 
     stage('Unit tests') {
       steps {
