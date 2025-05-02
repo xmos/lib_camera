@@ -105,41 +105,28 @@ pipeline {
                 }
               }
             }
-          } // ISP tests
-          
-          post {
-            cleanup {
-              xcoreCleanSandbox()
-            }
-          } // post
+            post {cleanup {xcoreCleanSandbox()}} // post
+          } // ISP tests 
         } // stages
       } // Build & Test
       
       stage('Documentation') {
         agent {label 'documentation'}
         steps{
-            runningOn(env.NODE_NAME)
-            dir("${REPO}") {
+          runningOn(env.NODE_NAME)
+          dir("${REPO}") {
             checkoutScmShallow()
             createVenv(reqFile: "requirements.txt")
             withVenv {
               buildDocs()
             }
-          }
+          } 
         }
+        post {cleanup {xcoreCleanSandbox()}} // post
       } // Documentation
-      post {
-        cleanup {
-          xcoreCleanSandbox()
-        }
-      } // post
-
+      
     } // parallel
   } // CI
   } // stages
   
-
-
-
-
 } // pipeline
