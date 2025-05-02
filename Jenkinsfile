@@ -37,7 +37,7 @@ pipeline {
   } // options
 
 
-  stages {
+  stage('CI') {
     parallel {
     stage ('Build & Test') {
       agent {label 'xcore.ai'}
@@ -121,7 +121,7 @@ pipeline {
       }
     } // Documentation
     } // parallel
-  } // Stages
+  } // CI
   
   
 
