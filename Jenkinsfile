@@ -36,7 +36,7 @@ pipeline {
     buildDiscarder(xmosDiscardBuildSettings(onlyArtifacts=false))
   } // options
 
-
+  stages{
   stage('CI') {
     parallel {
     stage ('Build & Test') {
@@ -122,7 +122,7 @@ pipeline {
     } // Documentation
     } // parallel
   } // CI
-  
+  } // stages
   
 
 
