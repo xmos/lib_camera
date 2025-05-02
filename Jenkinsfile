@@ -106,6 +106,12 @@ pipeline {
               }
             }
           } // ISP tests
+          
+          post {
+            cleanup {
+              xcoreCleanSandbox()
+            }
+          } // post
         } // stages
       } // Build & Test
       
@@ -122,16 +128,18 @@ pipeline {
           }
         }
       } // Documentation
+      post {
+        cleanup {
+          xcoreCleanSandbox()
+        }
+      } // post
+
     } // parallel
   } // CI
   } // stages
   
 
 
-  post {
-    cleanup {
-      xcoreCleanSandbox()
-    }
-  } // post
+
 
 } // pipeline
