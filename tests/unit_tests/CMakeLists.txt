@@ -3,7 +3,7 @@ include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
 project(unit_tests)
 
 # sandbox
-set(XMOS_SANDBOX_DIR ${CMAKE_SOURCE_DIR}/../../..)
+set(XMOS_SANDBOX_DIR ${CMAKE_CURRENT_LIST_DIR}/../../..)
 
 # target
 # set(APP_HW_TARGET src/XK-EVK-XU316-AIV.xn)

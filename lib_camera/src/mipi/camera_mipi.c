@@ -33,7 +33,7 @@ void check_mipi_freq(
   debug_printf("mipi_shim_cfg0 = 0x%08X\n", mipi_shim_cfg0);
   xassert(mipi_phy_freq < 200 && "MIPI PHY frequency too high");
   xassert(mipi_shim_freq < 200 && "MIPI shim frequency too high");
-  xassert(mipi_shim_freq > mipi_phy_freq && "PHY has to be faster than shim");
+  xassert(mipi_shim_freq >= mipi_phy_freq && "PHY has to be >= than shim");
 }
 
 static
