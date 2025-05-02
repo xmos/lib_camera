@@ -130,7 +130,7 @@ pipeline {
 
   post {
     cleanup {
-      cleanWs()
+      xcoreCleanSandbox()
     }
   } // post
 

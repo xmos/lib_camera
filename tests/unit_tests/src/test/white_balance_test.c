@@ -106,7 +106,7 @@ TEST(white_balance, white_balance__odd) // non multiple of 4 size
 
     // print output image
     for (unsigned i = 0; i < size; i++) {
-        printf("buff[%d] = %d, buff2[%d] = %d\n", i, buff[i], i, buff2[i]);
+        // printf("buff[%d] = %d, buff2[%d] = %d\n", i, buff[i], i, buff2[i]);
         TEST_ASSERT_INT8_WITHIN(10, buff[i], buff2[i]);
     }
 }
