@@ -39,87 +39,89 @@ pipeline {
   stages{
   stage('CI') {
     parallel {
-    stage ('Build & Test') {
-      agent {label 'xcore.ai'}
-      stage('Checkout') {
-        steps {
-          runningOn(env.NODE_NAME)
-          dir(REPO)
-          {
+      stage ('Build & Test') {
+        agent {label 'xcore.ai'}
+        stages {
+          stage('Checkout') {
+            steps {
+              runningOn(env.NODE_NAME)
+              dir(REPO)
+              {
+                checkoutScmShallow()
+                createVenv(reqFile: "requirements.txt")
+              }
+            } // steps
+          } // Checkout
+
+          stage('Examples build') {
+            steps{
+              dir("${REPO}/examples") {
+                withVenv {
+                  xcoreBuild()
+                }
+              }
+            }
+          } // Examples build
+
+          stage('Tests build') {
+            steps{
+              dir("${REPO}/tests") {
+                withVenv {
+                  xcoreBuild()
+                }
+              }
+            }
+          } // Tests build
+
+          stage("Lib checks"){ // Needs to be placed after build stage for dependancies to be built
+            steps {
+              dir("${REPO}") {
+                withVenv {
+                  runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
+                }
+              }
+            }
+          } // Lib checks
+
+          stage('Unit tests') {
+            steps {
+              dir("${REPO}/tests/unit_tests") {
+                withTools(params.TOOLS_VERSION) {
+                  sh 'xrun --id 0 --xscope bin/unit_tests.xe'
+                }
+              }
+            }
+          } // Unit tests
+
+          stage('ISP tests') {
+            steps {
+              dir('lib_camera/tests/isp') {
+                withVenv {
+                  withTools(params.TOOLS_VERSION) {
+                    sh 'pytest -n auto'
+                  } // withTools
+                  archiveArtifacts artifacts: "test_results.csv"
+                  archiveArtifacts artifacts: "imgs/images.zip"
+                }
+              }
+            }
+          } // ISP tests
+        } // stages
+      } // Build & Test
+      
+      stage('Documentation') {
+        agent {label 'documentation'}
+        steps{
+            runningOn(env.NODE_NAME)
+            dir("${REPO}") {
             checkoutScmShallow()
             createVenv(reqFile: "requirements.txt")
-          }
-        } // steps
-      } // Checkout
-
-      stage('Examples build') {
-        steps{
-          dir("${REPO}/examples") {
             withVenv {
-              xcoreBuild()
+              buildDocs()
             }
           }
         }
-      } // Examples build
-
-      stage('Tests build') {
-        steps{
-          dir("${REPO}/tests") {
-            withVenv {
-              xcoreBuild()
-            }
-          }
-        }
-      } // Tests build
-
-      stage("Lib checks"){ // Needs to be placed after build stage for dependancies to be built
-        steps {
-          dir("${REPO}") {
-            withVenv {
-              runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
-            }
-          }
-        }
-      } // Lib checks
-
-      stage('Unit tests') {
-        steps {
-          dir("${REPO}/tests/unit_tests") {
-            withTools(params.TOOLS_VERSION) {
-              sh 'xrun --id 0 --xscope bin/unit_tests.xe'
-            }
-          }
-        }
-      } // Unit tests
-
-      stage('ISP tests') {
-        steps {
-          dir('lib_camera/tests/isp') {
-            withVenv {
-              withTools(params.TOOLS_VERSION) {
-                sh 'pytest -n auto'
-              } // withTools
-              archiveArtifacts artifacts: "test_results.csv"
-              archiveArtifacts artifacts: "imgs/images.zip"
-            }
-          }
-        }
-      } // ISP tests
-    } // Build & Test
-    
-    stage('Documentation') {
-      agent {label 'documentation'}
-      steps{
-          runningOn(env.NODE_NAME)
-          dir("${REPO}") {
-          checkoutScmShallow()
-          createVenv(reqFile: "requirements.txt")
-          withVenv {
-            buildDocs()
-          }
-        }
-      }
-    } // Documentation
+      } // Documentation
     } // parallel
   } // CI
   } // stages
