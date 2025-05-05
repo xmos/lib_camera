@@ -10,6 +10,12 @@
 
 C_API_START
 
+/** 
+ * @addtogroup camera_isp_conv
+ * @brief TBD
+ * @{
+ */
+
 // -------------------- Color -----------------------
 
 /**
@@ -148,3 +154,5 @@ void camera_rotate90(
     const int16_t ch);
 
 C_API_END
+
+/// @} endgroup camera_isp_conv

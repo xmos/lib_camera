@@ -61,7 +61,9 @@ Development repo
 Required tools
 **************
 
-  * XMOS XTC Tools: 15.3.1
+ * XTC tools: |xtc_tools_version| `XTC tools`_.
+ * Python: |python_version| or later Python_.
+ * CMake: |cmake_version| or later CMAKE_.
 
 *********************************
 Required libraries (dependencies)

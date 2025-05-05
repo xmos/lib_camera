@@ -149,22 +149,29 @@ typedef enum {
   // MIPI_DT_RESERVED_0x3E       = 0x3E,
 
   // 0x3F - Unavailable (0x3F is used for LRTE EPD Spacer)
-
 } mipi_data_type_t;
+
 // alias
 typedef mipi_data_type_t pixel_format_t;
 
-typedef struct
-{
-    port_t p_mipi_clk;
-    port_t p_mipi_rxa;
-    port_t p_mipi_rxv;
-    in_buffered_port_32_t p_mipi_rxd;
-    xclock_t clk_mipi;
-} camera_mipi_ctx_t;
-
 
 C_API_START
+
+/** 
+ * @addtogroup camera_mipi
+ * @brief MIPI camera interface functions.
+ * @{
+ */
+
+/// @brief Context structure for the MIPI camera interface.
+typedef struct
+{
+    port_t p_mipi_clk;           ///< Clock port for the MIPI interface
+    port_t p_mipi_rxa;           ///< MIPI control signal active RXA
+    port_t p_mipi_rxv;           ///< MIPI control signal valid RXV
+    in_buffered_port_32_t p_mipi_rxd; ///< Buffered data port for MIPI RX data
+    xclock_t clk_mipi;           ///< Clock block associated with the MIPI interface
+} camera_mipi_ctx_t;
 
 /**
  * @brief Initialize the MIPI camera.
@@ -176,6 +183,7 @@ void camera_mipi_init(camera_mipi_ctx_t* ctx);
 
 C_API_END
 
+/// @} endgroup camera_mipi
 
 
 /*

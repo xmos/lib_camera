@@ -1,6 +1,8 @@
 // Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+
+
 #pragma once
 
 #include <stdint.h>
@@ -18,49 +20,61 @@
 #define MODE_RGB2_MAX_SIZE          (400)
 #define MODE_RGB4_MAX_SIZE          (800)
 
-
 C_API_START
 
-// this enum will hold the camera modes
-typedef enum{
-  MODE_RAW  = 0,
-  MODE_RGB1 = 1,
-  MODE_RGB2 = 2,
-  MODE_RGB4 = 4
+// ---------------------------- ISP CFG -------------------------------
+
+typedef unsigned mipi_header_t;
+
+/** 
+ * @addtogroup camera_isp_cfg
+ * @brief Functions related to the Image Signal Processing (ISP) pipeline.
+ * @{
+ */
+
+/// @brief Defines the camera output modes.
+typedef enum {
+  MODE_RAW,   ///< Unprocessed RAW sensor data
+  MODE_RGB1,  ///< RGB mode with no downsample (demosaicing)
+  MODE_RGB2,  ///< RGB mode with x2 downsample
+  MODE_RGB4   ///< RGB mode with x4 downsample
 } camera_mode_t;
 
-// this struct will hold the configuration for the camera
+/// @brief Configuration structure for the camera.
 typedef struct
 {
-  float offset_x;           // [0,1] range from the sensor
-  float offset_y;           // [0,1] range from the sensor
-  camera_mode_t mode;       // RAW or RGB
-  unsigned x1, y1, x2, y2;  // Mipi region
-  unsigned sensor_width;    // Mipi region width
-  unsigned sensor_height;   // Mipi region height
+  float offset_x;         ///< Horizontal offset in [0,1] range relative to the sensor area
+  float offset_y;         ///< Vertical offset in [0,1] range relative to the sensor area
+  camera_mode_t mode;     ///< Output mode: RAW or RGB
+  unsigned x1, y1, x2, y2;///< Region of interest (ROI) in MIPI coordinates
+  unsigned sensor_width;  ///< Width of the MIPI region
+  unsigned sensor_height; ///< Height of the MIPI region
 } camera_cfg_t;
 
-// this will hold the image data and possible configurations
-// we could split this into two structs, but for now we will keep it simple
-// splitting will just cause have more functions, so is a balance to decide
+/// @brief Image configuration structure.
 typedef struct {
-  unsigned height;
-  unsigned width;
-  unsigned channels;
-  unsigned size;
-  int8_t* ptr;
-  camera_cfg_t* config;
+  unsigned height;    ///< Height of the output image in pixels
+  unsigned width;     ///< Width of the output image in pixels
+  unsigned channels;  ///< Number of channels in the output image (ex: 1 for RAW, 3 for RGB)
+  unsigned size;      ///< Size of the output image in bytes
+  int8_t* ptr;        ///< Pointer to the output image data
+  camera_cfg_t* config; ///< Pointer to the camera configuration structure
 } image_cfg_t;
 
-// this struct will hold the mipi header and data
-typedef unsigned mipi_header_t;
+/// @brief MIPI header and MIPI data structure.
 typedef struct {
-  mipi_header_t header;
-  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];
+  mipi_header_t header;                       ///< MIPI header 
+  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];   ///< MIPI payload data
 } mipi_packet_t;
 
+/// @}endgroup camera_isp_cfg
 
 // ---------------------------- Capture API -------------------------------
+/** 
+ * @addtogroup camera_isp_api
+ * @brief Functions related to the Image Signal Processing (ISP) pipeline.
+ * @{
+ */
 
 /**
  * @brief Captures frames until the AE is done or max_steps is reached.
@@ -116,14 +130,14 @@ void camera_isp_thread(
 /**
  * @brief compute MIPI coordinates, from user request to sensor dimensions.
  *
- * @param image_cfg
+ * @param image_cfg pointer to the image configuration structure.
  */
 void camera_isp_coordinates_compute(image_cfg_t* image_cfg);
 
 /**
  * @brief prints the coordinates of the image_cfg
  *
- * @param image_cfg
+ * @param image_cfg pointer to the image configuration structure.
  */
 void camera_isp_coordinates_print(image_cfg_t* image_cfg);
 
@@ -190,5 +204,7 @@ void camera_isp_white_balance(image_cfg_t* image);
  * @return uint8_t new exposure value in [1, 80] or 0 if the exposure is already adjusted.
  */
 uint8_t camera_isp_auto_exposure(image_cfg_t* image);
+
+/// @}endgroup camera_isp_api
 
 C_API_END
