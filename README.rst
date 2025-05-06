@@ -1,26 +1,92 @@
-Camera Library
-==============
+:orphan:
 
-This repository serves as a comprehensive software solution for camera manipulation using the XCORE.AI sensor.
+##########################
+lib_camera: Camera Library
+##########################
 
-Repository Structure
---------------------
+:vendor: XMOS
+:version: 2.0.0
+:scope: General Use
+:description: Camera Library
+:category: Vision
+:keywords: MIPI, Camera, I2C, RAW, ISP
+:devices: xcore.ai
 
-- **doc**         : documentation for the camera library
-- **examples**    : examples for taking pictures with the ``XCORE-VISION board``
-- **lib_camera**  : library to manipulate cameras
-- **python**      : python functions to decode RAW8, RAW10 pictures and other utilities to treat images
-- **tests**       : tests for the camera library
+*******
+Summary
+*******
 
-Examples
---------
+``lib_camera`` is a library for controlling cameras using XCORE.AI. It provides an API for manipulating cameras, and perofrming Image Singal Processing (ISP) functions.
 
-- **take_picture_downsample** : takes a picture from an input size of 680x480 or 1280x960 and downsample it down to 160x120. 
+********
+Features
+********
 
+- Camera Interface:
+  - MIPI-CSI2 interface for camera connection
+  - I2C interface for camera control
 
-Quick Start
------------
+- Board Supported:
+  - xcore.ai Vision Development Kit (`XK-EVK-XU316-AIV`)
+  
+- Sensor Supported:
+  - Sony IMX219 (Raspberry Pi Camera V2)
 
-In order to setup the project and build the examples, please refer to the documentation:
+- Capture and ISP:
+  - RAW8 capture.
+  - RGB888 capture. 
+  - Asynchronous Streaming Mode.
+  - Dynamic Region of interest (ROI) selection.
+  - Support the following downsample factors: x1, x2, x4. 
+  - Auto White Balance (AWB) control.
+  - Auto Exposure (AE) control.
+  - Sw Image rotation (90 degrees).
+  - Sensor Image rotation (180 degrees).
+  - Sensor Image Flip (horizontal and vertical).
 
-`doc/quick_start_guide <./doc/quick_start_guide/quick_start_guide.rst>`_.
+************
+Known issues
+************
+
+- The library is designed to work with the IMX219 sensor. Other sensors may require modifications to the library. More information on how to add your own sensor can be found in the documentation.
+
+- White balancing is based on static white balancing of the sensor IMX219. The static values are not optimal for all lighting conditions. When using a different sensor, the static values should be adjusted to match the sensor's characteristics.
+
+- Output Image Size must be a multiple of four. 
+
+****************
+Development repo
+****************
+
+  * `lib_camera <https://www.github.com/xmos/lib_camera>`_
+
+**************
+Required tools
+**************
+
+  * XMOS XTC Tools: 15.3.1
+
+*********************************
+Required libraries (dependencies)
+*********************************
+
+  * `lib_i2c <https://www.xmos.com/file/fwk_io>`_
+  * `lib_logging <https://www.xmos.com/file/lib_logging>`_
+
+*************************
+Related application notes
+*************************
+
+The following application notes use this library:
+
+  * `AN02017` <www.xmos.com/file/an02017>`_
+  * `AN02005` <www.xmos.com/file/an02005>`_
+  * `AN02010` <www.xmos.com/file/an02010>`_
+  * `AN02013` <www.xmos.com/file/an02013>`_
+
+*******
+Support
+*******
+
+This package is supported by XMOS Ltd. Issues can be raised against the software at
+`http://www.xmos.com/support <http://www.xmos.com/support>`_
