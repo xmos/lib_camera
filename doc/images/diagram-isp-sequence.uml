@@ -1,0 +1,42 @@
+@startuml
+!theme materia
+
+participant "Camera Main" as MAIN
+participant "ISP th" as ISP
+participant "MIPI th" as MIPI
+participant "I2C ctrl fn" as I2C
+participant "User th" as USER
+
+MAIN -> ISP: Start ISP thread
+MAIN -> MIPI: Start MIPI thread
+
+USER -> USER: Creates image buffer
+USER -> USER: Creates image_t
+USER -> USER: Creates/Updates image_cfg_t
+
+ISP -> I2C: camera_sensor_init()
+I2C --> ISP: return 0 (success)
+
+USER -> ISP : camera_isp_coordinates_compute()
+ISP --> USER: return 0 (success)
+
+loop For each frame
+USER -> ISP: camera_isp_start_capture()
+ISP -> I2C : sensor_start()
+loop For each line
+    MIPI -> ISP: Send packet
+    ISP -> ISP : get packet type
+    alt MIPI_DT_FRAME_START
+    ISP -> ISP : restart counters
+    else MIPI_DT_RAW8
+    ISP -> ISP : handle_no_expected_lines()
+    ISP -> ISP : handle_expected_lines()
+    else MIPI_DT_FRAME_END
+    ISP -> ISP : handle_post_process: stats, AE, AWB
+    end
+end
+ISP -> I2C : sensor_stop()
+USER <- ISP: camera_isp_get_capture()
+end
+
+@enduml

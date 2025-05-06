@@ -10,6 +10,13 @@
 #include "api.h"
 #include "camera.h" // packet size
 
+C_API_START
+
+/** 
+ * @defgroup camera_isp_cfg Functions related to the Image Signal Processing (ISP) pipeline.
+ * @{
+ */
+
 // MIPI packet size
 #define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)
@@ -20,24 +27,16 @@
 #define MODE_RGB2_MAX_SIZE          (400)
 #define MODE_RGB4_MAX_SIZE          (800)
 
-C_API_START
-
 // ---------------------------- ISP CFG -------------------------------
 
 typedef unsigned mipi_header_t;
 
-/** 
- * @addtogroup camera_isp_cfg
- * @brief Functions related to the Image Signal Processing (ISP) pipeline.
- * @{
- */
-
 /// @brief Defines the camera output modes.
 typedef enum {
-  MODE_RAW,   ///< Unprocessed RAW sensor data
-  MODE_RGB1,  ///< RGB mode with no downsample (demosaicing)
-  MODE_RGB2,  ///< RGB mode with x2 downsample
-  MODE_RGB4   ///< RGB mode with x4 downsample
+  MODE_RAW  = 0,   ///< Unprocessed RAW sensor data
+  MODE_RGB1 = 1,   ///< RGB mode with no downsample (demosaicing)
+  MODE_RGB2 = 2,   ///< RGB mode with x2 downsample
+  MODE_RGB4 = 4    ///< RGB mode with x4 downsample
 } camera_mode_t;
 
 /// @brief Configuration structure for the camera.
@@ -67,12 +66,11 @@ typedef struct {
   uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];   ///< MIPI payload data
 } mipi_packet_t;
 
-/// @}endgroup camera_isp_cfg
+/// @} endgroup camera_isp_cfg
 
 // ---------------------------- Capture API -------------------------------
 /** 
- * @addtogroup camera_isp_api
- * @brief Functions related to the Image Signal Processing (ISP) pipeline.
+ * @defgroup camera_isp_api Functions related to the Image Signal Processing (ISP) pipeline.
  * @{
  */
 
@@ -205,6 +203,6 @@ void camera_isp_white_balance(image_cfg_t* image);
  */
 uint8_t camera_isp_auto_exposure(image_cfg_t* image);
 
-/// @}endgroup camera_isp_api
+/// @} endgroup camera_isp_api
 
 C_API_END

@@ -12,7 +12,7 @@
 #include "camera_utils.h"
 
 
-#include "imx219.hpp"
+#include "sensor_imx219.hpp"
 
 using namespace sensor;
 

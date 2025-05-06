@@ -13,9 +13,8 @@
 
 C_API_START
 
-/** 
- * @addtogroup camera_main
- * @brief TBD
+/**
+ * @defgroup camera_main Main camera functions
  * @{
  */
 

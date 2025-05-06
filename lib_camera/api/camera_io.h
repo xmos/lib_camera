@@ -10,8 +10,7 @@
 C_API_START
 
 /** 
- * @addtogroup camera_io
- * @brief TBD
+ * @defgroup camera_io Functions related to file I/O operations for camera data
  * @{
  */
 

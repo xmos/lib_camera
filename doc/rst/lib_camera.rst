@@ -12,3 +12,4 @@ lib_camera
    05_troubleshooting
    06_contributing
    07_api_reference
+

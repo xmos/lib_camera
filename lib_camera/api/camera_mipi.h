@@ -158,8 +158,7 @@ typedef mipi_data_type_t pixel_format_t;
 C_API_START
 
 /** 
- * @addtogroup camera_mipi
- * @brief MIPI camera interface functions.
+ * @defgroup camera_mipi MIPI camera interface functions.
  * @{
  */
 

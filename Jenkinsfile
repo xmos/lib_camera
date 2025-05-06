@@ -21,12 +21,14 @@ pipeline {
     )
     string(
       name: 'XMOSDOC_VERSION',
-      defaultValue: 'v7.0.0',
+      defaultValue: 'feature/plantuml', //TO BE UPDATED WHEN RELEASED
+
       description: 'The xmosdoc version')
 
     string(
       name: 'INFR_APPS_VERSION',
-      defaultValue: 'feature/xcommon_cmake_deps_check', //TODO update to develop
+      defaultValue: 'develop',
+
       description: 'The infr_apps version'
     )
   } // parameters

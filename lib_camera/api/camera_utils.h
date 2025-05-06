@@ -14,8 +14,7 @@
 C_API_START
 
 /** 
- * @addtogroup camera_utils
- * @brief TBD
+ * @defgroup camera_utils Utility functions for camera operations
  * @{
  */
 

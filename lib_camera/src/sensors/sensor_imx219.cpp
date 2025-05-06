@@ -7,13 +7,13 @@
 #include <xcore/select.h>
 #include <print.h>
 
-#include "imx219.hpp"
+#include "sensor_imx219.hpp"
 #include "camera_isp.h"
 
 using namespace sensor;
 
-// This header has to be after imx219.hpp and the namespace
-#include "imx219_reg.h"
+// This header has to be after sensor_imx219.hpp and the namespace
+#include "sensor_imx219_reg.h"
 
 IMX219::IMX219(
   i2c_config_t _conf, 
