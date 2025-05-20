@@ -14,7 +14,7 @@ In this library, components refer to a high-level description of the main parts 
 
 .. list-table:: lib_camera components
     :header-rows: 1
-    :widths: 20 80
+    :widths: 25 75
 
     * - Component
       - Description
@@ -28,7 +28,7 @@ In this library, components refer to a high-level description of the main parts 
       - The MIPI Software Interface Module (SHIM) consist of a MIPI D-PHY receiver and a demultiplexer, which translates MIPI Lanes data into xcore ports. Usually, the MIPI Shims receive two MIPI data lanes, which are translated into 4 xcore ports, active, valid, clock and data.
     * - MIPI Receiver
       - The MIPI receiver thread is a software thread that takes as input the mentioned 4 points and retrieves useful MIPI packets, those MIPI packets, such as header and data packets. It is located in ``src/mipi``. 
-    * - ISP (Image Signal Processor)
+    * - ISP
       - In this context, the ISP englobes all the image processing functions, from MIPI packets to a desired output image. It consists in line by line-by-line processes or after the end of frame (EOF functions). They are located in ``src/isp``.
     * - User Thread 
       - The user thread or consumer is the thread or application that specifies the image and consumes it. This thread needs to call functions from the ISP that will allow configuring the desired image and taking a picture. This code is located as well in ``src/isp``. This library provides examples of how the user thread or consumer would look.
@@ -36,23 +36,34 @@ In this library, components refer to a high-level description of the main parts 
 Image Processing Pipeline
 -------------------------
 
-The image processing pipeline consists of several stages, including demosaicing, downsampling, image scaling and cropping, image rotation, Auto Exposure (AE), and Auto White Balance (AWB). Each stage is implemented as a separate function in the library, allowing for easy customisation and extension. Below is a diagram illustrating the image processing pipeline:
+The image processing pipeline consists of several stages, including demosaicing, downsampling, image scaling and cropping, image rotation, Auto Exposure (AE), and Auto White Balance (AWB). Each stage is implemented as a separate function in the library, allowing for easy customisation and extension.
+:numref:`diagram-isp-pipeline` illustrates the image processing pipeline:
 
+.. _diagram-isp-pipeline:
 .. uml:: ../images/diagram-isp-pipeline.uml
+    :alt: ISP Pipeline Diagram
+    :caption: ISP Pipeline Diagram
     :align: center
-    :alt: Image processing pipeline
+    :height: 280px
+
+
 
 This diagram illustrates a basic image processing pipeline. It starts with RAW8 RGGB input data, followed by demosaicing and downsampling. Histograms and statistics are computed to support auto-exposure (AE) and auto white balance (AWB). Optional operations include cropping, resizing, rotating, and data type conversion. The final result is an output image.
 
 Capture Sequence Diagram
 ------------------------
 
-The following sequence diagram illustrates the interaction between the main components of the library during the image capture process. It shows how the MIPI receiver thread and the ISP thread work together to capture and process an image.
+:numref:`diagram-isp-sequence` illustrates the interaction between the main components of the library during the image capture process. 
+It shows how the MIPI receiver thread and the ISP thread work together to capture and process an image.
 
+.. _diagram-isp-sequence:
 .. uml:: ../images/diagram-isp-sequence.uml
+    :alt: Capture Sequence Diagram
+    :caption: Capture Sequence Diagram
     :align: center
-    :alt: Capture sequence diagram
     :width: 80%
+
+
 
 This diagram outlines the sequence of operations in the camera capture pipeline. The main thread starts the ISP and MIPI threads. The user thread prepares the image buffer, image metadata (`image_t`), and configuration (`image_cfg_t`). The ISP thread initialises the camera sensor via I2C. The user then computes ISP coordinates and begins capture for each frame.
 

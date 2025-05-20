@@ -57,6 +57,9 @@ Hardware Setup
 - Plug the 1x Micro USB cable to both the host computer and the ``DEBUG`` Micro USB port.
 - Face the |vision board| horizontally, with the camera connector looking down.
 
+:numref:`Setup` shows the hardware setup for the example:
+
+.. _Setup:
 .. figure:: ../images/hw_setup.jpeg
    :alt: Setup
    :align: center

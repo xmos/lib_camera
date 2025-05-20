@@ -166,12 +166,13 @@ The sensor has to:
 - Be driven from a 3.3V source
 - Have a compatible FPC-24 camera connector.
 
-The following diagram shows the pinout of the 24-pin FPC connector on the |vision board|:
+:numref:`vision_board_fpc` shows the pinout of the 24-pin FPC connector on the |vision board|:
 
+.. _vision_board_fpc:
 .. figure:: ../images/vision_board_fpc.png
   :align: center
   :alt: FPC-24 connector pinout
-  :width: 70%
+  :width: 60%
   
   FPC-24 connector pinout
 
