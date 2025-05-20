@@ -2,6 +2,5 @@
 tests
 build
 
-**README*
 **LICENSE*
 **CHANGELOG*

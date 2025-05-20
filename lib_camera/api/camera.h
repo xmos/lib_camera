@@ -19,7 +19,7 @@ C_API_START
  */
 
 // High-Level Sensor Configuration
-#define SENSOR_WIDHT    800 ///< Sensor width in pixels
+#define SENSOR_WIDTH    800 ///< Sensor width in pixels
 #define SENSOR_HEIGHT   800 ///< Sensor height in pixels
 
 #define CONFIG_FLIP         FLIP_NONE ///< Flip mode: FLIP_NONE, FLIP_VERTICAL

@@ -18,7 +18,7 @@ C_API_START
  */
 
 // MIPI packet size
-#define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDHT) + 4)
+#define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDTH) + 4)
 #define MIPI_PKT_BUFFER_COUNT       (4)
 
 // Sensor width maximum values

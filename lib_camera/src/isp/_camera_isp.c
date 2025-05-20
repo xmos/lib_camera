@@ -175,7 +175,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   unsigned scale = (mode == MODE_RAW) ? 1 : (unsigned)(mode);
 
   // Compute the coordinates of the region of interest
-  cfg->x1 = cfg->offset_x * SENSOR_WIDHT;
+  cfg->x1 = cfg->offset_x * SENSOR_WIDTH;
   cfg->y1 = cfg->offset_y * SENSOR_HEIGHT;
 
   // ensure all are even and unsigned
@@ -213,7 +213,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   xassert(cfg->sensor_height <= max_size && "sensor_height");
   xassert(cfg->x1 < cfg->x2 && "x1");
   xassert(cfg->y1 < cfg->y2 && "y1");
-  xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
+  xassert(cfg->x2 <= SENSOR_WIDTH && "x2");
   xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
   xassert((img_cfg->width % 4) == 0 && "width has to be divisible by 4");
   xassert((img_cfg->height % 4) == 0 && "height has to be divisible by 4");

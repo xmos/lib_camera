@@ -45,13 +45,6 @@ ISP
    :project: lib_camera
    :members:
 
-Utils
-------
-
-.. doxygengroup:: camera_utils
-   :project: lib_camera
-   :members:
-
 I/O
 ---
 

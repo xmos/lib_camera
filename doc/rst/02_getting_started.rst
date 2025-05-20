@@ -48,8 +48,8 @@ Hardware Requirements
 
 The library is designed to work with the following hardware:
 
-- |vision board| (|vision board ref|)
-- 2x Micro USB cable (Power supply and xTag)
+- |vision board| (|vision board ref|).
+- 1x Micro USB cable.
 
 Hardware Setup
 --------------
@@ -102,8 +102,7 @@ Once done, run the following commands from the root of the library:
 If the build is successful, the message ``[100%] Built target capture_rgb`` and the usage report will be displayed:
 
 .. list-table:: Memory Usage Per Tile
-   :header-rows: 1
-   :align: left
+   :align: center
 
    * - Tile
      - Memory Used
@@ -142,11 +141,11 @@ This will try to apply an offset > 1.0 and will cause an error. The error will b
    xrun: Program received signal ET_ECALL, Application exception.
    0x00081ad6 in camera_isp_coordinates_compute (img_cfg=0xe2a2c) at ...camera_isp.c:216
 
-Line 216 is the line where the error is raised. The line expects the following:
+The line that raised the error, corresponds to the following:
 
 .. literalinclude:: ../../lib_camera/src/isp/_camera_isp.c
    :language: c
-   :start-at:  xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
+   :start-at:  xassert(cfg->x2 <= SENSOR_WIDTH && "x2");
    :end-at: xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
 
 As we can see, the error is raised because the offset is greater than the image size. Offset has to be a valid range in float from 0.0 to 1.0.

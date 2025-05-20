@@ -31,7 +31,7 @@ void camera_sensor_init() {
 
   // Sensor settings
   resolution_t res = {
-    .sensor_width = SENSOR_WIDHT,
+    .sensor_width = SENSOR_WIDTH,
     .sensor_height = SENSOR_HEIGHT
   };
   

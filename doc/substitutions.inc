@@ -14,11 +14,10 @@
 
 .. _MIPI: https://www.mipi.org/specifications/csi-2
 .. _XMOS: https://www.xmos.ai/
-.. _XMOS I2C: https://www.xmos.ai/download/lib_i2c-%5Buserguide%5D(5.0.0rc3).pdf
+.. _XMOS I2C: https://github.com/xmos/fwk_io
 .. _XMOS Programming Guide: https://www.xmos.ai/download/XMOS-Programming-Guide-(documentation)(E).pdf
 .. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 .. _SW_TOOLS: https://www.xmos.ai/software-tools/
-.. _XSCOPE_FILEIO: https://github.com/xmos/xscope_fileio
 .. _xcore.ai: https://www.xmos.com/xcore-ai
 .. _XMOS XS3 Architecture: https://www.xmos.com/download/The-XMOS-XS3-Architecture.pdf
 
