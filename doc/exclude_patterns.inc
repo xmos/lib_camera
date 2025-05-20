@@ -4,3 +4,10 @@ build
 
 **LICENSE*
 **CHANGELOG*
+
+examples/*
+python/*
+tests/*
+
+*.md
+**/*.md
