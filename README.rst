@@ -16,7 +16,7 @@ lib_camera: Camera Library
 Summary
 *******
 
-``lib_camera`` is a library for controlling cameras using XCORE.AI. It provides an API for manipulating cameras, and perofrming Image Singal Processing (ISP) functions.
+``lib_camera`` is a library for controlling cameras using XCORE.AI. It provides an API for manipulating cameras, and performing Image Signal Processing (ISP) functions.
 
 ********
 Features
