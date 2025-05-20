@@ -25,7 +25,7 @@ This section provides solutions to common issues that users may encounter when u
 
    To resolve this issue, ensure that the image configuration is valid and supported by the camera. Check the camera documentation for supported image sizes and formats.
 
-#. **Missing Timings**: It may occur that the camera is not able to provide the timings for a specific mode. This can be due to a variety of reasons, such as the camera has no time to process each line before the next one arrives, the camera is configured faster than it can handle, either the PHY or the SHIM. If this happens, the camera will not be able to provide the timings and the ISP will receive invalid packets. This will result in an error message similar to the following:
+#. **Missing Timings**: It may occur that the camera is not able to meet the timings for a specific mode. This can be due to a variety of reasons, such as the camera running out of time while processing the current line before the next one arrives, the camera is configured faster than it can handle, either the PHY or the SHIM. If this happens, the camera will not be able to meet the required timing and the ISP will receive invalid packets. This will result in an error message similar to the following:
 
     .. code-block:: console
 

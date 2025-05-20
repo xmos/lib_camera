@@ -47,7 +47,7 @@ Key features
 High-level Architecture
 -----------------------
 
-The library is structured into several key components, each responsible for a specific aspect of camera operation. The library itself is designed to only use two threads: the `MIPI Receiver` thread and the `ISP`` thread. 
+The library is structured into several key components, each responsible for a specific aspect of camera operation. The library itself is designed to only use two threads: the `MIPI Receiver` thread and the `ISP` thread. 
 
 The high-level architecture is shown in :numref:`lib_camera-od`: 
 

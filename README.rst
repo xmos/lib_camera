@@ -48,7 +48,7 @@ Features
 Known issues
 ************
 
-- The library is designed to work with the IMX219 sensor. Other sensors may require modifications to the library. More information on how to add your own sensor can be found in the documentation.
+- The library is designed to work with the IMX219 sensor. Other sensors may require modifications to the library. More information on how to add a custom sensor can be found in the documentation.
 
 - White balancing is based on static white balancing of the sensor IMX219. The static values are not optimal for all lighting conditions. When using a different sensor, the static values should be adjusted to match the sensor's characteristics.
 

@@ -66,7 +66,7 @@ Adding Support for the Explorer Board
 
 The |explorer board| (|explorer board ref|) is a development board that can be used with the xcore.ai camera library, it has a compatible FPC-24 connector and a MIPI D-PHY receiver. It can support cameras like the Raspberry Pi camera module v2.1 (IMX219) directly. The main difference is the board layout, in the |explorer board|, I2C and MIPI lines collide in the same tile, so the user will need to adapt the hardware or software to make it work.
 
-Regarding the **Hardware solution**, the user can route the I2C signals from one tile to free pins on the same tile. This allows the use of the same code as for the |vision board|. The specific ports and pin assignments for the board can be found in the corresponding ``.xn`` file and the board's manual. The following diagram illustrates how to achieve this:
+Regarding the **Hardware solution**, the user can route the I2C signals from one tile to free pins on the same tile. This allows reuse of the same code as used for the |vision board|. The specific ports and pin assignments for the board can be found in the corresponding ``.xn`` file and the board's manual. The following diagram illustrates how to achieve this:
 
 """
 TO BE DOCUMENTED
@@ -104,7 +104,7 @@ Regarding the **Software solution**, the user will need to adapt the code to wor
         on tile[CAMERA_MIPI_TILE]: user_app(c_cam);
         on tile[CAMERA_I2C_TILE]: camera_sensor_control_rx(c_i2c);
 
-The main difference is while in the |vision board| the I2C and MIPI is in the same tile, the sensor control object can be called directly as a function, in the |explorer board| the I2C and MIPI ports are in different tiles, therefore the user will need to create a new thread (in the example ``camera_sensor_control_rx``) to handle the I2C control, both threads will communicate via a channel (in the example ``c_i2c``).
+The main difference is that in the |vision board| the I2C and MIPI are on the same tile, so the sensor control object can be called directly as a function, while in the |explorer board|, the I2C and MIPI ports are on different tiles, therefore the user will need to create a new thread (in the example ``camera_sensor_control_rx``) to handle the I2C control, and both threads will communicate via a channel (in the example, ``c_i2c``).
 
 Below is a definition of what the ``camera_sensor_control_rx`` thread could look like:
 
@@ -144,13 +144,13 @@ Adding Support for Other Boards
 
 To support additional boards, ensure that the minimum hardware requirements are satisfied. Refer to the :ref:`lib_camera_supported_hardware` section for detailed information.
 
-If the board meets these requirements, you may need to adapt either the hardware or software configuration, depending on the board's architecture:
+If the board meets these requirements, it may be necessary to adapt either the hardware or software configuration, depending on the board’s architecture.
 
-If both MIPI and I2C interfaces are available on the same tile, you can generally reuse the code for the |vision board|. Update the XN file and adjust the I2C port initialisation as needed, typically found under the ``sensor`` folder.
+If both MIPI and I2C interfaces are available on the same tile, the code for the |vision board| can generally be reused. Update the XN file and adjust the I2C port initialisation as needed, typically found under the ``sensor`` folder.
 
 If MIPI and I2C are located on separate tiles, follow the approach described in the previous section for the |explorer board|. This involves creating a dedicated thread for I2C control and establishing inter-tile communication via channels.
 
-Additionally, ensure that the MIPI connector meets D-PHY specifications and that I2C lines are correctly routed to the appropriate pins for your board. Board-specific configuration may require further adjustments to the hardware description and initialisation code.
+Additionally, ensure that the MIPI connector meets D-PHY specifications and that I2C lines are correctly routed to the appropriate pins for the custom board. Board-specific configuration may require further adjustments to the hardware description and initialisation code.
 
 Adding a New Sensor
 -------------------
@@ -176,7 +176,7 @@ The sensor has to:
   
   FPC-24 connector pinout
 
-Once we have a compatible sensor, user will need to adapt the Software. 
+Once a compatible sensor is available, the user will need to adapt the software. 
 
 By navigating to ``sensors/api/SensorBase.hpp``, the user will find the ``SensorBase`` class which is intended to be derived from.
 It doesn't have anything to do with a particular sensor, it only provides an API to do basic I2C communication with the sensor.

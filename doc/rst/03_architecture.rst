@@ -29,9 +29,9 @@ In this library, components refer to a high-level description of the main parts 
     * - MIPI Receiver
       - The MIPI receiver thread is a software thread that takes as input the mentioned 4 points and retrieves useful MIPI packets, those MIPI packets, such as header and data packets. It is located in ``src/mipi``. 
     * - ISP
-      - In this context, the ISP englobes all the image processing functions, from MIPI packets to a desired output image. It consists in line by line-by-line processes or after the end of frame (EOF functions). They are located in ``src/isp``.
+      - In this context, the ISP englobes all the image processing functions, from MIPI packets to a desired output image. It consists of line-by-line processes as well as after the end of frame (EOF) functions. They are located in ``src/isp``.
     * - User Thread 
-      - The user thread or consumer is the thread or application that specifies the image and consumes it. This thread needs to call functions from the ISP that will allow configuring the desired image and taking a picture. This code is located as well in ``src/isp``. This library provides examples of how the user thread or consumer would look.
+      - The user thread or consumer is the thread or application that specifies the image and consumes it. This thread needs to call functions from the ISP that will allow configuring the desired image and taking a picture. This code is also located in ``src/isp``. This library provides examples of how the user thread or consumer would look.
 
 Image Processing Pipeline
 -------------------------

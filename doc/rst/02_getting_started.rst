@@ -3,7 +3,7 @@
 Getting Started
 ===============
 
-This section provides a quick-start guide to help you get up and running with the library. It includes information on hardware and software requirements, installation instructions, and a minimal working example that captures a frame from the camera.
+This section provides a quick-start guide to help users get up and running with the library. It includes information on hardware and software requirements, installation instructions, and a minimal working example that captures a frame from the camera.
 
 .. note::
 
@@ -79,7 +79,7 @@ The following software is required to build and run the library:
 Software Setup
 --------------
 
-Before building the example, ensure that the ``XTC tools`` are installed and properly activated in your development environment (`XTC tools`_). You can verify this by running the following command in your terminal:
+Before building the example, ensure that the ``XTC tools`` are installed and properly activated in your development environment (`XTC tools`_). This can be verified by running the following command in a terminal with the XTC tools sourced:
 
 .. code-block:: console
 
@@ -87,7 +87,7 @@ Before building the example, ensure that the ``XTC tools`` are installed and pro
 
 This command should display the version of the installed ``XTC tools``. If the tools are not installed or activated, refer to the installation instructions in the documentation.
 
-Once done, run then run the following commands from the root of the library:
+Once done, run the following commands from the root of the library:
 
 .. code-block:: console
 

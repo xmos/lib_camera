@@ -9,7 +9,7 @@ The general approach to contributing to the library is to fork the repository, m
 
 When doing so, it is recommended to add tests or examples to demonstrate the new functionality or bug fix. This will help us understand the changes and ensure they work as intended.
 
-PR's will trigger a CI pipeline that will run the tests and check the code style. Make sure new tests are added to the pipeline modifying the correct CMakeLists.txt file.
+PRs will trigger a CI pipeline that will run the tests and check the code style. Make sure new tests are added to the pipeline modifying the correct CMakeLists.txt file.
 
 The following section focuses on contributing to the ISP components. 
 
@@ -24,7 +24,7 @@ End-of-Frame ISP components, on the other hand, process data after the entire im
 
 For modifying components, the user should be aware of the following:
 
-- camera_isp.c : this file contain both line process under the ``handle_expected_lines()`` function and EOF process under the ``handle_post_process()`` function. 
+- camera_isp.c : this file contains both line process under the ``handle_expected_lines()`` function and EOF process under the ``handle_post_process()`` function. 
 
 - camera_isp.h : this file contains the different modes, and their corresponding maximum allowed regions for each mode. 
 
@@ -34,7 +34,7 @@ Other files that may be of interest are:
 
 - sensor_wrapper.h : Defines the sensor wrapper functions, which are used to communicate with the camera sensor and configure its settings. These wrapper functions are implemented in the ``sensor_wrapper.c`` file. This file serves as a C wrapper for the C++ implementation, specifically the ``sensor_imx219.cpp`` class, which is a subclass of the ``sensor_base.cpp`` class.
 
-In order to add or modify an ISP component the user would have to submit his changes in the `isp` folder. As an example, lets suppose user want to improve the conversion from RAW8 to RGB888 (RGB1) with an improved algorithm, or wants to add a new alogirthm, like RAW8 to YUV422.
+In order to add or modify an ISP component the user would have to submit their changes in the `isp` folder. As an example, lets suppose the user wants to improve the conversion from RAW8 to RGB888 (RGB1) with an improved algorithm, or wants to add a new alogrithm, like RAW8 to YUV422.
 
 The user should implement the new algorithm in the ISP folder, ensuring it adheres to the library's coding standards and performance requirements. Additionally, the user should update the ``camera_isp.c`` file to integrate the new algorithm into the ``handle_expected_lines()`` function. 
 
