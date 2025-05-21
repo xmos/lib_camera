@@ -1,5 +1,7 @@
 |newpage|
 
+.. _lib_camera_getting_started:
+
 Getting Started
 ===============
 

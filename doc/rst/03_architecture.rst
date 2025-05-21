@@ -44,7 +44,7 @@ The image processing pipeline consists of several stages, including demosaicing,
     :alt: ISP Pipeline Diagram
     :caption: ISP Pipeline Diagram
     :align: center
-    :height: 280px
+    :height: 320px
 
 This diagram illustrates a basic image processing pipeline. It starts with RAW8 RGGB input data, followed by demosaicing and downsampling. Histograms and statistics are computed to support auto-exposure (AE) and auto white balance (AWB). Optional operations include cropping, resizing, rotating, and data type conversion. The final result is an output image.
 
@@ -54,15 +54,13 @@ Capture Sequence Diagram
 :numref:`diagram-isp-sequence` illustrates the interaction between the main components of the library during the image capture process. 
 It shows how the MIPI receiver thread and the ISP thread work together to capture and process an image.
 
+This diagram outlines the sequence of operations in the camera capture pipeline. The main thread starts the ISP and MIPI threads. The user thread prepares the image buffer, image metadata (`image_t`), and configuration (`image_cfg_t`). The ISP thread initialises the camera sensor via I2C. The user then computes ISP coordinates and begins capture for each frame.
+
+For every frame, the sensor is started, and MIPI sends line packets to the ISP. Based on the packet type (`FRAME_START`, `RAW8`, or `FRAME_END`), the ISP updates counters, processes expected lines, or performs post-processing (statistics, auto-exposure, auto white balance). Once the frame is complete, the sensor is stopped, and the captured image is retrieved.
+
 .. _diagram-isp-sequence:
 .. uml:: ../images/diagram-isp-sequence.uml
     :alt: Capture Sequence Diagram
     :caption: Capture Sequence Diagram
     :align: center
-    :width: 80%
-
-This diagram outlines the sequence of operations in the camera capture pipeline. The main thread starts the ISP and MIPI threads. The user thread prepares the image buffer, image metadata (`image_t`), and configuration (`image_cfg_t`). The ISP thread initialises the camera sensor via I2C. The user then computes ISP coordinates and begins capture for each frame.
-
-For every frame, the sensor is started, and MIPI sends line packets to the ISP. Based on the packet type (`FRAME_START`, `RAW8`, or `FRAME_END`), the ISP updates counters, processes expected lines, or performs post-processing (statistics, auto-exposure, auto white balance). Once the frame is complete, the sensor is stopped, and the captured image is retrieved.
-
-|newpage|
+    :width: 90%

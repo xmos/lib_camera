@@ -21,25 +21,30 @@ It defines global macros for main camera configuration and provides functions to
 .. doxygengroup:: camera_main
    :project: lib_camera
    :members:
+   :noindex: 
 
 ISP
 ---
 
 The ISP module offers an interface for configuring and controlling the camera's image processing pipeline.
+
 It provides functions to set the output format, resolution, and various image processing parameters.
 This module includes both configuration and conversion functions essential for adapting the camera output to different requirements.
 
 .. doxygengroup:: camera_isp_cfg
    :project: lib_camera
    :members:
+   :noindex: 
 
 .. doxygengroup:: camera_isp_api
    :project: lib_camera
    :members:
+   :noindex: 
 
 .. doxygengroup:: camera_isp_conv
    :project: lib_camera
    :members:
+   :noindex: 
 
 Sensors
 -------
@@ -50,6 +55,7 @@ It includes set of methods that the library needs in order to configure and cont
 .. doxygengroup:: camera_sensors
    :project: lib_camera
    :members:
+   :noindex: 
 
 I/O
 ---
@@ -59,3 +65,4 @@ The I/O module includes a set of functions to read and write image data from or 
 .. doxygengroup:: camera_io
    :project: lib_camera
    :members:
+   :noindex: 
