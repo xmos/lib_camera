@@ -21,10 +21,9 @@ pipeline {
     )
     string(
       name: 'XMOSDOC_VERSION',
-      defaultValue: 'pr-180', //TO BE UPDATED WHEN RELEASED
-
-      description: 'The xmosdoc version')
-
+      defaultValue: 'pr-179', //TO BE UPDATED WHEN RELEASED
+      description: 'The xmosdoc version'
+    )
     string(
       name: 'INFR_APPS_VERSION',
       defaultValue: 'develop',
