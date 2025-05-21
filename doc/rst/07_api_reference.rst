@@ -21,7 +21,6 @@ It defines global macros for main camera configuration and provides functions to
 .. doxygengroup:: camera_main
    :project: lib_camera
    :members:
-   :noindex: 
 
 ISP
 ---
@@ -34,17 +33,14 @@ This module includes both configuration and conversion functions essential for a
 .. doxygengroup:: camera_isp_cfg
    :project: lib_camera
    :members:
-   :noindex: 
 
 .. doxygengroup:: camera_isp_api
    :project: lib_camera
    :members:
-   :noindex: 
 
 .. doxygengroup:: camera_isp_conv
    :project: lib_camera
    :members:
-   :noindex: 
 
 Sensors
 -------
@@ -55,7 +51,6 @@ It includes set of methods that the library needs in order to configure and cont
 .. doxygengroup:: camera_sensors
    :project: lib_camera
    :members:
-   :noindex: 
 
 I/O
 ---
@@ -65,4 +60,3 @@ The I/O module includes a set of functions to read and write image data from or 
 .. doxygengroup:: camera_io
    :project: lib_camera
    :members:
-   :noindex: 
