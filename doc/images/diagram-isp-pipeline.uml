@@ -1,5 +1,5 @@
 @startuml
-!theme materia
+!include puml-theme-xmos.puml
 
 :RAW8 RGGB Data;
 :demosaic/downsample;

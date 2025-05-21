@@ -1,5 +1,5 @@
 @startuml
-!theme materia
+!include puml-theme-xmos.puml
 
 participant "Camera Main" as MAIN
 participant "ISP th" as ISP
