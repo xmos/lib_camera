@@ -21,7 +21,7 @@ pipeline {
     )
     string(
       name: 'XMOSDOC_VERSION',
-      defaultValue: 'feature-plantuml', //TO BE UPDATED WHEN RELEASED
+      defaultValue: 'pr-180', //TO BE UPDATED WHEN RELEASED
 
       description: 'The xmosdoc version')
 
