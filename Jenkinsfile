@@ -113,7 +113,7 @@ pipeline {
       } // Build & Test
       
       stage('Documentation') {
-        agent {label 'documentation && !docker'}
+        agent {label 'documentation && docker'}
         steps{
           runningOn(env.NODE_NAME)
           dir("${REPO}") {
