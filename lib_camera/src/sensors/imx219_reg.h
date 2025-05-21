@@ -5,6 +5,10 @@
 
 // --------- REG definitions ---------------------------------------------------------
 
+// MODEL ID AND VALUE
+#define REG_MODEL_ID   0x0000
+#define VAL_MODEL_ID   0x0219
+
 // Sleep values and registers
 #define SLEEP             0xFFFF
 #define TRSTUS            200

@@ -22,7 +22,7 @@ void SensorBase::i2c_init() {
   printstrln("I2C initialized.");
 }
 
-uint16_t SensorBase::i2c_read(uint16_t reg) {
+int SensorBase::i2c_read(uint16_t reg) {
   i2c_regop_res_t op_code;
 
   uint16_t result = read_reg16(
@@ -31,8 +31,7 @@ uint16_t SensorBase::i2c_read(uint16_t reg) {
     reg,
     &op_code);
 
-  xassert((op_code == I2C_REGOP_SUCCESS) && "Could not read from I2C");
-  return result;
+  return op_code != I2C_REGOP_SUCCESS ? -1 : result;
 }
 
 int SensorBase::i2c_write_line(i2c_line_t line) {
@@ -125,5 +124,10 @@ void SensorBase::control(chanend_t c_control) {
 
 int SensorBase::set_test_pattern(uint16_t pattern) {
   xassert(0 && "Sensor Exception: Make sure your set_test_pattern() method is implemented and called from the derived class");
+  return -1;
+}
+
+int SensorBase::check_sensor_is_connected(){
+  xassert(0 && "Sensor Exception: Make sure your check_sensor_is_connected() method is implemented and called from the derived class");
   return -1;
 }
