@@ -44,7 +44,7 @@ typedef struct
 {
   float offset_x;         ///< Horizontal offset in [0,1] range relative to the sensor area
   float offset_y;         ///< Vertical offset in [0,1] range relative to the sensor area
-  camera_mode_t mode;     ///< Output mode: RAW or RGB
+  camera_mode_t mode;     ///< Camera output mode
   unsigned x1, y1, x2, y2;///< Region of interest (ROI) in MIPI coordinates
   unsigned sensor_width;  ///< Width of the MIPI region
   unsigned sensor_height; ///< Height of the MIPI region

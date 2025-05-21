@@ -35,9 +35,12 @@ C_API_START
 #endif
 
 /**
- * @brief Lib camera main function
- * @param c_user  Channel to communicate with the user
- * TODO: Add more details about the function and its parameters.
+ * @brief Main entry point for the lib_camera module.
+ *
+ * This function initializes and configures the MIPI interface, and starts both 
+ * the MIPI RX and ISP processing threads. 
+ * 
+ * @param c_camera  Channel endpoint for communication with the user application.
  */
 void camera_main(chanend_t c_camera);
 
