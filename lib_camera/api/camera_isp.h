@@ -17,10 +17,6 @@ C_API_START
  * @{
  */
 
-// MIPI packet size
-#define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDTH) + 4)
-#define MIPI_PKT_BUFFER_COUNT       (4)
-
 // Sensor width maximum values
 #define MODE_RAW_MAX_SIZE           (800)
 #define MODE_RGB1_MAX_SIZE          (200)
@@ -60,12 +56,6 @@ typedef struct {
   camera_cfg_t* config; ///< Pointer to the camera configuration structure
 } image_cfg_t;
 
-/// @brief MIPI header and MIPI data structure.
-typedef struct {
-  mipi_header_t header;                       ///< MIPI header 
-  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];   ///< MIPI payload data
-} mipi_packet_t;
-
 /// @} endgroup camera_isp_cfg
 
 // ---------------------------- Capture API -------------------------------
@@ -75,7 +65,7 @@ typedef struct {
  */
 
 /**
- * @brief Captures frames until the AE is done or max_steps is reached.
+ * @brief Captures frames until the AE is done or a maximum number of steps is reached.
  * This function can be called before `camera_isp_start_capture` to ensure the image is well-exposed.
  * It is optional and can be skipped if the user does not require auto-exposure 
  * or is willing to accept initial frames with incorrect exposure.
@@ -98,7 +88,7 @@ void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image);
 void camera_isp_start_capture(chanend_t c_cam, image_cfg_t *image);
 
 /**
- * @brief Reiceves an image from the ISP thread.
+ * @brief Receives an image from the ISP thread.
  * This function blocks until the image is ready. 
  * This function should be called after `camera_isp_start_capture`.
  * Image will be returned in the image structure passed to `camera_isp_start_capture`.

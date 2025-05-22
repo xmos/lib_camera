@@ -2,6 +2,8 @@
 lib_camera
 ##########
 
+|newpage|
+
 .. rubric:: Introduction
 
 Lib Camera is a software library designed to interface camera sensors with xcore devices. 
@@ -22,6 +24,7 @@ The documentation is organized as follows:
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    01_overview
    02_getting_started

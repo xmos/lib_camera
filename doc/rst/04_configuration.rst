@@ -106,6 +106,34 @@ Regarding the **Software solution**, the user will need to adapt the code to wor
 
 The main difference is that in the |vision board| the I2C and MIPI are on the same tile, so the sensor control object can be called directly as a function, while in the |explorer board|, the I2C and MIPI ports are on different tiles, therefore the user will need to create a new thread (in the example ``camera_sensor_control_rx``) to handle the I2C control, and both threads will communicate via a channel (in the example, ``c_i2c``).
 
+To enable this, the ``camera_main`` function needs to accept a second channel parameter, ``c_i2c``. This channel is used for communication between the ISP thread and the I2C control thread, and should be passed to ``camera_isp_thread``.
+
+.. code-block:: c
+
+   void camera_main(chanend_t c_cam, chanend_t c_i2c) {
+    /*
+    .....
+    */
+    PAR_JOBS(
+        PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)),
+        PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_cam, c_i2c))
+    );
+
+Instead of calling the ``camera_sensor_control`` function directly, the ISP calls the ``camera_sensor_control_tx`` function, which sends the command to the I2C control thread via the ``c_i2c`` channel.
+
+.. tab:: Vision Board
+
+  .. code-block:: c
+
+    camera_sensor_init();
+
+.. tab:: Explorer Board
+
+  .. code-block:: c
+
+    camera_sensor_control_tx(SENSOR_INIT, 0);
+
+The ``camera_sensor_control_rx`` thread will be responsible for handling the I2C control commands and sending them to the sensor.
 Below is a definition of what the ``camera_sensor_control_rx`` thread could look like:
 
 .. code-block:: c
@@ -139,12 +167,15 @@ Below is a definition of what the ``camera_sensor_control_rx`` thread could look
      chan_out_word(c_control, encoded_command);
    }
 
+After implementing the above changes, the user will need to rebuild the application. The user can then run the example and verify that the camera is working correctly.
+
+
 Adding Support for Other Boards
 -------------------------------
 
-To support additional boards, ensure that the minimum hardware requirements are satisfied. Refer to the :ref:`lib_camera_supported_hardware` section for detailed information.
+The xcore.ai camera library is designed to work with the supported hardware listed in the :ref:`lib_camera_supported_hardware` section. However, it can be adapted to work with other boards that meet the minimum hardware requirements.
 
-If the board meets these requirements, it may be necessary to adapt either the hardware or software configuration, depending on the board’s architecture.
+If the board meets these requirements, it may be necessary to adapt either the hardware or software configuration, depending on the board's architecture.
 
 If both MIPI and I2C interfaces are available on the same tile, the code for the |vision board| can generally be reused. Update the XN file and adjust the I2C port initialisation as needed, typically found under the ``sensor`` folder.
 

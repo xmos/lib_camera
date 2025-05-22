@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <xcore/assert.h>
-#include "print.h"
+#include "debug_print.h"
 
 #include "camera.h"
 #include "camera_mipi.h"
@@ -44,7 +44,7 @@ void camera_sensor_init() {
     (centralise_t)CONFIG_CENTRALISE);
 
   // Init the I2C sensor first configuration
-  printstr("Camera init\n");
+  debug_printf("Camera init\n");
   int ret = 0;
   ret |= camera_sensor_ptr->initialize();
   delay_milliseconds_cpp(100);
@@ -53,7 +53,7 @@ void camera_sensor_init() {
   ret |= camera_sensor_ptr->stream_start();
   delay_milliseconds_cpp(500);
   xassert((ret == 0) && "Could not initialise camera");
-  printstr("Camera_started and configured\n");
+  debug_printf("Camera_started and configured\n");
 }
 
 void camera_sensor_start() {

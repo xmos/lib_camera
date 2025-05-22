@@ -24,7 +24,7 @@ In this library, components refer to a high-level description of the main parts 
       - Sensor control covers all I2C operations for configuring the sensor, such as reading or writing registers for pixel format, exposure time, data format, and clock configuration.
     * - Sensor Region
       - The Sensor Region, defined in ``camera.h``, is a macro specifying the maximum image size the sensor can capture. This affects the achievable frame rate and selectable region. The maximum region is set by the sensor's active pixel area (e.g., 3280x2464 for IMX219). Downsampling and binning reduce this size. The ISP will reject regions larger than allowed, but the maximum can be adjusted based on user needs and sensor capabilities.
-    * - MIPI SHIM
+    * - MIPI D-PHY SHIM
       - The MIPI Software Interface Module (SHIM) consist of a MIPI D-PHY receiver and a demultiplexer, which translates MIPI Lanes data into xcore ports. Usually, the MIPI Shims receive two MIPI data lanes, which are translated into 4 xcore ports, active, valid, clock and data.
     * - MIPI Receiver
       - The MIPI receiver thread is a software thread that takes as input the mentioned 4 points and retrieves useful MIPI packets, those MIPI packets, such as header and data packets. It is located in ``src/mipi``. 

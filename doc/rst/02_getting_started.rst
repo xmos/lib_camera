@@ -18,7 +18,7 @@ The following example demonstrates how to use the library to capture a frame fro
 
 The example consists of two main files:
 
-- ``mapfile.xc``: This file contains the entry point to the application (main). On one hand, it initialises the ``camera_main`` thread. On the other hand, it starts the ``user_app`` thread. ``camera_main`` is part of the camera library and is responsible for initialising the camera, configuring the camera settings, and starting the camera capture process. It also handles the MIPI receiver thread and the ISP thread. The ``user_app`` thread is responsible for processing the image data after it has been captured. Both communicate via the channel ``c_cam``. For more information on XMOS channels, refer to the `XMOS Programming Guide`_.
+- ``mapfile.xc``: This file contains the entry point to the application (main). On one hand, it initialises the ``camera_main`` thread. On the other hand, it starts the ``user_app`` thread. ``camera_main`` is part of the camera library and is responsible for initialising the camera, configuring the camera settings, and starting the camera capture process. It also handles the MIPI receiver thread and the ISP thread. The ``user_app`` thread is responsible for processing the image data after it has been captured. Both communicate via the channel ``c_cam``. For more information on XMOS channels, refer to the `XMOS XC Programming Guide`_ and the C version `XMOS C Programming Guide`_.
 
 .. literalinclude:: ../../examples/capture_rgb/src/mapfile.xc
    :language: c
@@ -36,6 +36,8 @@ The example consists of two main files:
 First, the user must define the objects ``camera_cfg_t`` and ``image_t``. The ``camera_cfg_t`` struct contains the camera configuration parameters, such as offsets to define the region of interest and the acquisition mode. The ``image_t`` struct contains the image data and properties, such as width, height, a pointer to the image buffer, and a pointer to the previously declared configuration. In the example, the user expects an image of 200x200x3 RGB int8 image. 
 
 Next, the user must call the ``camera_isp_coordinates_compute()`` function, which takes a pointer to ``image_t``. This call computes the coordinates of the region of interest (ROI) based on the camera configuration (``camera_cfg_t``) and the capture mode. In this case, it will be captured in RGB format and downsampled by a factor of 2 and starting at position (0,0).
+
+The function ``camera_isp_coordinates_compute()`` only needs to be called once if the user does not change the image size or properties. It needs to be called again each time image size, format or properties are changed.
 
 Finally, the user must call the ``camera_isp_start_capture()`` function to start the camera capture process. When the user needs the frame, they can call the ``camera_isp_get_capture()`` function. This function will block until the frame is ready.
 

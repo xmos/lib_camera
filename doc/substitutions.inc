@@ -16,6 +16,9 @@
 .. _XMOS: https://www.xmos.ai/
 .. _XMOS I2C: https://github.com/xmos/fwk_io
 .. _XMOS Programming Guide: https://www.xmos.ai/download/XMOS-Programming-Guide-(documentation)(E).pdf
+.. _XMOS XC Programming Guide: https://www.xmos.ai/download/XMOS-Programming-Guide-(documentation)(E).pdf
+.. _XMOS C Programming Guide: https://www.xmos.com/documentation/XM-014363-PC/html/prog-guide/quick-start/c-programming-guide/index.html
+
 .. _IMX219: https://www.opensourceinstruments.com/Electronics/Data/IMX219PQ.pdf
 .. _SW_TOOLS: https://www.xmos.ai/software-tools/
 .. _xcore.ai: https://www.xmos.com/xcore-ai

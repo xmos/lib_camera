@@ -21,18 +21,24 @@ extern "C" {
 
 namespace sensor {
 
+/// @brief I2C line structure
+/// @ingroup camera_sensors
 typedef struct
 {
   uint16_t reg_addr;
   uint16_t reg_val;
 } i2c_line_t;
 
+/// @brief I2C table structure
+/// @ingroup camera_sensors
 typedef struct
 {
   i2c_line_t * table;
   size_t num_lines;
 } i2c_table_t;
 
+/// @brief I2C configuration structure
+/// @ingroup camera_sensors
 typedef struct 
 {
   uint8_t  device_addr;

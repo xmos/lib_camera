@@ -21,8 +21,13 @@
 #include "camera_mipi.h"
 #include "sensor_wrapper.h"
 
-
 // -------- Globals & Constants -------------
+
+// MIPI packet size
+#define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDTH) + 4)
+#define MIPI_PKT_BUFFER_COUNT       (4)
+
+// Sensor State
 static struct {
   unsigned wait_for_frame_start;
   unsigned frame_number;
@@ -39,6 +44,7 @@ static struct {
     1,  // ae_value
 };
 
+// Sensor width maximum values
 const unsigned sensor_width_max_values[] = {
   MODE_RAW_MAX_SIZE,
   MODE_RGB1_MAX_SIZE,
@@ -46,6 +52,11 @@ const unsigned sensor_width_max_values[] = {
   MODE_RGB4_MAX_SIZE
 };
 
+// MIPI packet header
+typedef struct {
+  mipi_header_t header;                       // MIPI header 
+  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];   // MIPI payload data
+} mipi_packet_t;
 
 // -------- Image API -------------------
 void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image)
