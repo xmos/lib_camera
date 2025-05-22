@@ -33,13 +33,13 @@ The example consists of two main files:
    :start-at:  // Image and configuration
    :end-before: save_image(&image, FILE1_NAME);
 
-First, the user must define the objects ``camera_cfg_t`` and ``image_t``. The ``camera_cfg_t`` struct contains the camera configuration parameters, such as offsets to define the region of interest and the acquisition mode. The ``image_t`` struct contains the image data and properties, such as width, height, a pointer to the image buffer, and a pointer to the previously declared configuration. In the example, the user expects an image of 200x200x3 RGB int8 image. 
+First, the user must define the objects :c:struct:`camera_cfg_t` and :c:struct:`image_cfg_t`. The ``camera_cfg_t`` struct contains the camera configuration parameters, such as offsets to define the region of interest and the acquisition mode. The ``image_cfg_t`` struct contains the image data and properties, such as width, height, a pointer to the image buffer, and a pointer to the previously declared configuration. In the example, the user expects an image of 200x200x3 RGB int8 image. 
 
-Next, the user must call the ``camera_isp_coordinates_compute()`` function, which takes a pointer to ``image_t``. This call computes the coordinates of the region of interest (ROI) based on the camera configuration (``camera_cfg_t``) and the capture mode. In this case, it will be captured in RGB format and downsampled by a factor of 2 and starting at position (0,0).
+Next, the user must call the :c:func:`camera_isp_coordinates_compute` function, which takes a pointer to ``image_cfg_t``. This call computes the coordinates of the region of interest (ROI) based on the camera configuration (``camera_cfg_t``) and the capture mode. In this case, it will be captured in RGB format and downsampled by a factor of 2 and starting at position (0,0).
 
-The function ``camera_isp_coordinates_compute()`` only needs to be called once if the user does not change the image size or properties. It needs to be called again each time image size, format or properties are changed.
+The function :c:func:`camera_isp_coordinates_compute` only needs to be called once if the user does not change the image size or properties. It needs to be called again each time image size, format or properties are changed.
 
-Finally, the user must call the ``camera_isp_start_capture()`` function to start the camera capture process. When the user needs the frame, they can call the ``camera_isp_get_capture()`` function. This function will block until the frame is ready.
+Finally, the user must call the :c:func:`camera_isp_start_capture` function to start the camera capture process. When the user needs the frame, they can call the :c:func:`camera_isp_get_capture` function. This function will block until the frame is ready.
 
 Once the frame is ready, the user can process the image data and save it to a file using the ``save_image()`` function.
 

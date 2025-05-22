@@ -26,7 +26,7 @@ End-of-Frame ISP components, on the other hand, process data after the entire im
 
 For modifying components, the user should be aware of the following:
 
-- camera_isp.c : this file contains both line process under the ``handle_expected_lines()`` function and EOF process under the ``handle_post_process()`` function. 
+- camera_isp.c : this file contains both line process under the :c:func:`handle_expected_lines` function and EOF process under the :c:func:`handle_post_process` function. 
 
 - camera_isp.h : this file contains the different modes, and their corresponding maximum allowed regions for each mode. 
 
