@@ -45,7 +45,7 @@ This module includes both configuration and conversion functions essential for a
 Sensors
 -------
 
-This module provides a high-level class fort he camera sensor. 
+This module provides a high-level class for the camera sensor. 
 It includes set of methods that the library needs in order to configure and control the camera sensor.
 
 .. doxygengroup:: camera_sensors
