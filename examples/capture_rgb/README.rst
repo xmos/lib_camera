@@ -2,7 +2,7 @@ Example: Capture RGB
 ====================
 
 This example runs intermetly a sequence of start-capture-stop. 
-It prints in the console every time it recieves a:
+It prints in the console every time it receives a:
 
 - start of frame
 - expected packet

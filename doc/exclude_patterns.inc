@@ -2,6 +2,12 @@
 tests
 build
 
-**README*
 **LICENSE*
 **CHANGELOG*
+
+examples/*
+python/*
+tests/*
+
+*.md
+**/*.md

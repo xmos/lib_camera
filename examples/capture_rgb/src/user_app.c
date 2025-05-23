@@ -53,11 +53,9 @@ void user_app(chanend_t c_cam) {
         .config = &config
     };
 
-    // wait a few seconds and ask somthing
+    // wait a few seconds and ask something
     delay_seconds_cpp(3);
-    
-    // From here, it could be a while loop
-    
+
     // set coords and send to ISP
     camera_isp_coordinates_compute(&image);
     camera_isp_start_capture(c_cam, &image);
@@ -76,8 +74,7 @@ void user_app(chanend_t c_cam) {
     printf("Capture time:\t%f [ms]\n", (t1 - t0) * 1e-5);
     save_image(&image, FILE2_NAME);
 
-    // (Optional) try something makes no sense
-    /*
+    /* (Optional) try something out of bounds
     config.offset_x = 1.8; 
     config.offset_y = 1.8; 
     camera_isp_coordinates_compute(&image);

@@ -9,6 +9,11 @@
 
 C_API_START
 
+/** 
+ * @defgroup camera_io Functions related to file I/O operations for camera data
+ * @{
+ */
+
 /**
  * @brief Dumps data into a file, can be lossy if done over xscope
  *
@@ -66,5 +71,7 @@ void camera_io_write_bmp_file(
  * @note Image has to be in [height][width] format
  */
 void write_bmp_greyscale(char * filename, uint8_t * image, const size_t height, const size_t width);
+
+/// @} endgroup camera_io
 
 C_API_END
