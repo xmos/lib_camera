@@ -54,6 +54,10 @@
 #define REG_TP_HEIGHT_MSB    0x0626
 #define REG_TP_HEIGHT_LSB    0x0627
 
+// LED PORT
+#ifndef PORT_LED
+#define PORT_LED XS1_PORT_32A
+#endif
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static i2c_line_t imx219_common_regs[] = {
