@@ -1,6 +1,11 @@
 // Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
+/**
+ * @defgroup camera_sensors Camera Sensor Base API
+ * @brief Functions and classes to control camera sensors
+ */
+
 #pragma once
 
 #include <stdint.h>
@@ -16,18 +21,24 @@ extern "C" {
 
 namespace sensor {
 
+/// @brief I2C line structure
+/// @ingroup camera_sensors
 typedef struct
 {
   uint16_t reg_addr;
   uint16_t reg_val;
 } i2c_line_t;
 
+/// @brief I2C table structure
+/// @ingroup camera_sensors
 typedef struct
 {
   i2c_line_t * table;
   size_t num_lines;
 } i2c_table_t;
 
+/// @brief I2C configuration structure
+/// @ingroup camera_sensors
 typedef struct 
 {
   uint8_t  device_addr;
@@ -41,7 +52,8 @@ typedef struct
 #define GET_TABLE(regs_arr) (i2c_table_t){regs_arr, GET_NUM_LINES(regs_arr)}
 
 /**
- *  @brief Base class for implementing Sensor control from
+ * @ingroup camera_sensors
+ * @brief Base class for camera sensors.
  */
 class SensorBase {
 

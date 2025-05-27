@@ -20,6 +20,7 @@
 DECLARE_JOB(camera_mipi_rx, (in_buffered_port_32_t, port_t, streaming_chanend_t, streaming_chanend_t));
 DECLARE_JOB(camera_isp_thread, (streaming_chanend_t, streaming_chanend_t, chanend_t));
 
+// defined in: camera_mipi_rx.S
 extern void camera_mipi_rx(
     in_buffered_port_32_t p_mipi_rxd,
     port_t p_mipi_rxa,
@@ -44,7 +45,7 @@ void camera_main(chanend_t c_cam){
 
     // Parallel Jobs
     PAR_JOBS(
-        PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)), // camera_mipi_rx.S
+        PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)),
         PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_cam))
     );
 

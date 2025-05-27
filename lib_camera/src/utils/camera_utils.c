@@ -11,21 +11,18 @@
 #include "camera_utils.h"
 
 // -------------------- Delays -----------------------
-inline
 void delay_ticks_cpp(unsigned ticks){
   hwtimer_t tmr = hwtimer_alloc();
   hwtimer_delay(tmr, ticks);
   hwtimer_free(tmr);
 }
 
-inline
 void delay_milliseconds_cpp(unsigned delay) {
   hwtimer_t tmr = hwtimer_alloc();
   hwtimer_delay(tmr, delay * XS1_TIMER_MHZ * 1000);
   hwtimer_free(tmr);
 }
 
-inline
 void delay_seconds_cpp(unsigned int delay) {
   hwtimer_t tmr = hwtimer_alloc();
   hwtimer_delay(tmr, delay * XS1_TIMER_HZ);

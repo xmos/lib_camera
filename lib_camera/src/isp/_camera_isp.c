@@ -21,8 +21,13 @@
 #include "camera_mipi.h"
 #include "sensor_wrapper.h"
 
-
 // -------- Globals & Constants -------------
+
+// MIPI packet size
+#define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDTH) + 4)
+#define MIPI_PKT_BUFFER_COUNT       (4)
+
+// Sensor State
 static struct {
   unsigned wait_for_frame_start;
   unsigned frame_number;
@@ -39,6 +44,7 @@ static struct {
     1,  // ae_value
 };
 
+// Sensor width maximum values
 const unsigned sensor_width_max_values[] = {
   MODE_RAW_MAX_SIZE,
   MODE_RGB1_MAX_SIZE,
@@ -46,6 +52,11 @@ const unsigned sensor_width_max_values[] = {
   MODE_RGB4_MAX_SIZE
 };
 
+// MIPI packet header
+typedef struct {
+  mipi_header_t header;                       // MIPI header 
+  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];   // MIPI payload data
+} mipi_packet_t;
 
 // -------- Image API -------------------
 void camera_isp_prepare_capture(chanend_t c_cam, image_cfg_t* image)
@@ -175,7 +186,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   unsigned scale = (mode == MODE_RAW) ? 1 : (unsigned)(mode);
 
   // Compute the coordinates of the region of interest
-  cfg->x1 = cfg->offset_x * SENSOR_WIDHT;
+  cfg->x1 = cfg->offset_x * SENSOR_WIDTH;
   cfg->y1 = cfg->offset_y * SENSOR_HEIGHT;
 
   // ensure all are even and unsigned
@@ -213,7 +224,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   xassert(cfg->sensor_height <= max_size && "sensor_height");
   xassert(cfg->x1 < cfg->x2 && "x1");
   xassert(cfg->y1 < cfg->y2 && "y1");
-  xassert(cfg->x2 <= SENSOR_WIDHT && "x2");
+  xassert(cfg->x2 <= SENSOR_WIDTH && "x2");
   xassert(cfg->y2 <= SENSOR_HEIGHT && "y2");
   xassert((img_cfg->width % 4) == 0 && "width has to be divisible by 4");
   xassert((img_cfg->height % 4) == 0 && "height has to be divisible by 4");

@@ -10,6 +10,11 @@
 
 C_API_START
 
+/** 
+ * @defgroup camera_isp_conv Functions related to image conversion
+ * @{
+ */
+
 // -------------------- Color -----------------------
 
 /**
@@ -57,13 +62,13 @@ inline void camera_rgb_to_greyscale(
 }
 
 // Macro arguments to get color components from packed result
-#define GET_R(rgb) (rgb & 0xFF)
-#define GET_G(rgb) ((rgb >> 8) & 0xFF)
-#define GET_B(rgb) ((rgb >> 16)& 0xFF)
+#define GET_R(rgb) (rgb & 0xFF)         ///< Get Red component from encoded XRGB uint32_t
+#define GET_G(rgb) ((rgb >> 8) & 0xFF)  ///< Get Green component from encoded XRGB uint32_t
+#define GET_B(rgb) ((rgb >> 16)& 0xFF)  ///< Get Blue component from encoded XRGB uint32_t
 
-#define GET_Y(yuv) GET_R(yuv)
-#define GET_U(yuv) GET_G(yuv)
-#define GET_V(yuv) GET_B(yuv)
+#define GET_Y(yuv) GET_R(yuv)           ///< Get Y component from encoded XYUV uint32_t
+#define GET_U(yuv) GET_G(yuv)           ///< Get U component from encoded XYUV uint32_t
+#define GET_V(yuv) GET_B(yuv)           ///< Get V component from encoded XYUV uint32_t
 
 /**
  * @brief Converts a YUV pixel to RGB.
@@ -146,5 +151,7 @@ void camera_rotate90(
     const int16_t h,
     const int16_t w,
     const int16_t ch);
+
+/// @} endgroup camera_isp_conv
 
 C_API_END
