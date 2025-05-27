@@ -66,13 +66,19 @@ Adding Support for the Explorer Board
 
 The |explorer board| (|explorer board ref|) is a development board that can be used with the xcore.ai camera library, it has a compatible FPC-24 connector and a MIPI D-PHY receiver. It can support cameras like the Raspberry Pi camera module v2.1 (IMX219) directly. The main difference is the board layout, in the |explorer board|, I2C and MIPI lines collide in the same tile, so the user will need to adapt the hardware or software to make it work.
 
-Regarding the **Hardware solution**, the user can route the I2C signals from one tile to free pins on the same tile. This allows reuse of the same code as used for the |vision board|. The specific ports and pin assignments for the board can be found in the corresponding ``.xn`` file and the board's manual. The following diagram illustrates how to achieve this:
+Regarding the **Hardware solution**, the user can route free pins on tile[1] to the I2C signals from tile [0] (SCL:X0D37:D16, SDA:X0D38:D17). This allows reuse of the same code as used for the |vision board|. MIPI can be placed in both tiles, with the only restriction that MIPI and USB can't be placed on the same tile. The specific ports and pin assignments for the board can be found in the corresponding ``.xn`` file and the board's manual. :numref:`expl-board-conn` illustrates how to achieve this:
 
-"""
-TO BE DOCUMENTED
-"""
+.. _expl-board-conn:
+.. figure:: ../images/expl-board-conn.png
+  :align: center
+  :alt: Explorer Board I2C connections
+  :width: 60%
 
-Regarding the **Software solution**, the user will need to adapt the code to work with the |explorer board|. The following sections provide a guide on how to do this.
+  Explorer Board I2C connections
+
+In this configuration, free pins on tile[1] (X1D56, X1D57) are used to connect the I2C signals from tile[0] (SDA, SCL respectively). 
+
+Regarding the **Software solution**, the user will need to adapt the code to work with the |explorer board|. The following sections provide a guide on how to do this. The first change is to adapt the entry point of the program as follows:
 
 .. tab:: Vision Board
 
@@ -214,15 +220,6 @@ It doesn't have anything to do with a particular sensor, it only provides an API
 Inside ``SensorBase`` class users can also find some public virtual methods which will **have to** be implemented in the derived class.
 
 In order to implement a new sensor, the user will need to create a directory in ``lib_camera/src/sensors``, implement a derived class with 
-``initialize()``, ``stream_start()``, ``stream_stop()``, ``set_exposure()``, ``configure()`` and ``control()`` methods. When the
-sensor class has been implemented, its header file can be added into ``lib_camera/src/sensor_control.cpp``. ``sensor_control()`` should call the new sensor API like this:
-
-.. code-block:: C++
-
-  sensor_control(chanend_t c_control) {
-    // i2c_conf definition first
-    sensor::NEW_SENSOR snsr(i2c_conf, other_arguments);
-    snsr.control(c_control);
-  }
+``initialize()``, ``stream_start()``, ``stream_stop()``, ``set_exposure()``, ``configure()`` and ``control()`` methods.
 
 After that's been done, the user will need to rebuild the application. 

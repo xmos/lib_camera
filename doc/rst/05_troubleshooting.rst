@@ -14,7 +14,8 @@ This section provides solutions to common issues that users may encounter when u
 
 .. code-block:: console
 
-    TODO
+    ERROR: IMX219 not connected
+    >> Verify that the sensor is properly connected"
 
 To resolve this issue, ensure that the camera is properly connected to the board. If the camera is not detected, check the connection and try again.
 
