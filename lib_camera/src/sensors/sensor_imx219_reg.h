@@ -5,8 +5,9 @@
 
 // --------- REG definitions ---------------------------------------------------------
 
-// MODEL ID
-#define REG_MODEL_ID 0x00
+// MODEL ID AND VALUE
+#define REG_MODEL_ID   0x0000
+#define VAL_MODEL_ID   0x0219
 
 // Sleep values and registers
 #define SLEEP             0xFFFF
@@ -52,6 +53,11 @@
 #define REG_TP_WIDTH_LSB     0x0625
 #define REG_TP_HEIGHT_MSB    0x0626
 #define REG_TP_HEIGHT_LSB    0x0627
+
+// LED PORT
+#ifndef PORT_LED
+#define PORT_LED XS1_PORT_32A
+#endif
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static i2c_line_t imx219_common_regs[] = {

@@ -156,6 +156,13 @@ class IMX219 : public SensorBase {
      */
     int set_test_pattern(uint16_t pattern);
 
+    /**
+     * @brief Check if sensor is connected
+     *
+     * @returns           0 if succeeded, -1 if failed
+     */
+    int check_sensor_is_connected();
+
 }; // IMX219
 
 } // sensor

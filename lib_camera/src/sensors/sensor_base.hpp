@@ -75,9 +75,9 @@ class SensorBase {
      * @brief Read from a 16-bit register
      *
      * @param reg         Register to read from
-     * @returns           Register value
+     * @returns           Register value, -1 if failed
      */
-    uint16_t i2c_read(uint16_t reg);
+    int i2c_read(uint16_t reg);
 
     /**
      * @brief Write to a single register
@@ -165,6 +165,14 @@ class SensorBase {
      * @note This is a virtual function, and will have to be implemented in the derived class
      */
     virtual int set_test_pattern(uint16_t pattern);
+
+    /**
+     * @brief Check if sensor is connected
+     * 
+     * @returns           0 if succeeded, -1 if failed
+     * @note This is a virtual function, and will have to be implemented in the derived class
+     */
+    virtual int check_sensor_is_connected();
 
 }; // SensorBase
 

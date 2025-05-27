@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+#include <platform.h>
 #include <xcore/assert.h>
 #include <xcore/select.h>
 #include <print.h>
@@ -60,6 +61,8 @@ int IMX219::configure() {
   binning_reg[0].reg_val = (this->binning_2x2) ? BINNING_2X2 : BINNING_NONE;
 
   int ret = 0;
+  // Check if the sensor is connected
+  ret |= this->check_sensor_is_connected();
   // Apply default values of current mode
   ret |= this->i2c_write_table(frame_size_regs);
   // set frame format register
@@ -222,4 +225,30 @@ int IMX219::set_test_pattern(uint16_t pattern) {
   i2c_table_t test_table = {test_pattern_regs, 10};
   int ret = this->i2c_write_table(test_table);
   return ret;
+}
+
+int IMX219::check_sensor_is_connected()
+{
+  port_t flashing_led_port = PORT_LED;
+  unsigned flashing_seconds = 10;
+  unsigned flashing_delay_ms = 80;
+  unsigned flashing_delay_ticks = flashing_delay_ms * XS1_TIMER_KHZ;
+  unsigned flashing_end = get_reference_time() + flashing_seconds * XS1_TIMER_HZ;
+
+  // read model ID and check if it is correct
+  int ret = this->i2c_read(REG_MODEL_ID);
+  if (ret != VAL_MODEL_ID) {
+    port_enable(flashing_led_port);
+    hwtimer_t tmr = hwtimer_alloc();
+    while (get_reference_time() <= flashing_end) { // flip red
+      port_out(flashing_led_port, (port_peek(flashing_led_port) ^ 0b10));
+      hwtimer_delay(tmr, flashing_delay_ticks);
+    }
+    port_disable(flashing_led_port);
+    hwtimer_free(tmr);
+    printstrln("ERROR: IMX219 not connected");
+    printstrln(">> Verify that the sensor is properly connected");
+    return -1;
+  }
+  return 0;
 }
