@@ -229,7 +229,7 @@ int IMX219::set_test_pattern(uint16_t pattern) {
 
 int IMX219::check_sensor_is_connected()
 {
-  port_t flashing_led_port = LED_PORT;
+  port_t flashing_led_port = XS1_PORT_32A; // Default port for flashing LED
   unsigned flashing_seconds = 10;
   unsigned flashing_delay_ms = 80;
   unsigned flashing_delay_ticks = flashing_delay_ms * XS1_TIMER_KHZ;

@@ -54,10 +54,6 @@
 #define REG_TP_HEIGHT_MSB    0x0626
 #define REG_TP_HEIGHT_LSB    0x0627
 
-#ifndef LED_PORT
-#warning "LED_PORT is not defined, using default XS1_PORT_4C"
-#define LED_PORT XS1_PORT_4C
-#endif
 
 // --------- REG GROUP definitions ----------------------------------------------------
 static i2c_line_t imx219_common_regs[] = {
