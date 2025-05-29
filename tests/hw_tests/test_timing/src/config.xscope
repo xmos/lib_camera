@@ -1,0 +1,22 @@
+<!-- ======================================================= -->
+<!-- The 'ioMode' attribute on the xSCOPEconfig              -->
+<!-- element can take the following values:                  -->
+<!--   "none", "basic", "timed"                              -->
+<!--                                                         -->
+<!-- The 'type' attribute on Probe                           -->
+<!-- elements can take the following values:                 -->
+<!--   "STARTSTOP", "CONTINUOUS", "DISCRETE", "STATEMACHINE" -->
+<!--                                                         -->
+<!-- The 'datatype' attribute on Probe                       -->
+<!-- elements can take the following values:                 -->
+<!--   "NONE", "UINT", "INT", "FLOAT"                        -->
+<!-- ======================================================= -->
+
+<xSCOPEconfig ioMode="timed" enabled="true">
+  <Probe name="SOF" type="CONTINUOUS" datatype="UINT" units="mV" enabled="true"/>
+  <Probe name="RAW8" type="CONTINUOUS" datatype="UINT" units="mV" enabled="true"/>
+  <Probe name="EOF" type="CONTINUOUS" datatype="UINT" units="mV" enabled="true"/>
+  <Probe name="PCKT" type="CONTINUOUS" datatype="UINT" units="mV" enabled="true"/>
+  <Probe name="WC" type="CONTINUOUS" datatype="UINT" units="mV" enabled="true"/>
+  <Probe name="CAP" type="CONTINUOUS" datatype="UINT" units="mV" enabled="true"/>
+</xSCOPEconfig>
