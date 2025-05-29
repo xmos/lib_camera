@@ -45,7 +45,7 @@ static struct {
 };
 
 // Sensor width maximum values
-const unsigned sensor_width_max_values[] = {
+static const unsigned sensor_width_max_values[] = {
   MODE_RAW_MAX_SIZE,
   MODE_RGB1_MAX_SIZE,
   MODE_RGB2_MAX_SIZE,

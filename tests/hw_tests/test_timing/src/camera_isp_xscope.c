@@ -25,6 +25,12 @@
 
 
 // -------- Globals & Constants -------------
+
+// MIPI packet size
+#define MIPI_MAX_PKT_SIZE_BYTES     ((SENSOR_WIDTH) + 4)
+#define MIPI_PKT_BUFFER_COUNT       (4)
+
+// Sensor State
 static struct {
   unsigned wait_for_frame_start;
   unsigned frame_number;
@@ -33,13 +39,19 @@ static struct {
   unsigned capture_finished;
   unsigned ae_value;
 } ph_state = {
-    0,  // wait_for_frame_start
+    1,  // wait_for_frame_start
     0,  // frame_number
     0,  // in_line_number
     0,  // out_line_number
     0,  // capture_finished
     1,  // ae_value
 };
+
+// MIPI packet header
+typedef struct {
+  mipi_header_t header;                       // MIPI header 
+  uint8_t payload[MIPI_MAX_PKT_SIZE_BYTES];   // MIPI payload data
+} mipi_packet_t;
 
 // -------- State handlers --------
 void camera_isp_start_capture_xscope(chanend_t c_cam, image_cfg_t *image) {
