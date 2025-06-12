@@ -27,8 +27,8 @@ The documentation is organized as follows:
    :hidden:
 
    01_overview
-   02_getting_started
-   03_architecture
+   02_architecture
+   03_getting_started
    04_configuration
    05_troubleshooting
    06_contributing

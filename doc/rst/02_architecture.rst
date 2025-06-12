@@ -33,6 +33,15 @@ In this library, components refer to a high-level description of the main parts 
     * - User Thread 
       - The user thread or consumer is the thread or application that specifies the image and consumes it. This thread needs to call functions from the ISP that will allow configuring the desired image and taking a picture. This code is also located in ``src/isp``. This library provides examples of how the user thread or consumer would look.
 
+Image Processing Blocks
+-----------------------
+
+The library supports two types of ISP components: Line ISP and End-of-Frame (EOF) ISP. The primary difference between them lies in how they process image data.
+
+Line ISP components process data on a line-by-line basis or in groups of lines. This means the component processes each line of the image as it is received from the camera sensor. This approach is typically used when converting from RAW8 input to a desired output format, such as RGB888 or YUV422. Processing line by line is preferred in this case to avoid storing the entire RAW image in memory.
+
+End-of-Frame ISP components, on the other hand, process data after the entire image has been received and processed by the line ISP components. These components handle tasks that do not necessarily require storing the entire image, such as auto-exposure adjustments, or tasks that can be performed in-place in memory, such as int8 to uint8 conversion or gamma correction.
+
 Image Processing Pipeline
 -------------------------
 

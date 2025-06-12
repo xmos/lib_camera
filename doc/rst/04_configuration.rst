@@ -61,8 +61,8 @@ Below is an example configuration:
 In this example, the user has set the image size to 192x240 pixels with 3 channels (RGB). The `ptr` field points to the buffer where the image data will be stored. The `config` field points to the camera configuration structure, which contains additional settings such as offsets and modes. In this case ``MODE_RGB2`` is selected, meaning that the image will take a region of 384x480 pixels from the sensor area to produce a 192x240 image. The offsets are set to 0.2 and 0.3, which means that the image will start from 20% and 30% of the sensor's maximum area.
 
 
-Adding Support for the Explorer Board
--------------------------------------
+Adding Support for the xcore.ai Evaluation Kit
+----------------------------------------------
 
 The |explorer board| (|explorer board ref|) is a development board that can be used with the xcore.ai camera library, it has a compatible FPC-24 connector and a MIPI D-PHY receiver. It can support cameras like the Raspberry Pi camera module v2.1 (IMX219) directly. The main difference is the board layout, in the |explorer board|, I2C and MIPI lines collide in the same tile, so the user will need to adapt the hardware or software to make it work.
 
@@ -71,10 +71,10 @@ Regarding the **Hardware solution**, the user can route free pins on tile[1] to 
 .. _expl-board-conn:
 .. figure:: ../images/expl-board-conn.png
   :align: center
-  :alt: Explorer Board I2C connections
+  :alt: I2C connections
   :width: 60%
 
-  Explorer Board I2C connections
+  |explorer board| I2C connections
 
 In this configuration, free pins on tile[1] (X1D56, X1D57) are used to connect the I2C signals from tile[0] (SDA, SCL respectively). 
 
@@ -94,7 +94,7 @@ Regarding the **Software solution**, the user will need to adapt the code to wor
         on tile[1]: user_app(c_cam);
 
 
-.. tab:: Explorer Board
+.. tab:: |explorer board|
 
     .. code-block:: c
 
@@ -217,7 +217,7 @@ Once a compatible sensor is available, the user will need to adapt the software.
 
 By navigating to ``sensors/api/SensorBase.hpp``, the user will find the ``SensorBase`` class which is intended to be derived from.
 It doesn't have anything to do with a particular sensor, it only provides an API to do basic I2C communication with the sensor.
-Inside ``SensorBase`` class users can also find some public virtual methods which will **have to** be implemented in the derived class.
+Inside ``SensorBase`` class users can also find some public virtual methods which will have to be implemented in the derived class.
 
 In order to implement a new sensor, the user will need to create a directory in ``lib_camera/src/sensors``, implement a derived class with 
 ``initialize()``, ``stream_start()``, ``stream_stop()``, ``set_exposure()``, ``configure()`` and ``control()`` methods.
