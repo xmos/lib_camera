@@ -72,7 +72,7 @@ TEST(white_balance, white_balance__simple) // ensure we dont write zeros after t
     camera_isp_white_balance(&image);
 
     // print output image
-    print_array(buff, size_with_zeros);
+    // print_array(buff, size_with_zeros);
 
     // assert last N are zeros
     for (unsigned i = size; i < size_with_zeros; i++) {
