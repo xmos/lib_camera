@@ -46,4 +46,8 @@ void camera_main(chanend_t c_camera);
 
 /// @} endgroup camera_main
 
+
+void camera_main_tile1(chanend_t c_cam, chanend_t c_i2c);
+void camera_main_tile0(chanend_t c_i2c);
+
 C_API_END

@@ -36,6 +36,14 @@ typedef enum {
   FLIP_VERTICAL = (0 | (1 << 1))
 } orientation_t;
 
+typedef enum {
+  SENSOR_INIT = 0,
+  SENSOR_STREAM_START,
+  SENSOR_STREAM_STOP,
+  SENSOR_SET_EXPOSURE,
+  SENSOR_SET_TEST_PATTERN,
+} sensor_control_t;
+
 C_API_START
 
 void camera_sensor_init();
@@ -43,5 +51,9 @@ void camera_sensor_start();
 void camera_sensor_stop();
 void camera_sensor_set_tp(uint16_t pattern);
 void camera_sensor_set_exposure(uint32_t dBGain);
+
+// Inter tile communication
+void camera_sensor_set_channel(chanend_t c_in);
+void camera_i2c_thread(chanend_t c_i2c);
 
 C_API_END

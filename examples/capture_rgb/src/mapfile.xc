@@ -17,10 +17,12 @@ void user_app(chanend_t c_user_isp);
 int main(void)
 {
   chan c_cam;
+  chan c_i2c;
   
   // Parallel jobs
   par{
-    on tile[1]: camera_main(c_cam);
+    on tile[0]: camera_main_tile0(c_i2c);
+    on tile[1]: camera_main_tile1(c_cam, c_i2c);
     on tile[1]: user_app(c_cam);
   }
   return 0;

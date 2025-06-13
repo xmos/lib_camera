@@ -7,7 +7,7 @@ set(XMOS_SANDBOX_DIR ${CMAKE_CURRENT_LIST_DIR}/../../..)
 message("XMOS_SANDBOX_DIR: ${XMOS_SANDBOX_DIR}")
 
 # Target, xscope
-set(APP_HW_TARGET src/XK-EVK-XU316-AIV.xn)
+set(APP_HW_TARGET XCORE-AI-EXPLORER)
 set(APP_XSCOPE_SRCS src/config.xscope)
 
 # Includes, Dependencies

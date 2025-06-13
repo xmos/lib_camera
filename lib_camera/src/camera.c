@@ -52,3 +52,32 @@ void camera_main(chanend_t c_cam){
     s_chan_free(c_pkt);
     s_chan_free(c_ctrl);
 }
+
+void camera_main_tile1(chanend_t c_cam, chanend_t c_i2c){
+
+    // Channels
+    streaming_channel_t c_pkt = s_chan_alloc();
+    channel_t c_ctrl = s_chan_alloc();
+
+    // Camera Init
+    camera_mipi_ctx_t ctx = {
+        .p_mipi_clk = XS1_PORT_1O,
+        .p_mipi_rxa = XS1_PORT_1E,
+        .p_mipi_rxv = XS1_PORT_1I,
+        .p_mipi_rxd = XS1_PORT_8A,
+        .clk_mipi = MIPI_CLKBLK
+    };
+    camera_mipi_init(&ctx);
+    camera_sensor_set_channel(c_i2c);
+    // Parallel Jobs
+    PAR_JOBS(
+        PJOB(camera_mipi_rx, (ctx.p_mipi_rxd, ctx.p_mipi_rxa, c_pkt.end_a, c_ctrl.end_a)),
+        PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_cam))
+    );
+    s_chan_free(c_pkt);
+    s_chan_free(c_ctrl);
+}
+
+void camera_main_tile0(chanend_t c_i2c){
+    camera_i2c_thread(c_i2c);
+}
