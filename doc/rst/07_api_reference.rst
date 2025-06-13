@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_api_reference:
 
 API Reference

@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_troubleshooting:
 
 Troubleshooting

@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_architecture:
 
 Architecture
@@ -27,7 +25,7 @@ In this library, components refer to a high-level description of the main parts 
     * - MIPI D-PHY SHIM
       - The MIPI Software Interface Module (SHIM) consist of a MIPI D-PHY receiver and a demultiplexer, which translates MIPI Lanes data into xcore ports. Usually, the MIPI Shims receive two MIPI data lanes, which are translated into 4 xcore ports, active, valid, clock and data.
     * - MIPI Receiver
-      - The MIPI receiver thread is a software thread that takes as input the mentioned 4 points and retrieves useful MIPI packets, those MIPI packets, such as header and data packets. It is located in ``src/mipi``. 
+      - The MIPI receiver is a dedicated software thread that interfaces with the MIPI SHIM ports. It monitors the active and valid signals, collects incoming data, and assembles it into 32-bit words. The receiver continues this process until a complete image line is buffered, at which point it sends and signals the ISP to start processing the line.
     * - ISP
       - In this context, the ISP englobes all the image processing functions, from MIPI packets to a desired output image. It consists of line-by-line processes as well as after the end of frame (EOF) functions. They are located in ``src/isp``.
     * - User Thread 
