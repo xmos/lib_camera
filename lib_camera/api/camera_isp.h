@@ -22,6 +22,7 @@ C_API_START
 #define MODE_RGB1_MAX_SIZE          (200)
 #define MODE_RGB2_MAX_SIZE          (400)
 #define MODE_RGB4_MAX_SIZE          (800)
+#define MODE_YUV2_MAX_SIZE          (800)
 
 // ---------------------------- ISP CFG -------------------------------
 
@@ -32,7 +33,8 @@ typedef enum {
   MODE_RAW  = 0,   ///< Unprocessed RAW sensor data
   MODE_RGB1 = 1,   ///< RGB mode with no downsample (demosaicing)
   MODE_RGB2 = 2,   ///< RGB mode with x2 downsample
-  MODE_RGB4 = 4    ///< RGB mode with x4 downsample
+  MODE_RGB4 = 4,   ///< RGB mode with x4 downsample
+  MODE_YUV2 = 6,   ///< YUV2 mode (YUV422)
 } camera_mode_t;
 
 /// @brief Configuration structure for the camera.
@@ -172,7 +174,14 @@ void camera_isp_raw8_to_rgb2(image_cfg_t* image, int8_t* data_in, unsigned ln);
  */
 void camera_isp_raw8_to_rgb4(image_cfg_t* image, int8_t* data_in, unsigned ln);
 
-
+/**
+ * @brief Converts RAW8 lines into an YUV422 image. (downsampled by 2 horizontally)
+ * 
+ * @param image structure containing image configuration and output YUV pointer.
+ * @param data_in pointer to the input RAW8 data.
+ * @param ln current sensor line number.
+ */
+void camera_isp_raw8_to_yuv2(image_cfg_t* image, int8_t* data_in, unsigned ln);
 // ---------------------------- White Balancing / Auto Exposure  -------------------------------
 
 /**
@@ -191,7 +200,7 @@ void camera_isp_white_balance(image_cfg_t* image);
  * @param image structure containing image configuration and output RGB pointer.
  * @return uint8_t new exposure value in [1, 80] or 0 if the exposure is already adjusted.
  */
-uint8_t camera_isp_auto_exposure(image_cfg_t* image);
+unsigned camera_isp_auto_exposure(image_cfg_t* image);
 
 /// @} endgroup camera_isp_api
 
