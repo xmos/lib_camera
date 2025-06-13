@@ -9,7 +9,7 @@
 .. |vision board| replace:: xcore.ai Vision Development Kit
 .. |vision board ref| replace:: `XK-EVK-XU316-AIV`
 
-.. |explorer board| replace:: xcore.ai explorer Development Kit
+.. |explorer board| replace:: xcore.ai Explorer Development Kit
 .. |explorer board ref| replace:: `XK-EVK-XU316`
 
 .. _MIPI: https://www.mipi.org/specifications/csi-2

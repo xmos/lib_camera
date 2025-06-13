@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_architecture:
 
 Architecture
@@ -27,11 +25,20 @@ In this library, components refer to a high-level description of the main parts 
     * - MIPI D-PHY SHIM
       - The MIPI Software Interface Module (SHIM) consist of a MIPI D-PHY receiver and a demultiplexer, which translates MIPI Lanes data into xcore ports. Usually, the MIPI Shims receive two MIPI data lanes, which are translated into 4 xcore ports, active, valid, clock and data.
     * - MIPI Receiver
-      - The MIPI receiver thread is a software thread that takes as input the mentioned 4 points and retrieves useful MIPI packets, those MIPI packets, such as header and data packets. It is located in ``src/mipi``. 
+      - The MIPI receiver is a dedicated software thread that interfaces with the MIPI SHIM ports. It monitors the active and valid signals, collects incoming data, and assembles it into 32-bit words. The receiver continues this process until a complete image line is buffered, at which point it sends and signals the ISP to start processing the line.
     * - ISP
       - In this context, the ISP englobes all the image processing functions, from MIPI packets to a desired output image. It consists of line-by-line processes as well as after the end of frame (EOF) functions. They are located in ``src/isp``.
     * - User Thread 
       - The user thread or consumer is the thread or application that specifies the image and consumes it. This thread needs to call functions from the ISP that will allow configuring the desired image and taking a picture. This code is also located in ``src/isp``. This library provides examples of how the user thread or consumer would look.
+
+Image Processing Blocks
+-----------------------
+
+The library supports two types of ISP components: Line ISP and End-of-Frame (EOF) ISP. The primary difference between them lies in how they process image data.
+
+Line ISP components process data on a line-by-line basis or in groups of lines. This means the component processes each line of the image as it is received from the camera sensor. This approach is typically used when converting from RAW8 input to a desired output format, such as RGB888 or YUV422. Processing line by line is preferred in this case to avoid storing the entire RAW image in memory.
+
+End-of-Frame ISP components, on the other hand, process data after the entire image has been received and processed by the line ISP components. These components handle tasks that do not necessarily require storing the entire image, such as auto-exposure adjustments, or tasks that can be performed in-place in memory, such as int8 to uint8 conversion or gamma correction.
 
 Image Processing Pipeline
 -------------------------

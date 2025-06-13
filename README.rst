@@ -64,9 +64,9 @@ Development repo
 Required tools
 **************
 
- * XTC tools: `15.3.1` `XTC Software Tools <https://www.xmos.com/software-tools/>`_.
- * Python: `3.10` or later `Python <https://www.python.org/>`.
- * CMake: `3.21 ` or later `CMAKE_ <https://cmake.org/>`.
+ * XTC tools: *15.3.1* `XTC Software Tools <https://www.xmos.com/software-tools/>`_.
+ * Python: *3.10* or later `Python <https://www.python.org/>`_.
+ * CMake: *3.21* or later `CMAKE <https://cmake.org/>`_.
 
 *********************************
 Required libraries (dependencies)
@@ -81,10 +81,10 @@ Related application notes
 
 The following application notes use this library:
 
-  * `AN02017` <www.xmos.com/file/an02017>`_
-  * `AN02005` <www.xmos.com/file/an02005>`_
-  * `AN02010` <www.xmos.com/file/an02010>`_
-  * `AN02013` <www.xmos.com/file/an02013>`_
+  * `AN02017 <www.xmos.com/file/an02017>`_
+  * `AN02005 <www.xmos.com/file/an02005>`_
+  * `AN02010 <www.xmos.com/file/an02010>`_
+  * `AN02013 <www.xmos.com/file/an02013>`_
 
 *******
 Support

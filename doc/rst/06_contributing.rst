@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_contributing:
 
 Contributing
@@ -26,17 +24,17 @@ End-of-Frame ISP components, on the other hand, process data after the entire im
 
 For modifying components, the user should be aware of the following:
 
-- camera_isp.c : this file contains both line process under the :c:func:`handle_expected_lines` function and EOF process under the :c:func:`handle_post_process` function. 
+- camera_isp.c : This file contains both line process under the :c:func:`handle_expected_lines` function and EOF process under the :c:func:`handle_post_process` function. 
 
-- camera_isp.h : this file contains the different modes, and their corresponding maximum allowed regions for each mode. 
+- camera_isp.h : This file contains the different modes, and their corresponding maximum allowed regions for each mode. 
 
 Other files that may be of interest are:
 
-- camera.h : defines the absolute maximum sensor region. This will drive the maximum output image size.
+- camera.h : Defines the absolute maximum sensor region. This will drive the maximum output image size.
 
 - sensor_wrapper.h : Defines the sensor wrapper functions, which are used to communicate with the camera sensor and configure its settings. These wrapper functions are implemented in the ``sensor_wrapper.c`` file. This file serves as a C wrapper for the C++ implementation, specifically the ``sensor_imx219.cpp`` class, which is a subclass of the ``sensor_base.cpp`` class.
 
-In order to add or modify an ISP component the user would have to submit their changes in the `isp` folder. As an example, lets suppose the user wants to improve the conversion from RAW8 to RGB888 (RGB1) with an improved algorithm, or wants to add a new alogrithm, like RAW8 to YUV422.
+In order to add or modify an ISP component the user would have to submit their changes in the `isp` folder. As an example, let us suppose the user wants to improve the conversion from RAW8 to RGB888 (RGB1) with an improved algorithm, or wants to add a new alogrithm, like RAW8 to YUV422.
 
 The user should implement the new algorithm in the ISP folder, ensuring it adheres to the library's coding standards and performance requirements. Additionally, the user should update the ``camera_isp.c`` file to integrate the new algorithm into the ``handle_expected_lines()`` function. 
 
