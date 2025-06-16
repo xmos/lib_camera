@@ -87,7 +87,7 @@ pipeline {
             steps {
               dir("${REPO}/tests/unit_tests") {
                 withTools(params.TOOLS_VERSION) {
-                  sh 'xrun --id 0 --xscope bin/unit_tests.xe'
+                  sh 'xsim bin/unit_tests.xe'
                 }
               }
             }
