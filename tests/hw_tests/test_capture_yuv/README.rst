@@ -1,4 +1,4 @@
-Example: Capture RGB
+Example: Capture YUV
 ====================
 
 This example runs intermetly a sequence of start-capture-stop. 
