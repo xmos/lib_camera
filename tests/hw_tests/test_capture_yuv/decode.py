@@ -1,7 +1,9 @@
+# Copyright 2025 XMOS LIMITED.
+# This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
 import numpy as np
 import cv2
 from PIL import Image
-
 
 def yuv422_to_rgb_and_save(img_path, width, height, output_file):
     buffer = np.fromfile(img_path, dtype=np.int8)
