@@ -34,7 +34,7 @@ Other files that may be of interest are:
 
 - sensor_wrapper.h : Defines the sensor wrapper functions, which are used to communicate with the camera sensor and configure its settings. These wrapper functions are implemented in the ``sensor_wrapper.c`` file. This file serves as a C wrapper for the C++ implementation, specifically the ``sensor_imx219.cpp`` class, which is a subclass of the ``sensor_base.cpp`` class.
 
-In order to add or modify an ISP component the user would have to submit their changes in the `isp` folder. As an example, let us suppose the user wants to improve the conversion from RAW8 to RGB888 (RGB1) with an improved algorithm, or wants to add a new alogrithm, like RAW8 to YUV422.
+In order to add or modify an ISP component the user would have to submit their changes in the `isp` folder. As an example, let us suppose the user wants to improve the conversion from RAW8 to RGB888 (RGB1) with an improved algorithm, or wants to add a new alogrithm, like RAW8 to RGB565.
 
 The user should implement the new algorithm in the ISP folder, ensuring it adheres to the library's coding standards and performance requirements. Additionally, the user should update the ``camera_isp.c`` file to integrate the new algorithm into the ``handle_expected_lines()`` function. 
 
