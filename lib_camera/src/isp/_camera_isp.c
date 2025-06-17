@@ -45,12 +45,16 @@ static struct {
 };
 
 // Sensor width maximum values
-static const unsigned sensor_width_max_values[] = {
-  MODE_RAW_MAX_SIZE,
-  MODE_RGB1_MAX_SIZE,
-  MODE_RGB2_MAX_SIZE,
-  MODE_RGB4_MAX_SIZE
-};
+static inline
+unsigned get_max_width(camera_mode_t mode) {
+  switch (mode) {
+  case MODE_RAW:  return MODE_RAW_MAX_SIZE;
+  case MODE_RGB1: return MODE_RGB1_MAX_SIZE;
+  case MODE_RGB2: return MODE_RGB2_MAX_SIZE;
+  case MODE_RGB4: return MODE_RGB4_MAX_SIZE;
+  }
+  return 0; // Invalid mode
+}
 
 // MIPI packet header
 typedef struct {
@@ -182,7 +186,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
 
   // If RAW, scale = 1
   unsigned mode = cfg->mode;
-  unsigned max_size = sensor_width_max_values[mode];
+  unsigned max_size = get_max_width(mode);
   unsigned scale = (mode == MODE_RAW) ? 1 : (unsigned)(mode);
 
   // Compute the coordinates of the region of interest

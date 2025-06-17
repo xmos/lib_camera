@@ -19,8 +19,8 @@ C_API_START
  */
 
 // High-Level Sensor Configuration
-#define SENSOR_WIDTH    800 ///< Sensor width in pixels
-#define SENSOR_HEIGHT   800 ///< Sensor height in pixels
+#define SENSOR_WIDTH    1048 ///< Sensor width in pixels
+#define SENSOR_HEIGHT   1048 ///< Sensor height in pixels
 
 #define CONFIG_FLIP         FLIP_NONE ///< Flip mode: FLIP_NONE, FLIP_VERTICAL
 #define CONFIG_BINNING      BINNING_ON  ///< Binning mode: BINNING_ON or BINNING_OFF
