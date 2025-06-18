@@ -111,6 +111,11 @@ void camera_int8_to_uint8(
     int8_t * input,
     const unsigned length);
 
+//TODO addd descr
+void camera_int8_to_uint8_fast(
+    uint8_t * output,
+    int8_t * input,
+    const unsigned length);
 // -------------------- Spatial -----------------------
 
 /**

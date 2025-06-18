@@ -16,6 +16,25 @@
 // Common difinitions
 #define CT_INT 127 // int conversion
 
+
+#pragma once
+
+#include <stdio.h>
+#include <print.h>
+#include <xcore/hwtimer.h>
+
+#define TO_MS(ticks) ((float)(ticks) / XS1_TIMER_KHZ)
+#define PRINT_STR_MSG ">> ticks: "
+
+#define TIMEIT(func, ...) \
+    { \
+        unsigned start_time = get_reference_time(); \
+        func(__VA_ARGS__); \
+        unsigned end_time = get_reference_time(); \
+        printstr(PRINT_STR_MSG); \
+        printuintln(end_time - start_time); \
+    }
+
 // --------------------------- Image creation -----------------------------------------
 #define CREATE_IMG_UINT8(name, h, w, c)      \
 struct name {                                \
