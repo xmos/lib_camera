@@ -7,12 +7,9 @@ void camera_int8_to_uint8_fast(
     unsigned size
 );
 
-//TODO ensure data is aligned8
-//TODO ensure data >= 8
-
 */
 
-#define FUNCTION_NAME   camera_int8_to_uint8_fast
+#define FUNCTION_NAME   camera_int8_to_uint8_block
 #define NSTACKWORDS     4
 #define dst             r0
 #define src             r1

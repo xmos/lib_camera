@@ -111,11 +111,20 @@ void camera_int8_to_uint8(
     int8_t * input,
     const unsigned length);
 
-//TODO addd descr
+/**
+ * @brief Convert an array of int8 to an array of uint8 using a fast method.
+ * Data can be updated in-place. 
+ * This function requires input and output arrays to be double word aligned
+ *
+ * @param output    Array of uint8_t that will contain the output
+ * @param input     Array of int8_t that contains the input
+ * @param length    Length of the input and output arrays
+ */
 void camera_int8_to_uint8_fast(
     uint8_t * output,
     int8_t * input,
     const unsigned length);
+
 // -------------------- Spatial -----------------------
 
 /**

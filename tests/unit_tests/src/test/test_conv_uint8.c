@@ -3,6 +3,8 @@
 #include <string.h>
 #include <time.h>
 
+#include <xcore/hwtimer.h>
+
 #include "unity_fixture.h"
 
 #include "camera_isp.h"
@@ -25,6 +27,14 @@ TEST_TEAR_DOWN(uint8_conv) {}
 typedef 
 void (*conv_func_t)(uint8_t *, const int8_t *, unsigned);
 
+static
+void timeit(conv_func_t func, uint8_t *dst, const int8_t *src, unsigned size) {
+    unsigned t = get_reference_time();
+    func(dst, src, size);
+    t = get_reference_time() - t;
+    printf("elapsed ticks: %d\n", t);
+}
+
 static 
 void test_conversion_with_size(unsigned size) {
     int8_t input[MAX_TEST_SIZE] ALIGNED_8;
@@ -40,13 +50,6 @@ void test_conversion_with_size(unsigned size) {
     }
 }
 
-static
-void timeit(conv_func_t func, uint8_t *dst, const int8_t *src, unsigned size) {
-    unsigned t = get_reference_time();
-    func(dst, src, size);
-    t = get_reference_time() - t;
-    printf("elapsed ticks: %d\n", t);
-}
 
 TEST(uint8_conv, uint8_conv__time){
     const unsigned size = 128;
