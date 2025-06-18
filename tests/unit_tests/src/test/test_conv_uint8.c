@@ -22,6 +22,9 @@ TEST_GROUP(uint8_conv);
 TEST_SETUP(uint8_conv) {print_separator("uint8_conv");}
 TEST_TEAR_DOWN(uint8_conv) {}
 
+typedef 
+void (*conv_func_t)(uint8_t *, const int8_t *, unsigned);
+
 static 
 void test_conversion_with_size(unsigned size) {
     int8_t input[MAX_TEST_SIZE] ALIGNED_8;
@@ -37,24 +40,22 @@ void test_conversion_with_size(unsigned size) {
     }
 }
 
+static
+void timeit(conv_func_t func, uint8_t *dst, const int8_t *src, unsigned size) {
+    unsigned t = get_reference_time();
+    func(dst, src, size);
+    t = get_reference_time() - t;
+    printf("elapsed ticks: %d\n", t);
+}
+
 TEST(uint8_conv, uint8_conv__time){
     const unsigned size = 128;
     int8_t input[size] ALIGNED_8;
     uint8_t ref[size] ALIGNED_8;
     uint8_t out[size] ALIGNED_8;
     fill_array_rand_int8(input, size);
-    
-    unsigned t0 = 0, t1 = 0;
-    t0 = get_reference_time();
-    camera_int8_to_uint8(ref, input, size);
-    t0 = get_reference_time() - t0;
-
-    t1 = get_reference_time();
-    camera_int8_to_uint8_fast(out, input, size);
-    t1 = get_reference_time() - t1;
-
-    printf("elapsed ref:\t%d\n", t0);
-    printf("elapsed fast:\t%d\n", t1);
+    timeit((conv_func_t)camera_int8_to_uint8, ref, input, size);
+    timeit((conv_func_t)camera_int8_to_uint8_fast, out, input, size);
 }
 
 TEST(uint8_conv, uint8_conv__size){
