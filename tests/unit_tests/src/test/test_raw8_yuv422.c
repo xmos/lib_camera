@@ -179,5 +179,5 @@ TEST(yuv, yuv__time)
     float avg_time_c = (float)total_time_c / n_runs;
     float avg_time_vpu = (float)total_time_vpu / n_runs;
     float ratio = avg_time_c / avg_time_vpu;
-    printf("avg_time_c: %.2f, avg_time_vpu: %.2f, ratio: %.2f\n", avg_time_c, avg_time_vpu, ratio);
+    printf("avg_time_c: %.2f [ticks/block], avg_time_vpu: %.2f [ticks/block], ratio: %.2f\n", avg_time_c, avg_time_vpu, ratio);
 }
