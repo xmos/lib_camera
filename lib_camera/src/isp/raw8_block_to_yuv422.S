@@ -34,7 +34,7 @@ Note:
 
 .section .text
 .issue_mode dual
-.align 4
+.align 16
 .globl FUNCTION_NAME
 .type FUNCTION_NAME, @function
 .cc_top FUNCTION_NAME.func, FUNCTION_NAME
