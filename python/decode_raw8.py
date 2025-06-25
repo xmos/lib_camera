@@ -1,4 +1,4 @@
-# Copyright 2023 XMOS LIMITED.
+# Copyright 2023-2025 XMOS LIMITED.
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 """
@@ -19,8 +19,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image  # just to avoid color BGR issues when writting
-from dotenv import load_dotenv
-load_dotenv()  # take environment variables from .env.
 
 from utils import (
     normalize,

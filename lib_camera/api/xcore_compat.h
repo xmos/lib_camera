@@ -1,4 +1,4 @@
-// Copyright 2023-2024 XMOS LIMITED.
+// Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #pragma once
@@ -16,4 +16,5 @@
     #include <xcore/channel.h>          // include channel, channend, streaming channel (C only)
     #include <xccompat.h>               // include ports, clocks, and channends (XC/C compat)
     typedef chanend chanend_t;          // chanend_t (XC/C compat)
+    typedef unsigned tileref_t;         // tileref_t (XC/C compat)
 #endif //__XC__
