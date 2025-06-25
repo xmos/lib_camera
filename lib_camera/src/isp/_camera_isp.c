@@ -45,11 +45,14 @@ static struct {
 };
 
 // Sensor width maximum values
-static const unsigned sensor_width_max_values[] = {
-  MODE_RAW_MAX_SIZE,
-  MODE_RGB1_MAX_SIZE,
-  MODE_RGB2_MAX_SIZE,
-  MODE_RGB4_MAX_SIZE
+const unsigned sensor_width_max_values[] = {
+  MODE_RAW_MAX_SIZE,    // 0
+  MODE_RGB1_MAX_SIZE,   // 1
+  MODE_RGB2_MAX_SIZE,   // 2
+  0,                    // 3
+  MODE_RGB4_MAX_SIZE,   // 4
+  0,                    // 5
+  MODE_YUV2_MAX_SIZE    // 6
 };
 
 // MIPI packet header
@@ -105,7 +108,9 @@ void handle_post_process(image_cfg_t* image)
   }
 
 #if (CONFIG_APPLY_AWB)
-  camera_isp_white_balance(image);
+  if (image->config->mode != MODE_YUV2) {
+    camera_isp_white_balance(image);
+  }
 #endif
 
 #if (CONFIG_APPLY_AE)
@@ -160,6 +165,10 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
       camera_isp_raw8_to_rgb4(image, data_in, ln);
       break;
     }
+    case MODE_YUV2:{
+      camera_isp_raw8_to_yuv2(image, data_in, ln);
+      break;
+    }
     default:{
       xassert(0 && "mode not supported");
       break;
@@ -184,6 +193,9 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   unsigned mode = cfg->mode;
   unsigned max_size = sensor_width_max_values[mode];
   unsigned scale = (mode == MODE_RAW) ? 1 : (unsigned)(mode);
+
+  // scale correction for yuv422
+  if (mode == MODE_YUV2) {scale = 2;}
 
   // Compute the coordinates of the region of interest
   cfg->x1 = cfg->offset_x * SENSOR_WIDTH;
@@ -211,7 +223,8 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
 
   // if raw ensure channels are 1, else 3
   unsigned cond_raw = (mode == MODE_RAW && img_cfg->channels == 1);
-  unsigned cond_rgb = (mode != MODE_RAW && img_cfg->channels == 3);
+  unsigned cond_yuv = (mode == MODE_YUV2 && img_cfg->channels == 2);
+  unsigned cond_rgb = ((!cond_raw) && (!cond_yuv) && img_cfg->channels == 3);
 
   // debug info
   debug_printf("Coords: x1:%d, y1:%d, x2:%d, y2:%d\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);
@@ -219,7 +232,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   debug_printf("Mode: %d\n", mode);
 
   // ensure everything is logical
-  xassert(cond_raw || cond_rgb && "channels not valid");
+  xassert(cond_raw || cond_rgb || cond_yuv && "channels not valid");
   xassert(cfg->sensor_width <= max_size && "sensor_width");
   xassert(cfg->sensor_height <= max_size && "sensor_height");
   xassert(cfg->x1 < cfg->x2 && "x1");

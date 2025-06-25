@@ -32,7 +32,7 @@ SENSOR_WIDTH = 200
 class ImgSize(BaseModel):
     height: int = 200
     width: int = 200
-    channels: Literal[1, 3]
+    channels: Literal[1, 2, 3]
     dtype: Literal[np.int8, np.uint8] = np.int8
 
 
@@ -107,7 +107,31 @@ class ImageDecoder(object):
         print("Image saved in:", output_name)
         self.last_img = img_pil
         return img_pil
-
+    
+    def raw8_to_yuv422(self, input_name, output_name):
+        img = self._imgread(input_name)
+        dest_shape = (self.width // 2, self.height // 2)
+        img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB) # to rgb
+        img = cv2.resize(img, dest_shape, interpolation=cv2.INTER_LINEAR)
+        # Do AWB uint8
+        img = self.rgb_apply_static_wb_uint8(img)
+        yuv = cv2.cvtColor(img, cv2.COLOR_RGB2YUV) # default opencv is bgr
+        # Extract Y, U, V channels
+        Y = yuv[:, :, 0]; U = yuv[:, :, 1]; V = yuv[:, :, 2]
+        # Subsample U and V channels
+        U_sub = U[:, ::2]  # Take every second U value
+        V_sub = V[:, ::2]  # Take every second V value 
+        # Interleave Y, U, and V in YUV422 format (Y1 U Y2 V)
+        h, w = Y.shape
+        yuv422 = np.zeros((h, 2*w), dtype=np.uint8)    
+        yuv422[:, 0::4] = Y[:, ::2]   # Y1
+        yuv422[:, 1::4] = U_sub       # U (shared)
+        yuv422[:, 2::4] = Y[:, 1::2]  # Y2
+        yuv422[:, 3::4] = V_sub       # V (shared)   
+        yuv422.tofile(output_name)  # Saves raw YUV422 data
+        print("Image saved in:", output_name)
+        return yuv422
+        
     def raw8_to_rgb1(self, input_name=None, output_name=None):
         return self.raw8_to_rgbx(input_name, output_name, 1)
 
@@ -251,6 +275,40 @@ class ImageDecoder(object):
             img[i] = tmp
             pos = (pos + 1) % 3
         return img
+
+    def rgb_apply_static_wb_uint8(self, _img: np.ndarray):
+        assert(_img.dtype == np.uint8), "Image must be uint8"
+        img = _img.copy().flatten()
+        wb = np.array([1.538, 1.0, 1.587])
+        pos = 0
+        uint8_range = np.iinfo(np.uint8)
+        for i, px in enumerate(img):
+            tmp = (wb[pos] * (px))
+            tmp = tmp.clip(uint8_range.min, uint8_range.max)
+            tmp = tmp.astype(np.uint8)
+            img[i] = tmp
+            pos = (pos + 1) % 3
+        img = img.reshape(_img.shape)
+        return img
+    
+    # ------------------ YUV ------------------
+    def yuv422_to_png(self, input_name=None, output_name=None):
+        assert self.channels == 2, "This method is only for YUV images"
+        img = self._imgread(input_name)
+        img_pil = Image.fromarray(img)
+        if output_name is None:
+            output_name = Path(input_name).with_suffix(".png")
+        img_pil.save(output_name)
+        print("Image saved in:", output_name)
+        self.last_img = img_pil
+        return img_pil
+    
+    def yuv422_to_rgb_png(self, input_name=None, output_name=None):
+        assert self.channels == 2, "This method is only for YUV images"
+        img = self._imgread(input_name)
+        img = cv2.cvtColor(img, cv2.COLOR_YUV2RGB_YUY2)
+        img_pil = Image.fromarray(img)
+        return self._imgsave(img, input_name, output_name)
     
     # ------------------ PLOT ------------------
     def plot(self, title=""):

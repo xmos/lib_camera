@@ -4,6 +4,7 @@ lib_camera change log
 2.0.0
 -----
 
+  * ADDED: RAW8 to YUV422 conversion support.
   * ADDED: On the fly downsample for raw8 to rgb888 (x1, x2, x4).
   * CHANGED: camera capture mode from streaming to single capture.
   * CHANGED: packet handler and sensor control thread are embded in ISP thread.

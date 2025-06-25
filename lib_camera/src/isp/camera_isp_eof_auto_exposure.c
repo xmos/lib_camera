@@ -9,18 +9,27 @@
 #include <xcore/assert.h>
 
 #include "camera_isp.h"
+#include "camera_utils.h"
+
+// debug options
+// (can be enabled via: -DDEBUG_PRINT_ENABLE_CAM_ISP_AE=1)
+#define DEBUG_UNIT CAM_ISP_AE 
+#include <debug_print.h>
 
 #define HIST_BIN_COUNT      (64)
 #define HIST_QUANT_BITS     (2)
 
 #define AE_MARGIN           (0.1)     // default marging for the auto exposure error
 #define AE_INIT_EXPOSURE    (35)      // initial exposure value
+#define AE_MIN_EXPOSURE     (1)       // minimum value for exposure
+#define AE_MAX_EXPOSURE     (80)      // maximum value for exposure
 #define AE_DONE             (0)       // done flag for auto exposure
 
 typedef enum {
     CHANNEL_RED = 0,
     CHANNEL_GREEN = 1,
     CHANNEL_BLUE = 2,
+    CHANNEL_Y = CHANNEL_RED,
 } channel_order_t;
 
 typedef struct {
@@ -52,10 +61,83 @@ typedef struct {
 
 
 static
+float stats_compute_mean_skewness(statistics_t* stats)
+{
+    float mean = \
+        stats->stats_red.skewness + \
+        stats->stats_green.skewness + \
+        stats->stats_blue.skewness;
+    mean /= 3.0;
+    return mean;
+}
+
+static 
+int8_t csign(float x) {
+  return (x > 0) - (x < 0);
+}
+
+static
+uint8_t AE_compute_new_exposure(float exposure, float skewness)
+{
+    static float a = AE_MIN_EXPOSURE;     // minimum value for exposure
+    static float b = AE_MAX_EXPOSURE;    // maximum value for exposure
+    static float fa = -1.0;   // minimimum skewness
+    static float fb = 1.0;    // maximum skewness
+    // static int count = 0;
+    float c = (float)exposure;
+    float fc = skewness;
+
+    if (csign(fc) == csign(fa)) {
+        a = c; fa = fc;
+    }
+    else {
+        b = c; fb = fc;
+    }
+    c = b - fb * ((b - a) / (fb - fa));
+    return c;
+}
+
+static inline
+uint8_t AE_is_adjusted(float sk)
+{
+    return (sk < AE_MARGIN && sk > -AE_MARGIN) ? 1 : 0;
+}
+
+static
+unsigned AE_compute_exposure(
+    statistics_t* global_stats)
+{
+    // Initial exposure
+    static unsigned new_exp = AE_INIT_EXPOSURE;
+    static unsigned skip_ae_control = 0; // if too dark for a certain frames, skip AE control
+
+    // Compute skewness
+    float sk = stats_compute_mean_skewness(global_stats);
+    debug_printf("AE: skewness (100): %d, exposure: %d\n", (int)(100*sk), new_exp);
+
+    // Compute new exposure
+    if (AE_is_adjusted(sk)) {
+        return AE_DONE;
+    }
+    else {
+        new_exp = AE_compute_new_exposure((float)new_exp, sk); // new_exp is in [1, 80]
+        if (new_exp > AE_MAX_EXPOSURE) { // Skip AE control if too dark
+            skip_ae_control++;
+            if (skip_ae_control > 5) {
+                skip_ae_control = 0;
+                debug_printf("\nskipping AE control, too dark\n");
+                return AE_DONE;
+            }
+        }
+    }
+    return new_exp;
+}
+
+static
 void stats_simple(
     channel_histogram_t* histogram,
     channel_stats_t* stats,
-    const float inv_img_size)
+    float inv_img_size)
 {
     // Calculate the histogram
     uint8_t temp_min = 0;
@@ -88,7 +170,7 @@ static
 void stats_skewness(
     channel_histogram_t* histogram,
     channel_stats_t* stats,
-    const float inv_img_size)
+    float inv_img_size)
 {
     const float zk_values[] = {
       -1.000000, -0.907753, -0.821362, -0.740633, -0.665375, -0.595396,
@@ -112,12 +194,14 @@ void stats_skewness(
     stats->skewness = skew * inv_img_size;
 }
 
-static inline
+static
 void stats_compute_stats(
     statistics_t* stats,
     histograms_t* histograms,
-    const float inv_img_size)
+    image_cfg_t* image)
 {
+    float inv_img_size = (1.0f) / (image->width * image->height);
+
     stats_simple(&histograms->histogram_red, &stats->stats_red, inv_img_size);
     stats_simple(&histograms->histogram_green, &stats->stats_green, inv_img_size);
     stats_simple(&histograms->histogram_blue, &stats->stats_blue, inv_img_size);
@@ -127,136 +211,79 @@ void stats_compute_stats(
     stats_skewness(&histograms->histogram_blue, &stats->stats_blue, inv_img_size);
 }
 
-static inline
-float stats_compute_mean_skewness(statistics_t* stats)
-{
-    float mean = \
-        stats->stats_red.skewness + \
-        stats->stats_green.skewness + \
-        stats->stats_blue.skewness;
-    mean /= 3.0;
-    return mean;
-}
-
-static inline
-int32_t csign(float x)
-{
-    int32_t s, e; // sign, exp
-    asm volatile("fsexp %0, %1, %2" : "=r"(s),  "=r"(e) : "r"(x));
-    return s;
-}
-
-static
-uint8_t AE_compute_new_exposure(float exposure, float skewness)
-{
-    static float a = 1.0;     // minimum value for exposure
-    static float fa = -1.0;   // minimimum skewness
-    static float b = 80.0;    // maximum value for exposure
-    static float fb = 1.0;    // minimum skewness
-    static int count = 0;
-    float c = exposure;
-    float fc = skewness;
-
-    if (csign(fc) == csign(fa)) {
-        a = c; fa = fc;
-    }
-    else {
-        b = c; fb = fc;
-    }
-    c = b - fb * ((b - a) / (fb - fa));
-
-    // each X samples, restart AE algorithm
-    if (count < 5) {
-        count = count + 1;
-    }
-    else {
-        // restart auto exposure
-        count = 0; a = 0; fa = -1; b = 80; fb = 1;
-    }
-    return c;
-}
-
-static inline
-uint8_t AE_is_adjusted(float sk)
-{
-    return (sk < AE_MARGIN && sk > -AE_MARGIN) ? 1 : 0;
-}
-
-static
-uint8_t AE_compute_exposure(
-    statistics_t* global_stats)
-{
-    // Initial exposure
-    static uint8_t new_exp = AE_INIT_EXPOSURE;
-    static uint8_t skip_ae_control = 0; // if too dark for a certain frames, skip AE control
-
-    // Compute skewness
-    float sk = stats_compute_mean_skewness(global_stats);
-
-    // Compute new exposure
-    if (AE_is_adjusted(sk)) {
-        return AE_DONE;
-    }
-    else {
-        new_exp = AE_compute_new_exposure((float)new_exp, sk); // new_exp is in [1, 80]
-        if (new_exp > 70) { // Skip AE control if too dark
-            skip_ae_control++;
-            if (skip_ae_control > 5) {
-                skip_ae_control = 0;
-                return AE_DONE;
-            }
-        }
-    }
-    return new_exp;
-}
-
-
 static
 void stats_compute_hist_channel(
     channel_histogram_t* hist,
     image_cfg_t* image,
-    channel_order_t channel)
+    channel_order_t chan_start)
 {
-    //TODO compute directly RGB histogram
-    xassert(image->channels == 3 && "only RGB image supported");
     const uint32_t img_size = image->size;
     const int8_t* pix = (int8_t*)image->ptr;
+    const unsigned channels = image->channels;
     int16_t val = 0;
-    for (uint32_t k = channel; k < img_size; k+=3) {
+    for (uint32_t k = chan_start; k < img_size; k+=channels) {
         val = pix[k];
         val += 128; // convert from int8_t to uint8_t
+        val = (val < 0) ? 0 : (val > 255) ? 255 : val;
         val >>= HIST_QUANT_BITS;
         hist->bins[val]++;
     }
 }
 
-static inline
+static 
 void stats_compute_histograms(
     histograms_t* histograms,
     image_cfg_t* image)
 {
-    stats_compute_hist_channel(&histograms->histogram_red, image, CHANNEL_RED);
-    stats_compute_hist_channel(&histograms->histogram_green, image, CHANNEL_GREEN);
-    stats_compute_hist_channel(&histograms->histogram_blue, image, CHANNEL_BLUE);
+    channel_order_t chans[3];
+    unsigned img_num_channels = image->channels;
+    switch (img_num_channels) {
+        case 3:
+            chans[0] = CHANNEL_RED;
+            chans[1] = CHANNEL_GREEN;
+            chans[2] = CHANNEL_BLUE;
+            break;
+        case 2:
+            chans[0] = CHANNEL_Y;
+            chans[1] = CHANNEL_Y;
+            chans[2] = CHANNEL_Y;
+            break;
+        default:
+            xassert(0); // unsupported channel format
+            break;
+    }
+    stats_compute_hist_channel(&histograms->histogram_red, image, chans[0]);
+    stats_compute_hist_channel(&histograms->histogram_green, image, chans[1]);
+    stats_compute_hist_channel(&histograms->histogram_blue, image, chans[2]);
 }
 
 
-uint8_t camera_isp_auto_exposure(image_cfg_t* image)
+static
+void stats_reset(
+    histograms_t* histograms,
+    statistics_t* stats)
 {
-    static histograms_t histograms;
-    static statistics_t statistics;
-    static uint8_t ae_value = 1;
+    memset(histograms, 0, sizeof(histograms_t));
+    memset(stats, 0, sizeof(statistics_t));
+}
 
+unsigned camera_isp_auto_exposure(image_cfg_t* image)
+{   
+    static unsigned ae_value = 1;
     if (ae_value == AE_DONE) {
         return AE_DONE;
     }
+    
+    // init histograms and statistics
+    histograms_t histograms;
+    statistics_t statistics;
+    stats_reset(&histograms, &statistics);
 
     // compute histograms
     stats_compute_histograms(&histograms, image);
-
+        
     // compute statistics
-    const float inv_img_size = 1.0f / (image->width * image->height);
-    stats_compute_stats(&statistics, &histograms, inv_img_size);
+    stats_compute_stats(&statistics, &histograms, image);
 
     // compute auto exposure
     ae_value = AE_compute_exposure(&statistics);
