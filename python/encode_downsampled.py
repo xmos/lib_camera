@@ -1,4 +1,4 @@
-# Copyright 2023-2024 XMOS LIMITED.
+# Copyright 2023-2025 XMOS LIMITED.
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 import argparse
@@ -6,14 +6,14 @@ import numpy as np
 from PIL import Image
 
 
-def encode_downsampled_image(input_name=None, width=160, height=120, img_dtype="uint8"):
+def encode_downsampled_image(input_name=None, width=160, height=120, img_dtype="uint8", output_name=None):
     # this takes an image in png, jpg, etc using pillow
     # then it propduce a binary file with the image
     # the image size is width x height
     # the image is in RGB format
     # the image is in img_dtype format
 
-    img = Image.open(input_name)
+    img = Image.open(input_name).convert('RGB')
     img = img.resize((width, height))
     img = np.array(img)
 
@@ -26,12 +26,15 @@ def encode_downsampled_image(input_name=None, width=160, height=120, img_dtype="
     else:
         raise ValueError("dtype not supported")
 
-    output_name = input_name.split(".")[0] + img_dtype + ".bin"
+    if output_name is None:
+        output_name = input_name.split(".")[0] + img_dtype + ".bin"
+    
     with open(output_name, "wb") as f:
         f.write(buffer)
         
     # print a complete message
     print(f"Image {input_name} was downsampled to {output_name} with size {width}x{height} and dtype {img_dtype}")
+    print(f"Buffer len: {len(buffer)}")
     
 
 if __name__ == "__main__":
@@ -40,6 +43,9 @@ if __name__ == "__main__":
     argparse.add_argument("--width", help="image width", default=160, type=int)
     argparse.add_argument("--height", help="image height", default=120, type=int)
     argparse.add_argument("--dtype", help="image dtype", default="uint8")
+    argparse.add_argument("--output", help="image output file name", default=None)
     args = argparse.parse_args()
-    encode_downsampled_image(args.input, args.width, args.height, args.dtype)
+    
+    encode_downsampled_image(args.input, args.width, args.height, args.dtype, args.output)
+    
     print("done")

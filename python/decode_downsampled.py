@@ -1,4 +1,4 @@
-# Copyright 2023-2024 XMOS LIMITED.
+# Copyright 2023-2025 XMOS LIMITED.
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 """
@@ -32,7 +32,7 @@ def decode_downsampled_image(input_name="capture.bin", width=160, height=120, im
     else:
         raise ValueError(f"Invalid dtype: {img_dtype}")
     
-    img = buffer.reshape(height, width, 3)
+    img = buffer.reshape(height, width, 1)
 
     if plot:
         # show image
@@ -41,7 +41,7 @@ def decode_downsampled_image(input_name="capture.bin", width=160, height=120, im
         plt.show()
 
         # show histograms
-        show_histogram_by_channel(img, 3000)
+        #show_histogram_by_channel(img, 3000)
     return img
 
 

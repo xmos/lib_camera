@@ -1,4 +1,4 @@
-// Copyright 2020-2023 XMOS LIMITED.
+// Copyright 2020-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #pragma once
@@ -8,4 +8,3 @@
 
 // Prevents Unity from taking control of malloc() and free()
 #define UNITY_FIXTURE_NO_EXTRAS  (1)
-

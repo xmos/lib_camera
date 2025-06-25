@@ -1,0 +1,4 @@
+!imgs/*.raw
+imgs/*.rgb
+imgs/*.bin
+imgs/*.zip

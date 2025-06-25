@@ -1,34 +1,33 @@
-@Library('xmos_jenkins_shared_library@v0.28.0')
+@Library('xmos_jenkins_shared_library@v0.38.0') _
 
 def runningOn(machine) {
   println "Stage running on:"
   println machine
 }
 
-def buildApps(appList) {
-  appList.each { app ->
-    sh "cmake -G 'Unix Makefiles' -S ${app} -B ${app}/build"
-    sh "xmake -C ${app}/build -j\$(nproc)"
-  }
-}
-
-def buildDocs(String zipFileName) {
-  withVenv {
-    sh 'pip install git+ssh://git@github.com/xmos/xmosdoc@v5.1.1'
-    sh 'xmosdoc'
-    zip zipFile: zipFileName, archive: true, dir: "doc/_build"
-  }
-}
 
 getApproval()
 pipeline {
   agent none
-
+  environment {
+    REPO = 'lib_camera'
+    REPO_NAME = "lib_camera"
+  } // environment
   parameters {
     string(
       name: 'TOOLS_VERSION',
-      defaultValue: '15.2.1',
+      defaultValue: '15.3.1',
       description: 'The XTC tools version'
+    )
+    string(
+      name: 'XMOSDOC_VERSION',
+      defaultValue: 'v7.1.0',
+      description: 'The xmosdoc version'
+    )
+    string(
+      name: 'INFR_APPS_VERSION',
+      defaultValue: 'develop',
+      description: 'The infr_apps version'
     )
   } // parameters
   options {
@@ -37,107 +36,97 @@ pipeline {
     buildDiscarder(xmosDiscardBuildSettings(onlyArtifacts=false))
   } // options
 
-  stages {
-    stage('Builds') {
-      parallel {
-        stage ('Build and Unit test') {
-          agent {
-            label 'xcore.ai'
-          }
-          stages {
-            stage ('Build') {
-              steps {
-                runningOn(env.NODE_NAME)
+  stages{
+  stage('CI') {
+    parallel {
+      stage ('Build & Test') {
+        agent {label 'xcore.ai'}
+        stages {
+          stage('Checkout') {
+            steps {
+              runningOn(env.NODE_NAME)
+              dir(REPO)
+              {
+                checkoutScmShallow()
+                createVenv(reqFile: "requirements.txt")
+              }
+            } // steps
+          } // Checkout
 
-                sh 'git clone -b develop git@github.com:xmos/xcommon_cmake'
-                sh 'git -C xcommon_cmake rev-parse HEAD'
+          stage('Examples build') {
+            steps{
+              dir("${REPO}/examples") {
+                withVenv {
+                  xcoreBuild()
+                }
+              }
+            }
+          } // Examples build
 
-                dir('lib_camera') {
-                  checkout scm
-                  // build examples and tests
+          stage('Tests build') {
+            steps{
+              dir("${REPO}/tests") {
+                withVenv {
+                  xcoreBuild()
+                }
+              }
+            }
+          } // Tests build
+
+          stage("Lib checks"){ // Needs to be placed after build stage for dependancies to be built
+            steps {
+              dir("${REPO}") {
+                withVenv {
+                  runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
+                }
+              }
+            }
+          } // Lib checks
+
+          stage('Unit tests') {
+            steps {
+              dir("${REPO}/tests/unit_tests") {
+                withTools(params.TOOLS_VERSION) {
+                  sh 'xsim bin/unit_tests.xe'
+                }
+              }
+            }
+          } // Unit tests
+
+          stage('ISP tests') {
+            steps {
+              dir('lib_camera/tests/isp') {
+                withVenv {
                   withTools(params.TOOLS_VERSION) {
-                    withEnv(["XMOS_CMAKE_PATH=${WORKSPACE}/xcommon_cmake"]) {
-                      buildApps([
-                        "examples/take_picture_downsample",
-                        "examples/take_picture_local",
-                        "examples/take_picture_raw",
-                        "tests/hardware_tests/test_timing",
-                        "tests/unit_tests"
-                      ]) // buildApps
-                    } // withEnv
+                    sh 'pytest -n auto'
                   } // withTools
-                } // dir
-              } // steps
-            } // Build
-
-            stage('Create Python enviroment') {
-              steps {
-                // Clone infrastructure repos
-                sh "git clone git@github.com:xmos/infr_apps"
-                sh "git clone git@github.com:xmos/infr_scripts_py"
-                // can't use createVenv on the top level yet
-                dir('lib_camera') {
-                  createVenv('requirements.txt')
-                  withVenv {
-                    sh "pip install -e ../infr_scripts_py"
-                    sh "pip install -e ../infr_apps"
-                  }
+                  archiveArtifacts artifacts: "test_results.csv"
+                  archiveArtifacts artifacts: "imgs/images.zip"
                 }
               }
-            } // Create Python enviroment
-
-            stage('Source check') {
-              steps {
-                // bit weird for now but should changed after the next xjsl release
-                dir('lib_camera') {
-                  withVenv {
-                    dir('tests/lib_checks') {
-                      sh "pytest -s"
-                    }
-                  }
-                }
-              }
-            } // Source check
-
-            stage('Unit tests') {
-              steps {
-                dir('lib_camera/tests/unit_tests') {
-                  withTools(params.TOOLS_VERSION) {
-                    sh 'xrun --id 0 --xscope bin/test_camera.xe'
-                  }
-                }
-              }
-            } // Unit tests
-
-          } // stages
-          post {
-            cleanup {
-              cleanWs()
             }
-          }
-        } // Build and Unit test
-
-        stage ('Build Documentation') {
-          agent {
-            label 'documentation'
-          }
-          steps {
-            runningOn(env.NODE_NAME)
-            dir('lib_camera') {
-              checkout scm
-              createVenv("requirements.txt")
-              withTools(params.TOOLS_VERSION) {
-                buildDocs("lib_camera_docs.zip")
-              } // withTools
-            } // dir
-          } // steps
-          post {
-            cleanup {
-              cleanWs()
+            post {cleanup {xcoreCleanSandbox()}} // post
+          } // ISP tests 
+        } // stages
+      } // Build & Test
+      
+      stage('Documentation') {
+        agent {label 'documentation && docker'}
+        steps{
+          runningOn(env.NODE_NAME)
+          dir("${REPO}") {
+            checkoutScmShallow()
+            createVenv(reqFile: "requirements.txt")
+            withVenv {
+              buildDocs()
             }
-          }
-        } // Build Documentation
-      } // parallel
-    } // Builds
+          } 
+        }
+        post {cleanup {xcoreCleanSandbox()}} // post
+      } // Documentation
+      
+    } // parallel
+  } // CI
   } // stages
+  
 } // pipeline

@@ -1,0 +1,15 @@
+@startuml
+!include puml-theme-xmos.puml
+
+:RAW8 RGGB Data;
+:demosaic/downsample;
+:histograms/statistics;
+:AE/AWB;
+:(Optional)
+- Crop
+- Resize
+- Rotate
+- dtype conv;
+:output_image;
+
+@enduml
