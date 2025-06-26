@@ -41,6 +41,7 @@ pipeline {
     parallel {
       stage ('Build & Test') {
         agent {label 'xcore.ai'}
+        post {cleanup {xcoreCleanSandbox()}}
         stages {
           stage('Checkout') {
             steps {
@@ -83,6 +84,7 @@ pipeline {
             }
           } // Lib checks
 
+
           stage('Unit tests') {
             steps {
               dir("${REPO}/tests/unit_tests") {
@@ -105,13 +107,20 @@ pipeline {
                 }
               }
             }
-            post {cleanup {xcoreCleanSandbox()}} // post
           } // ISP tests 
+        
+          stage("Archive sandbox"){
+            steps {
+              archiveSandbox(REPO_NAME)
+            }
+          } // Archive sandbox
         } // stages
+        
       } // Build & Test
       
       stage('Documentation') {
-        agent {label 'documentation && docker'}
+        agent {label 'documentation'}
+        post {cleanup {xcoreCleanSandbox()}}
         steps{
           runningOn(env.NODE_NAME)
           dir("${REPO}") {
@@ -122,15 +131,9 @@ pipeline {
             }
           } 
         }
-        post {cleanup {xcoreCleanSandbox()}} // post
       } // Documentation
 
-      stage("Archive sandbox"){
-        steps {
-          archiveSandbox(REPO_NAME)
-        }
-      } // Archive sandbox
-      
+
     } // parallel
   } // CI
   } // stages
