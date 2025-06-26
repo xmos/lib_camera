@@ -41,19 +41,19 @@ std r4, r5, sp[0]
 
 ldc r11, 0x200
 { ldc _16, 16             ; vsetc r11               }
+{                         ; vclrdr                  }
 
 .loop_top:
 
   // make block 2x16 is stack, then load to vC
-  { mov r11, src            ; ldaw r5, sp[STACK_VEC]  }
-  { add r11, r11, lns       ; vldr r11[0]             }
-  { add r5, r5, _16         ; vstr r5[0]              }
-  {                         ; vldr r11[0]             }
-  {                         ; vstr r5[0]              }
+  { mov r5, src             ; ldaw r11, sp[STACK_VEC] }
+  { add r5, r5, lns         ; vldc r5[0]              }
+  { add r11, r11, _16       ; vstc r11[0]             }
+  { add src, src, _16       ; vldc r5[0]              }
+  { sub r11, r11, _16       ; vstc r11[0]             }
 
-  { sub r5, r5, _16         ; vclrdr                  }
-  { ldc _32, 32             ; vldc r5[0]              }
-
+  { ldc _32, 32             ; vldc r11[0]             }
+  
   // unrolled loop
   ldaw r11, cp[kernels_yuv422]
   { vlmaccr  r11[0]         ; add r11, r11, _32       }
@@ -78,8 +78,8 @@ ldc r11, 0x200
   { mkmsk r5, _16           ; vladd r11[0]            }
   vstrpv dst[0], r5  // result
 
-  { add dst, dst, _16       ; sub r2, r2, 1           }
-  { add src, src, _16       ; bt r2, .loop_top        }
+  { sub r2, r2, 1           ; vclrdr                  }
+  { add dst, dst, _16       ; bt r2, .loop_top        }
 
 ldd r4, r5, sp[0]
 
