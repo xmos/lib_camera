@@ -124,6 +124,12 @@ pipeline {
         }
         post {cleanup {xcoreCleanSandbox()}} // post
       } // Documentation
+
+      stage("Archive sandbox"){
+        steps {
+          archiveSandbox(REPO_NAME)
+        }
+      } // Archive sandbox
       
     } // parallel
   } // CI
