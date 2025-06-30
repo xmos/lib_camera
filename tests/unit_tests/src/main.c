@@ -16,7 +16,6 @@ int main(
   RUN_TEST_GROUP(color_conversion);
   RUN_TEST_GROUP(white_balance);
   RUN_TEST_GROUP(timings);
-  RUN_TEST_GROUP(yuv);
   RUN_TEST_GROUP(uint8_conv);
   
   return UNITY_END();

@@ -19,32 +19,9 @@
 extern void raw8_block_to_yuv422(
     int8_t *dst,
     int8_t *src,
+    unsigned img_width,
     unsigned line_size
 );
-
-static inline 
-void vpu_set_int8_mode(){
-    asm volatile("vclrdr");
-    asm volatile("ldc r11, 0x200");
-    asm volatile("vsetc r11");
-}
-
-static
-void block_raw8_to_yuv422_vpu(
-    int8_t *out_ptr, 
-    int8_t input_rows[2][MODE_YUV2_MAX_SIZE], 
-    unsigned img_width)
-{    
-    const unsigned steps = 16;
-    const unsigned loop_size = ((img_width << 1) - 4);
-    const unsigned line_size = MODE_YUV2_MAX_SIZE;
-    vpu_set_int8_mode();
-    for (unsigned x = 0; x <= (loop_size); x += steps) {
-        int8_t *src = (int8_t *)&input_rows[0][x];
-        int8_t *dst = &out_ptr[x];
-        raw8_block_to_yuv422(dst, src, line_size);
-    }
-}
 
 void camera_isp_raw8_to_yuv2(image_cfg_t* image, int8_t* data_in, unsigned sensor_ln){
     unsigned x1 = image->config->x1;
@@ -60,6 +37,6 @@ void camera_isp_raw8_to_yuv2(image_cfg_t* image, int8_t* data_in, unsigned senso
     if(buff_ln == 1) {
         unsigned img_ln = (sensor_ln - y1 - 1) >> 1;
         int8_t *out_ptr = img_ptr + ((img_ln * img_width)) * (img_channels);
-        block_raw8_to_yuv422_vpu(out_ptr, input_rows, img_width);
+        raw8_block_to_yuv422(out_ptr, &input_rows[0][0], img_width, MODE_YUV2_MAX_SIZE);
     }
 }

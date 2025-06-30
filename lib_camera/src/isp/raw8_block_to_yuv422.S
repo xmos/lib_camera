@@ -1,88 +1,89 @@
 // Copyright 2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-/******************************************************
+/*
 
  void raw8_block_to_yuv422(
     int8_t *dst,
     int8_t *src,
+    unsigned img_width
     unsigned line_size
  );
 
-Descr:
- Converts a block of raw8 data to YUV422 format.
- Each two horizontal RAW8 pixels RGGB are converted to a single YUYV pixel pair (Y0 U Y1 V). 
+Note: 
+Coefficient derive from (BT.601) in fix point, adding compensation for white balancing. 
 
-Parameters:
-   dst       - destination pointer for YUV422 data (1x8x2 YU, YV block)
-   src       - input raw8 source pointer (2x16x1 raw8 block)
-   line_size - size of the line in bytes
+*/
 
-Note:
-    VPU has to be set to 8-bit mode before calling this function.
-    Coefficient derive from (BT.601) in fix point, adding compensation for white balancing. 
-
-********************************************************/
-
+.text
+.issue_mode dual
 
 #define FUNCTION_NAME   raw8_block_to_yuv422
-#define NSTACKWORDS     2
+#define NSTACKWORDS     14
+#define STACK_VEC       (NSTACKWORDS - 12)
 #define dst             r0
 #define src             r1
-#define lns             r2 // line size
-#define msk             r3
+#define img_width       r2
+#define lns             r3 // line size
 
-#define _16             r4      
+#define _16             r4
 #define _32             r5
 
-.section .text
-.issue_mode dual
-.align 4
+.align 16
 .globl FUNCTION_NAME
 .type FUNCTION_NAME, @function
 .cc_top FUNCTION_NAME.func, FUNCTION_NAME
 
 FUNCTION_NAME:
-    DUALENTSP_lu6   NSTACKWORDS
-    // init
-    std r4, r5, sp[0]
-    // make block 2x16 in dst, load dst to vc
-    {ldc _32, 32; ldc _16, 16}
-    mkmsk msk, _16
-    mov r11, src
-    vldr r11[0]
-    vstrpv dst[0], msk
-    {add dst, dst, _16; add r11, r11, lns}
-    vldr r11[0]
-    vstrpv dst[0], msk
-    {vclrdr; sub dst, dst, _16}
-    vldc dst[0]    
-    // loop
-    ldaw r11, cp[kernels_yuv422]
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    {vlmaccr  r11[0]; add r11, r11, _32}
-    ldaw r11, cp[kernels_yuv422_sat]
-    vlsat r11[0]
-    ldaw r11, cp[kernels_yuv422_adds]
-    vladd r11[0]
-    vstrpv dst[0], msk  // result
-    // restore regs
-    ldd  r4, r5, sp[0]
-    RETSP_lu6 NSTACKWORDS
+{ shr r2, img_width, 3    ; dualentsp NSTACKWORDS   }
+
+std r4, r5, sp[0]
+
+ldc r11, 0x200
+{ ldc _16, 16             ; vsetc r11               }
+{                         ; vclrdr                  }
+
+.loop_top:
+
+  // make block 2x16 is stack, then load to vC
+  { mov r5, src             ; ldaw r11, sp[STACK_VEC] }
+  { add r5, r5, lns         ; vldc r5[0]              }
+  { add r11, r11, _16       ; vstc r11[0]             }
+  { add src, src, _16       ; vldc r5[0]              }
+  { sub r11, r11, _16       ; vstc r11[0]             }
+
+  { ldc _32, 32             ; vldc r11[0]             }
+  
+  // unrolled loop
+  ldaw r11, cp[kernels_yuv422]
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  { vlmaccr  r11[0]         ; add r11, r11, _32       }
+  ldaw r11, cp[kernels_yuv422_sat]
+  {                         ; vlsat r11[0]            }
+  ldaw r11, cp[kernels_yuv422_adds]
+  { mkmsk r5, _16           ; vladd r11[0]            }
+  vstrpv dst[0], r5  // result
+
+  { sub r2, r2, 1           ; vclrdr                  }
+  { add dst, dst, _16       ; bt r2, .loop_top        }
+
+ldd r4, r5, sp[0]
+
+retsp NSTACKWORDS
 
 .cc_bottom FUNCTION_NAME.func
 .set    FUNCTION_NAME.nstackwords, NSTACKWORDS; .globl  FUNCTION_NAME.nstackwords
