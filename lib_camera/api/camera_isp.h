@@ -124,13 +124,6 @@ void camera_isp_thread(
  */
 void camera_isp_coordinates_compute(image_cfg_t* image_cfg);
 
-/**
- * @brief prints the coordinates of the image_cfg
- *
- * @param image_cfg pointer to the image configuration structure.
- */
-void camera_isp_coordinates_print(image_cfg_t* image_cfg);
-
 
 // ---------------------------- RAW to RGB -------------------------------
 
