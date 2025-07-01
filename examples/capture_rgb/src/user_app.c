@@ -75,7 +75,6 @@ void user_app(chanend_t c_cam) {
     config.offset_x = 1.8; 
     config.offset_y = 1.8; 
     camera_isp_coordinates_compute(&image);
-    camera_isp_coordinates_print(&image);
     */
     exit(0);
 }

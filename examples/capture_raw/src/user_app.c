@@ -78,7 +78,6 @@ void user_app(chanend_t c_cam) {
     config.offset_x = 0.5; // 640*0.5 + 400 (width) = 720 > 640 !!
     config.offset_y = 0.5; // 480*0.5 + 300 (height) = 540 > 480 !!
     camera_isp_coordinates_compute(&image);
-    camera_isp_coordinates_print(&image);
     */
     exit(0);
 }
