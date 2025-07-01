@@ -13,13 +13,13 @@ void camera_int8_to_uint8_fast(
 #define NSTACKWORDS     4
 #define dst             r0
 #define src             r1
-#define len             r2
-#define rem             r3
+#define sz              r2
+#define len             r3
 
 #define tmp1            r4      
 #define tmp2            r5
 #define idx             r6
-#define aux             r7
+//#define aux             r7
 
 #define mask            r11
 
@@ -39,26 +39,24 @@ FUNCTION_NAME:
     DUALENTSP_lu6   NSTACKWORDS
     std r4, r5, sp[0]
     std r6, r7, sp[1]
-    {ldc idx, 0x0; ldc aux, 0x7}
-    {and rem, len, aux; shr len, len, 3}
+    {mov len, sz                ; ldc idx, 0x0      }
+    {shr len, len, 3            ;                   }
     ldw mask, cp[cp_xor]
-.do_loop:
+.do_loop:                                               // do xor of 8 bytes
     ldd tmp1, tmp2, src[idx]
     xor tmp1, tmp1, mask
     xor tmp2, tmp2, mask
     std tmp1, tmp2, dst[idx]
-    {add idx, idx, 1; sub len, len, 1}
-    bt  len, .do_loop
+    {add idx, idx, 1            ; sub len, len, 1   }
+    {ldc tmp1, 0x7              ; bt  len, .do_loop }
 // prepare remainder
-    ldc aux, 0x80
-    shl idx, idx, 3
-    bf rem, .end
-.do_remainder:
-    ld8u tmp2, src[idx]
-    xor tmp2, tmp2, aux
+    {and len, sz, tmp1          ; shl idx, idx, 3   }            
+    {shr mask, mask, 24         ; bf len, .end      } // new mask = 0x80
+.do_rem:
+    {ld8u tmp2, src[idx]        ; sub len, len, 1   }
+    xor tmp2, tmp2, mask
     st8 tmp2, dst[idx]
-    {sub rem, rem, 1; add idx, idx, 1}
-    bt rem, .do_remainder
+    {add idx, idx, 1            ; bt len, .do_rem   }
 .end:
     ldd r4, r5, sp[0]
     ldd r6, r7, sp[1]
