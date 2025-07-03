@@ -180,12 +180,6 @@ void handle_expected_lines(image_cfg_t* image, int8_t* data_in) {
 
 // -------- Image Coordinates --------
 
-inline
-void camera_isp_coordinates_print(image_cfg_t* img_cfg){
-  camera_cfg_t *cfg = img_cfg->config;
-  printf("x1: %d, y1: %d, x2: %d, y2: %d\n", cfg->x1, cfg->y1, cfg->x2, cfg->y2);  
-}
-
 void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   camera_cfg_t *cfg = img_cfg->config;
 
