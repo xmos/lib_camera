@@ -19,7 +19,7 @@ void camera_int8_to_uint8_fast(
 #define tmp1            r4      
 #define tmp2            r5
 #define idx             r6
-//#define aux             r7
+#define _0x7            r7
 
 #define mask            r11
 
@@ -39,19 +39,21 @@ FUNCTION_NAME:
     DUALENTSP_lu6   NSTACKWORDS
     std r4, r5, sp[0]
     std r6, r7, sp[1]
-    {mov len, sz                ; ldc idx, 0x0      }
-    {shr len, len, 3            ;                   }
+    {ldc _0x7, 0x7              ; ldc idx, 0x0       }
+    {and tmp1, src, _0x7        ; and tmp2, dst, _0x7}
+    {mov len, sz                ; ecallt tmp1        }  // check dword alignment
+    {shr len, len, 3            ; ecallt tmp2        }
     ldw mask, cp[cp_xor]
-.do_loop:                                               // do xor of 8 bytes
+.do_loop:                                               // do xor of 8 bytes (int64)
     ldd tmp1, tmp2, src[idx]
     xor tmp1, tmp1, mask
     xor tmp2, tmp2, mask
     std tmp1, tmp2, dst[idx]
     {add idx, idx, 1            ; sub len, len, 1   }
-    {ldc tmp1, 0x7              ; bt  len, .do_loop }
+    {                           ; bt  len, .do_loop }
 // prepare remainder
-    {and len, sz, tmp1          ; shl idx, idx, 3   }            
-    {shr mask, mask, 24         ; bf len, .end      } // new mask = 0x80
+    {and len, sz, _0x7          ; shl idx, idx, 3   }            
+    {shr mask, mask, 24         ; bf len, .end      }   // new mask = 0x80
 .do_rem:
     {ld8u tmp2, src[idx]        ; sub len, len, 1   }
     xor tmp2, tmp2, mask
