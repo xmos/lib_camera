@@ -134,28 +134,76 @@ class ImageDecoder(object):
 
 
     def raw8_to_yuv422_xcore(self, input_name, output_name):
+
+        def clamp(x):
+            """Clamp the value to the range of int8"""
+            return np.int8(max(-128, min(127, x)))
+
         img = self._imgread(input_name)
-        dest_shape = (self.width // 2, self.height // 2)
-        img = cv2.cvtColor(img, cv2.COLOR_BayerBG2RGB) # to rgb
-        img = cv2.resize(img, dest_shape, interpolation=cv2.INTER_LINEAR)
-        # Do AWB uint8
-        img = self.rgb_apply_static_wb_uint8(img)
-        yuv = cv2.cvtColor(img, cv2.COLOR_RGB2YUV) # default opencv is bgr
-        # Extract Y, U, V channels
-        Y = yuv[:, :, 0]; U = yuv[:, :, 1]; V = yuv[:, :, 2]
-        # Subsample U and V channels
-        U_sub = U[:, ::2]  # Take every second U value
-        V_sub = V[:, ::2]  # Take every second V value 
-        # Interleave Y, U, and V in YUV422 format (Y1 U Y2 V)
-        h, w = Y.shape
-        yuv422 = np.zeros((h, 2*w), dtype=np.uint8)    
-        yuv422[:, 0::4] = Y[:, ::2]   # Y1
-        yuv422[:, 1::4] = U_sub       # U (shared)
-        yuv422[:, 2::4] = Y[:, 1::2]  # Y2
-        yuv422[:, 3::4] = V_sub       # V (shared)   
-        yuv422.tofile(output_name)  # Saves raw YUV422 data
+        out_size = (self.height//2, self.width)
+        img_out = np.zeros(out_size, dtype=np.int8)
+
+        a = 47
+        b = 61
+        c = 18
+        d = -27
+        e = -34
+        f = 82
+        g = 80
+        h = -43
+        i = -13
+
+        yk = 0
+        uk = 21
+        vk = 23
+
+        steps = 4
+
+        for y in range(0, self.height - 2 + 1, 2):
+            for x in range(0, self.width - 4 + 1, steps):
+                # Load 2 RAW pixels, converting from uint8 to int32
+                r0 = np.int32(img[y, x + 0]) - 128
+                g0 = np.int32(img[y, x + 1]) - 128
+                r1 = np.int32(img[y, x + 2]) - 128
+                g1 = np.int32(img[y, x + 3]) - 128
+                b0 = np.int32(img[y + 1, x + 1]) - 128
+                b1 = np.int32(img[y + 1, x + 3]) - 128
+
+                # MACCS
+                Y0 = (a * r0 + b * g0 + c * b0)
+                U0 = (d * r0 + e * g0 + f * b0)
+                V0 = (g * r0 + h * g0 + i * b0)
+                Y1 = (a * r1 + b * g1 + c * b1)
+
+                # SAT
+                Y0 = Y0 >> 7
+                U0 = U0 >> 7
+                Y1 = Y1 >> 7
+                V0 = V0 >> 7
+                
+                # ADDS
+                Y0 += yk
+                U0 += uk
+                Y1 += yk
+                V0 += vk
+
+                # Convert to int8_t
+                Y0 = clamp(Y0)
+                U0 = clamp(U0)
+                Y1 = clamp(Y1)
+                V0 = clamp(V0)
+
+                # Output
+                out_y = y // 2
+                img_out[out_y, x + 0] = Y0
+                img_out[out_y, x + 1] = U0
+                img_out[out_y, x + 2] = Y1
+                img_out[out_y, x + 3] = V0
+
+        img_out.tofile(output_name)  # Saves raw YUV422 data
+
         print("Image saved in:", output_name)
-        return yuv422
+        return img_out
 
     def raw8_to_rgb1(self, input_name=None, output_name=None):
         return self.raw8_to_rgbx(input_name, output_name, 1)
