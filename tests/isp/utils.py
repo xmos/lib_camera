@@ -131,7 +131,72 @@ class ImageDecoder(object):
         yuv422.tofile(output_name)  # Saves raw YUV422 data
         print("Image saved in:", output_name)
         return yuv422
-        
+
+
+    def raw8_to_yuv422_xcore(self, input_name, output_name):
+
+        img = self._imgread(input_name)
+        out_size = (self.height//2, self.width)
+        img_out = np.zeros(out_size, dtype=np.int8)
+
+        c_y0 = [47, 61, 18]
+        c_u0 = [-27, -34, 82]
+        c_v0 = [80, -43, -13]
+        c_y1 = c_y0 #same for now
+
+        yk = 0
+        uk = 21
+        vk = 23
+
+        steps = 4
+
+        for y in range(0, self.height - 2 + 1, 2):
+            for x in range(0, self.width - 4 + 1, steps):
+                # Load 2 RAW pixels, converting from uint8 to int32
+                r0 = np.int32(img[y, x + 0]) - 128
+                g0 = np.int32(img[y, x + 1]) - 128
+                r1 = np.int32(img[y, x + 2]) - 128
+                g1 = np.int32(img[y, x + 3]) - 128
+                b0 = np.int32(img[y + 1, x + 1]) - 128
+                b1 = np.int32(img[y + 1, x + 3]) - 128
+
+                # MACCS
+                Y0 = c_y0[0] * r0 + c_y0[1] * g0 + c_y0[2] * b0
+                U0 = c_u0[0] * r0 + c_u0[1] * g0 + c_u0[2] * b0
+                V0 = c_v0[0] * r0 + c_v0[1] * g0 + c_v0[2] * b0
+                Y1 = c_y1[0] * r1 + c_y1[1] * g1 + c_y1[2] * b1
+
+                # SAT
+                Y0 = Y0 >> 7
+                U0 = U0 >> 7
+                Y1 = Y1 >> 7
+                V0 = V0 >> 7
+                
+                # ADDS
+                Y0 += yk
+                U0 += uk
+                Y1 += yk
+                V0 += vk
+
+                # Convert to int8_t
+                info = np.iinfo(np.int8)
+                Y0 = np.clip(Y0, info.min, info.max).astype(np.int8)
+                U0 = np.clip(U0, info.min, info.max).astype(np.int8)
+                Y1 = np.clip(Y1, info.min, info.max).astype(np.int8)
+                V0 = np.clip(V0, info.min, info.max).astype(np.int8)
+
+                # Output
+                out_y = y // 2
+                img_out[out_y, x + 0] = Y0
+                img_out[out_y, x + 1] = U0
+                img_out[out_y, x + 2] = Y1
+                img_out[out_y, x + 3] = V0
+
+        img_out.tofile(output_name)  # Saves raw YUV422 data
+
+        print("Image saved in:", output_name)
+        return img_out
+
     def raw8_to_rgb1(self, input_name=None, output_name=None):
         return self.raw8_to_rgbx(input_name, output_name, 1)
 
@@ -309,7 +374,7 @@ class ImageDecoder(object):
         img = cv2.cvtColor(img, cv2.COLOR_YUV2RGB_YUY2)
         img_pil = Image.fromarray(img)
         return self._imgsave(img, input_name, output_name)
-    
+
     # ------------------ PLOT ------------------
     def plot(self, title=""):
         assert self.last_img is not None, "No image to plot"
