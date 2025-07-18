@@ -135,23 +135,14 @@ class ImageDecoder(object):
 
     def raw8_to_yuv422_xcore(self, input_name, output_name):
 
-        def clamp(x):
-            """Clamp the value to the range of int8"""
-            return np.int8(max(-128, min(127, x)))
-
         img = self._imgread(input_name)
         out_size = (self.height//2, self.width)
         img_out = np.zeros(out_size, dtype=np.int8)
 
-        a = 47
-        b = 61
-        c = 18
-        d = -27
-        e = -34
-        f = 82
-        g = 80
-        h = -43
-        i = -13
+        c_y0 = [47, 61, 18]
+        c_u0 = [-27, -34, 82]
+        c_v0 = [80, -43, -13]
+        c_y1 = c_y0 #same for now
 
         yk = 0
         uk = 21
@@ -170,10 +161,10 @@ class ImageDecoder(object):
                 b1 = np.int32(img[y + 1, x + 3]) - 128
 
                 # MACCS
-                Y0 = (a * r0 + b * g0 + c * b0)
-                U0 = (d * r0 + e * g0 + f * b0)
-                V0 = (g * r0 + h * g0 + i * b0)
-                Y1 = (a * r1 + b * g1 + c * b1)
+                Y0 = c_y0[0] * r0 + c_y0[1] * g0 + c_y0[2] * b0
+                U0 = c_u0[0] * r0 + c_u0[1] * g0 + c_u0[2] * b0
+                V0 = c_v0[0] * r0 + c_v0[1] * g0 + c_v0[2] * b0
+                Y1 = c_y1[0] * r1 + c_y1[1] * g1 + c_y1[2] * b1
 
                 # SAT
                 Y0 = Y0 >> 7
@@ -188,10 +179,11 @@ class ImageDecoder(object):
                 V0 += vk
 
                 # Convert to int8_t
-                Y0 = clamp(Y0)
-                U0 = clamp(U0)
-                Y1 = clamp(Y1)
-                V0 = clamp(V0)
+                info = np.iinfo(np.int8)
+                Y0 = np.clip(Y0, info.min, info.max).astype(np.int8)
+                U0 = np.clip(U0, info.min, info.max).astype(np.int8)
+                Y1 = np.clip(Y1, info.min, info.max).astype(np.int8)
+                V0 = np.clip(V0, info.min, info.max).astype(np.int8)
 
                 # Output
                 out_y = y // 2
