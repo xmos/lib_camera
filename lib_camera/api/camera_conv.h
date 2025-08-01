@@ -116,8 +116,8 @@ void camera_int8_to_uint8(
  * Data can be updated in-place. 
  * This function requires input and output arrays to be double word aligned
  *
- * @param output    Array of uint8_t that will contain the output
- * @param input     Array of int8_t that contains the input
+ * @param output    uint8_t output pointer
+ * @param input     int8_t input pointer
  * @param length    Length of the input and output arrays
  */
 void camera_int8_to_uint8_fast(
