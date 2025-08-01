@@ -64,6 +64,9 @@ def test_yuv(file_in, in_size):
     # prepare output files
     file_tmp = out_folder / out_filename.with_suffix(f".tmp.bin")
 
+    file_ref_png = out_folder / out_filename.with_suffix(".ref.png")
+    file_ref_bin = out_folder / out_filename.with_suffix(".ref.bin")
+
     file_py_png = out_folder / out_filename.with_suffix(".py.png")
     file_py_bin = out_folder / out_filename.with_suffix(".py.bin")
 
@@ -73,20 +76,30 @@ def test_yuv(file_in, in_size):
     # prepare xcore input
     InDec.raw8_resize(file_in, file_tmp, InSize)
 
-    # raw to yuv [python]
+    # raw to yuv [opencv]
+    ref_name = out_filename.with_suffix(".ref.png")
     OutDec.dtype = np.uint8
-    InDec.raw8_to_yuv422(file_in, file_py_bin)
+    InDec.raw8_to_yuv422(file_in, file_ref_bin)
+    img_ref = OutDec.yuv422_to_rgb_png(file_ref_bin, file_ref_png)
+
+    # raw to yuv [python]
+    OutDec.dtype = np.int8
+    InDec.raw8_to_yuv422_xcore(file_in, file_py_bin)
     img_py = OutDec.yuv422_to_rgb_png(file_py_bin, file_py_png)
-    
+
     # raw to yuv [xcore]
     OutDec.dtype = np.int8
     run_xcore(file_tmp, file_xc_bin, 2, InSize)
     img_xc = OutDec.yuv422_to_rgb_png(file_xc_bin, file_xc_png)
 
     # compare images
-    res = met.get_metric(file_py_png, img_py, file_xc_png, img_xc, check=True)
-    print(res)
-    
+    res_py = met.get_metric(ref_name, img_ref, file_py_png, img_py, check=True)
+    res_xc = met.get_metric(ref_name, img_ref, file_xc_png, img_xc, check=True)
+    met.get_cross_metrics(res_py, res_xc, check=True)
+
+    print(res_py)
+    print(res_xc)
+
 if __name__ == "__main__":
     file_in = list(test_files)[0]
     in_size = 128
