@@ -118,7 +118,7 @@ void camera_int8_to_uint8(
  *
  * @param output    uint8_t output pointer
  * @param input     int8_t input pointer
- * @param length    Length of the input and output arrays
+ * @param length    Length of the input and output arrays in bytes
  */
 void camera_int8_to_uint8_fast(
     uint8_t * output,

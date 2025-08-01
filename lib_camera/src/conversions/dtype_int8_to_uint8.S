@@ -1,3 +1,5 @@
+// Copyright 2025 XMOS LIMITED.
+// This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 /*
 
@@ -7,9 +9,21 @@ void camera_int8_to_uint8_fast(
     unsigned size
 );
 
+Description:
+    
+    Converts an array of int8_t values to uint8_t values by applying a bitwise XOR operation with a constant mask.
+    
+    The conversion is performed in blocks of 8 bytes for efficiency.
+    The remaining bytes (if any) are processed individually.
+
+Others:
+
+    - 0x7 is used to determine the byte alignment and to handle the remainder.
+    - The mask is set to 0x80808080, which is used to flip the sign bit of each byte.
+    
 */
 
-#define FUNCTION_NAME   camera_int8_to_uint8_block
+#define FUNCTION_NAME   camera_int8_to_uint8_fast
 #define NSTACKWORDS     4
 #define dst             r0
 #define src             r1
