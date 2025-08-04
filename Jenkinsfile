@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.38.0') _
+@Library('xmos_jenkins_shared_library@v0.41.1') _
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -21,12 +21,12 @@ pipeline {
     )
     string(
       name: 'XMOSDOC_VERSION',
-      defaultValue: 'v7.1.0',
+      defaultValue: 'v7.3.0',
       description: 'The xmosdoc version'
     )
     string(
       name: 'INFR_APPS_VERSION',
-      defaultValue: 'v2.2.0',
+      defaultValue: 'v3.1.1',
       description: 'The infr_apps version'
     )
   } // parameters
@@ -74,11 +74,11 @@ pipeline {
             }
           } // Tests build
 
-          stage("Lib checks"){ // Needs to be placed after build stage for dependancies to be built
+          stage("Repo checks"){ // Needs to be placed after build stage for dependancies to be built
             steps {
               dir("${REPO}") {
                 withVenv {
-                  runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
+                  runRepoChecks("${WORKSPACE}/${REPO}")
                 }
               }
             }
