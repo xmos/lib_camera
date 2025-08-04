@@ -13,10 +13,10 @@ int main(
   UnityBegin(argv[0]);
 
   printf("lib_camera Unit Tests\n");
- 
   RUN_TEST_GROUP(color_conversion);
   RUN_TEST_GROUP(white_balance);
   RUN_TEST_GROUP(timings);
+  RUN_TEST_GROUP(uint8_conv);
   
   return UNITY_END();
 }
