@@ -24,6 +24,7 @@
 #define AE_MIN_EXPOSURE     (1)       // minimum value for exposure
 #define AE_MAX_EXPOSURE     (80)      // maximum value for exposure
 #define AE_DONE             (0)       // done flag for auto exposure
+#define AE_RESET_COUNT      (0)       // counter for resetting the auto exposure, 0 means no reset
 
 typedef enum {
     CHANNEL_RED = 0,
@@ -81,9 +82,11 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
 {
     static float a = AE_MIN_EXPOSURE;     // minimum value for exposure
     static float b = AE_MAX_EXPOSURE;    // maximum value for exposure
+    static int count = AE_RESET_COUNT;
+
     static float fa = -1.0;   // minimimum skewness
     static float fb = 1.0;    // maximum skewness
-    // static int count = 0;
+   
     float c = (float)exposure;
     float fc = skewness;
 
@@ -93,6 +96,15 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
     else {
         b = c; fb = fc;
     }
+
+    if (count > 0) {
+        if (--count == 0) {
+            a = AE_MIN_EXPOSURE; b = AE_MAX_EXPOSURE;
+            count = AE_RESET_COUNT;
+            fa = -1.0; fb = 1.0;
+        }
+    }
+
     c = b - fb * ((b - a) / (fb - fa));
     return c;
 }
@@ -270,8 +282,9 @@ void stats_reset(
 unsigned camera_isp_auto_exposure(image_cfg_t* image)
 {   
     static unsigned ae_value = 1;
-    if (ae_value == AE_DONE) {
-        return AE_DONE;
+
+    if ((ae_value == AE_DONE) && (AE_RESET_COUNT == 0)) {
+        return AE_DONE; // already done   
     }
     
     // init histograms and statistics

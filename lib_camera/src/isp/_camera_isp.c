@@ -45,14 +45,21 @@ static struct {
 };
 
 // Sensor width maximum values
-const unsigned sensor_width_max_values[] = {
-  MODE_RAW_MAX_SIZE,    // 0
-  MODE_RGB1_MAX_SIZE,   // 1
-  MODE_RGB2_MAX_SIZE,   // 2
-  0,                    // 3
-  MODE_RGB4_MAX_SIZE,   // 4
-  0,                    // 5
-  MODE_YUV2_MAX_SIZE    // 6
+static const unsigned sensor_width_max_values[] = {
+  [MODE_RAW]  = MODE_RAW_MAX_SIZE,
+  [MODE_RGB1] = MODE_RGB1_MAX_SIZE,
+  [MODE_RGB2] = MODE_RGB2_MAX_SIZE,
+  [MODE_RGB4] = MODE_RGB4_MAX_SIZE,
+  [MODE_YUV2] = MODE_YUV2_MAX_SIZE,
+};
+
+// Sensor scale values
+static const unsigned sensor_scale_values[] = {
+  [MODE_RAW]  = 1,
+  [MODE_RGB1] = 1,
+  [MODE_RGB2] = 2,
+  [MODE_RGB4] = 4,
+  [MODE_YUV2] = 2,
 };
 
 // MIPI packet header
@@ -186,10 +193,7 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   // If RAW, scale = 1
   unsigned mode = cfg->mode;
   unsigned max_size = sensor_width_max_values[mode];
-  unsigned scale = (mode == MODE_RAW) ? 1 : (unsigned)(mode);
-
-  // scale correction for yuv422
-  if (mode == MODE_YUV2) {scale = 2;}
+  unsigned scale = sensor_scale_values[mode];
 
   // Compute the coordinates of the region of interest
   cfg->x1 = cfg->offset_x * SENSOR_WIDTH;
@@ -228,7 +232,6 @@ void camera_isp_coordinates_compute(image_cfg_t* img_cfg){
   // ensure everything is logical
   xassert(cond_raw || cond_rgb || cond_yuv && "channels not valid");
   xassert(cfg->sensor_width <= max_size && "sensor_width");
-  xassert(cfg->sensor_height <= max_size && "sensor_height");
   xassert(cfg->x1 < cfg->x2 && "x1");
   xassert(cfg->y1 < cfg->y2 && "y1");
   xassert(cfg->x2 <= SENSOR_WIDTH && "x2");

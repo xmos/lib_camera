@@ -26,7 +26,7 @@ void camera_isp_raw8_to_rgb1(image_cfg_t* image, int8_t* data_in, unsigned senso
     xassert(img_channels == 3);
     int8_t* data_src = data_in + x1;
 
-    // 4 rows of 200 pixels
+    // 4 rows of MODE_RGB1_MAX_SIZE pixels
     static int8_t input_rows[4][MODE_RGB1_MAX_SIZE] ALIGNED_8 = { {0} };
 
     // if even, move data, if odd compute
