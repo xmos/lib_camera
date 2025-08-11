@@ -51,7 +51,7 @@ void camera_mipi_init(
 {
   // ---------------- MIPI config variables ----------------
   const unsigned mipi_clk_divider = 0x1;
-  const unsigned mipi_clk_cfg_divider = 0x2;
+  const unsigned mipi_clk_cfg_divider = 0x1;
   const unsigned mipi_shim_cfg0 = MIPI_SHIM_CFG0_PACK(
     MIPI_SHIM_DEMUX_EN,
     MIPI_SHIM_DEMUX_DATATYPE,

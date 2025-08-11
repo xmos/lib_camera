@@ -1,6 +1,13 @@
 lib_camera change log
 =====================
 
+UNRELEASED
+----------
+
+  * ADDED: fast int8 to uint8 conversion function.
+  * ADDED: continous AE control (AE_RESET_COUNT).
+  * CHANGED: Default MIPI PHY and SHIM frecuency to 150MHz. 
+
 2.0.0
 -----
 
