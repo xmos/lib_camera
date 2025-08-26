@@ -23,8 +23,16 @@
 #define AE_INIT_EXPOSURE    (35)      // initial exposure value
 #define AE_MIN_EXPOSURE     (1)       // minimum value for exposure
 #define AE_MAX_EXPOSURE     (80)      // maximum value for exposure
+#define AE_MIN_SK           (-1.0)    // minimum skewness value
+#define AE_MAX_SK           (1.0)     // maximum skewness value
 #define AE_DONE             (0)       // done flag for auto exposure
-#define AE_RESET_COUNT      (0)       // counter for resetting the auto exposure, 0 means no reset
+
+// Number of frames to reset the AE search (only if continuous AE is enabled)
+#if (CONFIG_APPLY_AE == 2) 
+#define AE_RESET_COUNT      (30)
+#else
+#define AE_RESET_COUNT      (0)
+#endif
 
 typedef enum {
     CHANNEL_RED = 0,
@@ -72,41 +80,50 @@ float stats_compute_mean_skewness(statistics_t* stats)
     return mean;
 }
 
-static 
-int8_t csign(float x) {
-  return (x > 0) - (x < 0);
-}
-
 static
 uint8_t AE_compute_new_exposure(float exposure, float skewness)
 {
-    static float a = AE_MIN_EXPOSURE;     // minimum value for exposure
+    static float a = AE_MIN_EXPOSURE;    // minimum value for exposure
     static float b = AE_MAX_EXPOSURE;    // maximum value for exposure
-    static int count = AE_RESET_COUNT;
+    static float fa = AE_MIN_SK;         // minimimum skewness
+    static float fb = AE_MAX_SK;         // maximum skewness
+    static int count = AE_RESET_COUNT;   // reset counter for exposure
 
-    static float fa = -1.0;   // minimimum skewness
-    static float fb = 1.0;    // maximum skewness
-   
     float c = (float)exposure;
     float fc = skewness;
 
-    if (csign(fc) == csign(fa)) {
+    // compute low and high bounds, depending on sign of skewness
+    if (fa * fc > 0.0f) {
         a = c; fa = fc;
     }
     else {
         b = c; fb = fc;
     }
 
+    // if continous exposure mode (>0), reset the bounds
     if (count > 0) {
         if (--count == 0) {
-            a = AE_MIN_EXPOSURE; b = AE_MAX_EXPOSURE;
+            a = AE_MIN_EXPOSURE; 
+            b = AE_MAX_EXPOSURE;
+            fa = AE_MIN_SK; 
+            fb = AE_MAX_SK;
             count = AE_RESET_COUNT;
-            fa = -1.0; fb = 1.0;
         }
     }
 
-    c = b - fb * ((b - a) / (fb - fa));
-    return c;
+    // Secant step
+    float num   = (b - a);
+    float denom = (fb - fa);
+    if (denom != 0.0f) {
+        c = b - fb * (num / denom);
+    } else {
+        c = 0.5f * (a + b);
+    }
+
+    // Clamp to valid range
+    if (c < AE_MIN_EXPOSURE) c = AE_MIN_EXPOSURE;
+    if (c > AE_MAX_EXPOSURE) c = AE_MAX_EXPOSURE;
+    return (uint8_t)c;
 }
 
 static inline
@@ -133,11 +150,11 @@ unsigned AE_compute_exposure(
     }
     else {
         new_exp = AE_compute_new_exposure((float)new_exp, sk); // new_exp is in [1, 80]
-        if (new_exp > AE_MAX_EXPOSURE) { // Skip AE control if too dark
+        if (new_exp >= AE_MAX_EXPOSURE) { // Skip AE control if too dark
             skip_ae_control++;
             if (skip_ae_control > 5) {
                 skip_ae_control = 0;
-                debug_printf("\nskipping AE control, too dark\n");
+                debug_printf("skipping AE control, too dark\n");
                 return AE_DONE;
             }
         }
