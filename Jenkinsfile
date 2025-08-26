@@ -136,6 +136,13 @@ pipeline {
 
     } // parallel
   } // CI
+
+  stage('🚀 Release') {
+    steps {
+      triggerRelease()
+    }
+  } // Release
+
   } // stages
   
 } // pipeline
