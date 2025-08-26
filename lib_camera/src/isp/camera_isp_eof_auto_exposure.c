@@ -26,7 +26,14 @@
 #define AE_MIN_SK           (-1.0)    // minimum skewness value
 #define AE_MAX_SK           (1.0)     // maximum skewness value
 #define AE_DONE             (0)       // done flag for auto exposure
-#define AE_RESET_COUNT      (0)       // counter for resetting the auto exposure, 0 means no reset
+
+// Number of frames to reset the AE search 
+// Note: depends on AE mode, continuous or single-shot
+#if (CONFIG_APPLY_AE == 2) 
+#define AE_RESET_COUNT      (30)
+#else
+#define AE_RESET_COUNT      (0)
+#endif
 
 typedef enum {
     CHANNEL_RED = 0,
@@ -105,7 +112,7 @@ uint8_t AE_compute_new_exposure(float exposure, float skewness)
         }
     }
 
-    // Secant step: c = b - fb * ((b - a)/(fb - fa))
+    // Secant step
     float num   = (b - a);
     float denom = (fb - fa);
     if (denom != 0.0f) {

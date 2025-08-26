@@ -16,7 +16,7 @@ The library provides a logging mechanism to help developers debug and monitor th
 
 - -DDEBUG_PRINT_ENABLE_CAM_ISP=1 : This option enables debug prints for the ISP thread. It can be used to monitor the status of the ISP and its components.
 - -DDEBUG_PRINT_ENABLE_CAM_MIPI=1 : This option enables debug prints for the MIPI thread. It can be used to monitor the status of the MIPI receiver and its components.
-- -DCONFIG_APPLY_AE=1: This option enables the application of automatic exposure (AE) settings (default). It can be set to 0 to disable AE.
+- -DCONFIG_APPLY_AE=1: This option enables the application of automatic exposure (AE) settings (default). It can be set to 0 to disable AE. Setting it to 2 enables continuous AE adjustment.
 - -DCONFIG_APPLY_AWB=1: This option enables the application of automatic white balance (AWB) settings (default). It can be set to 0 to disable AWB.
 - -DLIBXCORE_XASSERT_IS_ASSERT=1 : This option configures the library to use the standard ``assert`` C standard library instead of ``lib_xcore/xassert`` for runtime exceptions. Enabling this provides more detailed error reporting, as ``assert`` outputs information about the error location, while ``xassert`` does not. Default is set to 0.
 
