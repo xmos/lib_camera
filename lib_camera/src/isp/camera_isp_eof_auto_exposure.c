@@ -27,8 +27,7 @@
 #define AE_MAX_SK           (1.0)     // maximum skewness value
 #define AE_DONE             (0)       // done flag for auto exposure
 
-// Number of frames to reset the AE search 
-// Note: depends on AE mode, continuous or single-shot
+// Number of frames to reset the AE search (only if continuous AE is enabled)
 #if (CONFIG_APPLY_AE == 2) 
 #define AE_RESET_COUNT      (30)
 #else
