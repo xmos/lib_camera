@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.41.1') _
+@Library('xmos_jenkins_shared_library@v0.42.0') _
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -138,6 +138,9 @@ pipeline {
   } // CI
 
   stage('🚀 Release') {
+    when {
+      expression {triggerRelease.isReleasable() }
+    }
     steps {
       triggerRelease()
     }
