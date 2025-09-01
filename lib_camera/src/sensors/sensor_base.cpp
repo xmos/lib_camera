@@ -1,10 +1,15 @@
 // Copyright 2023-2025 XMOS LIMITED.
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-#include <print.h>
+#include <stdio.h>
 
 #include "sensor_base.hpp"
 #include "camera_utils.h"
+
+// debug options
+// (can be enabled via: -DDEBUG_PRINT_ENABLE_CAM_I2C=1)
+#define DEBUG_UNIT CAM_I2C 
+#include <debug_print.h>
 
 using namespace sensor;
 
@@ -19,7 +24,7 @@ void SensorBase::i2c_init() {
     this->i2c_cfg.p_sda, 0, 0xC,
     this->i2c_cfg.speed);
   delay_milliseconds_cpp(100);
-  printstrln("I2C initialized.");
+  debug_printf("I2C initialized.");
 }
 
 int SensorBase::i2c_read(uint16_t reg) {
@@ -64,9 +69,7 @@ int SensorBase::i2c_write_table(i2c_table_t table) {
     // pause if we reset the device
     if (address == sleep_adr) {
       delay_ticks_cpp(sleep_ticks);
-      #if PRINT_I2C_REG
-        printf("sleeping...\n");
-      #endif
+      debug_printf("sleep for %d ticks\n", sleep_ticks);
     }
 
     // if continuous mode
@@ -74,17 +77,13 @@ int SensorBase::i2c_write_table(i2c_table_t table) {
       if (address & 0x8000) {
         address &= 0x7fff;
       }
-      #if PRINT_I2C_REG
-        printf("mode=%c , address  = 0x%04x, value = 0x%02x\n", 'c', address, value >> 8);
-        printf("mode=%c , address+ = 0x%04x, value = 0x%02x\n", 'c', address+1, value & 0xff);  
-      #endif 
+      debug_printf("mode=%c , address  = 0x%04x, value = 0x%02x\n", 'c', address, value >> 8);
+      debug_printf("mode=%c , address+ = 0x%04x, value = 0x%02x\n", 'c', address+1, value & 0xff);
       ret |= this->i2c_write_line(address,   value >> 8); // B1 B2 B3 B4 -> B1 B2
       ret |= this->i2c_write_line(address+1, value & 0xff); // B1 B2 B3 B4 -> B3 B4 
     }
     else {
-      #if PRINT_I2C_REG
-        printf("mode=%c , address = 0x%04x, value = 0x%02x\n", 's', address, value);
-      #endif
+      debug_printf("mode=%c , address = 0x%04x, value = 0x%02x\n", 's', address, value);
       ret |= this->i2c_write_line(address, (uint8_t)value);
     }
   }

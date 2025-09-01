@@ -11,7 +11,6 @@
 #include "sensor_base.hpp"
 #include "camera_utils.h"
 
-
 #include "sensor_imx219.hpp"
 
 using namespace sensor;
@@ -44,7 +43,6 @@ void camera_sensor_init() {
     (centralise_t)CONFIG_CENTRALISE);
 
   // Init the I2C sensor first configuration
-  debug_printf("Camera init\n");
   int ret = 0;
   ret |= camera_sensor_ptr->initialize();
   delay_milliseconds_cpp(100);
@@ -53,7 +51,6 @@ void camera_sensor_init() {
   ret |= camera_sensor_ptr->stream_start();
   delay_milliseconds_cpp(500);
   xassert((ret == 0) && "Could not initialise camera");
-  debug_printf("Camera_started and configured\n");
 }
 
 void camera_sensor_start() {
