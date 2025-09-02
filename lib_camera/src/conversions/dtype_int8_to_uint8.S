@@ -1,0 +1,86 @@
+// Copyright 2025 XMOS LIMITED.
+// This Software is subject to the terms of the XMOS Public Licence: Version 1.
+
+/*
+
+void camera_int8_to_uint8_fast(
+    uint8_t *dst, 
+    const int8_t *src, 
+    unsigned size
+);
+
+Description:
+    
+    Converts an array of int8_t values to uint8_t values by applying a bitwise XOR operation with a constant mask.
+    
+    The conversion is performed in blocks of 8 bytes for efficiency.
+    The remaining bytes (if any) are processed individually.
+
+Others:
+
+    - 0x7 is used to determine the byte alignment and to handle the remainder.
+    - The mask is set to 0x80808080, which is used to flip the sign bit of each byte.
+    
+*/
+
+#define FUNCTION_NAME   camera_int8_to_uint8_fast
+#define NSTACKWORDS     4
+#define dst             r0
+#define src             r1
+#define sz              r2
+#define len             r3
+
+#define tmp1            r4      
+#define tmp2            r5
+#define idx             r6
+#define _0x7            r7
+
+#define mask            r11
+
+.section .cp.rodata,"ac",@progbits
+.issue_mode dual
+.align 4
+cp_xor: .word 0x80808080
+
+.section .text
+.issue_mode dual
+.align 4
+.globl FUNCTION_NAME
+.type FUNCTION_NAME, @function
+.cc_top FUNCTION_NAME.func, FUNCTION_NAME
+
+FUNCTION_NAME:
+    DUALENTSP_lu6   NSTACKWORDS
+    std r4, r5, sp[0]
+    std r6, r7, sp[1]
+    {ldc _0x7, 0x7              ; ldc idx, 0x0       }
+    {and tmp1, src, _0x7        ; and tmp2, dst, _0x7}
+    {mov len, sz                ; ecallt tmp1        }  // check dword alignment
+    {shr len, len, 3            ; ecallt tmp2        }
+    ldw mask, cp[cp_xor]
+.do_loop:                                               // do xor of 8 bytes (int64)
+    ldd tmp1, tmp2, src[idx]
+    xor tmp1, tmp1, mask
+    xor tmp2, tmp2, mask
+    std tmp1, tmp2, dst[idx]
+    {add idx, idx, 1            ; sub len, len, 1   }
+    {                           ; bt  len, .do_loop }
+// prepare remainder
+    {and len, sz, _0x7          ; shl idx, idx, 3   }            
+    {shr mask, mask, 24         ; bf len, .end      }   // new mask = 0x80
+.do_rem:
+    {ld8u tmp2, src[idx]        ; sub len, len, 1   }
+    xor tmp2, tmp2, mask
+    st8 tmp2, dst[idx]
+    {add idx, idx, 1            ; bt len, .do_rem   }
+.end:
+    ldd r4, r5, sp[0]
+    ldd r6, r7, sp[1]
+    RETSP_lu6 NSTACKWORDS
+
+.cc_bottom FUNCTION_NAME.func
+.set    FUNCTION_NAME.nstackwords, NSTACKWORDS; .globl  FUNCTION_NAME.nstackwords
+.set    FUNCTION_NAME.maxcores,1; .global FUNCTION_NAME.maxcores
+.set	FUNCTION_NAME.maxtimers,0; .globl FUNCTION_NAME.maxtimers
+.set	FUNCTION_NAME.maxchanends,0; .globl	FUNCTION_NAME.maxchanends
+.size FUNCTION_NAME, .-FUNCTION_NAME

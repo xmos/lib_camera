@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_configuration:
 
 Configuration
@@ -18,9 +16,9 @@ The library provides a logging mechanism to help developers debug and monitor th
 
 - -DDEBUG_PRINT_ENABLE_CAM_ISP=1 : This option enables debug prints for the ISP thread. It can be used to monitor the status of the ISP and its components.
 - -DDEBUG_PRINT_ENABLE_CAM_MIPI=1 : This option enables debug prints for the MIPI thread. It can be used to monitor the status of the MIPI receiver and its components.
-- -DCONFIG_APPLY_AE=1: This option enables the application of automatic exposure (AE) settings. It can be set to 0 to disable AE.
-- -DCONFIG_APPLY_AWB=1: This option enables the application of automatic white balance (AWB) settings. It can be set to 0 to disable AWB.
-- -DLIBXCORE_XASSERT_IS_ASSERT=1 : This option configures the library to use the standard ``assert`` C standard library instead of ``lib_xcore/xassert`` for runtime exceptions. Enabling this provides more detailed error reporting, as ``assert`` outputs information about the error location, while ``xassert`` does not.
+- -DCONFIG_APPLY_AE=1: This option enables the application of automatic exposure (AE) settings (default). It can be set to 0 to disable AE. Setting it to 2 enables continuous AE adjustment.
+- -DCONFIG_APPLY_AWB=1: This option enables the application of automatic white balance (AWB) settings (default). It can be set to 0 to disable AWB.
+- -DLIBXCORE_XASSERT_IS_ASSERT=1 : This option configures the library to use the standard ``assert`` C standard library instead of ``lib_xcore/xassert`` for runtime exceptions. Enabling this provides more detailed error reporting, as ``assert`` outputs information about the error location, while ``xassert`` does not. Default is set to 0.
 
 Default Settings
 ----------------
@@ -61,20 +59,20 @@ Below is an example configuration:
 In this example, the user has set the image size to 192x240 pixels with 3 channels (RGB). The `ptr` field points to the buffer where the image data will be stored. The `config` field points to the camera configuration structure, which contains additional settings such as offsets and modes. In this case ``MODE_RGB2`` is selected, meaning that the image will take a region of 384x480 pixels from the sensor area to produce a 192x240 image. The offsets are set to 0.2 and 0.3, which means that the image will start from 20% and 30% of the sensor's maximum area.
 
 
-Adding Support for the Explorer Board
--------------------------------------
+Adding Support for the xcore.ai Evaluation Kit
+----------------------------------------------
 
 The |explorer board| (|explorer board ref|) is a development board that can be used with the xcore.ai camera library, it has a compatible FPC-24 connector and a MIPI D-PHY receiver. It can support cameras like the Raspberry Pi camera module v2.1 (IMX219) directly. The main difference is the board layout, in the |explorer board|, I2C and MIPI lines collide in the same tile, so the user will need to adapt the hardware or software to make it work.
 
-Regarding the **Hardware solution**, the user can route free pins on tile[1] to the I2C signals from tile [0] (SCL:X0D37:D16, SDA:X0D38:D17). This allows reuse of the same code as used for the |vision board|. MIPI can be placed in both tiles, with the only restriction that MIPI and USB can't be placed on the same tile. The specific ports and pin assignments for the board can be found in the corresponding ``.xn`` file and the board's manual. :numref:`expl-board-conn` illustrates how to achieve this:
+Regarding the **Hardware solution**, the user can route free pins on tile[1] to the I2C signals from tile [0] (SCL:X0D37:D16, SDA:X0D38:D17). This allows reuse of the same code as used for the |vision board|. MIPI can be placed in both tiles, with the only restriction that MIPI and USB can't be placed on the same tile. The specific ports and pin assignments for the board can be found in the corresponding XN file and the board's manual. :numref:`expl-board-conn` illustrates how to achieve this:
 
 .. _expl-board-conn:
 .. figure:: ../images/expl-board-conn.png
   :align: center
-  :alt: Explorer Board I2C connections
+  :alt: I2C connections
   :width: 60%
 
-  Explorer Board I2C connections
+  |explorer board| I2C connections
 
 In this configuration, free pins on tile[1] (X1D56, X1D57) are used to connect the I2C signals from tile[0] (SDA, SCL respectively). 
 
@@ -94,7 +92,7 @@ Regarding the **Software solution**, the user will need to adapt the code to wor
         on tile[1]: user_app(c_cam);
 
 
-.. tab:: Explorer Board
+.. tab:: |explorer board|
 
     .. code-block:: c
 
@@ -125,7 +123,7 @@ To enable this, the ``camera_main`` function needs to accept a second channel pa
         PJOB(camera_isp_thread,(c_pkt.end_b, c_ctrl.end_b, c_cam, c_i2c))
     );
 
-Instead of calling the ``camera_sensor_control`` function directly, the ISP calls the ``camera_sensor_control_tx`` function, which sends the command to the I2C control thread via the ``c_i2c`` channel.
+The key distinction is that, on the |explorer board|, I2C commands are not issued directly from the ISP thread. Instead, the ISP thread invokes ``camera_sensor_control_tx``, which transmits the command over a channel to a dedicated thread (``camera_sensor_control_rx``) running on the tile with I2C access. This thread receives the command and performs the actual I2C transaction with the camera sensor. This separation enables inter-tile communication and proper handling of hardware constraints.
 
 .. tab:: Vision Board
 
@@ -139,22 +137,23 @@ Instead of calling the ``camera_sensor_control`` function directly, the ISP call
 
     camera_sensor_control_tx(SENSOR_INIT, 0);
 
-The ``camera_sensor_control_rx`` thread will be responsible for handling the I2C control commands and sending them to the sensor.
+The ``camera_sensor_control_rx`` thread is responsible for receiving I2C control commands over the ``c_i2c`` channel (sent via ``camera_sensor_control_tx``) and executing them on the sensor.
+
 Below is a definition of what the ``camera_sensor_control_rx`` thread could look like:
 
 .. code-block:: c
 
-   void camera_sensor_control_rx(chanend_t c_control){
+   void camera_sensor_control_rx(chanend_t c_i2c){
      uint32_t encoded_response;
      sensor_control_t cmd;
      uint8_t arg;
      int ret = 0;
 
      SELECT_RES(
-       CASE_THEN(c_control, c_control_handler))
+       CASE_THEN(c_i2c, c_i2c_handler))
      {
-       c_control_handler: {
-         encoded_response = chan_in_word(c_control);
+       c_i2c_handler: {
+         encoded_response = chan_in_word(c_i2c);
          cmd = (sensor_control_t)DECODE_CMD(encoded_response);
          arg = DECODE_ARG(encoded_response);
          switch (cmd)
@@ -168,9 +167,9 @@ Below is a definition of what the ``camera_sensor_control_rx`` thread could look
      }
    }
 
-   void camera_sensor_control_tx(chanend_t c_control, sensor_control_t cmd, uint8_t arg) {
+   void camera_sensor_control_tx(chanend_t c_i2c, sensor_control_t cmd, uint8_t arg) {
      uint32_t encoded_command = ENCODE_CTRL(cmd, arg);
-     chan_out_word(c_control, encoded_command);
+     chan_out_word(c_i2c, encoded_command);
    }
 
 After implementing the above changes, the user will need to rebuild the application. The user can then run the example and verify that the camera is working correctly.
@@ -217,7 +216,7 @@ Once a compatible sensor is available, the user will need to adapt the software.
 
 By navigating to ``sensors/api/SensorBase.hpp``, the user will find the ``SensorBase`` class which is intended to be derived from.
 It doesn't have anything to do with a particular sensor, it only provides an API to do basic I2C communication with the sensor.
-Inside ``SensorBase`` class users can also find some public virtual methods which will **have to** be implemented in the derived class.
+Inside ``SensorBase`` class users can also find some public virtual methods which will have to be implemented in the derived class.
 
 In order to implement a new sensor, the user will need to create a directory in ``lib_camera/src/sensors``, implement a derived class with 
 ``initialize()``, ``stream_start()``, ``stream_stop()``, ``set_exposure()``, ``configure()`` and ``control()`` methods.

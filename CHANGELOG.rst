@@ -1,9 +1,17 @@
 lib_camera change log
 =====================
 
+2.0.1
+-----
+
+  * ADDED: fast int8 to uint8 conversion.
+  * ADDED: continous AE control (-DCONFIG_APPLY_AE=2).
+  * CHANGED: Default MIPI PHY and SHIM frecuency to 150MHz.
+
 2.0.0
 -----
 
+  * ADDED: RAW8 to YUV422 conversion support.
   * ADDED: On the fly downsample for raw8 to rgb888 (x1, x2, x4).
   * CHANGED: camera capture mode from streaming to single capture.
   * CHANGED: packet handler and sensor control thread are embded in ISP thread.

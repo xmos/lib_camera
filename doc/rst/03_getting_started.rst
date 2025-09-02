@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_getting_started:
 
 Getting Started
@@ -9,7 +7,7 @@ This section provides a quick-start guide to help users get up and running with 
 
 .. note::
 
-   To directly go to the instructions for building and running the example, refer to :ref:`Build and Run the Application <Build and Run the Application>` section.
+   To directly go to the instructions for building and running the example, refer to :ref:`Build and Run the Example <build-run-example>` section.
 
 RGB Capture Example
 -------------------
@@ -44,8 +42,6 @@ Finally, the user must call the :c:func:`camera_isp_start_capture` function to s
 Once the frame is ready, the user can process the image data and save it to a file using the ``save_image()`` function.
 
 The following sections provide detailed information about the requirements for running the example, as well as step-by-step instructions on how to build and execute it.
-
-.. _Build and Run the Application:
 
 Hardware Requirements
 ---------------------
@@ -119,6 +115,11 @@ If the build is successful, the message ``[100%] Built target capture_rgb`` and 
      - OKAY
 
 Note that the memory usage is shown in bytes, and results could differ slightly. The maximum memory available for each tile is 524288 bytes. As we can see in this case, the memory usage is well within the limits for both tiles. Usage is about 0.81% of the total memory available for tile 0 and about 32% for tile 1. 
+
+.. _build-run-example:
+
+Build and Run the Example
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once the example is built, you can run it using the following command:
 

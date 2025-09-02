@@ -15,8 +15,8 @@ With this guide, users can quickly get started capturing images and integrating 
 The documentation is organized as follows:
 
 - :ref:`lib_camera_overview`: Introduction to the library's purpose, supported hardware, key features, and high-level architecture.
-- :ref:`lib_camera_getting_started`: Step-by-step instructions for setting up the library and running example applications.
 - :ref:`lib_camera_architecture`: Detailed explanation of the library's components, data flow, and concurrency model.
+- :ref:`lib_camera_getting_started`: Step-by-step instructions for setting up the library and running example applications.
 - :ref:`lib_camera_configuration`: Guidance on configuring the library for various hardware platforms and use cases.
 - :ref:`lib_camera_troubleshooting`: Tips and solutions for common issues encountered when using the library.
 - :ref:`lib_camera_contributing`: Information on contributing to the project, including bug reporting, feature requests, and development guidelines.
@@ -27,8 +27,8 @@ The documentation is organized as follows:
    :hidden:
 
    01_overview
-   02_getting_started
-   03_architecture
+   02_architecture
+   03_getting_started
    04_configuration
    05_troubleshooting
    06_contributing

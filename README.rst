@@ -5,7 +5,7 @@ lib_camera: Camera Library
 ##########################
 
 :vendor: XMOS
-:version: 2.0.0
+:version: 2.0.1
 :scope: General Use
 :description: Camera Library
 :category: Vision
@@ -58,22 +58,22 @@ Known issues
 Development repo
 ****************
 
-  * `lib_camera <https://www.github.com/xmos/lib_camera>`_
+* `lib_camera <https://www.github.com/xmos/lib_camera>`_
 
 **************
 Required tools
 **************
 
- * XTC tools: `15.3.1` `XTC Software Tools <https://www.xmos.com/software-tools/>`_.
- * Python: `3.10` or later `Python <https://www.python.org/>`.
- * CMake: `3.21 ` or later `CMAKE_ <https://cmake.org/>`.
+* XTC tools: *15.3.1* `XTC Software Tools <https://www.xmos.com/software-tools/>`_.
+* Python: *3.10* or later `Python <https://www.python.org/>`_.
+* CMake: *3.21* or later `CMAKE <https://cmake.org/>`_.
 
 *********************************
 Required libraries (dependencies)
 *********************************
 
-  * `lib_i2c <https://www.xmos.com/file/fwk_io>`_
-  * `lib_logging <https://www.xmos.com/file/lib_logging>`_
+* `lib_i2c <https://www.xmos.com/file/fwk_io>`_
+* `lib_logging <https://www.xmos.com/file/lib_logging>`_
 
 *************************
 Related application notes
@@ -81,10 +81,10 @@ Related application notes
 
 The following application notes use this library:
 
-  * `AN02017` <www.xmos.com/file/an02017>`_
-  * `AN02005` <www.xmos.com/file/an02005>`_
-  * `AN02010` <www.xmos.com/file/an02010>`_
-  * `AN02013` <www.xmos.com/file/an02013>`_
+* `AN02017 <www.xmos.com/file/an02017>`_
+* `AN02005 <www.xmos.com/file/an02005>`_
+* `AN02010 <www.xmos.com/file/an02010>`_
+* `AN02013 <www.xmos.com/file/an02013>`_
 
 *******
 Support

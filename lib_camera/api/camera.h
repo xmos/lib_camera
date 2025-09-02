@@ -27,11 +27,11 @@ C_API_START
 #define CONFIG_CENTRALISE   CENTRALISE_ON ///< Centralise mode: CENTRALISE_ON or CENTRALISE_OFF
 
 #ifndef CONFIG_APPLY_AWB
-#define CONFIG_APPLY_AWB    (1) ///< Apply White Balance: 1 to apply, 0 to skip
+#define CONFIG_APPLY_AWB    (1) ///< Apply White Balance: 0 skip, 1 apply
 #endif
 
 #ifndef CONFIG_APPLY_AE
-#define CONFIG_APPLY_AE     (1) ///< Apply Auto Exposure: 1 to apply, 0 to skip
+#define CONFIG_APPLY_AE     (1) ///< Apply Auto Exposure: 0 to skip, 1 apply once, 2 continuous 
 #endif
 
 /**

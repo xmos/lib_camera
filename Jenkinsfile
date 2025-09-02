@@ -1,4 +1,4 @@
-@Library('xmos_jenkins_shared_library@v0.38.0') _
+@Library('xmos_jenkins_shared_library@v0.42.0') _
 
 def runningOn(machine) {
   println "Stage running on:"
@@ -21,12 +21,12 @@ pipeline {
     )
     string(
       name: 'XMOSDOC_VERSION',
-      defaultValue: 'v7.1.0',
+      defaultValue: 'v7.3.0',
       description: 'The xmosdoc version'
     )
     string(
       name: 'INFR_APPS_VERSION',
-      defaultValue: 'develop',
+      defaultValue: 'v3.1.1',
       description: 'The infr_apps version'
     )
   } // parameters
@@ -41,6 +41,7 @@ pipeline {
     parallel {
       stage ('Build & Test') {
         agent {label 'xcore.ai'}
+        post {cleanup {xcoreCleanSandbox()}}
         stages {
           stage('Checkout') {
             steps {
@@ -73,21 +74,22 @@ pipeline {
             }
           } // Tests build
 
-          stage("Lib checks"){ // Needs to be placed after build stage for dependancies to be built
+          stage("Repo checks"){ // Needs to be placed after build stage for dependancies to be built
             steps {
               dir("${REPO}") {
                 withVenv {
-                  runLibraryChecks("${WORKSPACE}/${REPO}", "${params.INFR_APPS_VERSION}")
+                  runRepoChecks("${WORKSPACE}/${REPO}")
                 }
               }
             }
           } // Lib checks
 
+
           stage('Unit tests') {
             steps {
               dir("${REPO}/tests/unit_tests") {
                 withTools(params.TOOLS_VERSION) {
-                  sh 'xrun --id 0 --xscope bin/unit_tests.xe'
+                  sh 'xsim bin/unit_tests.xe'
                 }
               }
             }
@@ -105,13 +107,20 @@ pipeline {
                 }
               }
             }
-            post {cleanup {xcoreCleanSandbox()}} // post
           } // ISP tests 
+        
+          stage("Archive sandbox"){
+            steps {
+              archiveSandbox(REPO_NAME)
+            }
+          } // Archive sandbox
         } // stages
+        
       } // Build & Test
       
       stage('Documentation') {
-        agent {label 'documentation && docker'}
+        agent {label 'documentation'}
+        post {cleanup {xcoreCleanSandbox()}}
         steps{
           runningOn(env.NODE_NAME)
           dir("${REPO}") {
@@ -122,11 +131,21 @@ pipeline {
             }
           } 
         }
-        post {cleanup {xcoreCleanSandbox()}} // post
       } // Documentation
-      
+
+
     } // parallel
   } // CI
+
+  stage('🚀 Release') {
+    when {
+      expression {triggerRelease.isReleasable() }
+    }
+    steps {
+      triggerRelease()
+    }
+  } // Release
+
   } // stages
   
 } // pipeline

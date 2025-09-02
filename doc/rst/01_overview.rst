@@ -1,5 +1,3 @@
-|newpage|
-
 .. _lib_camera_overview:
 
 Overview
@@ -75,7 +73,8 @@ Additional Resources
 --------------------
 
 - MIPI CSI-2 specification:     `MIPI`_
-- XMOS I2C library user guide:  `XMOS I2C`_
-- XMOS Programming Guide:       `XMOS Programming Guide`_
+- XMOS I2C library user Guide:  `XMOS I2C`_
+- XMOS XC Programming Guide:    `XMOS XC Programming Guide`_
+- XMOS C Programming Guide:     `XMOS C Programming Guide`_
 - XMOS XS3A Architecture:       `XMOS XS3 Architecture`_
 - Sony IMX219 datasheet:        `IMX219`_
