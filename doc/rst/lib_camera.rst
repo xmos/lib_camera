@@ -29,6 +29,7 @@ The documentation is organized as follows:
 
    01_overview
    02_architecture
+   02b_resource_usage
    03_getting_started
    04_configuration
    05_troubleshooting
