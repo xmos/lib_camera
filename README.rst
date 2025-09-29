@@ -5,7 +5,7 @@ lib_camera: Camera Library
 ##########################
 
 :vendor: XMOS
-:version: 2.0.1
+:version: 2.0.2
 :scope: General Use
 :description: Camera Library
 :category: Vision
