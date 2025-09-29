@@ -15,7 +15,7 @@ For a typical single capture RGB application, ``lib_camera`` requires:
 * **Memory**: ~170 KB total (50 KB library + 120 KB image buffer)
 * **Performance**: 10-30 fps typical, single-capture optimized
 
-The following describes a nore detailed breakdown of the resources used by the library.
+The following describes a more detailed breakdown of the resources used by the library.
 
 Ports, Pins, and Clocks
 -----------------------
