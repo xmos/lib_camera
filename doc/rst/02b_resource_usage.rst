@@ -5,6 +5,18 @@ Resource Usage
 
 This section describes the resources required by ``lib_camera`` during typical operation.
 
+**Quick Summary**
+-----------------
+
+For a typical single capture RGB application, ``lib_camera`` requires:
+
+* **Hardware**: 3x 1-bit ports + 1x 8-bit port + 1 clock block (MIPI interface)
+* **Software**: 2 threads (MIPI receiver + image processing)
+* **Memory**: ~170 KB total (50 KB library + 120 KB image buffer)
+* **Performance**: 10-30 fps typical, single-capture optimized
+
+The following describes a nore detailed breakdown of the resources used by the library.
+
 Ports, Pins, and Clocks
 -----------------------
 
@@ -21,7 +33,7 @@ The MIPI D-PHY is a receiver-only physical layer, accepting up to two differenti
     * - Resource
       - Description
     * - ``Port 1O``
-      - MIPI Clock. 1-bit port used for clocking the demultiplexer and the data port at the same frequency via a clock block. Configured via tile registers. Typically set to 100–200 MHz.
+      - MIPI Clock. 1-bit port used for clocking the demultiplexer and the data port at the same frequency via a clock block. Configured via tile registers. Typically set to 100-200 MHz.
     * - ``Port 8A``
       - MIPI Data. 8-bit port for receiving MIPI data from the demultiplexer. Clocked by the MIPI clock.
     * - ``Port 1I``
@@ -37,11 +49,11 @@ Thread Usage
 The library uses **two threads** to handle different tasks:
 
 - 1x MIPI Receiver Thread: Handles the low-level MIPI protocol, including lane synchronization, data decoding, and error handling. 
-- 1x Image Processing Thread: Processes the raw image data, including debayering, color correction, and image scaling. It also manages sensor configuration via I2C.
+- 1x Image Processing Thread: Processes the raw image data, including debayering, color correction, and image scaling. It also manages sensor configuration via *I2C*.
 
 .. note::
 
-   The library is designed to be flexible and can be adapted to different hardware configurations. Depending on the specific use case, additional threads may be required for tasks such as image analysis or storage. For instance, if i2c port is placed in a different tile, an additional thread is required to handle the i2c communication.
+   The library is designed to be flexible and can be adapted to different hardware configurations. Depending on the specific use case, additional threads may be required for tasks such as image analysis or storage. For instance, if *I2C* port is placed in a different tile, an additional thread is required to handle the *I2C* communication.
 
 Memory
 ------
@@ -54,7 +66,7 @@ The memory requirements depend on the library itself and user image memory. Imag
   - A 640x480 RAW8 image requires approximately 307.2 KB of memory (640 * 480 * 1 bytes).
   - A 200x200 RGB image requires approximately 120 KB of memory (200 * 200 * 3 bytes).
 
-For a typical application then capturing RGB888 at 200x200 resolution, the total memory requirement would be approximately **170 KB** (50 KB for the library + 120 KB for the image buffer).
+For a typical application capturing RGB888 at 200x200 resolution, the total memory requirement would be approximately **170 KB** (50 KB for the library + 120 KB for the image buffer).
 
 Frame Rates
 -----------
