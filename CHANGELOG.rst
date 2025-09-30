@@ -1,6 +1,11 @@
 lib_camera change log
 =====================
 
+2.0.2
+-----
+
+  * ADDED: Resource Usage section to documentation.
+
 2.0.1
 -----
 
