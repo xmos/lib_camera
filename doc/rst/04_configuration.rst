@@ -79,7 +79,7 @@ In this configuration, free pins on tile[1] (X1D56, X1D57) are used to connect t
 
 Regarding the **Software solution**, the user will need to adapt the code to work with the |explorer board|. The following sections provide a guide on how to do this. The first change is to adapt the entry point of the program as follows:
 
-.. tab:: Vision Board
+.. tab:: |vision board|
 
     .. code-block:: c
 
@@ -126,13 +126,13 @@ To enable this, the ``camera_main`` function needs to accept a second channel pa
 
 The key distinction is that, on the |explorer board|, I2C commands are not issued directly from the ISP thread. Instead, the ISP thread invokes ``camera_sensor_control_tx``, which transmits the command over a channel to a dedicated thread (``camera_sensor_control_rx``) running on the tile with I2C access. This thread receives the command and performs the actual I2C transaction with the camera sensor. This separation enables inter-tile communication and proper handling of hardware constraints.
 
-.. tab:: Vision Board
+.. tab:: |vision board|
 
   .. code-block:: c
 
     camera_sensor_init();
 
-.. tab:: Explorer Board
+.. tab:: |explorer board|
 
   .. code-block:: c
 
